@@ -1,0 +1,4 @@
+(l: List) each: (b: Block) := {
+    l map: b in-scope
+    l
+} call
