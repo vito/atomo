@@ -2,3 +2,9 @@
     l map: b in-scope
     l
 } call
+
+[] includes?: _ := False
+(xs: List) includes?: y :=
+    if: (xs (take: y length) == y)
+        then: { True }
+        else: { xs tail includes?: y }
