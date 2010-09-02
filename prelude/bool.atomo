@@ -5,14 +5,14 @@ False = Object clone
 True delegates-to: Bool
 False delegates-to: Bool
 
-True && True = True
-Bool && Bool = False
+True && True := True
+Bool && Bool := False
 
-True || Bool = True
+True || Bool := True
 False || (b: Bool) := b
 
-True not = False
-False not = True
+True not := False
+False not := True
 
 if: True then: (a: Block) else: Block :=
     a call
@@ -30,5 +30,5 @@ while: (test: Block) do: (action: Block) :=
             while: test do: action
         }
 
-True show = "True"
-False show = "False"
+True show := "True"
+False show := "False"
