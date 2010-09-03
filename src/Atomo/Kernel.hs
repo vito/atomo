@@ -19,12 +19,10 @@ load = do
     [$p|this|] =: eval [$e|dispatch sender|]
 
     [$p|(x: Object) clone|] =: do
-        r <- eval [$e|x|] >>= referenceTo
-        o <- newObject $ \o -> o
-            { oDelegates = [r]
+        x <- here "x"
+        newObject $ \o -> o
+            { oDelegates = [x]
             }
-
-        return o
 
     [$p|(x: Object) delegates-to: (y: Object)|] =: do
         f <- eval [$e|x|] >>= orefFor
