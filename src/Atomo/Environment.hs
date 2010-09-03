@@ -14,6 +14,7 @@ import System.IO.Unsafe
 import qualified Data.IntMap as M
 import qualified Data.Vector as V
 
+import {-# SOURCE #-} Atomo.Method
 import Atomo.Parser
 import Atomo.Types
 import {-# SOURCE #-} qualified Atomo.Kernel as Kernel
@@ -51,7 +52,7 @@ execWith x e = do
 
         gets halt >>= liftIO
 
-run :: VM () -> IO (Either AtomoError ())
+run :: VM a -> IO (Either AtomoError a)
 run x = runWith (initEnv >> x) startEnv
 
 runWith :: VM a -> Env -> IO (Either AtomoError a)
@@ -198,8 +199,8 @@ define !p !e = do
         let (oss, oks) = oMethods obj
             ms =
                 case newp of
-                    PSingle {} -> (insertMethod m oss, oks)
-                    PKeyword {} -> (oss, insertMethod m oks)
+                    PSingle {} -> (addMethod m oss, oks)
+                    PKeyword {} -> (oss, addMethod m oks)
 
         liftIO . writeIORef o $
             obj { oMethods = ms }
@@ -296,7 +297,6 @@ match ids (PMatch (Reference x)) (Reference y) =
     delegatesMatch = any
         (match ids (PMatch (Reference x)))
         (oDelegates (unsafePerformIO (readIORef y)))
-match ids (PMatch (Reference x)) (Reference y) = x == y
 match ids (PMatch (Reference x)) y =
     match ids (PMatch (Reference x)) (Reference (orefFrom ids y))
 match ids (PMatch x) y =
@@ -481,3 +481,14 @@ loadFile filename = do
 
     exts = ["", "atomo", "hs"]
 
+delegatesTo :: Value -> Value -> VM Bool
+delegatesTo f t = do
+    o <- objectFor f
+    delegatesTo' (oDelegates o) t
+  where
+    delegatesTo' [] _ = return False
+    delegatesTo' (d:ds) t
+        | t `elem` (d:ds) = return True
+        | otherwise = do
+            o <- objectFor d
+            delegatesTo' (oDelegates o ++ ds) t

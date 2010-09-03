@@ -268,15 +268,6 @@ keyParticle :: [String] -> [Maybe Value] -> Value
 {-# INLINE keyParticle #-}
 keyParticle ns vs = Particle $ PMKeyword ns vs
 
-insertMethod :: Method -> MethodMap -> MethodMap
-insertMethod m mm =
-    M.insertWith (flip (++)) key [m] mm -- TODO: insert by precision
-  where
-    key = ppID (mPattern m)
-
-toMethods :: [(Pattern, Value)] -> MethodMap
-toMethods bs = foldl (\ss (p, v) -> insertMethod (Slot p v) ss) M.empty bs
-
 
 -----------------------------------------------------------------------------
 -- Helpers ------------------------------------------------------------------

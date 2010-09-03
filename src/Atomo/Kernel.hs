@@ -13,6 +13,7 @@ import qualified Data.Vector as V
 import Atomo.Debug
 import Atomo.Environment
 import Atomo.Haskell
+import Atomo.Method
 
 load :: VM ()
 load = do
@@ -35,16 +36,7 @@ load = do
     [$p|(x: Object) is-a?: (y: Object)|] =: do
         x <- here "x"
         y <- here "y"
-        Object { oDelegates = ds } <- objectFor x
-
-        let delegatesTo [] _ = return False
-            delegatesTo (d:ds) t
-                | t `elem` (d:ds) = return True
-                | otherwise = do
-                    o <- objectFor d
-                    delegatesTo (oDelegates o ++ ds) t
-
-        delegatesTo (x:ds) y >>= bool
+        delegatesTo x y >>= bool
 
     [$p|(x: Object) responds-to?: (p: Particle)|] =: do
         x <- here "x"
@@ -189,12 +181,12 @@ load = do
 
                     withTop blockScope (evalAll es)
       where
-        bs = insertMethod (Slot (PSingle (hash "this") "this" PSelf) top) $
+        bs = addMethod (Slot (PSingle (hash "this") "this" PSelf) top) $
                 toMethods . concat $ zipWith bindings' ps as
 
         merge (os, ok) (ns, nk) =
-            ( foldl (flip insertMethod) os (concat $ M.elems ns)
-            , foldl (flip insertMethod) ok (concat $ M.elems nk)
+            ( foldl (flip addMethod) os (concat $ M.elems ns)
+            , foldl (flip addMethod) ok (concat $ M.elems nk)
             )
 
 loadBlock :: VM ()
