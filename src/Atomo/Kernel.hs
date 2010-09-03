@@ -25,16 +25,16 @@ load = do
             }
 
     [$p|(x: Object) delegates-to: (y: Object)|] =: do
-        f <- eval [$e|x|] >>= orefFor
-        t <- eval [$e|y|]
+        f <- here "x" >>= orefFor
+        t <- here "y"
 
         from <- liftIO (readIORef f)
         liftIO $ writeIORef f (from { oDelegates = oDelegates from ++ [t] })
         return (particle "ok")
 
     [$p|(x: Object) is-a?: (y: Object)|] =: do
-        x <- eval [$e|x|]
-        y <- eval [$e|y|]
+        x <- here "x"
+        y <- here "y"
         Object { oDelegates = ds } <- objectFor x
 
         let delegatesTo [] _ = return False
@@ -47,8 +47,8 @@ load = do
         delegatesTo (x:ds) y >>= bool
 
     [$p|(x: Object) responds-to?: (p: Particle)|] =: do
-        x <- eval [$e|x|]
-        Particle p <- eval [$e|p|] >>= findValue isParticle
+        x <- here "x"
+        Particle p <- here "p" >>= findValue isParticle
 
         let completed =
                 case p of
@@ -62,7 +62,7 @@ load = do
             >>= bool . isJust
 
     [$p|(s: String) as: String|] =: do
-        s <- eval [$e|s|]
+        s <- here "s"
         cs <- fmap V.toList (getList [$e|s|])
         if all isChar cs
             then return s
@@ -76,7 +76,7 @@ load = do
             >>= string . show . pretty
 
     [$p|(x: Object) dump|] =: do
-        x <- eval [$e|x|]
+        x <- here "x"
         liftIO (putStrLn (prettyShow x))
         return x
 
@@ -90,24 +90,24 @@ load = do
         return (particle "ok")
 
     [$p|v do: (b: Block)|] =: do
-        v <- eval [$e|v|]
-        b <- eval [$e|b|] >>= findValue isBlock
+        v <- here "v"
+        b <- here "b" >>= findValue isBlock
         joinWith v b []
         return v
     [$p|v do: (b: Block) with: (l: List)|] =: do
-        v <- eval [$e|v|]
-        b <- eval [$e|b|] >>= findValue isBlock
+        v <- here "v"
+        b <- here "b" >>= findValue isBlock
         as <- fmap V.toList $ getList [$e|l|]
         joinWith v b []
         return v
 
     [$p|v join: (b: Block)|] =: do
-        v <- eval [$e|v|]
-        b <- eval [$e|b|] >>= findValue isBlock
+        v <- here "v"
+        b <- here "b" >>= findValue isBlock
         joinWith v b []
     [$p|v join: (b: Block) with: (l: List)|] =: do
-        v <- eval [$e|v|]
-        b <- eval [$e|b|] >>= findValue isBlock
+        v <- here "v"
+        b <- here "b" >>= findValue isBlock
         as <- fmap V.toList $ getList [$e|l|]
         joinWith v b as
 
@@ -209,14 +209,14 @@ loadBlock = do
         return (Expression $ EBlock Nothing [] (map toExpr es))
 
     [$p|(b: Block) call|] =: do
-        Block s as es <- eval [$e|b|] >>= findValue isBlock
+        Block s as es <- here "b" >>= findValue isBlock
 
         if length as > 0
             then throwError . ErrorMsg $ "block expects " ++ show (length as) ++ ", given 0"
             else doBlock M.empty s es
 
     [$p|(b: Block) call: (l: List)|] =: do
-        Block s ps es <- eval [$e|b|] >>= findValue isBlock
+        Block s ps es <- here "b" >>= findValue isBlock
         vs <- fmap V.toList $ getList [$e|l|]
 
         if length ps > length vs
@@ -229,21 +229,21 @@ loadBlock = do
             else doBlock (toMethods . concat $ zipWith bindings' ps vs) s es
 
     [$p|(b: Block) scope|] =: do
-        Block s _ _ <- eval [$e|b|] >>= findValue isBlock
+        Block s _ _ <- here "b" >>= findValue isBlock
         return s
 
     [$p|(b: Block) arguments|] =: do
-        Block _ as _ <- eval [$e|b|] >>= findValue isBlock
+        Block _ as _ <- here "b" >>= findValue isBlock
         list (map Pattern as)
 
     [$p|(b: Block) contents|] =: do
-        Block _ _ es <- eval [$e|b|] >>= findValue isBlock
+        Block _ _ es <- here "b" >>= findValue isBlock
         list (map Expression es)
 
     -- TODO: this probably shouldn't be in the kernel, but
     -- there aren't any timing primitives yet
     [$p|(b: Block) time|] =: do
-        Block s _ es <- eval [$e|b|] >>= findValue isBlock
+        Block s _ es <- here "b" >>= findValue isBlock
         before <- liftIO getPOSIXTime
         doBlock M.empty s es
         after <- liftIO getPOSIXTime
@@ -252,11 +252,11 @@ loadBlock = do
 loadExpression :: VM ()
 loadExpression = do
     [$p|(e: Expression) evaluate|] =: do
-        Expression e <- eval [$e|e|] >>= findValue isExpression
+        Expression e <- here "e" >>= findValue isExpression
         eval e
 
     [$p|(e: Expression) type|] =: do
-        Expression e <- eval [$e|e|] >>= findValue isExpression
+        Expression e <- here "e" >>= findValue isExpression
         case e of
             Dispatch {} -> return (particle "dispatch")
             Define {} -> return (particle "define")
@@ -270,17 +270,17 @@ loadExpression = do
             EParticle {} -> return (particle "particle")
 
     [$p|(e: Expression) dispatch-type|] =: do
-        Expression (Dispatch _ d) <- eval [$e|e|] >>= findValue isExpression
+        Expression (Dispatch _ d) <- here "e" >>= findValue isExpression
         case d of
             ESingle {} -> return (particle "single")
             EKeyword {} -> return (particle "keyword")
 
     [$p|(e: Expression) target|] =: do
-        Expression (Dispatch _ (ESingle { emTarget = t })) <- eval [$e|e|] >>= findValue isExpression
+        Expression (Dispatch _ (ESingle { emTarget = t })) <- here "e" >>= findValue isExpression
         return (Expression t)
 
     [$p|(e: Expression) particle|] =: do
-        Expression (Dispatch _ em) <- eval [$e|e|] >>= findValue isExpression
+        Expression (Dispatch _ em) <- here "e" >>= findValue isExpression
 
         case em of
             EKeyword { emNames = ns } ->
@@ -288,21 +288,21 @@ loadExpression = do
             ESingle { emName = n } -> return (particle n)
 
     [$p|(e: Expression) targets|] =: do
-        Expression (Dispatch _ (EKeyword { emTargets = vs })) <- eval [$e|e|] >>= findValue isExpression
+        Expression (Dispatch _ (EKeyword { emTargets = vs })) <- here "e" >>= findValue isExpression
         list (map Expression vs)
 
     [$p|(e: Expression) contents|] =: do
-        Expression (EList _ es) <- eval [$e|e|] >>= findValue isExpression
+        Expression (EList _ es) <- here "e" >>= findValue isExpression
         list (map Expression es)
 
     [$p|(e: Expression) pattern|] =: do
-        Expression e <- eval [$e|e|] >>= findValue isExpression
+        Expression e <- here "e" >>= findValue isExpression
         case e of
             Set { ePattern = p } -> return (Pattern p)
             Define { ePattern = p } -> return (Pattern p)
 
     [$p|(e: Expression) expression|] =: do
-        Expression e <- eval [$e|e|] >>= findValue isExpression
+        Expression e <- here "e" >>= findValue isExpression
         case e of
             Set { eExpr = e } -> return (Expression e)
             Define { eExpr = e } -> return (Expression e)
@@ -322,13 +322,13 @@ loadConcurrency = do
     [$p|halt|] =: gets halt >>= liftIO >> return (particle "ok")
 
     [$p|(p: Process) ! v|] =: do
-        Process chan _ <- eval [$e|p|] >>= findValue isProcess
-        v <- eval [$e|v|]
+        Process chan _ <- here "p" >>= findValue isProcess
+        v <- here "v"
         liftIO (writeChan chan v)
-        eval [$e|p|]
+        here "p"
 
     [$p|(b: Block) spawn|] =: do
-        Block s as es <- eval [$e|b|] >>= findValue isBlock
+        Block s as es <- here "b" >>= findValue isBlock
 
         if length as > 0
             then throwError . ErrorMsg $ "block expects " ++ show (length as) ++ ", given 0"
@@ -339,7 +339,7 @@ loadConcurrency = do
                 return (Process chan tid)
 
     [$p|(b: Block) spawn: (l: List)|] =: do
-        Block s as es <- eval [$e|b|] >>= findValue isBlock
+        Block s as es <- here "b" >>= findValue isBlock
         vs <- fmap V.toList $ getList [$e|l|]
 
         if length as > length vs
@@ -362,23 +362,23 @@ loadConcurrency = do
 
     -- TODO: move this somewhere more sensible
     [$p|(n: Integer) sleep|] =: do
-        Integer n <- eval [$e|n|] >>= findValue isInteger
+        Integer n <- here "n" >>= findValue isInteger
         liftIO (threadDelay (fromIntegral n))
         return (particle "ok")
 
     [$p|(p: Process) stop|] =: do
-        Process _ tid <- eval [$e|p|] >>= findValue isProcess
+        Process _ tid <- here "p" >>= findValue isProcess
         liftIO (killThread tid)
         return (particle "ok")
 
 loadNumeric :: VM ()
 loadNumeric = do
     [$p|(a: Integer) sqrt|] =: do
-        Integer a <- eval [$e|a|] >>= findValue isInteger
+        Integer a <- here "a" >>= findValue isInteger
         return (Double (sqrt (fromIntegral a)))
 
     [$p|(a: Double) sqrt|] =: do
-        Double a <- eval [$e|a|] >>= findValue isDouble
+        Double a <- here "a" >>= findValue isDouble
         return (Double (sqrt a))
 
     [$p|(a: Integer) + (b: Integer)|] =: primII (+)
@@ -407,177 +407,177 @@ loadNumeric = do
     [$p|(a: Integer) remainder: (b: Integer)|] =: primII rem
   where
     primII f = do
-        Integer a <- eval [$e|a|] >>= findValue isInteger
-        Integer b <- eval [$e|b|] >>= findValue isInteger
+        Integer a <- here "a" >>= findValue isInteger
+        Integer b <- here "b" >>= findValue isInteger
         return (Integer (f a b))
 
     primID f = do
-        Integer a <- eval [$e|a|] >>= findValue isInteger
-        Double b <- eval [$e|b|] >>= findValue isDouble
+        Integer a <- here "a" >>= findValue isInteger
+        Double b <- here "b" >>= findValue isDouble
         return (Double (f (fromIntegral a) b))
 
     primDI f = do
-        Double a <- eval [$e|a|] >>= findValue isDouble
-        Integer b <- eval [$e|b|] >>= findValue isInteger
+        Double a <- here "a" >>= findValue isDouble
+        Integer b <- here "b" >>= findValue isInteger
         return (Double (f a (fromIntegral b)))
 
     primDD f = do
-        Double a <- eval [$e|a|] >>= findValue isDouble
-        Double b <- eval [$e|b|] >>= findValue isDouble
+        Double a <- here "a" >>= findValue isDouble
+        Double b <- here "b" >>= findValue isDouble
         return (Double (f a b))
 
 loadMessage :: VM ()
 loadMessage = do
     [$p|(m: Message) type|] =: do
-        Message m <- eval [$e|m|] >>= findValue isMessage
+        Message m <- here "m" >>= findValue isMessage
         case m of
             Single {} -> return (particle "single")
             Keyword {} -> return (particle "keyword")
 
     [$p|(m: Message) particle|] =: do
-        Message m <- eval [$e|m|] >>= findValue isMessage
+        Message m <- here "m" >>= findValue isMessage
         case m of
             Single { mName = n } -> return (particle n)
             Keyword { mNames = ns } -> return (keyParticle ns (replicate (length ns + 1) Nothing))
 
     [$p|(m: Message) target|] =: do
-        Message (Single { mTarget = t }) <- eval [$e|m|] >>= findValue isMessage
+        Message (Single { mTarget = t }) <- here "m" >>= findValue isMessage
         return t
 
     [$p|(m: Message) targets|] =: do
-        Message (Keyword { mTargets = ts }) <- eval [$e|m|] >>= findValue isMessage
+        Message (Keyword { mTargets = ts }) <- here "m" >>= findValue isMessage
         list ts
 
 loadComparable :: VM ()
 loadComparable = do
     [$p|a equals: b|] =: do
-        a <- eval [$e|a|]
-        b <- eval [$e|b|]
+        a <- here "a"
+        b <- here "b"
         bool (a == b)
 
     [$p|(a: Char) < (b: Char)|] =: do
-        Char a <- eval [$e|a|] >>= findValue isChar
-        Char b <- eval [$e|b|] >>= findValue isChar
+        Char a <- here "a" >>= findValue isChar
+        Char b <- here "b" >>= findValue isChar
         bool (a < b)
 
     [$p|(a: Integer) < (b: Integer)|] =: do
-        Integer a <- eval [$e|a|] >>= findValue isInteger
-        Integer b <- eval [$e|b|] >>= findValue isInteger
+        Integer a <- here "a" >>= findValue isInteger
+        Integer b <- here "b" >>= findValue isInteger
         bool (a < b)
 
     [$p|(a: Integer) < (b: Double)|] =: do
-        Integer a <- eval [$e|a|] >>= findValue isInteger
-        Double b <- eval [$e|b|] >>= findValue isDouble
+        Integer a <- here "a" >>= findValue isInteger
+        Double b <- here "b" >>= findValue isDouble
         bool (fromIntegral a < b)
 
     [$p|(a: Double) < (b: Integer)|] =: do
-        Double a <- eval [$e|a|] >>= findValue isDouble
-        Integer b <- eval [$e|b|] >>= findValue isInteger
+        Double a <- here "a" >>= findValue isDouble
+        Integer b <- here "b" >>= findValue isInteger
         bool (a < fromIntegral b)
 
     [$p|(a: Double) < (b: Double)|] =: do
-        Double a <- eval [$e|a|] >>= findValue isDouble
-        Double b <- eval [$e|b|] >>= findValue isDouble
+        Double a <- here "a" >>= findValue isDouble
+        Double b <- here "b" >>= findValue isDouble
         bool (a < b)
 
     [$p|(a: Char) > (b: Char)|] =: do
-        Char a <- eval [$e|a|] >>= findValue isChar
-        Char b <- eval [$e|b|] >>= findValue isChar
+        Char a <- here "a" >>= findValue isChar
+        Char b <- here "b" >>= findValue isChar
         bool (a > b)
 
     [$p|(a: Integer) > (b: Integer)|] =: do
-        Integer a <- eval [$e|a|] >>= findValue isInteger
-        Integer b <- eval [$e|b|] >>= findValue isInteger
+        Integer a <- here "a" >>= findValue isInteger
+        Integer b <- here "b" >>= findValue isInteger
         bool (a > b)
 
     [$p|(a: Integer) > (b: Double)|] =: do
-        Integer a <- eval [$e|a|] >>= findValue isInteger
-        Double b <- eval [$e|b|] >>= findValue isDouble
+        Integer a <- here "a" >>= findValue isInteger
+        Double b <- here "b" >>= findValue isDouble
         bool (fromIntegral a > b)
 
     [$p|(a: Double) > (b: Integer)|] =: do
-        Double a <- eval [$e|a|] >>= findValue isDouble
-        Integer b <- eval [$e|b|] >>= findValue isInteger
+        Double a <- here "a" >>= findValue isDouble
+        Integer b <- here "b" >>= findValue isInteger
         bool (a > fromIntegral b)
 
     [$p|(a: Double) > (b: Double)|] =: do
-        Double a <- eval [$e|a|] >>= findValue isDouble
-        Double b <- eval [$e|b|] >>= findValue isDouble
+        Double a <- here "a" >>= findValue isDouble
+        Double b <- here "b" >>= findValue isDouble
         bool (a > b)
 
     [$p|(a: Char) <= (b: Char)|] =: do
-        Char a <- eval [$e|a|] >>= findValue isChar
-        Char b <- eval [$e|b|] >>= findValue isChar
+        Char a <- here "a" >>= findValue isChar
+        Char b <- here "b" >>= findValue isChar
         bool (a <= b)
 
     [$p|(a: Integer) <= (b: Integer)|] =: do
-        Integer a <- eval [$e|a|] >>= findValue isInteger
-        Integer b <- eval [$e|b|] >>= findValue isInteger
+        Integer a <- here "a" >>= findValue isInteger
+        Integer b <- here "b" >>= findValue isInteger
         bool (a <= b)
 
     [$p|(a: Integer) <= (b: Double)|] =: do
-        Integer a <- eval [$e|a|] >>= findValue isInteger
-        Double b <- eval [$e|b|] >>= findValue isDouble
+        Integer a <- here "a" >>= findValue isInteger
+        Double b <- here "b" >>= findValue isDouble
         bool (fromIntegral a <= b)
 
     [$p|(a: Double) <= (b: Integer)|] =: do
-        Double a <- eval [$e|a|] >>= findValue isDouble
-        Integer b <- eval [$e|b|] >>= findValue isInteger
+        Double a <- here "a" >>= findValue isDouble
+        Integer b <- here "b" >>= findValue isInteger
         bool (a <= fromIntegral b)
 
     [$p|(a: Double) <= (b: Double)|] =: do
-        Double a <- eval [$e|a|] >>= findValue isDouble
-        Double b <- eval [$e|b|] >>= findValue isDouble
+        Double a <- here "a" >>= findValue isDouble
+        Double b <- here "b" >>= findValue isDouble
         bool (a <= b)
 
     [$p|(a: Char) >= (b: Char)|] =: do
-        Char a <- eval [$e|a|] >>= findValue isChar
-        Char b <- eval [$e|b|] >>= findValue isChar
+        Char a <- here "a" >>= findValue isChar
+        Char b <- here "b" >>= findValue isChar
         bool (a >= b)
 
     [$p|(a: Integer) >= (b: Integer)|] =: do
-        Integer a <- eval [$e|a|] >>= findValue isInteger
-        Integer b <- eval [$e|b|] >>= findValue isInteger
+        Integer a <- here "a" >>= findValue isInteger
+        Integer b <- here "b" >>= findValue isInteger
         bool (a >= b)
 
     [$p|(a: Integer) >= (b: Double)|] =: do
-        Integer a <- eval [$e|a|] >>= findValue isInteger
-        Double b <- eval [$e|b|] >>= findValue isDouble
+        Integer a <- here "a" >>= findValue isInteger
+        Double b <- here "b" >>= findValue isDouble
         bool (fromIntegral a >= b)
 
     [$p|(a: Double) >= (b: Integer)|] =: do
-        Double a <- eval [$e|a|] >>= findValue isDouble
-        Integer b <- eval [$e|b|] >>= findValue isInteger
+        Double a <- here "a" >>= findValue isDouble
+        Integer b <- here "b" >>= findValue isInteger
         bool (a >= fromIntegral b)
 
     [$p|(a: Double) >= (b: Double)|] =: do
-        Double a <- eval [$e|a|] >>= findValue isDouble
-        Double b <- eval [$e|b|] >>= findValue isDouble
+        Double a <- here "a" >>= findValue isDouble
+        Double b <- here "b" >>= findValue isDouble
         bool (a >= b)
 
     [$p|(a: Char) == (b: Char)|] =: do
-        Char a <- eval [$e|a|] >>= findValue isChar
-        Char b <- eval [$e|b|] >>= findValue isChar
+        Char a <- here "a" >>= findValue isChar
+        Char b <- here "b" >>= findValue isChar
         bool (a == b)
 
     [$p|(a: Integer) == (b: Integer)|] =: do
-        Integer a <- eval [$e|a|] >>= findValue isInteger
-        Integer b <- eval [$e|b|] >>= findValue isInteger
+        Integer a <- here "a" >>= findValue isInteger
+        Integer b <- here "b" >>= findValue isInteger
         bool (a == b)
 
     [$p|(a: Integer) == (b: Double)|] =: do
-        Integer a <- eval [$e|a|] >>= findValue isInteger
-        Double b <- eval [$e|b|] >>= findValue isDouble
+        Integer a <- here "a" >>= findValue isInteger
+        Double b <- here "b" >>= findValue isDouble
         bool (fromIntegral a == b)
 
     [$p|(a: Double) == (b: Integer)|] =: do
-        Double a <- eval [$e|a|] >>= findValue isDouble
-        Integer b <- eval [$e|b|] >>= findValue isInteger
+        Double a <- here "a" >>= findValue isDouble
+        Integer b <- here "b" >>= findValue isInteger
         bool (a == fromIntegral b)
 
     [$p|(a: Double) == (b: Double)|] =: do
-        Double a <- eval [$e|a|] >>= findValue isDouble
-        Double b <- eval [$e|b|] >>= findValue isDouble
+        Double a <- here "a" >>= findValue isDouble
+        Double b <- here "b" >>= findValue isDouble
         bool (a == b)
 
     [$p|(a: List) == (b: List)|] =: do
@@ -592,13 +592,13 @@ loadComparable = do
             else bool False
 
     [$p|(a: Process) == (b: Process)|] =: do
-        Process _ a <- eval [$e|a|] >>= findValue isProcess
-        Process _ b <- eval [$e|b|] >>= findValue isProcess
+        Process _ a <- here "a" >>= findValue isProcess
+        Process _ b <- here "b" >>= findValue isProcess
         bool (a == b)
 
     [$p|(a: Message) == (b: Message)|] =: do
-        Message a <- eval [$e|a|] >>= findValue isMessage
-        Message b <- eval [$e|b|] >>= findValue isMessage
+        Message a <- here "a" >>= findValue isMessage
+        Message b <- here "b" >>= findValue isMessage
 
         true <- bool True
         case (a, b) of
@@ -612,8 +612,8 @@ loadComparable = do
             _ -> bool False
 
     [$p|(a: Particle) == (b: Particle)|] =: do
-        Particle a <- eval [$e|a|] >>= findValue isParticle
-        Particle b <- eval [$e|b|] >>= findValue isParticle
+        Particle a <- here "a" >>= findValue isParticle
+        Particle b <- here "b" >>= findValue isParticle
 
         true <- bool True
         case (a, b) of
@@ -633,7 +633,7 @@ loadComparable = do
 loadParticle :: VM ()
 loadParticle = do
     [$p|(p: Particle) call: (l: List)|] =: do
-        Particle p <- eval [$e|p|] >>= findValue isParticle
+        Particle p <- here "p" >>= findValue isParticle
         vs <- fmap V.toList $ getList [$e|l|]
 
         case p of
@@ -654,11 +654,11 @@ loadParticle = do
                     else dispatch (Single (hash n) n (head vs))
 
     [$p|(p: Particle) name|] =: do
-        Particle (PMSingle n) <- eval [$e|p|]
+        Particle (PMSingle n) <- here "p"
         list (map Char n)
 
     [$p|(p: Particle) names|] =: do
-        Particle (PMKeyword ns _) <- eval [$e|p|]
+        Particle (PMKeyword ns _) <- here "p"
         mapM (list . map Char) ns >>= list
 
 loadList :: VM ()
@@ -670,7 +670,7 @@ loadList = do
         getList [$e|l|] >>= bool . V.null
 
     [$p|(l: List) at: (n: Integer)|] =: do
-        Integer n <- eval [$e|n|] >>= findValue isInteger
+        Integer n <- here "n" >>= findValue isInteger
         vs <- getList [$e|l|]
         return (vs V.! fromIntegral n)
 
@@ -682,8 +682,8 @@ loadList = do
 
     [$p|(l: List) from: (s: Integer) to: (e: Integer)|] =: do
         vs <- getList [$e|l|]
-        Integer start <- eval [$e|s|] >>= findValue isInteger
-        Integer end <- eval [$e|e|] >>= findValue isInteger
+        Integer start <- here "s" >>= findValue isInteger
+        Integer end <- here "e" >>= findValue isInteger
         list' (V.slice (fromIntegral start) (fromIntegral end) vs)
 
     [$p|(l: List) init|] =:
@@ -694,22 +694,22 @@ loadList = do
 
     [$p|(l: List) take: (n: Integer)|] =: do
         vs <- getList [$e|l|]
-        Integer n <- eval [$e|n|] >>= findValue isInteger
+        Integer n <- here "n" >>= findValue isInteger
         list' (V.take (fromIntegral n) vs)
 
     [$p|(l: List) drop: (n: Integer)|] =: do
         vs <- getList [$e|l|]
-        Integer n <- eval [$e|n|] >>= findValue isInteger
+        Integer n <- here "n" >>= findValue isInteger
         list' (V.drop (fromIntegral n) vs)
 
     [$p|v replicate: (n: Integer)|] =: do
-        v <- eval [$e|v|]
-        Integer n <- eval [$e|n|] >>= findValue isInteger
+        v <- here "v"
+        Integer n <- here "n" >>= findValue isInteger
         list' (V.replicate (fromIntegral n) v)
 
     [$p|b repeat: (n: Integer)|] =: do
-        b <- eval [$e|b|]
-        Integer n <- eval [$e|n|] >>= findValue isInteger
+        b <- here "b"
+        Integer n <- here "n" >>= findValue isInteger
         vs <- V.replicateM (fromIntegral n) $
             dispatch (Single (hash "call") "call" b)
         list' vs
@@ -724,7 +724,7 @@ loadList = do
 
     [$p|(l: List) map: b|] =: do
         vs <- getList [$e|l|]
-        b <- eval [$e|b|]
+        b <- here "b"
 
         nvs <- V.mapM (\v -> do
             as <- list' (V.singleton v)
@@ -737,7 +737,7 @@ loadList = do
     [$p|(x: List) zip: (y: List) with: b|] =: do
         xs <- getList [$e|x|]
         ys <- getList [$e|y|]
-        b <- eval [$e|b|]
+        b <- here "b"
 
         nvs <- V.zipWithM (\x y -> do
             as <- list' (V.fromList [x, y])
@@ -747,7 +747,7 @@ loadList = do
 
     [$p|(l: List) filter: b|] =: do
         vs <- getList [$e|l|]
-        b <- eval [$e|b|]
+        b <- here "b"
 
         t <- bool True
         nvs <- V.filterM (\v -> do
@@ -759,7 +759,7 @@ loadList = do
 
     [$p|(l: List) reduce: b|] =: do
         vs <- getList [$e|l|]
-        b <- eval [$e|b|]
+        b <- here "b"
 
         V.fold1M (\x acc -> do
             as <- list [x, acc]
@@ -767,8 +767,8 @@ loadList = do
 
     [$p|(l: List) reduce: b with: v|] =: do
         vs <- getList [$e|l|]
-        b <- eval [$e|b|]
-        v <- eval [$e|v|]
+        b <- here "b"
+        v <- here "v"
 
         V.foldM (\x acc -> do
             as <- list [x, acc]
@@ -782,7 +782,7 @@ loadList = do
 
     [$p|(l: List) all?: b|] =: do
         vs <- getList [$e|l|]
-        b <- eval [$e|b|]
+        b <- here "b"
 
         t <- bool True
         nvs <- V.mapM (\v -> do
@@ -794,7 +794,7 @@ loadList = do
 
     [$p|(l: List) any?: b|] =: do
         vs <- getList [$e|l|]
-        b <- eval [$e|b|]
+        b <- here "b"
 
         t <- bool True
         nvs <- V.mapM (\v -> do
@@ -818,31 +818,31 @@ loadList = do
 
     [$p|(l: List) contains?: v|] =: do
         vs <- getList [$e|l|]
-        v <- eval [$e|v|]
+        v <- here "v"
         bool (v `V.elem` vs)
 
     -- TODO: find
 
     [$p|(x: Integer) .. (y: Integer)|] =: do
-        Integer x <- eval [$e|x|] >>= findValue isInteger
-        Integer y <- eval [$e|y|] >>= findValue isInteger
+        Integer x <- here "x" >>= findValue isInteger
+        Integer y <- here "y" >>= findValue isInteger
 
         if x < y
             then dispatch (Keyword (hash ["up-to"]) ["up-to"] [Integer x, Integer y])
             else dispatch (Keyword (hash ["down-to"]) ["down-to"] [Integer x, Integer y])
 
     [$p|(x: Integer) ... (y: Integer)|] =: do
-        Integer x <- eval [$e|x|] >>= findValue isInteger
-        Integer y <- eval [$e|y|] >>= findValue isInteger
+        Integer x <- here "x" >>= findValue isInteger
+        Integer y <- here "y" >>= findValue isInteger
 
         if x < y
             then dispatch (Keyword (hash ["up-to"]) ["up-to"] [Integer x, Integer (y - 1)])
             else dispatch (Keyword (hash ["down-to"]) ["down-to"] [Integer x, Integer (y + 1)])
 
     [$p|(x: Integer) to: (y: Integer) by: (d: Integer)|] =: do
-        Integer x <- eval [$e|x|] >>= findValue isInteger
-        Integer y <- eval [$e|y|] >>= findValue isInteger
-        Integer d <- eval [$e|d|] >>= findValue isInteger
+        Integer x <- here "x" >>= findValue isInteger
+        Integer y <- here "y" >>= findValue isInteger
+        Integer d <- here "d" >>= findValue isInteger
 
         list' $ V.generate
             (fromIntegral $ abs ((y - x) `div` d) + 1)
@@ -853,11 +853,11 @@ loadList = do
 
     -- destructive update
     [$p|(l: List) at: (n: Integer) put: v|] =: do
-        List l <- eval [$e|l|] >>= findValue isList
+        List l <- here "l" >>= findValue isList
         vs <- getList [$e|l|]
 
-        Integer n <- eval [$e|n|] >>= findValue isInteger
-        v <- eval [$e|v|]
+        Integer n <- here "n" >>= findValue isInteger
+        v <- here "v"
 
         liftIO . writeIORef l $ vs V.// [(fromIntegral n, v)]
 
@@ -865,9 +865,9 @@ loadList = do
 
     [$p|(l: List) << v|] =: eval [$e|l push: v|]
     [$p|(l: List) push: v|] =: do
-        List l <- eval [$e|l|] >>= findValue isList
+        List l <- here "l" >>= findValue isList
         vs <- getList [$e|l|]
-        v <- eval [$e|v|]
+        v <- here "v"
 
         liftIO . writeIORef l $ V.snoc vs v
 
@@ -888,7 +888,7 @@ loadPorts = do
     [$p|Port new: (fn: String)|] =: eval [$e|Port new: fn mode: @read-write|]
     [$p|Port new: (fn: String) mode: (m: Particle)|] =: do
         fn <- fmap (map (\(Char c) -> c) . V.toList) (getList [$e|fn|])
-        Particle m <- eval [$e|m|] >>= findValue isParticle
+        Particle m <- here "m" >>= findValue isParticle
 
         hdl <- case m of
             PMSingle "read" ->
@@ -949,7 +949,7 @@ loadPorts = do
         port <- eval [$e|Port clone|]
         [$p|p|] =: return port
         [$p|p handle|] =: return (Haskell (toDyn hdl))
-        eval [$e|p|]
+        here "p"
 
 completeKP :: [Maybe Value] -> [Value] -> [Value]
 completeKP [] [] = []
