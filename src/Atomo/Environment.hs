@@ -56,22 +56,38 @@ runWith x s = evalStateT (runErrorT x) s
 initEnv :: VM ()
 {-# INLINE initEnv #-}
 initEnv = do
+    -- the very root object
     object <- newObject id
 
-    topObj <- newObject $ \o -> o { oDelegates = oDelegates o ++ [object] }
+    -- top scope is a proto delegating to the root object
+    topObj <- newObject $ \o -> o { oDelegates = [object] }
     modify $ \e -> e { top = topObj }
 
+    -- define Object as the root object
     define (PSingle (hash "Object") "Object" (PMatch topObj)) (Primitive Nothing object)
 
-    integer <- newObject $ \o -> o { oDelegates = oDelegates o ++ [object] }
-    define (PSingle (hash "Integer") "Integer" (PMatch topObj)) (Primitive Nothing integer)
+    -- this thread's channel
+    chan <- liftIO newChan
+    modify $ \e -> e { channel = chan }
 
-    modify $ \e -> e
-        { ids = IDs
-            { idObject = rORef object
-            , idInteger = rORef integer
-            }
-        }
+    -- define primitive objects
+    forM_ primitives $ \(n, f) -> do
+        o <- newObject $ \o -> o { oDelegates = [object] }
+        define (PSingle (hash n) n (PMatch topObj)) (Primitive Nothing o)
+        modify $ \e -> e { ids = f (ids e) (rORef o) }
+  where
+    primitives =
+        [ ("Block", \is r -> is { idBlock = r })
+        , ("Char", \is r -> is { idChar = r })
+        , ("Double", \is r -> is { idDouble = r })
+        , ("Expression", \is r -> is { idExpression = r })
+        , ("Integer", \is r -> is { idInteger = r })
+        , ("List", \is r -> is { idList = r })
+        , ("Message", \is r -> is { idMessage = r })
+        , ("Particle", \is r -> is { idParticle = r })
+        , ("Process", \is r -> is { idProcess = r })
+        , ("Pattern", \is r -> is { idPattern = r })
+        ]
 
 
 

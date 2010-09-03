@@ -188,8 +188,7 @@ data Call =
 -- a giant record of the objects for each primitive value
 data IDs =
     IDs
-        { idMatch :: ORef
-        , idObject :: ORef
+        { idMatch :: ORef -- used in dispatch to refer to the object currently being searched
         , idBlock :: ORef
         , idChar :: ORef
         , idDouble :: ORef
@@ -229,7 +228,20 @@ instance Show (VM a) where
 startEnv :: Env
 startEnv = Env
     { top = error "top object not set"
-    , ids = error "ids not set"
+    , ids =
+        IDs
+            { idMatch = error "idMatch not set"
+            , idBlock = error "idBlock not set"
+            , idChar = error "idChar not set"
+            , idDouble = error "idDouble not set"
+            , idExpression = error "idExpression not set"
+            , idInteger = error "idInteger not set"
+            , idList = error "idList not set"
+            , idMessage = error "idMessage not set"
+            , idParticle = error "idParticle not set"
+            , idProcess = error "idProcess not set"
+            , idPattern = error "idPattern not set"
+            }
     , channel = error "channel not set"
     , halt = error "halt not set"
     , loadPath = []
