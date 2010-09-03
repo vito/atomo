@@ -64,8 +64,8 @@ data Message
     deriving Show
 
 data Particle
-    = SingleParticle String
-    | KeywordParticle [String] [Maybe Value]
+    = PMSingle String
+    | PMKeyword [String] [Maybe Value]
     deriving Show
 
 data AtomoError
@@ -78,16 +78,18 @@ data AtomoError
 -- pattern-matches
 data Pattern
     = PAny
+    | PHeadTail Pattern Pattern
     | PKeyword
         { ppID :: !Int
         , ppNames :: [String]
         , ppTargets :: [Pattern]
         }
+    | PList [Pattern]
     | PMatch Value
     | PNamed String Pattern
     | PObject Expr
-    | PPSingle String
-    | PPKeyword [String] [Pattern]
+    | PPMSingle String
+    | PPMKeyword [String] [Pattern]
     | PSelf
     | PSingle
         { ppID :: !Int
@@ -121,28 +123,23 @@ data Expr
         , eArguments :: [Pattern]
         , eContents :: [Expr]
         }
-    {-| EDispatchObject-}
-        {-{ eLocation :: Maybe SourcePos-}
-        {-}-}
-    | EVM
+    | EDispatchObject
         { eLocation :: Maybe SourcePos
-        , eAction :: VM Value
         }
     | EList
         { eLocation :: Maybe SourcePos
         , eContents :: [Expr]
         }
-    | ETop
-        { eLocation :: Maybe SourcePos
-        }
     | EParticle
         { eLocation :: Maybe SourcePos
         , eParticle :: EParticle
         }
-    | EMatch
+    | ETop
         { eLocation :: Maybe SourcePos
-        , eTarget :: Expr
-        , eBranches :: [(Pattern, Expr)]
+        }
+    | EVM
+        { eLocation :: Maybe SourcePos
+        , eAction :: VM Value
         }
     deriving Show
 
@@ -160,8 +157,8 @@ data EMessage
     deriving Show
 
 data EParticle
-    = EPSingle String
-    | EPKeyword [String] [Maybe Expr]
+    = EPMSingle String
+    | EPMKeyword [String] [Maybe Expr]
     deriving Show
 
 -- the evaluation environment
@@ -189,6 +186,7 @@ data Call =
 data IDs =
     IDs
         { idMatch :: ORef -- used in dispatch to refer to the object currently being searched
+        , idObject :: ORef -- root object
         , idBlock :: ORef
         , idChar :: ORef
         , idDouble :: ORef
@@ -205,6 +203,17 @@ data IDs =
 instance Error AtomoError where
     noMsg = ErrorMsg ""
     strMsg = ErrorMsg
+
+
+-- a basic Eq instance
+instance Eq Value where
+    Char a == Char b = a == b
+    Double a == Double b = a == b
+    Integer a == Integer b = a == b
+    List a == List b = a == b
+    Process _ a == Process _ b = a == b
+    Reference a == Reference b = a == b
+    _ == _ = False
 
 -- helper synonyms
 type Channel = Chan Value
@@ -231,6 +240,7 @@ startEnv = Env
     , ids =
         IDs
             { idMatch = error "idMatch not set"
+            , idObject = error "idObject not set"
             , idBlock = error "idBlock not set"
             , idChar = error "idChar not set"
             , idDouble = error "idDouble not set"
@@ -251,16 +261,93 @@ startEnv = Env
     }
 
 particle :: String -> Value
-particle = Particle . SingleParticle
+{-# INLINE particle #-}
+particle = Particle . PMSingle
+
+keyParticle :: [String] -> [Maybe Value] -> Value
+{-# INLINE keyParticle #-}
+keyParticle ns vs = Particle $ PMKeyword ns vs
 
 insertMethod :: Method -> MethodMap -> MethodMap
 insertMethod m mm =
     M.insertWith (flip (++)) key [m] mm -- TODO: insert by precision
-    {-case M.lookup key mm of-}
-        {-Nothing -> M.insert key [m] mm-}
-        {-Just ms -> M.insert key (ms ++ [m]) mm -- TODO: precision comparison-}
   where
     key = ppID (mPattern m)
 
 toMethods :: [(Pattern, Value)] -> MethodMap
 toMethods bs = foldl (\ss (p, v) -> insertMethod (Slot p v) ss) M.empty bs
+
+
+-----------------------------------------------------------------------------
+-- Helpers ------------------------------------------------------------------
+-----------------------------------------------------------------------------
+
+string :: MonadIO m => String -> m Value
+string = list . map Char
+
+list :: MonadIO m => [Value] -> m Value
+list = list' . V.fromList
+
+list' :: MonadIO m => V.Vector Value -> m Value
+list' = liftM List . liftIO . newIORef
+
+-- | Is a value a Block?
+isBlock :: Value -> Bool
+isBlock (Block _ _ _) = True
+isBlock _ = False
+
+-- | Is a value a Char?
+isChar :: Value -> Bool
+isChar (Char _) = True
+isChar _ = False
+
+-- | Is a value a Double?
+isDouble :: Value -> Bool
+isDouble (Double _) = True
+isDouble _ = False
+
+-- | Is a value an Expression?
+isExpression :: Value -> Bool
+isExpression (Expression _) = True
+isExpression _ = False
+
+-- | Is a value a Haskell value?
+isHaskell :: Value -> Bool
+isHaskell (Haskell _) = True
+isHaskell _ = False
+
+-- | Is a value an Integer?
+isInteger :: Value -> Bool
+isInteger (Integer _) = True
+isInteger _ = False
+
+-- | Is a value a List?
+isList :: Value -> Bool
+isList (List _) = True
+isList _ = False
+
+-- | Is a value a Message?
+isMessage :: Value -> Bool
+isMessage (Message _) = True
+isMessage _ = False
+
+-- | Is a value a Particle?
+isParticle :: Value -> Bool
+isParticle (Particle _) = True
+isParticle _ = False
+
+-- | Is a value a Pattern?
+isPattern :: Value -> Bool
+isPattern (Pattern _) = True
+isPattern _ = False
+
+-- | Is a value a Process?
+isProcess :: Value -> Bool
+isProcess (Process _ _) = True
+isProcess _ = False
+
+-- | Is a value a Reference?
+isReference :: Value -> Bool
+isReference (Reference _) = True
+isReference _ = False
+

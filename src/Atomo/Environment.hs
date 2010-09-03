@@ -8,10 +8,15 @@ import Control.Concurrent.Chan
 import Data.IORef
 import Data.Hashable
 import Data.List (nub)
+import System.Directory
+import System.FilePath
 import System.IO.Unsafe
 import qualified Data.IntMap as M
+import qualified Data.Vector as V
 
+import Atomo.Parser
 import Atomo.Types
+import {-# SOURCE #-} qualified Atomo.Kernel as Kernel
 
 
 -----------------------------------------------------------------------------
@@ -65,6 +70,7 @@ initEnv = do
 
     -- define Object as the root object
     define (PSingle (hash "Object") "Object" (PMatch topObj)) (Primitive Nothing object)
+    modify $ \e -> e { ids = (ids e) { idObject = rORef object } }
 
     -- this thread's channel
     chan <- liftIO newChan
@@ -75,6 +81,11 @@ initEnv = do
         o <- newObject $ \o -> o { oDelegates = [object] }
         define (PSingle (hash n) n (PMatch topObj)) (Primitive Nothing o)
         modify $ \e -> e { ids = f (ids e) (rORef o) }
+
+    list <- gets (idList . ids)
+    define (PSingle (hash "String") "String" (PMatch topObj)) (Primitive Nothing (Reference list))
+
+    Kernel.load
   where
     primitives =
         [ ("Block", \is r -> is { idBlock = r })
@@ -120,9 +131,38 @@ eval e = eval' e `catchError` pushStack
         vs <- mapM eval ts
         dispatch (Keyword i ns vs)
     eval' (Primitive { eValue = v }) = return v
+    eval' (EBlock { eArguments = as, eContents = es }) = do
+        t <- gets top
+        return (Block t as es)
+    eval' (EDispatchObject {}) = do
+        c <- gets call
+        newObject $ \o -> o
+            { oMethods =
+                ( toMethods
+                    [ (PSingle (hash "sender") "sender" PSelf, callSender c)
+                    , (PSingle (hash "message") "message" PSelf, Message (callMessage c))
+                    , (PSingle (hash "context") "context" PSelf, callContext c)
+                    ]
+                , M.empty
+                )
+            }
+    eval' (EList { eContents = es }) = do
+        vs <- mapM eval es
+        list vs
+    eval' (EParticle { eParticle = EPMSingle n }) = return (Particle $ PMSingle n)
+    eval' (EParticle { eParticle = EPMKeyword ns mes }) = do
+        mvs <- forM mes $
+            maybe (return Nothing) (\e -> eval e >>= return . Just)
+        return (Particle $ PMKeyword ns mvs)
     eval' (ETop {}) = gets top
     eval' (EVM { eAction = x }) = x
     eval' _ = error $ "no eval for " ++ show e
+
+-- | evaluating multiple expressions, returning the last result
+evalAll :: [Expr] -> VM Value
+evalAll [] = throwError . ErrorMsg $ "cannot evaluate 0 expressions" -- TODO: proper error
+evalAll [e] = eval e
+evalAll (e:es) = eval e >> evalAll es
 
 -- | object creation
 newObject :: (Object -> Object) -> VM Value
@@ -183,14 +223,14 @@ define !p !e = do
 
 
 targets :: IDs -> Pattern -> VM [ORef]
-targets is (PMatch (Reference o)) = return [o]
-targets is (PMatch (Integer _)) = return [idInteger is]
+targets is (PMatch v) = orefFor v >>= return . (: [])
 targets is (PSingle _ _ p) = targets is p
 targets is (PKeyword _ _ ps) = do
     ts <- mapM (targets is) ps
     return (nub (concat ts))
 targets is (PNamed _ p) = targets is p
 targets is PSelf = gets top >>= orefFor >>= return . (: [])
+targets is PAny = return [idObject is]
 targets _ p = error $ "no targets for " ++ show p
 
 
@@ -256,9 +296,10 @@ match ids (PMatch (Reference x)) (Reference y) =
     delegatesMatch = any
         (match ids (PMatch (Reference x)))
         (oDelegates (unsafePerformIO (readIORef y)))
-match ids (PMatch (Reference x)) (Integer _) =
-    match ids (PMatch (Reference x)) (Reference (idInteger ids))
-match ids (PMatch (Integer x)) (Integer y) =
+match ids (PMatch (Reference x)) (Reference y) = x == y
+match ids (PMatch (Reference x)) y =
+    match ids (PMatch (Reference x)) (Reference (orefFrom ids y))
+match ids (PMatch x) y =
     x == y
 match ids
     (PSingle { ppTarget = p })
@@ -309,15 +350,134 @@ bindings (PKeyword { ppTargets = ps }) (Keyword { mTargets = ts }) =
 
 bindings' :: Pattern -> Value -> [(Pattern, Value)]
 bindings' (PNamed n p) v = (PSingle (hash n) n PSelf, v) : bindings' p v
-bindings' (PPKeyword _ ps) (Particle (KeywordParticle _ mvs)) = concat
+bindings' (PPMKeyword _ ps) (Particle (PMKeyword _ mvs)) = concat
     $ map (\(p, Just v) -> bindings' p v)
     $ filter (\(_, mv) -> case mv of { Nothing -> False; _ -> True })
     $ zip ps mvs
 bindings' _ _ = []
 
+
+
+-----------------------------------------------------------------------------
+-- Helpers ------------------------------------------------------------------
+-----------------------------------------------------------------------------
+
+infixr 0 =:
+
+(=:) :: Pattern -> VM Value -> VM ()
+pat =: vm = define pat (EVM Nothing vm)
+
+findValue :: (Value -> Bool) -> Value -> VM Value
+findValue t v | t v = return v
+findValue t v = findValue' t v >>= maybe (error "could not find a value satisfying the predecate") return
+
+findValue' :: (Value -> Bool) -> Value -> VM (Maybe Value)
+findValue' t v | t v = return (Just v)
+findValue' t (Reference r) = do
+    o <- liftIO (readIORef r)
+    findDels (oDelegates o)
+  where
+    findDels [] = return Nothing
+    findDels (d:ds) = do
+        f <- findValue' t d
+        case f of
+            Nothing -> findDels ds
+            Just v -> return (Just v)
+findValue' _ _ = return Nothing
+
+getList :: Expr -> VM (V.Vector Value)
+getList e = eval e >>= findValue isList >>= \(List v) -> liftIO . readIORef $ v
+
+here :: String -> VM Value
+here n =
+    gets top
+        >>= dispatch . (Single (hash n) n)
+
+bool :: Bool -> VM Value
+bool True = here "True"
+bool False = here "False"
+
+referenceTo :: Value -> VM Value
+referenceTo = fmap Reference . orefFor
+
+doBlock :: MethodMap -> Value -> [Expr] -> VM Value
+doBlock bms s es = do
+    blockScope <- newObject $ \o -> o
+        { oDelegates = [s]
+        , oMethods = (bms, M.empty)
+        }
+
+    withTop blockScope (evalAll es)
+
 objectFor :: Value -> VM Object
 objectFor v = orefFor v >>= liftIO . readIORef
 
 orefFor :: Value -> VM ORef
-orefFor (Reference r) = return r
-orefFor (Integer _) = gets (idInteger . ids)
+orefFor v = gets ids >>= \is -> return $ orefFrom is v
+
+orefFrom :: IDs -> Value -> ORef
+orefFrom _ (Reference r) = r
+orefFrom ids (Block _ _ _) = idBlock ids
+orefFrom ids (Char _) = idChar ids
+orefFrom ids (Double _) = idDouble ids
+orefFrom ids (Expression _) = idExpression ids
+orefFrom ids (Integer _) = idInteger ids
+orefFrom ids (List _) = idList ids
+orefFrom ids (Message _) = idMessage ids
+orefFrom ids (Particle _) = idParticle ids
+orefFrom ids (Process _ _) = idProcess ids
+orefFrom ids (Pattern _) = idPattern ids
+orefFrom _ v = error $ "no orefFrom for: " ++ show v
+
+-- load a file, either .atomo or .hs
+loadFile :: FilePath -> VM ()
+loadFile filename = do
+    lpath <- gets loadPath
+    file <- findFile ("":lpath)
+
+    alreadyLoaded <- gets ((file `elem`) . loaded)
+    if alreadyLoaded
+        then return ()
+        else do
+
+    case takeExtension file of
+        ".atomo" -> do
+            parsed <- liftIO (parseFile file)
+            case parsed of
+                Left e -> throwError (ParseError e)
+                Right ast -> do
+                    modify (\s -> s { loadPath = [path] })
+
+                    mapM_ eval ast
+
+                    modify $ \s -> s
+                        { loadPath = lpath
+                        , loaded = file : loaded s
+                        }
+
+        {-".hs" -> do-}
+            {-int <- H.runInterpreter $ do-}
+                {-H.loadModules [filename]-}
+                {-H.setTopLevelModules ["Main"]-}
+                {-H.interpret "load" (H.as :: VM ())-}
+
+            {-load <- case int of-}
+                {-Left ie -> throwError (ImportError ie)-}
+                {-Right r -> return r-}
+
+            {-load-}
+
+        _ -> throwError . ErrorMsg $ "don't know how to load " ++ file
+  where
+    path = takeDirectory (normalise filename)
+
+    findFile [] = throwError (ErrorMsg ("file not found: " ++ filename)) -- TODO: proper error
+    findFile (p:ps) = do
+        check <- filterM (liftIO . doesFileExist . ((p </> filename) <.>)) exts
+
+        case check of
+            [] -> findFile ps
+            (ext:_) -> liftIO (canonicalizePath $ p </> filename <.> ext)
+
+    exts = ["", "atomo", "hs"]
+

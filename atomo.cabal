@@ -29,8 +29,11 @@ executable atomo
     directory,
     filepath,
     hashable,
+    haskeline,
     mtl,
     parsec >= 3.0.0,
     pretty,
+    pretty-show,
+    template-haskell,
     time,
     vector
