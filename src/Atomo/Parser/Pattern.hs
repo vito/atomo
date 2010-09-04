@@ -17,6 +17,7 @@ pPattern = choice
     , try ppHeadTail
     , try ppMatch
     , ppList
+    , ppString
     , ppParticle
     , ppAny
     , parens pPattern
@@ -29,6 +30,7 @@ pObjectPattern = choice
     , try ppObject
     , try ppMatch
     , ppList
+    , ppString
     , ppParticle
     , ppAnySensitive
     , parens pObjectPattern
@@ -72,6 +74,7 @@ ppSingle = do
         , try ppHeadTail
         , try ppMatch
         , ppList
+        , ppString
         , ppParticle
         , ppWildcard
         , parens pNonExpr
@@ -148,6 +151,7 @@ ppHeadTail = do
         [ try ppNamed
         , try ppMatch
         , ppList
+        , ppString
         , ppParticle
         , ppAny
         , parens pHead
@@ -157,6 +161,11 @@ ppList :: Parser Pattern
 ppList = brackets $ do
     ps <- commaSep pPattern
     return $ PList ps
+
+ppString :: Parser Pattern
+ppString = do
+    cs <- stringLiteral
+    return $ PList (map (PMatch . Char) cs)
 
 ppParticle :: Parser Pattern
 ppParticle = do

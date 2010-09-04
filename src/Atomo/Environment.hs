@@ -317,6 +317,9 @@ match ids PSelf v =
     match ids (PMatch (Reference (idMatch ids))) v
 match ids (PNamed _ p) v = match ids p v
 match _ PAny _ = True
+match ids (PList ps) (List v) = matchAll ids ps vs
+  where
+    vs = V.toList $ unsafePerformIO (readIORef v)
 match _ _ _ = False
 
 -- | match multiple patterns with multiple values
@@ -358,6 +361,9 @@ bindings' (PPMKeyword _ ps) (Particle (PMKeyword _ mvs)) = concat
     $ map (\(p, Just v) -> bindings' p v)
     $ filter (\(_, mv) -> case mv of { Nothing -> False; _ -> True })
     $ zip ps mvs
+bindings' (PList ps) (List v) = concat (zipWith bindings' ps vs)
+  where
+    vs = V.toList $ unsafePerformIO (readIORef v)
 bindings' _ _ = []
 
 

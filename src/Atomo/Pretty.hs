@@ -1,9 +1,11 @@
+{-# LANGUAGE TypeSynonymInstances #-}
 module Atomo.Pretty (Pretty(..)) where
 
 import Data.IORef
 import Data.Maybe (isJust)
 import Text.PrettyPrint hiding (braces)
 import System.IO.Unsafe
+import qualified Data.IntMap as M
 import qualified Data.Vector as V
 
 import Atomo.Types
@@ -12,9 +14,13 @@ import Atomo.Parser.Base (opLetters)
 
 data Context
     = CNone
+    | CDefine
     | CKeyword
     | CSingle
     | CArgs
+    | CObject
+    | CPattern
+    | CList
 
 class Pretty a where
     pretty :: a -> Doc
@@ -36,18 +42,42 @@ instance Pretty Value where
     prettyFrom _ (Integer i) = integer i
     prettyFrom _ (List l)
         | not (null vs) && all isChar vs = text $ show (map (\(Char c) -> c) vs)
-        | otherwise = brackets . hsep . punctuate comma $ map pretty vs
+        | otherwise = brackets . hsep . punctuate comma $ map (prettyFrom CList) vs
       where vs = V.toList (unsafePerformIO (readIORef l))
     prettyFrom _ (Message m) = internal "message" $ pretty m
     prettyFrom _ (Particle p) = char '@' <> pretty p
     prettyFrom _ (Pattern p) = internal "pattern" $ pretty p
     prettyFrom _ (Process _ tid) =
         internal "process" $ text (words (show tid) !! 1)
-    prettyFrom _ (Reference _) = internal "reference" empty
+    prettyFrom CNone (Reference r) = pretty (unsafePerformIO (readIORef r))
+    prettyFrom _ (Reference _) = internal "object" empty
+
+instance Pretty Object where
+    prettyFrom _ (Object ds (ss, ks)) = vcat
+        [ internal "object" $ parens (text "delegates to" <+> pretty ds)
+
+        , if not (M.null ss)
+              then nest 2 $ vcat (flip map (M.elems ss) $ (\ms ->
+                  vcat (map prettyMethod ms))) <>
+                      if not (M.null ks)
+                          then char '\n'
+                          else empty
+              else empty
+
+        , if not (M.null ks)
+              then nest 2 . vcat $ flip map (M.elems ks) $ \ms ->
+                  vcat (map prettyMethod ms) <> char '\n'
+              else empty
+        ]
+      where
+        prettyMethod (Slot { mPattern = p, mValue = v }) =
+            pretty p <+> text ":=" <+> prettyFrom CDefine v
+        prettyMethod (Method { mPattern = p, mExpr = e }) =
+            pretty p <+> text ":=" <+> prettyFrom CDefine e
 
 
 instance Pretty Message where
-    prettyFrom _ (Single _ n t) = pretty t <+> text n
+    prettyFrom _ (Single _ n t) = prettyFrom CSingle t <+> text n
     prettyFrom _ (Keyword _ ns vs) = keywords ns vs
 
 
@@ -62,7 +92,7 @@ instance Pretty Particle where
         prettyVal me =
             case me of
                 Nothing -> text "_"
-                Just e -> pretty e
+                Just e -> prettyFrom CKeyword e
 
 
 instance Pretty Pattern where
@@ -72,8 +102,13 @@ instance Pretty Pattern where
     prettyFrom _ (PKeyword _ ns (PSelf:vs)) =
         headlessKeywords ns vs
     prettyFrom _ (PKeyword _ ns vs) = keywords ns vs
-    prettyFrom _ (PList ps) = brackets . sep $ punctuate comma (map pretty ps)
-    prettyFrom _ (PMatch v) = pretty v
+    prettyFrom _ (PList ps)
+        | not (null ps) && all isCharMatch ps = text (show (map (\(PMatch (Char c)) -> c) ps))
+        | otherwise = brackets . sep $ punctuate comma (map pretty ps)
+      where
+        isCharMatch (PMatch (Char _)) = True
+        isCharMatch _ = False
+    prettyFrom _ (PMatch v) = prettyFrom CPattern v
     prettyFrom _ (PNamed n PAny) = text n
     prettyFrom _ (PNamed n p) = parens $ text n <> colon <+> pretty p
     prettyFrom _ (PObject e) = pretty e
@@ -83,11 +118,11 @@ instance Pretty Pattern where
 
 
 instance Pretty Expr where
-    prettyFrom _ (Define _ p v) = pretty p <+> text ":=" <+> pretty v
-    prettyFrom _ (Set _ p v)    = pretty p <+> text "=" <+> pretty v
+    prettyFrom _ (Define _ p v) = prettyFrom CDefine p <+> text ":=" <+> prettyFrom CDefine v
+    prettyFrom _ (Set _ p v)    = prettyFrom CDefine p <+> text "=" <+> prettyFrom CDefine v
     prettyFrom CKeyword (Dispatch _ m@(EKeyword {})) = parens $ pretty m
-    prettyFrom _ (Dispatch _ m) = pretty m
-    prettyFrom _ (Primitive _ v) = pretty v
+    prettyFrom c (Dispatch _ m) = prettyFrom c m
+    prettyFrom c (Primitive _ v) = prettyFrom c v
     prettyFrom _ (EBlock _ ps es)
         | null ps = braces exprs
         | otherwise = braces $ sep (map pretty ps) <+> char '|' <+> exprs
@@ -97,17 +132,17 @@ instance Pretty Expr where
     prettyFrom _ (EVM {}) = text "<vm>"
     prettyFrom _ (EList _ es)
         | all isPrimChar es = text $ show (map (\(Primitive _ (Char c)) -> c) es)
-        | otherwise = brackets . sep . punctuate comma $ map pretty es
+        | otherwise = brackets . sep . punctuate comma $ map (prettyFrom CList) es
       where
         isPrimChar (Primitive _ (Char _)) = True
         isPrimChar _ = False
-    prettyFrom _ (EParticle _ p) = char '@' <> pretty p
+    prettyFrom c (EParticle _ p) = char '@' <> prettyFrom c p
     prettyFrom _ (ETop {}) = text "<top>"
 
 
 instance Pretty EMessage where
     prettyFrom _ (ESingle _ n (ETop {})) = text n
-    prettyFrom _ (ESingle _ n t) = pretty t <+> text n
+    prettyFrom c (ESingle _ n t) = prettyFrom c t <+> text n
     prettyFrom _ (EKeyword _ ns (ETop {}:es)) = headlessKeywords ns es
     prettyFrom _ (EKeyword _ ns es) = keywords ns es
 
@@ -142,6 +177,13 @@ instance Pretty AtomoError where
         {-text "import error:" <+> text s-}
     {-pretty (ImportError (H.GhcException s)) =-}
         {-text "import error:" <+> text s-}
+
+
+instance Pretty Delegates where
+    prettyFrom _ [] = internal "bottom" empty
+    prettyFrom _ [_] = text "1 object"
+    prettyFrom _ ds = text $ show (length ds) ++ " objects"
+
 
 
 internal :: String -> Doc -> Doc

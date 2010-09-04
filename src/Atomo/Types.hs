@@ -33,7 +33,7 @@ data Value
 
 data Object =
     Object
-        { oDelegates :: ![Value]
+        { oDelegates :: !Delegates
         , oMethods :: !(MethodMap, MethodMap) -- singles, keywords
         }
     deriving Show
@@ -217,6 +217,7 @@ instance Eq Value where
     _ == _ = False
 
 -- helper synonyms
+type Delegates = [Value]
 type Channel = Chan Value
 type MethodMap = M.IntMap [Method]
 type ORef = IORef Object
