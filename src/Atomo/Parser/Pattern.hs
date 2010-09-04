@@ -178,11 +178,11 @@ ppParticle = do
     singleParticle = fmap PPMSingle anyIdentifier
 
     keywordParticle = choice
-        [ try . parens $ do
+        [ parens $ do
             ks <- many1 (keyword pPattern)
             let (ns, ps) = unzip ks
             return $ PPMKeyword ns (PAny:ps)
-        , try $ do
+        , do
             o <- operator
             spacing
             return $ PPMKeyword [o] [PAny, PAny]
