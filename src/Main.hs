@@ -20,26 +20,18 @@ main = do
     case args of
         r | null r || r == ["-d"] ->
             exec (repl (r == ["-d"]))
-        ["-e", expr] -> do
-            run $ do
-                r <- evalAST (parseInput expr) `catchError` (return . Left)
-                case r of
-                    Left e -> liftIO (print $ pretty e)
-                    Right r -> liftIO (print r)
-
-            return ()
+        ["-e", expr] ->
+            exec $ do
+                r <- evalAST (parseInput expr)
+                liftIO (print $ pretty r)
         [fn] -> do
             ast <- parseFile fn
 
             let path = takeDirectory (normalise fn)
-            r <- run $ do
+            exec $ do
                 modify (\s -> s { loadPath = path:loadPath s })
                 evalAST ast
                 return ()
-
-            case r of
-                Left e -> print $ pretty e
-                Right _ -> return ()
         {-["-make", fn] -> parseFile fn >>= compileAST-}
         _ -> putStrLn . unlines $
             [ "usage:"
@@ -68,7 +60,7 @@ repl quiet = do
             Just part | not (bracesBalanced $ input ++ part) ->
                 repl' (input ++ part) r
             Just expr -> do
-                res <- evalAST (parseInput (input ++ expr)) `catchError` (return . Left)
+                res <- fmap Right (evalAST (parseInput (input ++ expr))) `catchError` (return . Left)
 
                 case res of
                     Right v -> liftIO . print . pretty $ v
@@ -86,6 +78,6 @@ repl quiet = do
             | b `elem` ")]}" = hangingBraces ss - 1
             | otherwise = hangingBraces ss
 
-evalAST :: Either ParseError [Expr] -> VM (Either AtomoError Value)
-evalAST (Left e) = return . Left $ ParseError e
-evalAST (Right ok) = fmap Right $ evalAll ok
+evalAST :: Either ParseError [Expr] -> VM Value
+evalAST (Left e) = throwError $ ParseError e
+evalAST (Right ok) = evalAll ok

@@ -1,5 +1,5 @@
 {-# LANGUAGE TypeSynonymInstances #-}
-module Atomo.Pretty (Pretty(..)) where
+module Atomo.Pretty (Pretty(..), prettyStack) where
 
 import Data.IORef
 import Data.Maybe (isJust)
@@ -194,6 +194,12 @@ instance Pretty Delegates where
     prettyFrom _ ds = text $ show (length ds) ++ " objects"
 
 
+
+prettyStack :: Expr -> Doc
+prettyStack e =
+    case eLocation e of
+        Nothing -> pretty e
+        Just s -> text (show s) $$ nest 2 (pretty e)
 
 internal :: String -> Doc -> Doc
 internal n d = char '<' <> text n <+> d <> char '>'

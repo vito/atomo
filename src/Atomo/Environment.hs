@@ -17,6 +17,7 @@ import qualified Data.Vector as V
 
 import {-# SOURCE #-} Atomo.Method
 import Atomo.Parser
+import Atomo.Pretty
 import Atomo.Types
 import {-# SOURCE #-} qualified Atomo.Kernel as Kernel
 
@@ -47,8 +48,14 @@ execWith x e = do
         case res of
             Left err -> do
                 s <- gets stack
-                mapM_ (liftIO . print) (take 10 (reverse s))
-                liftIO (print err)
+
+                liftIO (putStrLn "traceback:")
+
+                forM_ (take 10 (reverse s)) $ \e -> liftIO $ do
+                    print (prettyStack e)
+
+                liftIO (putStrLn "")
+                liftIO . print . pretty $ err
             Right _ -> return ()
 
         gets halt >>= liftIO
