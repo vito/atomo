@@ -20,6 +20,7 @@ executable atomo
   
   ghc-prof-options:   -prof -auto-all -caf-all
   ghc-options:        -O2 -Wall -threaded -fno-warn-unused-do-bind
+                      -funfolding-use-threshold=9999
 
   -- Packages needed in order to build this package.
   build-depends:
