@@ -135,6 +135,9 @@ natural = P.natural tp
 symbol :: String -> Parser String
 symbol = P.symbol tp
 
+delimit :: String -> Parser String
+delimit n = whiteSpace >> symbol n
+
 stringLiteral :: Parser String
 stringLiteral = P.stringLiteral tp
 
@@ -145,7 +148,7 @@ colon :: Parser ()
 colon = char ':' >> return ()
 
 wsBlock :: Show a => Parser a -> Parser [a]
-wsBlock = indentAware (\n o -> sourceColumn n == sourceColumn o) (symbol ";" >> return True) False
+wsBlock = indentAware (\n o -> sourceColumn n == sourceColumn o) (delimit ";" >> return True) False
 
 wsMany1 :: Show a => Parser a -> Parser [a]
 wsMany1 p = do
@@ -256,15 +259,15 @@ makeTokenParser languageDef
     -----------------------------------------------------------
     -- Bracketing
     -----------------------------------------------------------
-    parens p        = between (symbol "(") (symbol ")") p
-    braces p        = between (symbol "{") (symbol "}") p
-    angles p        = between (symbol "<") (symbol ">") p
-    brackets p      = between (symbol "[") (symbol "]") p
+    parens p        = between (symbol "(") (delimit ")") p
+    braces p        = between (symbol "{") (delimit "}") p
+    angles p        = between (symbol "<") (delimit ">") p
+    brackets p      = between (symbol "[") (delimit "]") p
 
-    semi            = symbol ";"
-    comma           = symbol ","
-    dot             = symbol "."
-    colon           = symbol ":"
+    semi            = delimit ";"
+    comma           = delimit ","
+    dot             = delimit "."
+    colon           = delimit ":"
 
     commaSep p      = sepBy p comma
     semiSep p       = sepBy p semi
@@ -542,8 +545,11 @@ makeTokenParser languageDef
     -----------------------------------------------------------
     -- White space & symbols
     -----------------------------------------------------------
+    delimit name
+        = do{ whiteSpace; symbol name }
+
     symbol name
-        = do{ whiteSpace; s <- string name; whiteSpace; return s }
+        = do{ s <- string name; whiteSpace; return s }
 
     lexeme p
         = do{ x <- p; spacing; return x  }

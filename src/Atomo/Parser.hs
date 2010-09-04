@@ -118,7 +118,7 @@ pdKeys = do
   where
     branch = do
         pat <- pPattern
-        symbol "->"
+        delimit "->"
         whiteSpace
         val <- pExpr
         return (pat, val)
@@ -168,7 +168,7 @@ pBlock :: Parser Expr
 pBlock = dump "trying pBlock" >> tagged . braces $ do
     arguments <- option [] . try $ do
         ps <- many1 pPattern
-        symbol "|"
+        delimit "|"
         whiteSpace
         return ps
 
