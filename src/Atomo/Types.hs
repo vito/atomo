@@ -343,3 +343,22 @@ isProcess _ = False
 isReference :: Value -> Bool
 isReference (Reference _) = True
 isReference _ = False
+
+-- | Swap out a reference match with PSelf, for inserting on the object
+setSelf :: ORef -> Pattern -> Pattern
+setSelf o (PMatch (Reference x))
+    | o == x = PSelf
+setSelf o (PHeadTail h t) =
+    PHeadTail (setSelf o h) (setSelf o t)
+setSelf o (PKeyword i ns ps) =
+    PKeyword i ns (map (setSelf o) ps)
+setSelf o (PList ps) =
+    PList (map (setSelf o) ps)
+setSelf o (PNamed n p) =
+    PNamed n (setSelf o p)
+setSelf o (PPMKeyword ns ps) =
+    PPMKeyword ns (map (setSelf o) ps)
+setSelf o (PSingle i n t) =
+    PSingle i n (setSelf o t)
+setSelf _ p = p
+

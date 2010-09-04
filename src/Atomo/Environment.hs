@@ -237,14 +237,14 @@ define !p !e = do
         let (oss, oks) = oMethods obj
             ms =
                 case newp of
-                    PSingle {} -> (addMethod m oss, oks)
-                    PKeyword {} -> (oss, addMethod m oks)
+                    PSingle {} -> (addMethod (m o) oss, oks)
+                    PKeyword {} -> (oss, addMethod (m o) oks)
 
         liftIO . writeIORef o $
             obj { oMethods = ms }
   where
-    method p (Primitive _ v) = return (Slot p v)
-    method p e = gets top >>= \t -> return (Method p t e)
+    method p (Primitive _ v) = return (\o -> Slot (setSelf o p) v)
+    method p e = gets top >>= \t -> return (\o -> Method (setSelf o p) t e)
 
     methodPattern p'@(PSingle { ppTarget = t }) = do
         t' <- methodPattern t
@@ -259,7 +259,6 @@ define !p !e = do
         p' <- methodPattern p
         return (PNamed n p')
     methodPattern p' = return p'
-
 
 
 targets :: IDs -> Pattern -> VM [ORef]
