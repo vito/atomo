@@ -34,10 +34,20 @@ load = do
         liftIO $ writeIORef f (from { oDelegates = oDelegates from ++ [t] })
         return (particle "ok")
 
-    [$p|(x: Object) is-a?: (y: Object)|] =: do
+    [$p|(x: Object) delegates-to?: (y: Object)|] =: do
         x <- here "x"
         y <- here "y"
         delegatesTo x y >>= bool
+
+    [$p|(x: Object) is-a?: (y: Object)|] =: do
+        x <- here "x"
+        y <- here "y"
+        xr <- orefFor x
+        yr <- orefFor y
+
+        if xr == yr
+            then bool True
+            else delegatesTo x y >>= bool
 
     [$p|(x: Object) responds-to?: (p: Particle)|] =: do
         x <- here "x"

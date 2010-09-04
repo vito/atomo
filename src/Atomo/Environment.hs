@@ -550,11 +550,11 @@ loadFile filename = do
 
     exts = ["", "atomo", "hs"]
 
+-- | does one value delegate to another?
 delegatesTo :: Value -> Value -> VM Bool
 delegatesTo f t = do
-    r <- orefFor f
-    o <- liftIO (readIORef r)
-    delegatesTo' (Reference r:oDelegates o) t
+    o <- objectFor f
+    delegatesTo' (oDelegates o) t
   where
     delegatesTo' [] _ = return False
     delegatesTo' (d:ds) t
