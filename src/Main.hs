@@ -64,7 +64,7 @@ repl quiet = do
 
                 case res of
                     Right v -> liftIO . print . pretty $ v
-                    Left e -> liftIO . print . pretty $ e
+                    Left e -> printError e
 
                 repl' "" r
             Nothing -> return ()

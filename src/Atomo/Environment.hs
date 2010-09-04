@@ -46,16 +46,7 @@ execWith x e = do
     go = do
         res <- (fmap Right x) `catchError` (return . Left)
         case res of
-            Left err -> do
-                s <- gets stack
-
-                liftIO (putStrLn "traceback:")
-
-                forM_ (take 10 (reverse s)) $ \e -> liftIO $ do
-                    print (prettyStack e)
-
-                liftIO (putStrLn "")
-                liftIO . print . pretty $ err
+            Left err -> printError err
             Right _ -> return ()
 
         gets halt >>= liftIO
@@ -65,6 +56,20 @@ run x = runWith (initEnv >> x) startEnv
 
 runWith :: VM a -> Env -> IO (Either AtomoError a)
 runWith x s = evalStateT (runErrorT x) s
+
+printError :: AtomoError -> VM ()
+printError err = do
+    s <- gets stack
+
+    liftIO (putStrLn "traceback:")
+
+    forM_ (take 10 (reverse s)) $ \e -> liftIO $ do
+        print (prettyStack e)
+
+    liftIO (putStrLn "")
+    liftIO . print . pretty $ err
+
+    modify (\s -> s { stack = [] })
 
 -- | set up the primitive objects, etc.
 initEnv :: VM ()
@@ -194,6 +199,7 @@ newObject f = fmap Reference . liftIO $
         }
 
 -- run x with t as its toplevel object
+-- TODO: rebuild error stack
 withTop :: Value -> VM a -> VM a
 withTop t x = do
     e <- get
