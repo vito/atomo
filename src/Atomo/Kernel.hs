@@ -105,7 +105,7 @@ load = do
         v <- here "v"
         b <- here "b" >>= findValue isBlock
         as <- fmap V.toList $ getList [$e|l|]
-        joinWith v b []
+        joinWith v b as
         return v
 
     [$p|v join: (b: Block)|] =: do
