@@ -121,10 +121,14 @@ eval e = eval' e `catchError` pushStack
     eval' (Set { ePattern = p, eExpr = ev }) = do
         v <- eval ev
 
-        forM_ (bindings' p v) $ \(p', v') -> do
-            define p' (Primitive (eLocation ev) v')
+        is <- gets ids
+        if match is p v
+            then do
+                forM_ (bindings' p v) $ \(p', v') -> do
+                    define p' (Primitive (eLocation ev) v')
 
-        return v
+                return v
+            else throwError (Mismatch p v)
     eval' (Dispatch { eMessage = ESingle { emID = i, emName = n, emTarget = t } }) = do
         v <- eval t
         dispatch (Single i n v)

@@ -132,6 +132,8 @@ instance Pretty AtomoError where
         text "message not understood:" <+> pretty m
     pretty (ParseError e) =
         text "parse error:" <+> text (show e)
+    pretty (Mismatch p v) =
+        text "pattern" <+> char '<' <> pretty p <> char '>' <+> text "did not match value:" <+> pretty v
     {-pretty (ImportError (H.UnknownError s)) =-}
         {-text "import error:" <+> text s-}
     {-pretty (ImportError (H.WontCompile ges)) =-}

@@ -72,6 +72,7 @@ data AtomoError
     = ErrorMsg String
     | ParseError ParseError
     | DidNotUnderstand Message
+    | Mismatch Pattern Value
     {-| ImportError H.InterpreterError-}
     deriving Show
 
