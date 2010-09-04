@@ -14,6 +14,7 @@ import Atomo.Debug
 import Atomo.Environment
 import Atomo.Haskell
 import Atomo.Method
+import Atomo.Pretty
 
 load :: VM ()
 load = do
@@ -948,5 +949,3 @@ completeKP [] [] = []
 completeKP (Nothing:mvs') (v:vs') = v : completeKP mvs' vs'
 completeKP (Just v:mvs') vs' = v : completeKP mvs' vs'
 completeKP mvs' vs' = error $ "impossible: completeKP on " ++ show (mvs', vs')
-
-pretty = id

@@ -9,6 +9,7 @@ import Text.Parsec (ParseError)
 
 import Atomo.Environment
 import Atomo.Parser
+import Atomo.Pretty
 import Atomo.Types
 
 
@@ -70,7 +71,7 @@ repl quiet = do
                 res <- evalAST (parseInput (input ++ expr)) `catchError` (return . Left)
 
                 case res of
-                    Right v -> liftIO (print v)
+                    Right v -> liftIO . print . pretty $ v
                     Left e -> liftIO . print . pretty $ e
 
                 repl' "" r
@@ -88,5 +89,3 @@ repl quiet = do
 evalAST :: Either ParseError [Expr] -> VM (Either AtomoError Value)
 evalAST (Left e) = return . Left $ ParseError e
 evalAST (Right ok) = fmap Right $ evalAll ok
-
-pretty = id
