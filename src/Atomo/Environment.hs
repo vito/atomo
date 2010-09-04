@@ -260,6 +260,19 @@ define !p !e = do
         return (PNamed n p')
     methodPattern p' = return p'
 
+    -- | Swap out a reference match with PSelf, for inserting on the object
+    setSelf :: ORef -> Pattern -> Pattern
+    setSelf o (PKeyword i ns ps) =
+        PKeyword i ns (map (setSelf o) ps)
+    setSelf o (PMatch (Reference x))
+        | o == x = PSelf
+    setSelf o (PNamed n p) =
+        PNamed n (setSelf o p)
+    setSelf o (PSingle i n t) =
+        PSingle i n (setSelf o t)
+    setSelf _ p = p
+
+
 
 targets :: IDs -> Pattern -> VM [ORef]
 targets is (PMatch v) = orefFor v >>= return . (: [])
@@ -330,12 +343,12 @@ relevant ids o m =
 -- to check things like delegation matches.
 match :: IDs -> Pattern -> Value -> Bool
 {-# NOINLINE match #-}
+match ids PSelf (Reference y) =
+    refMatch ids (idMatch ids) y
+match ids PSelf y =
+    match ids (PMatch (Reference (idMatch ids))) (Reference (orefFrom ids y))
 match ids (PMatch (Reference x)) (Reference y) =
-    x == y || delegatesMatch
-  where
-    delegatesMatch = any
-        (match ids (PMatch (Reference x)))
-        (oDelegates (unsafePerformIO (readIORef y)))
+    refMatch ids x y
 match ids (PMatch (Reference x)) y =
     match ids (PMatch (Reference x)) (Reference (orefFrom ids y))
 match ids (PMatch x) y =
@@ -348,8 +361,6 @@ match ids
     (PKeyword { ppTargets = ps })
     (Message (Keyword { mTargets = ts })) =
     matchAll ids ps ts
-match ids PSelf v =
-    match ids (PMatch (Reference (idMatch ids))) v
 match ids (PNamed _ p) v = match ids p v
 match _ PAny _ = True
 match ids (PList ps) (List v) = matchAll ids ps vs
@@ -359,6 +370,13 @@ match ids (PPMSingle a) (Particle (PMSingle b)) = a == b
 match ids (PPMKeyword ans aps) (Particle (PMKeyword bns mvs)) =
     ans == bns && matchParticle ids aps mvs
 match _ _ _ = False
+
+refMatch :: IDs -> ORef -> ORef -> Bool
+refMatch ids x y = x == y || delegatesMatch
+  where
+    delegatesMatch = any
+        (match ids (PMatch (Reference x)))
+        (oDelegates (unsafePerformIO (readIORef y)))
 
 -- | match multiple patterns with multiple values
 matchAll :: IDs -> [Pattern] -> [Value] -> Bool

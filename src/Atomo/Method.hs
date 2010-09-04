@@ -9,50 +9,50 @@ import Atomo.Types
 import Atomo.Environment
 
 
--- LT = higher-precision
--- GT = lower-precision
+-- referring to the left side:
+--   LT = higher-precision
+--   GT = lower-precision
 comparePrecision :: Pattern -> Pattern -> Ordering
 comparePrecision PAny PAny = EQ
-comparePrecision PAny _ = GT
-comparePrecision _ PAny = LT
+comparePrecision PSelf PSelf = EQ
 comparePrecision (PMatch (Reference a)) (PMatch (Reference b))
     | unsafeDelegatesTo (Reference a) (Reference b) = LT
     | unsafeDelegatesTo (Reference a) (Reference b) = GT
     | otherwise = EQ
 comparePrecision (PMatch _) (PMatch _) = EQ
-comparePrecision (PMatch _) _ = LT
-comparePrecision _ (PMatch _) = GT
 comparePrecision (PList as) (PList bs) =
     comparePrecisions as bs
-comparePrecision (PList _) _ = LT
-comparePrecision _ (PList _) = GT
 comparePrecision (PPMSingle _) (PPMSingle _) = EQ
-comparePrecision (PPMSingle _) _ = LT
-comparePrecision _ (PPMSingle _) = GT
 comparePrecision (PPMKeyword _ as) (PPMKeyword _ bs) =
     comparePrecisions as bs
-comparePrecision (PPMKeyword _ _) _ = LT
-comparePrecision _ (PPMKeyword _ _) = GT
 comparePrecision (PHeadTail ah at) (PHeadTail bh bt) =
     comparePrecisions [ah, at] [bh, bt]
-comparePrecision (PHeadTail _ _) _ = LT
-comparePrecision _ (PHeadTail _ _) = GT
 comparePrecision (PSingle { ppTarget = at }) (PSingle { ppTarget = bt }) =
     comparePrecision at bt
-comparePrecision (PNamed _ a) (PNamed _ b) =
-    comparePrecision a b
-comparePrecision (PNamed _ a) b = comparePrecision a b
-comparePrecision a (PNamed _ b) = comparePrecision a b
 comparePrecision (PKeyword { ppTargets = as }) (PKeyword { ppTargets = bs }) =
     compareHeads as bs
-comparePrecision PSelf PSelf = EQ
+comparePrecision (PNamed _ a) (PNamed _ b) =
+    comparePrecision a b
+comparePrecision (PObject _) (PObject _) = EQ
+comparePrecision PAny _ = GT
+comparePrecision _ PAny = LT
 comparePrecision PSelf _ = LT
 comparePrecision _ PSelf = GT
-comparePrecision (PObject _) (PObject _) = EQ
+comparePrecision (PMatch _) _ = LT
+comparePrecision _ (PMatch _) = GT
+comparePrecision (PList _) _ = LT
+comparePrecision _ (PList _) = GT
+comparePrecision (PPMSingle _) _ = LT
+comparePrecision _ (PPMSingle _) = GT
+comparePrecision (PPMKeyword _ _) _ = LT
+comparePrecision _ (PPMKeyword _ _) = GT
+comparePrecision (PHeadTail _ _) _ = LT
+comparePrecision _ (PHeadTail _ _) = GT
 comparePrecision (PObject _) _ = LT
 comparePrecision _ (PObject _) = GT
-comparePrecision _ _= GT -- if they're not comparable,
-                         -- say GT so it continues on to one that is
+comparePrecision (PNamed _ a) b = comparePrecision a b
+comparePrecision a (PNamed _ b) = comparePrecision a b
+comparePrecision _ _ = GT
 
 compareHeads :: [Pattern] -> [Pattern] -> Ordering
 compareHeads [a] [b] = comparePrecision a b
@@ -76,7 +76,7 @@ unsafeDelegatesTo x y = unsafePerformIO $ do
 
 addMethod :: Method -> MethodMap -> MethodMap
 addMethod m mm =
-    M.insertWith (\[m] ms -> insertMethod m ms) key [m] mm -- TODO: insert by precision
+    M.insertWith (\[m] ms -> insertMethod m ms) key [m] mm
   where
     key = ppID (mPattern m)
 
