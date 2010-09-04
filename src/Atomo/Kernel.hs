@@ -86,6 +86,10 @@ load = do
     [$p|load: (fn: String)|] =: do
         fn <- fmap V.toList $ getList [$e|fn|]
 
+        -- escape from the method scope back to the sender
+        sender <- eval [$e|dispatch sender|]
+        modify $ \e -> e { top = sender }
+
         if all isChar fn
             then loadFile (map (\(Char c) -> c) fn)
             else throwError $ ErrorMsg "@load: applied to non-String"
