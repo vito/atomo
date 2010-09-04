@@ -203,8 +203,20 @@ newObject f = fmap Reference . liftIO $
 withTop :: Value -> VM a -> VM a
 withTop t x = do
     e <- get
-    res <- liftIO (runWith x (e { top = t }))
-    either throwError return res
+    Right res <- liftIO (runWith go (e { top = t }))
+    either mergeStack return res
+  where
+    go = do
+        res <- (fmap Right x) `catchError` (return . Left)
+        case res of
+            Left e -> do
+                s <- gets stack
+                return (Left (s, e))
+            Right r -> return (Right r)
+
+    mergeStack (st, e) = do
+        modify (\s -> s { stack = st })
+        throwError e
 
 
 
