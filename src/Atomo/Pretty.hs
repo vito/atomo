@@ -84,8 +84,8 @@ instance Pretty Message where
 instance Pretty Particle where
     prettyFrom _ (PMSingle e) = text e
     prettyFrom _ (PMKeyword ns vs)
-        | all (== Nothing) vs = text . concat $ map keyword ns
-        | head vs == Nothing =
+        | all (not . isJust) vs = text . concat $ map keyword ns
+        | not (isJust (head vs)) =
             parens $ headlessKeywords' prettyVal ns (tail vs)
         | otherwise = parens (keywords' prettyVal ns vs)
       where
@@ -112,6 +112,15 @@ instance Pretty Pattern where
     prettyFrom _ (PNamed n PAny) = text n
     prettyFrom _ (PNamed n p) = parens $ text n <> colon <+> pretty p
     prettyFrom _ (PObject e) = pretty e
+    prettyFrom _ (PPMSingle n) = char '@' <> text n
+    prettyFrom _ (PPMKeyword ns ps)
+        | all isAny ps = char '@' <> text (concat $ map keyword ns)
+        | isAny (head ps) =
+            char '@' <> parens (headlessKeywords' (prettyFrom CKeyword) ns (tail ps))
+        | otherwise = char '@' <> parens (keywords' (prettyFrom CKeyword) ns ps)
+      where
+        isAny PAny = True
+        isAny _ = False
     prettyFrom _ PSelf = text "<self>"
     prettyFrom _ (PSingle _ n PSelf) = text n
     prettyFrom _ (PSingle _ n p) = pretty p <+> text n

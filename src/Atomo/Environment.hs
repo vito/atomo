@@ -8,6 +8,7 @@ import Control.Concurrent.Chan
 import Data.IORef
 import Data.Hashable
 import Data.List (nub)
+import Data.Maybe (isJust)
 import System.Directory
 import System.FilePath
 import System.IO.Unsafe
@@ -329,6 +330,9 @@ match _ PAny _ = True
 match ids (PList ps) (List v) = matchAll ids ps vs
   where
     vs = V.toList $ unsafePerformIO (readIORef v)
+match ids (PPMSingle a) (Particle (PMSingle b)) = a == b
+match ids (PPMKeyword ans aps) (Particle (PMKeyword bns mvs)) =
+    ans == bns && matchParticle ids aps mvs
 match _ _ _ = False
 
 -- | match multiple patterns with multiple values
@@ -336,6 +340,13 @@ matchAll :: IDs -> [Pattern] -> [Value] -> Bool
 matchAll _ [] [] = True
 matchAll ids (p:ps) (v:vs) = match ids p v && matchAll ids ps vs
 matchAll _ _ _ = False
+
+matchParticle :: IDs -> [Pattern] -> [Maybe Value] -> Bool
+matchParticle _ [] [] = True
+matchParticle ids (PAny:ps) (Nothing:mvs) = matchParticle ids ps mvs
+matchParticle ids (PNamed _ p:ps) mvs = matchParticle ids (p:ps) mvs
+matchParticle ids (p:ps) (Just v:mvs) = match ids p v && matchParticle ids ps mvs
+matchParticle _ _ _ = False
 
 -- evaluate a method in a scope with the pattern's bindings,
 -- delegating to the method's context and setting the "dispatch" object
@@ -368,7 +379,7 @@ bindings' :: Pattern -> Value -> [(Pattern, Value)]
 bindings' (PNamed n p) v = (PSingle (hash n) n PSelf, v) : bindings' p v
 bindings' (PPMKeyword _ ps) (Particle (PMKeyword _ mvs)) = concat
     $ map (\(p, Just v) -> bindings' p v)
-    $ filter (\(_, mv) -> case mv of { Nothing -> False; _ -> True })
+    $ filter (isJust . snd)
     $ zip ps mvs
 bindings' (PList ps) (List v) = concat (zipWith bindings' ps vs)
   where
