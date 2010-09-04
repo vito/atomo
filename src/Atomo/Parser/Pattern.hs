@@ -90,7 +90,7 @@ ppKeywords = keywords PKeyword PSelf pObjectPattern
 ppNamed :: Parser Pattern
 ppNamed = parens $ do
     name <- identifier
-    lexeme colon
+    delimit ":"
     p <- pPattern
     return $ PNamed name p
 
@@ -98,7 +98,7 @@ ppNamedSensitive :: Parser Pattern
 ppNamedSensitive = parens $ do
     name <- lowIdentifier
     dump ("got ppNamedSensitive", name)
-    lexeme colon
+    delimit ":"
     p <- pObjectPattern
     dump ("finished ppNamedSensitive", name, p)
     return $ PNamed name p

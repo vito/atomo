@@ -259,10 +259,10 @@ makeTokenParser languageDef
     -----------------------------------------------------------
     -- Bracketing
     -----------------------------------------------------------
-    parens p        = between (symbol "(") (delimit ")") p
-    braces p        = between (symbol "{") (delimit "}") p
-    angles p        = between (symbol "<") (delimit ">") p
-    brackets p      = between (symbol "[") (delimit "]") p
+    parens p        = between (open "(") (close ")") p
+    braces p        = between (open "{") (close "}") p
+    angles p        = between (open "<") (close ">") p
+    brackets p      = between (open "[") (close "]") p
 
     semi            = delimit ";"
     comma           = delimit ","
@@ -547,6 +547,11 @@ makeTokenParser languageDef
     -----------------------------------------------------------
     delimit name
         = do{ whiteSpace; symbol name }
+
+    open = symbol
+
+    close name
+        = do{ whiteSpace; s <- string name; spacing; return s }
 
     symbol name
         = do{ s <- string name; whiteSpace; return s }
