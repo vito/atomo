@@ -118,6 +118,14 @@ eval e = eval' e `catchError` pushStack
     eval' (Define { ePattern = p, eExpr = ev }) = do
         define p ev
         return (particle "ok")
+    eval' (Set { ePattern = p@(PSingle {}), eExpr = ev }) = do
+        v <- eval ev
+        define p (Primitive (eLocation ev) v)
+        return v
+    eval' (Set { ePattern = p@(PKeyword {}), eExpr = ev }) = do
+        v <- eval ev
+        define p (Primitive (eLocation ev) v)
+        return v
     eval' (Set { ePattern = p, eExpr = ev }) = do
         v <- eval ev
 
@@ -236,6 +244,7 @@ targets is (PKeyword _ _ ps) = do
 targets is (PNamed _ p) = targets is p
 targets is PSelf = gets top >>= orefFor >>= return . (: [])
 targets is PAny = return [idObject is]
+targets is (PList _) = return [idList is]
 targets _ p = error $ "no targets for " ++ show p
 
 

@@ -10,7 +10,6 @@ import Atomo.Parser.Base
 import Atomo.Parser.Primitive
 import Atomo.Types
 
-
 pPattern :: Parser Pattern
 pPattern = choice
     [ try ppNamed
@@ -36,6 +35,9 @@ pObjectPattern = choice
     , parens pObjectPattern
     ]
 
+ppSet :: Parser Pattern
+ppSet = try ppDefine <|> pPattern
+
 ppDefine :: Parser Pattern
 ppDefine = try ppKeywords <|> ppSingle
 
@@ -49,6 +51,7 @@ ppSingle = do
             return (t, v)
         , try $ do
             ds <- pdCascade
+            dump ("got pdCascade", ds)
             p <- cInit ds
             v <- cLast ds
             return (PObject p, v)

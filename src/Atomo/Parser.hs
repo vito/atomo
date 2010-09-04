@@ -90,7 +90,7 @@ pDefine = tagged (do
 
 pSet :: Parser Expr
 pSet = tagged (do
-    pattern <- pPattern
+    pattern <- ppSet
     dump ("set pattern", pattern)
     reservedOp "="
     whiteSpace
