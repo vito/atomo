@@ -14,8 +14,11 @@ debug s v
 
 dump :: (Monad m, Show a) => a -> m ()
 dump x
-    | debugging = trace (prettyShow x) (return ())
+    | debugging = out x
     | otherwise = return ()
+
+out :: (Monad m, Show a) => a -> m ()
+out x = trace (prettyShow x) (return ())
 
 prettyShow :: Show a => a -> String
 prettyShow = ppShow
