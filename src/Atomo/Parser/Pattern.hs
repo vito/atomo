@@ -177,7 +177,17 @@ ppParticle = do
   where
     singleParticle = fmap PPMSingle anyIdentifier
 
-    keywordParticle = parens $ do
-        ks <- many1 (keyword pPattern)
-        let (ns, ps) = unzip ks
-        return $ PPMKeyword ns (PAny:ps)
+    keywordParticle = choice
+        [ try . parens $ do
+            ks <- many1 (keyword pPattern)
+            let (ns, ps) = unzip ks
+            return $ PPMKeyword ns (PAny:ps)
+        , try $ do
+            o <- operator
+            spacing
+            return $ PPMKeyword [o] [PAny, PAny]
+        , do
+            names <- many1 (anyIdentifier >>= \n -> char ':' >> return n)
+            spacing
+            return $ PPMKeyword names (replicate (length names + 1) PAny) 
+        ]

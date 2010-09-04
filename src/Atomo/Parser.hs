@@ -42,6 +42,7 @@ pParticle = tagged $ do
 
     symbols = do
         names <- many1 (anyIdentifier >>= \n -> char ':' >> return n)
+        spacing
         return $ EPMKeyword names (replicate (length names + 1) Nothing)
 
 cSingle :: Bool -> Parser EParticle
