@@ -869,7 +869,7 @@ loadList = do
 loadPorts :: VM ()
 loadPorts = do
     port <- eval [$e|Object clone|]
-    [$p|Port|] =: return port
+    [$p|Port|] =:: port
 
     [$p|Port standard-input|] =: portObj stdin
     [$p|Port standard-output|] =: portObj stdout
@@ -940,8 +940,8 @@ loadPorts = do
   where
     portObj hdl = do
         port <- eval [$e|Port clone|]
-        [$p|p|] =: return port
-        [$p|p handle|] =: return (Haskell (toDyn hdl))
+        [$p|p|] =:: port
+        [$p|p handle|] =:: Haskell (toDyn hdl)
         here "p"
 
 completeKP :: [Maybe Value] -> [Value] -> [Value]

@@ -372,10 +372,13 @@ bindings' _ _ = []
 -- Helpers ------------------------------------------------------------------
 -----------------------------------------------------------------------------
 
-infixr 0 =:
+infixr 0 =:, =::
 
 (=:) :: Pattern -> VM Value -> VM ()
 pat =: vm = define pat (EVM Nothing vm)
+
+(=::) :: Pattern -> Value -> VM ()
+pat =:: vm = define pat (Primitive Nothing vm)
 
 findValue :: (Value -> Bool) -> Value -> VM Value
 findValue t v | t v = return v
