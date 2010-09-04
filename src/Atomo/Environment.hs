@@ -394,6 +394,16 @@ runMethod (Method { mPattern = p, mTop = t, mExpr = e }) m = do
 
     withTop nt $ eval e
 
+-- evaluate an action in a new scope
+newScope :: VM a -> VM a
+newScope x = do
+    t <- gets top
+    nt <- newObject $ \o -> o
+        { oDelegates = [t]
+        }
+
+    withTop nt x
+
 -- | given a pattern and a message, return the bindings from the pattern
 bindings :: Pattern -> Message -> MethodMap
 bindings (PSingle { ppTarget = p }) (Single { mTarget = t }) =

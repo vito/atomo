@@ -871,12 +871,15 @@ loadPorts = do
     port <- eval [$e|Object clone|]
     [$p|Port|] =:: port
 
-    [$p|Port standard-input|] =: portObj stdin
-    [$p|Port standard-output|] =: portObj stdout
-    [$p|Port standard-error|] =: portObj stderr
+    sin <- portObj stdin
+    sout <- portObj stdout
+    serr <- portObj stderr
+    [$p|Port standard-input|] =:: sin
+    [$p|Port standard-output|] =:: sout
+    [$p|Port standard-error|] =:: serr
 
-    [$p|current-output-port|] =: eval [$e|Port standard-output|]
-    [$p|current-input-port|] =: eval [$e|Port standard-input|]
+    [$p|current-output-port|] =:: sout
+    [$p|current-input-port|] =:: sin
 
     [$p|Port new: (fn: String)|] =: eval [$e|Port new: fn mode: @read-write|]
     [$p|Port new: (fn: String) mode: (m: Particle)|] =: do
@@ -938,7 +941,7 @@ loadPorts = do
         line <- liftIO (hGetLine (fromDyn inh stdin))
         string line
   where
-    portObj hdl = do
+    portObj hdl = newScope $ do
         port <- eval [$e|Port clone|]
         [$p|p|] =:: port
         [$p|p handle|] =:: Haskell (toDyn hdl)
