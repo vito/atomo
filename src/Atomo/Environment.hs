@@ -83,7 +83,7 @@ initEnv = do
     modify $ \e -> e { top = topObj }
 
     -- define Object as the root object
-    define (PSingle (hash "Object") "Object" (PMatch topObj)) (Primitive Nothing object)
+    define (PSingle (hash "Object") "Object" PSelf) (Primitive Nothing object)
     modify $ \e -> e { ids = (ids e) { idObject = rORef object } }
 
     -- this thread's channel
@@ -93,11 +93,11 @@ initEnv = do
     -- define primitive objects
     forM_ primitives $ \(n, f) -> do
         o <- newObject $ \o -> o { oDelegates = [object] }
-        define (PSingle (hash n) n (PMatch topObj)) (Primitive Nothing o)
+        define (PSingle (hash n) n PSelf) (Primitive Nothing o)
         modify $ \e -> e { ids = f (ids e) (rORef o) }
 
     list <- gets (idList . ids)
-    define (PSingle (hash "String") "String" (PMatch topObj)) (Primitive Nothing (Reference list))
+    define (PSingle (hash "String") "String" PSelf) (Primitive Nothing (Reference list))
 
     Kernel.load
   where
