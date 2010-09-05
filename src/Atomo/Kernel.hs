@@ -204,13 +204,17 @@ load = do
 
 loadBlock :: VM ()
 loadBlock = do
-    [$p|(b: Block) new: (l: List)|] =: do
+    [$p|Block new: (l: List)|] =:::
+        [$e|Block new: l in: dispatch sender|]
+
+    [$p|Block new: (l: List) in: t|] =: do
+        t <- here "t"
         es <- fmap V.toList $ getList [$e|l|]
 
         let toExpr (Expression e) = e
             toExpr v = Primitive Nothing v
 
-        return (Expression $ EBlock Nothing [] (map toExpr es))
+        return (Block t [] (map toExpr es))
 
     [$p|(b: Block) call|] =: do
         Block s as es <- here "b" >>= findValue isBlock
