@@ -3,8 +3,8 @@
     l
 } call
 
-[] includes?: _ := False
-(xs: List) includes?: y :=
-    if: (xs (take: y length) == y)
+[] includes?: List := False
+(x: List) includes?: (y: List) :=
+    if: (x (take: y length) == y)
         then: { True }
-        else: { xs tail includes?: y }
+        else: { x tail includes?: y }
