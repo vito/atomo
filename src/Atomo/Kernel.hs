@@ -18,7 +18,7 @@ import Atomo.Pretty
 
 load :: VM ()
 load = do
-    [$p|this|] =: eval [$e|dispatch sender|]
+    [$p|this|] =::: [$e|dispatch sender|]
 
     [$p|(x: Object) clone|] =: do
         x <- here "x"
@@ -68,8 +68,7 @@ load = do
             then return s
             else string . show . pretty $ s
 
-    [$p|(x: Object) as: String|] =:
-        eval [$e|x show|]
+    [$p|(x: Object) as: String|] =::: [$e|x show|]
 
     [$p|(x: Object) show|] =:
         here "x"
@@ -778,11 +777,11 @@ loadList = do
             as <- list [x, acc]
             dispatch (Keyword (hash ["call"]) ["call"] [b, as])) v vs
 
-    [$p|(l: List) concat|] =: eval [$e|l reduce: @.. with: []|]
-    [$p|(l: List) sum|] =: eval [$e|l reduce: @+ with: 0|]
-    [$p|(l: List) product|] =: eval [$e|l reduce: @* with: 1|]
-    [$p|(l: List) maximum|] =: eval [$e|l reduce: @max:|]
-    [$p|(l: List) minimum|] =: eval [$e|l reduce: @min:|]
+    [$p|(l: List) concat|] =::: [$e|l reduce: @.. with: []|]
+    [$p|(l: List) sum|] =::: [$e|l reduce: @+ with: 0|]
+    [$p|(l: List) product|] =::: [$e|l reduce: @* with: 1|]
+    [$p|(l: List) maximum|] =::: [$e|l reduce: @max:|]
+    [$p|(l: List) minimum|] =::: [$e|l reduce: @min:|]
 
     [$p|(l: List) all?: b|] =: do
         vs <- getList [$e|l|]
@@ -820,10 +819,7 @@ loadList = do
 
     -- TODO: take-while, drop-while
 
-    [$p|(l: List) contains?: v|] =: do
-        vs <- getList [$e|l|]
-        v <- here "v"
-        bool (v `V.elem` vs)
+    [$p|(l: List) contains?: v|] =::: [$e|l any?: @(== v)|]
 
     -- TODO: find
 
@@ -852,8 +848,8 @@ loadList = do
             (fromIntegral $ abs ((y - x) `div` d) + 1)
             (Integer . (x +) . (* d) . fromIntegral)
 
-    [$p|(x: Integer) up-to: (y: Integer)|] =: eval [$e|x to: y by: 1|]
-    [$p|(x: Integer) down-to: (y: Integer)|] =: eval [$e|x to: y by: -1|]
+    [$p|(x: Integer) up-to: (y: Integer)|] =::: [$e|x to: y by: 1|]
+    [$p|(x: Integer) down-to: (y: Integer)|] =::: [$e|x to: y by: -1|]
 
     -- destructive update
     [$p|(l: List) at: (n: Integer) put: v|] =: do
@@ -867,7 +863,7 @@ loadList = do
 
         return (List l)
 
-    [$p|(l: List) << v|] =: eval [$e|l push: v|]
+    [$p|(l: List) << v|] =::: [$e|l push: v|]
     [$p|(l: List) push: v|] =: do
         List l <- here "l" >>= findValue isList
         vs <- getList [$e|l|]
@@ -892,7 +888,7 @@ loadPorts = do
     [$p|current-output-port|] =:: sout
     [$p|current-input-port|] =:: sin
 
-    [$p|Port new: (fn: String)|] =: eval [$e|Port new: fn mode: @read-write|]
+    [$p|Port new: (fn: String)|] =::: [$e|Port new: fn mode: @read-write|]
     [$p|Port new: (fn: String) mode: (m: Particle)|] =: do
         fn <- fmap (map (\(Char c) -> c) . V.toList) (getList [$e|fn|])
         Particle m <- here "m" >>= findValue isParticle

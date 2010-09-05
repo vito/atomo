@@ -497,7 +497,10 @@ infixr 0 =:, =::
 pat =: vm = define pat (EVM Nothing vm)
 
 (=::) :: Pattern -> Value -> VM ()
-pat =:: vm = define pat (Primitive Nothing vm)
+pat =:: v = define pat (Primitive Nothing v)
+
+(=:::) :: Pattern -> Expr -> VM ()
+pat =::: e = define pat e
 
 findValue :: (Value -> Bool) -> Value -> VM Value
 findValue t v | t v = return v
