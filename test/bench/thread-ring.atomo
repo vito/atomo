@@ -3,7 +3,7 @@ main = self
 start: token := {
     "starting!" print
 
-    h = (503 down-to: 2) reduce: { id pid |
+    h = (503 down-to: 2) reduce: { pid id |
         { roundtrip: id next: pid } spawn
     } with: self
 
@@ -22,12 +22,11 @@ roundtrip: id next: pid :=
         } call
 
         (token: Integer) -> {
-            token print
             pid ! (token - 1)
             roundtrip: id next: pid
         } call
     }
 
-{ start: 500000 } time print
+{ start: 1000 } time print
 
 halt
