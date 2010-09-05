@@ -1,15 +1,20 @@
+{-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.Haskell
     ( module Control.Concurrent
-    , module Control.Monad.Error
-    , module Control.Monad.State
+    , module Control.Monad
+    , module Control.Monad.Trans
+    , module Control.Monad.Error.Class
+    , module Control.Monad.State.Class
     , module Atomo.Types
     , p
     , e
     ) where
 
 import Control.Concurrent
-import Control.Monad.Error
-import Control.Monad.State
+import Control.Monad
+import Control.Monad.Error.Class
+import Control.Monad.State.Class
+import Control.Monad.Trans
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
 import Text.Parsec
@@ -76,12 +81,12 @@ parseExpr s (file, line, col) =
 quoteExprExp :: String -> TH.ExpQ
 quoteExprExp s = do
     l <- TH.location
-    expr <- parseExpr s
+    e <- parseExpr s
         ( TH.loc_filename l
         , fst $ TH.loc_start l
         , snd $ TH.loc_start l
         )
-    return (exprToExp expr)
+    return (exprToExp e)
 
 exprToExp :: Expr -> Exp
 exprToExp (Define l p e) = AppE (AppE (expr "Define" l) (patternToExp p)) (exprToExp e)
@@ -131,10 +136,7 @@ eparticleToExp (EPMKeyword ns es) =
     maybeExpr (Just e) = AppE (ConE (mkName "Just")) (exprToExp e)
 
 expr :: String -> Maybe SourcePos -> Exp
-expr n p = AppE (ConE (mkName n)) (pos p)
-
-pos :: Maybe SourcePos -> Exp
-pos _ = ConE (mkName "Nothing")
+expr n _ = AppE (ConE (mkName n)) (ConE (mkName "Nothing"))
 
 valueToExp :: Value -> Exp
 valueToExp (Block s as es) =

@@ -1,4 +1,5 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, RankNTypes #-}
+{-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.Parser.Base where
 
 import Control.Monad.Identity
@@ -9,7 +10,6 @@ import Text.Parsec
 import Text.Parsec.String (Parser)
 import qualified Text.Parsec.Token as P
 
-import Atomo.Debug
 import Atomo.Types (Expr(..))
 
 
@@ -31,7 +31,7 @@ def = P.LanguageDef
     , P.caseSensitive = True
     }
 
-tp :: P.GenTokenParser String a Identity
+tp :: P.GenTokenParser String () Identity
 tp = makeTokenParser def
 
 lexeme :: Parser a -> Parser a
@@ -167,7 +167,8 @@ wsManyStart s p = do
         then fail "needed more than one"
         else return ps
 
-chainContinue n o = debug ("chainContinue", o, n) $ sourceLine o == sourceLine n || sourceColumn n > sourceColumn o
+chainContinue :: SourcePos -> SourcePos -> Bool
+chainContinue n o = sourceLine o == sourceLine n || sourceColumn n > sourceColumn o
 
 indentAware :: Show a => (SourcePos -> SourcePos -> Bool) -> Parser Bool -> Bool -> Parser a -> Parser [a]
 indentAware cmp delim allowSeq p = indentAwareStart cmp delim allowSeq p p
@@ -175,9 +176,9 @@ indentAware cmp delim allowSeq p = indentAwareStart cmp delim allowSeq p p
 indentAwareStart :: Show a => (SourcePos -> SourcePos -> Bool) -> Parser Bool -> Bool -> Parser a -> Parser a -> Parser [a]
 indentAwareStart cmp delim allowSeq s p = do
     start <- getPosition
-    wsmany start start []
+    wsmany start []
   where
-    wsmany o i es = choice
+    wsmany o es = choice
         [ try $ do
             x <- if null es then s else p
 
@@ -187,7 +188,7 @@ indentAwareStart cmp delim allowSeq s p = do
             delimited <- option False $ try delim
 
             if delimited || cmp new o || (allowSeq && sequential)
-                then whiteSpace >> wsmany o new (es ++ [x])
+                then whiteSpace >> wsmany o (es ++ [x])
                 else return (es ++ [x])
         , return es
         ]
@@ -224,6 +225,7 @@ tagged p = do
     r <- p
     return r { eLocation = Just pos }
 
+makeTokenParser :: P.GenLanguageDef String () Identity -> P.GenTokenParser String () Identity
 makeTokenParser languageDef
     = P.TokenParser{ P.identifier = identifier
                    , P.reserved = reserved
@@ -568,9 +570,16 @@ makeTokenParser languageDef
                     skipMany (try $ spacing >> newline)
                     spacing
 
-whiteSpace    = P.whiteSpace tp
-simpleSpace   = skipMany1 $ satisfy (`elem` " \t\f\v\xa0")
+whiteSpace :: Parser ()
+whiteSpace = P.whiteSpace tp
+
+simpleSpace :: Parser ()
+simpleSpace = skipMany1 $ satisfy (`elem` " \t\f\v\xa0")
+
+spacing :: Parser ()
 spacing = skipMany spacing1
+
+spacing1 :: Parser ()
 spacing1 | noLine && noMulti  = simpleSpace <?> ""
          | noLine             = simpleSpace <|> multiLineComment <?> ""
          | noMulti            = simpleSpace <|> oneLineComment <?> ""
@@ -578,11 +587,18 @@ spacing1 | noLine && noMulti  = simpleSpace <?> ""
          where
              noLine  = null (P.commentLine def)
              noMulti = null (P.commentStart def)
-oneLineComment = try (string (P.commentLine def)) >> skipMany (satisfy (/= '\n'))
-multiLineComment = try (string (P.commentStart def)) >> inComment
-inComment | P.nestedComments def  = inCommentMulti
-          | otherwise                  = inCommentSingle
 
+oneLineComment :: Parser ()
+oneLineComment = try (string (P.commentLine def)) >> skipMany (satisfy (/= '\n'))
+
+multiLineComment :: Parser ()
+multiLineComment = try (string (P.commentStart def)) >> inComment
+
+inComment :: Parser ()
+inComment | P.nestedComments def = inCommentMulti
+          | otherwise = inCommentSingle
+
+inCommentMulti :: Parser ()
 inCommentMulti = (try (string (P.commentEnd def)) >> return ())
              <|> (multiLineComment >> inCommentMulti)
              <|> (skipMany1 (noneOf startEnd) >> inCommentMulti)
@@ -591,6 +607,7 @@ inCommentMulti = (try (string (P.commentEnd def)) >> return ())
                where
                    startEnd = nub (P.commentEnd def ++ P.commentStart def)
 
+inCommentSingle :: Parser ()
 inCommentSingle = (try (string (P.commentEnd def)) >> return ())
               <|> (skipMany1 (noneOf startEnd) >> inCommentSingle)
               <|> (oneOf startEnd >> inCommentSingle)

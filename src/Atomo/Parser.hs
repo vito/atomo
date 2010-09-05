@@ -115,13 +115,6 @@ pdKeys = do
     dump ("got keywords", ks)
     dump ("to binary operators", toBinaryOps ks)
     return $ Dispatch (Just pos) (toBinaryOps ks)
-  where
-    branch = do
-        pat <- pPattern
-        delimit "->"
-        whiteSpace
-        val <- pExpr
-        return (pat, val)
 
 pdCascade :: Parser Expr
 pdCascade = do
@@ -141,13 +134,13 @@ pdCascade = do
 
     -- start off by dispatching on either a primitive or Top
     dispatches :: SourcePos -> [Dispatch] -> Expr
-    dispatches _ [] = error "impossible: dispatches got empty list"
     dispatches p (DNormal e:ps) =
         dispatches' p ps e
     dispatches p (DParticle (EPMSingle n):ps) =
         dispatches' p ps (Dispatch (Just p) $ ESingle (hash n) n (ETop (Just p)))
     dispatches p (DParticle (EPMKeyword ns (Nothing:es)):ps) =
         dispatches' p ps (Dispatch (Just p) $ EKeyword (hash ns) ns (ETop (Just p):map fromJust es))
+    dispatches _ ds = error $ "impossible: dispatches on " ++ show ds
 
     -- roll a list of partial messages into a bunch of dispatches
     dispatches' :: SourcePos -> [Dispatch] -> Expr -> Expr
@@ -156,7 +149,7 @@ pdCascade = do
         dispatches' p ps (Dispatch (Just p) $ EKeyword (hash ns) ns (acc : map fromJust es))
     dispatches' p (DParticle (EPMSingle n):ps) acc =
         dispatches' p ps (Dispatch (Just p) $ ESingle (hash n) n acc)
-    dispatches' _ x y = error $ "no dispatches' for: " ++ show (x, y)
+    dispatches' _ x y = error $ "impossible: dispatches' on " ++ show (x, y)
 
 pList :: Parser Expr
 pList = tagged . fmap (EList Nothing) $ brackets (commaSep pExpr)

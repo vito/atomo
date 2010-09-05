@@ -18,7 +18,6 @@ data Context
     | CKeyword
     | CSingle
     | CArgs
-    | CObject
     | CPattern
     | CList
 
@@ -71,9 +70,9 @@ instance Pretty Object where
         ]
       where
         prettyMethod (Slot { mPattern = p, mValue = v }) =
-            pretty p <+> text ":=" <++> prettyFrom CDefine v
+            prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v
         prettyMethod (Method { mPattern = p, mExpr = e }) =
-            pretty p <+> text ":=" <++> prettyFrom CDefine e
+            prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine e
 
 instance Pretty Message where
     prettyFrom _ (Single _ n t) = prettyFrom CSingle t <+> text n
@@ -121,13 +120,14 @@ instance Pretty Pattern where
         isAny PAny = True
         isAny _ = False
     prettyFrom _ PSelf = text "<self>"
+    prettyFrom _ (PSingle _ n (PObject ETop {})) = text n
     prettyFrom _ (PSingle _ n PSelf) = text n
     prettyFrom _ (PSingle _ n p) = pretty p <+> text n
 
 
 instance Pretty Expr where
-    prettyFrom _ (Define _ p v) = prettyFrom CDefine p <+> text ":=" <+> prettyFrom CDefine v
-    prettyFrom _ (Set _ p v)    = prettyFrom CDefine p <+> text "=" <+> prettyFrom CDefine v
+    prettyFrom _ (Define _ p v) = prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v
+    prettyFrom _ (Set _ p v)    = prettyFrom CDefine p <+> text "=" <++> prettyFrom CDefine v
     prettyFrom CKeyword (Dispatch _ m@(EKeyword {})) = parens $ pretty m
     prettyFrom c (Dispatch _ m) = prettyFrom c m
     prettyFrom c (Primitive _ v) = prettyFrom c v
@@ -171,12 +171,12 @@ instance Pretty EParticle where
 
 
 instance Pretty AtomoError where
-    pretty (ErrorMsg msg) = text msg
-    pretty (DidNotUnderstand m) =
+    prettyFrom _ (ErrorMsg msg) = text msg
+    prettyFrom _ (DidNotUnderstand m) =
         text "message not understood:" $$ nest 2 (pretty m)
-    pretty (ParseError e) =
+    prettyFrom _ (ParseError e) =
         text "parse error:" $$ nest 2 (text (show e))
-    pretty (Mismatch p v) =
+    prettyFrom _ (Mismatch p v) =
         text "pattern" <+> char '<' <> pretty p <> char '>' <+> text "did not match value:" <+> pretty v
     {-pretty (ImportError (H.UnknownError s)) =-}
         {-text "import error:" <+> text s-}
@@ -216,7 +216,7 @@ headlessKeywords' _ _ _ = empty
 keywords' :: (a -> Doc) -> [String] -> [a] -> Doc
 keywords' p ks (v:vs) =
     p v <+> headlessKeywords' p ks vs
-keywords' p _ _ = empty
+keywords' _ _ _ = empty
 
 headlessKeywords :: Pretty a => [String] -> [a] -> Doc
 headlessKeywords = headlessKeywords' (prettyFrom CKeyword)
@@ -231,8 +231,7 @@ keyword k
 
 infixr 4 <++>
 
--- similar to <+>, but the right-hand side will be nested 2 levels
--- if it's longer than 50 chars
+-- similar to <+>, but the second half will be nested to prevent long lines
 (<++>) :: Doc -> Doc -> Doc
 (<++>) a b
     | length (show a ++ show b) > 80 = a $$ nest 2 b

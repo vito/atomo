@@ -166,7 +166,7 @@ data EParticle
 data Env =
     Env
         { top :: Value
-        , ids :: IDs
+        , primitives :: IDs
         , channel :: Channel
         , halt :: IO ()
         , loadPath :: [FilePath]
@@ -239,7 +239,7 @@ instance Show (VM a) where
 startEnv :: Env
 startEnv = Env
     { top = error "top object not set"
-    , ids =
+    , primitives =
         IDs
             { idMatch = error "idMatch not set"
             , idObject = error "idObject not set"

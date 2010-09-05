@@ -1,4 +1,5 @@
 {-# LANGUAGE QuasiQuotes #-}
+{-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.Kernel (load) where
 
 import Data.Dynamic
@@ -125,7 +126,7 @@ load = do
     loadParticle
     loadPorts
   where
-    joinWith top (Block s ps es) as
+    joinWith t (Block s ps es) as
         | length ps > length as = throwError . ErrorMsg . unwords $
             [ "block expects"
             , show (length ps)
@@ -133,9 +134,9 @@ load = do
             , show (length as)
             ]
         | null as = do
-            case top of
+            case t of
                 Reference r -> do
-                    Object ds ms <- objectFor top
+                    Object ds ms <- objectFor t
                     blockScope <- newObject $ \o -> o
                         { oDelegates = s:ds
                         , oMethods = ms
@@ -151,7 +152,7 @@ load = do
                     return res
                 _ -> do
                     blockScope <- newObject $ \o -> o
-                        { oDelegates = [top, s]
+                        { oDelegates = [t, s]
                         }
 
                     withTop blockScope (evalAll es)
@@ -161,9 +162,9 @@ load = do
                 { oMethods = (bs, M.empty)
                 }
 
-            case top of
+            case t of
                 Reference r -> do
-                    Object ds ms <- objectFor top
+                    Object ds ms <- objectFor t
                     -- the original prototype, but without its delegations
                     -- this is to prevent dispatch loops
                     doppelganger <- newObject $ \o -> o
@@ -187,24 +188,24 @@ load = do
                     return res
                 _ -> do
                     blockScope <- newObject $ \o -> o
-                        { oDelegates = [top, pseudoScope, s]
+                        { oDelegates = [t, pseudoScope, s]
                         }
 
                     withTop blockScope (evalAll es)
       where
-        bs = addMethod (Slot (PSingle (hash "this") "this" PSelf) top) $
+        bs = addMethod (Slot (PSingle (hash "this") "this" PSelf) t) $
                 toMethods . concat $ zipWith bindings' ps as
 
         merge (os, ok) (ns, nk) =
             ( foldl (flip addMethod) os (concat $ M.elems ns)
             , foldl (flip addMethod) ok (concat $ M.elems nk)
             )
+    joinWith _ v _ = error $ "impossible: joinWith on " ++ show v
 
 loadBlock :: VM ()
 loadBlock = do
     [$p|(b: Block) new: (l: List)|] =: do
         es <- fmap V.toList $ getList [$e|l|]
-        s <- gets top
 
         let toExpr (Expression e) = e
             toExpr v = Primitive Nothing v
@@ -303,12 +304,14 @@ loadExpression = do
         case e of
             Set { ePattern = p } -> return (Pattern p)
             Define { ePattern = p } -> return (Pattern p)
+            _ -> throwError $ ErrorMsg $ "no @pattern for " ++ show (pretty e)
 
     [$p|(e: Expression) expression|] =: do
         Expression e <- here "e" >>= findValue isExpression
         case e of
             Set { eExpr = e } -> return (Expression e)
             Define { eExpr = e } -> return (Expression e)
+            _ -> throwError $ ErrorMsg $ "no @expression for " ++ show (pretty (Expression e))
 
 loadConcurrency :: VM ()
 loadConcurrency = do
@@ -878,15 +881,15 @@ loadPorts = do
     port <- eval [$e|Object clone|]
     [$p|Port|] =:: port
 
-    sin <- portObj stdin
-    sout <- portObj stdout
-    serr <- portObj stderr
-    [$p|Port standard-input|] =:: sin
-    [$p|Port standard-output|] =:: sout
-    [$p|Port standard-error|] =:: serr
+    sinp <- portObj stdin
+    soutp <- portObj stdout
+    serrp <- portObj stderr
+    [$p|Port standard-input|] =:: sinp
+    [$p|Port standard-output|] =:: soutp
+    [$p|Port standard-error|] =:: serrp
 
-    [$p|current-output-port|] =:: sout
-    [$p|current-input-port|] =:: sin
+    [$p|current-output-port|] =:: soutp
+    [$p|current-input-port|] =:: sinp
 
     [$p|Port new: (fn: String)|] =::: [$e|Port new: fn mode: @read-write|]
     [$p|Port new: (fn: String) mode: (m: Particle)|] =: do
@@ -929,12 +932,12 @@ loadPorts = do
 
     [$p|(x: Object) print|] =: do
         x <- here "x"
-        Haskell out <- eval [$e|dispatch sender current-output-port handle|]
+        Haskell h <- eval [$e|dispatch sender current-output-port handle|]
 
         List str <- eval [$e|x as: String|]
         cs <- fmap V.toList (liftIO (readIORef str))
 
-        let hdl = fromDyn out stdout
+        let hdl = fromDyn h stdout
 
         if all isChar cs
             then do

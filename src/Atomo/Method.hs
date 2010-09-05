@@ -1,6 +1,5 @@
 module Atomo.Method (addMethod, insertMethod, toMethods) where
 
-import Data.IORef
 import Data.List (elemIndices)
 import System.IO.Unsafe
 import qualified Data.IntMap as M
@@ -60,6 +59,7 @@ compareHeads (a:as) (b:bs) =
     case comparePrecision a b of
         EQ -> compareHeads as bs
         x -> x
+compareHeads a b = error $ "impossible: compareHeads on " ++ show (a, b)
 
 comparePrecisions :: [Pattern] -> [Pattern] -> Ordering
 comparePrecisions as bs =
@@ -76,7 +76,7 @@ unsafeDelegatesTo x y = unsafePerformIO $ do
 
 addMethod :: Method -> MethodMap -> MethodMap
 addMethod m mm =
-    M.insertWith (\[m] ms -> insertMethod m ms) key [m] mm
+    M.insertWith (\[m'] ms -> insertMethod m' ms) key [m] mm
   where
     key = ppID (mPattern m)
 

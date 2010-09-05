@@ -91,20 +91,20 @@ initEnv = do
 
     -- define Object as the root object
     define (PSingle (hash "Object") "Object" PSelf) (Primitive Nothing object)
-    modify $ \e -> e { ids = (ids e) { idObject = rORef object } }
+    modify $ \e -> e { primitives = (primitives e) { idObject = rORef object } }
 
     -- this thread's channel
     chan <- liftIO newChan
     modify $ \e -> e { channel = chan }
 
     -- define primitive objects
-    forM_ primitives $ \(n, f) -> do
+    forM_ primObjs $ \(n, f) -> do
         o <- newObject $ \o -> o { oDelegates = [object] }
         define (PSingle (hash n) n PSelf) (Primitive Nothing o)
-        modify $ \e -> e { ids = f (ids e) (rORef o) }
+        modify $ \e -> e { primitives = f (primitives e) (rORef o) }
 
-    list <- gets (idList . ids)
-    define (PSingle (hash "String") "String" PSelf) (Primitive Nothing (Reference list))
+    listObj <- gets (idList . primitives)
+    define (PSingle (hash "String") "String" PSelf) (Primitive Nothing (Reference listObj))
 
     Kernel.load
 
@@ -112,7 +112,7 @@ initEnv = do
         liftIO (getDataFileName ("prelude/" ++ m))
             >>= loadFile
   where
-    primitives =
+    primObjs =
         [ ("Block", \is r -> is { idBlock = r })
         , ("Char", \is r -> is { idChar = r })
         , ("Double", \is r -> is { idDouble = r })
@@ -163,7 +163,7 @@ eval e = eval' e `catchError` pushStack
     eval' (Set { ePattern = p, eExpr = ev }) = do
         v <- eval ev
 
-        is <- gets ids
+        is <- gets primitives
         if match is p v
             then do
                 forM_ (bindings' p v) $ \(p', v') -> do
@@ -199,11 +199,10 @@ eval e = eval' e `catchError` pushStack
     eval' (EParticle { eParticle = EPMSingle n }) = return (Particle $ PMSingle n)
     eval' (EParticle { eParticle = EPMKeyword ns mes }) = do
         mvs <- forM mes $
-            maybe (return Nothing) (\e -> eval e >>= return . Just)
+            maybe (return Nothing) (fmap Just . eval)
         return (Particle $ PMKeyword ns mvs)
     eval' (ETop {}) = gets top
     eval' (EVM { eAction = x }) = x
-    eval' _ = error $ "no eval for " ++ show e
 
 -- | evaluating multiple expressions, returning the last result
 evalAll :: [Expr] -> VM Value
@@ -248,7 +247,7 @@ withTop t x = do
 -- | define a pattern to evaluate an expression
 define :: Pattern -> Expr -> VM ()
 define !p !e = do
-    is <- gets ids
+    is <- gets primitives
     newp <- methodPattern p
     os <- targets is newp
     m <- method newp e
@@ -260,12 +259,13 @@ define !p !e = do
                 case newp of
                     PSingle {} -> (addMethod (m o) oss, oks)
                     PKeyword {} -> (oss, addMethod (m o) oks)
+                    _ -> error $ "impossible: defining with pattern " ++ show newp
 
         liftIO . writeIORef o $
             obj { oMethods = ms }
   where
-    method p (Primitive _ v) = return (\o -> Slot (setSelf o p) v)
-    method p e = gets top >>= \t -> return (\o -> Method (setSelf o p) t e)
+    method p' (Primitive _ v) = return (\o -> Slot (setSelf o p') v)
+    method p' e' = gets top >>= \t -> return (\o -> Method (setSelf o p') t e')
 
     methodPattern p'@(PSingle { ppTarget = t }) = do
         t' <- methodPattern t
@@ -273,12 +273,12 @@ define !p !e = do
     methodPattern p'@(PKeyword { ppTargets = ts }) = do
         ts' <- mapM methodPattern ts
         return p' { ppTargets = ts' }
-    methodPattern (PObject e) = do
-        v <- eval e
+    methodPattern (PObject oe) = do
+        v <- eval oe
         return (PMatch v)
-    methodPattern (PNamed n p) = do
-        p' <- methodPattern p
-        return (PNamed n p')
+    methodPattern (PNamed n p') = do
+        p'' <- methodPattern p'
+        return (PNamed n p'')
     methodPattern p' = return p'
 
     -- | Swap out a reference match with PSelf, for inserting on the object
@@ -287,22 +287,22 @@ define !p !e = do
         PKeyword i ns (map (setSelf o) ps)
     setSelf o (PMatch (Reference x))
         | o == x = PSelf
-    setSelf o (PNamed n p) =
-        PNamed n (setSelf o p)
+    setSelf o (PNamed n p') =
+        PNamed n (setSelf o p')
     setSelf o (PSingle i n t) =
         PSingle i n (setSelf o t)
-    setSelf _ p = p
+    setSelf _ p' = p'
 
 
 
 targets :: IDs -> Pattern -> VM [ORef]
-targets is (PMatch v) = orefFor v >>= return . (: [])
+targets _ (PMatch v) = orefFor v >>= return . (: [])
 targets is (PSingle _ _ p) = targets is p
 targets is (PKeyword _ _ ps) = do
     ts <- mapM (targets is) ps
     return (nub (concat ts))
 targets is (PNamed _ p) = targets is p
-targets is PSelf = gets top >>= orefFor >>= return . (: [])
+targets _ PSelf = gets top >>= orefFor >>= return . (: [])
 targets is PAny = return [idObject is]
 targets is (PList _) = return [idList is]
 targets _ p = error $ "no targets for " ++ show p
@@ -336,10 +336,10 @@ dispatch !m = do
             Just method -> runMethod method (dnuSingle v)
 
     sendDNUs [] _ = throwError $ DidNotUnderstand m
-    sendDNUs (v:vs) n = do
+    sendDNUs (v:vs') n = do
         find <- findMethod v (dnu v n)
         case find of
-            Nothing -> sendDNUs vs (n + 1)
+            Nothing -> sendDNUs vs' (n + 1)
             Just method -> runMethod method (dnu v n)
 
     dnu v n = Keyword
@@ -357,7 +357,7 @@ dispatch !m = do
 -- delegates if necessary
 findMethod :: Value -> Message -> VM (Maybe Method)
 findMethod v m = do
-    is <- gets ids
+    is <- gets primitives
     r <- orefFor v
     o <- liftIO (readIORef r)
     case relevant (is { idMatch = r }) o m of
@@ -397,7 +397,7 @@ match ids (PMatch (Reference x)) (Reference y) =
     refMatch ids x y
 match ids (PMatch (Reference x)) y =
     match ids (PMatch (Reference x)) (Reference (orefFrom ids y))
-match ids (PMatch x) y =
+match _ (PMatch x) y =
     x == y
 match ids
     (PSingle { ppTarget = p })
@@ -412,7 +412,7 @@ match _ PAny _ = True
 match ids (PList ps) (List v) = matchAll ids ps vs
   where
     vs = V.toList $ unsafePerformIO (readIORef v)
-match ids (PPMSingle a) (Particle (PMSingle b)) = a == b
+match _ (PPMSingle a) (Particle (PMSingle b)) = a == b
 match ids (PPMKeyword ans aps) (Particle (PMKeyword bns mvs)) =
     ans == bns && matchParticle ids aps mvs
 match _ _ _ = False
@@ -447,9 +447,9 @@ runMethod (Method { mPattern = p, mTop = t, mExpr = e }) m = do
         , oMethods = (bindings p m, M.empty)
         }
 
-    modify $ \e -> e
+    modify $ \e' -> e'
         { call = Call
-            { callSender = top e
+            { callSender = top e'
             , callMessage = m
             , callContext = t
             }
@@ -473,6 +473,7 @@ bindings (PSingle { ppTarget = p }) (Single { mTarget = t }) =
     toMethods (bindings' p t)
 bindings (PKeyword { ppTargets = ps }) (Keyword { mTargets = ts }) =
     toMethods $ concat (zipWith bindings' ps ts)
+bindings p m = error $ "impossible: bindings on " ++ show (p, m)
 
 bindings' :: Pattern -> Value -> [(Pattern, Value)]
 bindings' (PNamed n p) v = (PSingle (hash n) n PSelf, v) : bindings' p v
@@ -548,7 +549,7 @@ objectFor :: Value -> VM Object
 objectFor v = orefFor v >>= liftIO . readIORef
 
 orefFor :: Value -> VM ORef
-orefFor v = gets ids >>= \is -> return $ orefFrom is v
+orefFor v = gets primitives >>= \is -> return $ orefFrom is v
 
 orefFrom :: IDs -> Value -> ORef
 orefFrom _ (Reference r) = r
@@ -620,11 +621,11 @@ loadFile filename = do
 delegatesTo :: Value -> Value -> VM Bool
 delegatesTo f t = do
     o <- objectFor f
-    delegatesTo' (oDelegates o) t
+    delegatesTo' (oDelegates o)
   where
-    delegatesTo' [] _ = return False
-    delegatesTo' (d:ds) t
+    delegatesTo' [] = return False
+    delegatesTo' (d:ds)
         | t `elem` (d:ds) = return True
         | otherwise = do
             o <- objectFor d
-            delegatesTo' (oDelegates o ++ ds) t
+            delegatesTo' (oDelegates o ++ ds)
