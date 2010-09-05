@@ -461,6 +461,8 @@ loadComparable = do
         b <- here "b"
         bool (a == b)
 
+    [$p|(a: Object) == (b: Object)|] =::: [$e|a equals: b |]
+
     [$p|(a: Char) < (b: Char)|] =: do
         Char a <- here "a" >>= findValue isChar
         Char b <- here "b" >>= findValue isChar

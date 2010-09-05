@@ -189,14 +189,22 @@ cKeyword wc = do
 toBinaryOps :: EMessage -> EMessage
 toBinaryOps done@(EKeyword _ [_] [_, _]) = done
 toBinaryOps (EKeyword h (n:ns) (v:vs))
+    | rightAssoc n =
+         EKeyword (hash [n]) [n]
+            [ v
+            , Dispatch (eLocation v)
+                (toBinaryOps (EKeyword (hash ns) ns vs))
+            ]
     | isOperator n =
         toBinaryOps . EKeyword (hash ns) ns $
             (Dispatch (eLocation v) (EKeyword (hash [n]) [n] [v, head vs]):tail vs)
     | nonOperators == ns = EKeyword h (n:ns) (v:vs)
     | null nonOperators && length vs > 2 =
         EKeyword (hash [head ns]) [head ns]
-            [ Dispatch (eLocation v) $ EKeyword (hash [n]) [n] [v, head vs]
-            , Dispatch (eLocation v) $ toBinaryOps (EKeyword (hash (tail ns)) (tail ns) (tail vs))
+            [ Dispatch (eLocation v) $
+                EKeyword (hash [n]) [n] [v, head vs]
+            , Dispatch (eLocation v) $
+                toBinaryOps (EKeyword (hash (tail ns)) (tail ns) (tail vs))
             ]
     | otherwise =
         EKeyword (hash (n:nonOperators))
@@ -213,6 +221,10 @@ toBinaryOps (EKeyword h (n:ns) (v:vs))
     numNonOps = length nonOperators
     nonOperators = takeWhile (not . isOperator) ns
     isOperator = all (`elem` opLetters)
+
+    -- a few operators that imply right-associativity
+    -- TODO?: associativity parser state
+    rightAssoc = (`elem` ["->", "=>"])
 toBinaryOps u = error $ "cannot toBinaryOps: " ++ show u
 
 parser :: Parser [Expr]
