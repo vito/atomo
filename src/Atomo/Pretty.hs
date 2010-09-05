@@ -235,5 +235,5 @@ infixr 4 <++>
 -- if it's longer than 50 chars
 (<++>) :: Doc -> Doc -> Doc
 (<++>) a b
-    | length (show b) > 50 = a $$ nest 2 b
+    | length (show a ++ show b) > 80 = a $$ nest 2 b
     | otherwise = a <+> b
