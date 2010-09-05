@@ -37,21 +37,20 @@ execWith x e = do
     haltChan <- newChan
 
     forkIO $ do
-        runWith go e
+        runWith (go x >> gets halt >>= liftIO) e
             { halt = writeChan haltChan ()
             }
 
         return ()
 
     readChan haltChan
-  where
-    go = do
-        res <- (fmap Right x) `catchError` (return . Left)
-        case res of
-            Left err -> printError err
-            Right _ -> return ()
 
-        gets halt >>= liftIO
+go :: VM () -> VM ()
+go x = do
+    res <- (fmap Right x) `catchError` (return . Left)
+    case res of
+        Left err -> printError err
+        Right _ -> return ()
 
 run :: VM a -> IO (Either AtomoError a)
 run x = runWith (initEnv >> x) startEnv

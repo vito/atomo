@@ -341,7 +341,7 @@ loadConcurrency = do
             else do
                 st <- lift get
                 chan <- liftIO newChan
-                tid <- liftIO $ forkIO (runWith (doBlock M.empty s es) (st { channel = chan }) >> return ())
+                tid <- liftIO $ forkIO (runWith (go $ doBlock M.empty s es >> return ()) (st { channel = chan }) >> return ())
                 return (Process chan tid)
 
     [$p|(b: Block) spawn: (l: List)|] =: do
@@ -360,7 +360,7 @@ loadConcurrency = do
                 chan <- liftIO newChan
                 tid <- liftIO . forkIO $ do
                     runWith
-                        (doBlock (toMethods . concat $ zipWith bindings' as vs) s es)
+                        (go $ doBlock (toMethods . concat $ zipWith bindings' as vs) s es >> return ())
                         (st { channel = chan })
 
                     return ()
