@@ -23,10 +23,10 @@ pExpr = try pDefine <|> try pSet <|> try pDispatch <|> pLiteral <|> parens pExpr
 
 pLiteral :: Parser Expr
 pLiteral = try pBlock <|> try pString <|> try pList <|> try pParticle <|> pPrimitive
-    <?> "block, list, or primitive"
+    <?> "literal"
 
 pParticle :: Parser Expr
-pParticle = tagged $ do
+pParticle = tagged (do
     char '@'
     c <- choice
         [ try (cSingle True)
@@ -34,7 +34,8 @@ pParticle = tagged $ do
         , try binary
         , try symbols
         ]
-    return (EParticle Nothing c)
+    return (EParticle Nothing c))
+    <?> "particle"
   where
     binary = do
         op <- operator
@@ -45,44 +46,10 @@ pParticle = tagged $ do
         spacing
         return $ EPMKeyword names (replicate (length names + 1) Nothing)
 
-cSingle :: Bool -> Parser EParticle
-cSingle p = do
-    n <- if p then anyIdent else ident
-    dump ("got single identifier", n)
-    notFollowedBy colon
-    spacing
-    return (EPMSingle n)
-
-singleDispatch :: Parser Expr
-singleDispatch = tagged $ do
-    pos <- getPosition
-    n <- identifier
-    return (Dispatch Nothing (ESingle (hash n) n (ETop (Just pos))))
-
-cKeyword :: Bool -> Parser EParticle
-cKeyword wc = do
-    ks <- parens . many1 $ keyword keywordVal
-    let (ns, vs) = unzip ks
-    return $ EPMKeyword ns (Nothing:vs)
-  where
-    keywordVal
-        | wc = value <|> wildcard
-        | otherwise = value
-
-    value = fmap Just $ choice
-        [ pLiteral
-        , pExpr
-        , singleDispatch
-        , parens pExpr
-        ]
-
-    wildcard = symbol "_" >> return Nothing
-
 pDefine :: Parser Expr
 pDefine = tagged (do
-    dump ("trying define")
     pattern <- ppDefine
-    dump ("define pattern", pattern)
+    dump ("pDefine: define pattern", pattern)
     reservedOp ":="
     whiteSpace
     expr <- pExpr
@@ -92,7 +59,7 @@ pDefine = tagged (do
 pSet :: Parser Expr
 pSet = tagged (do
     pattern <- ppSet
-    dump ("set pattern", pattern)
+    dump ("pSet: set pattern", pattern)
     reservedOp "="
     whiteSpace
     expr <- pExpr
@@ -106,19 +73,17 @@ pDispatch = choice
     ]
     <?> "dispatch"
 
--- TODO: find "match:" here
 pdKeys :: Parser Expr
 pdKeys = do
-    dump "trying keys"
     pos <- getPosition
     ks <- keywords EKeyword (ETop (Just pos)) pdCascade
-    dump ("got keywords", ks)
-    dump ("to binary operators", toBinaryOps ks)
+    dump ("pdKeys: got keywords", ks)
+    dump ("pdKeys: to binary operators", toBinaryOps ks)
     return $ Dispatch (Just pos) (toBinaryOps ks)
+    <?> "keyword dispatch"
 
 pdCascade :: Parser Expr
 pdCascade = do
-    dump "trying cascade"
     pos <- getPosition
 
     chain <- wsManyStart
@@ -126,6 +91,7 @@ pdCascade = do
         cascaded
 
     return $ dispatches pos chain
+    <?> "single dispatch"
   where
     cascaded = fmap DParticle $ choice
         [ try (cSingle False)
@@ -152,15 +118,22 @@ pdCascade = do
     dispatches' _ x y = error $ "impossible: dispatches' on " ++ show (x, y)
 
 pList :: Parser Expr
-pList = tagged . fmap (EList Nothing) $ brackets (commaSep pExpr)
+pList = (tagged . fmap (EList Nothing) $ brackets (commaSep pExpr))
+    <?> "list"
 
 pString :: Parser Expr
-pString = tagged $ do
-    pos <- getPosition
-    fmap (EList Nothing . map (\c -> Primitive (Just pos) (Char c))) $ stringLiteral
+pString = tagged (do
+    p <- getPosition
+    s <- stringLiteral
+    return (toEList p s))
+    <?> "string"
+  where
+    toEList p
+        = EList Nothing
+        . map (\c -> Primitive (Just p) (Char c))
 
 pBlock :: Parser Expr
-pBlock = dump "trying pBlock" >> tagged . braces $ do
+pBlock = tagged (braces $ do
     arguments <- option [] . try $ do
         ps <- many1 pPattern
         delimit "|"
@@ -169,10 +142,45 @@ pBlock = dump "trying pBlock" >> tagged . braces $ do
 
     code <- wsBlock pExpr
 
-    return $ EBlock Nothing arguments code
+    return $ EBlock Nothing arguments code)
+    <?> "block"
 
 pCall :: Parser Expr
-pCall = tagged $ reserved "dispatch" >> return (EDispatchObject Nothing)
+pCall = tagged (reserved "dispatch" >> return (EDispatchObject Nothing))
+    <?> "dispatch object"
+
+cSingle :: Bool -> Parser EParticle
+cSingle p = do
+    n <- if p then anyIdent else ident
+    notFollowedBy colon
+    spacing
+    return (EPMSingle n)
+    <?> "single segment"
+
+cKeyword :: Bool -> Parser EParticle
+cKeyword wc = do
+    ks <- parens . many1 $ keyword keywordVal
+    let (ns, vs) = unzip ks
+    return $ EPMKeyword ns (Nothing:vs)
+    <?> "keyword segment"
+  where
+    keywordVal
+        | wc = value <|> wildcard
+        | otherwise = value
+
+    value = fmap Just $ choice
+        [ pLiteral
+        , pExpr
+        , singleDispatch
+        , parens pExpr
+        ]
+
+    wildcard = symbol "_" >> return Nothing
+
+    singleDispatch = tagged $ do
+        pos <- getPosition
+        n <- identifier
+        return (Dispatch Nothing (ESingle (hash n) n (ETop (Just pos))))
 
 -- 1 * 2 + 3 => (1 * 2) + 3
 -- 1 + 2 * 3 => (1 + 2) * 3
