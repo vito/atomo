@@ -530,13 +530,16 @@ here n =
         >>= dispatch . (Single (hash n) n)
 
 bool :: Bool -> VM Value
+{-# INLINE bool #-}
 bool True = here "True"
 bool False = here "False"
 
 referenceTo :: Value -> VM Value
+{-# INLINE referenceTo #-}
 referenceTo = fmap Reference . orefFor
 
 doBlock :: MethodMap -> Value -> [Expr] -> VM Value
+{-# INLINE doBlock #-}
 doBlock bms s es = do
     blockScope <- newObject $ \o -> o
         { oDelegates = [s]
@@ -546,12 +549,15 @@ doBlock bms s es = do
     withTop blockScope (evalAll es)
 
 objectFor :: Value -> VM Object
+{-# INLINE objectFor #-}
 objectFor v = orefFor v >>= liftIO . readIORef
 
 orefFor :: Value -> VM ORef
+{-# INLINE orefFor #-}
 orefFor v = gets primitives >>= \is -> return $ orefFrom is v
 
 orefFrom :: IDs -> Value -> ORef
+{-# INLINE orefFrom #-}
 orefFrom _ (Reference r) = r
 orefFrom ids (Block _ _ _) = idBlock ids
 orefFrom ids (Char _) = idChar ids
