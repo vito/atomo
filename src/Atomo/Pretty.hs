@@ -173,9 +173,9 @@ instance Pretty EParticle where
 instance Pretty AtomoError where
     pretty (ErrorMsg msg) = text msg
     pretty (DidNotUnderstand m) =
-        text "message not understood:" <+> pretty m
+        text "message not understood:" $$ nest 2 (pretty m)
     pretty (ParseError e) =
-        text "parse error:" <+> text (show e)
+        text "parse error:" $$ nest 2 (text (show e))
     pretty (Mismatch p v) =
         text "pattern" <+> char '<' <> pretty p <> char '>' <+> text "did not match value:" <+> pretty v
     {-pretty (ImportError (H.UnknownError s)) =-}

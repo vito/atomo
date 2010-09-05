@@ -61,17 +61,22 @@ runWith x s = evalStateT (runErrorT x) s
 
 printError :: AtomoError -> VM ()
 printError err = do
-    s <- gets stack
+    t <- traceback
 
-    liftIO (putStrLn "traceback:")
+    if not (null t)
+        then do
+            liftIO (putStrLn "traceback:")
 
-    forM_ (take 10 (reverse s)) $ \e -> liftIO $ do
-        print (prettyStack e)
+            forM_ t $ \e -> liftIO $
+                print (prettyStack e)
+        else return ()
 
     liftIO (putStrLn "")
     liftIO . print . pretty $ err
 
     modify (\s -> s { stack = [] })
+  where
+    traceback = fmap (reverse . take 10 . reverse) (gets stack)
 
 -- | set up the primitive objects, etc.
 initEnv :: VM ()
@@ -313,7 +318,6 @@ dispatch :: Message -> VM Value
 dispatch !m = do
     find <- findFirstMethod m vs
     case find of
-        {-Just (Slot _ v) -> return v-}
         Just method -> runMethod method m
         Nothing -> throwError $ DidNotUnderstand m
   where
