@@ -874,13 +874,30 @@ loadList = do
 
         return (List l)
 
+    [$p|v . (l: List)|] =: do
+        vs <- getList [$e|l|]
+        v <- here "v"
+        l <- liftIO . newIORef $ V.cons v vs
+        return (List l)
+
     [$p|(l: List) << v|] =::: [$e|l push: v|]
+    [$p|v >> (l: List)|] =::: [$e|l left-push: v|]
+
     [$p|(l: List) push: v|] =: do
         List l <- here "l" >>= findValue isList
         vs <- getList [$e|l|]
         v <- here "v"
 
         liftIO . writeIORef l $ V.snoc vs v
+
+        return (List l)
+
+    [$p|(l: List) left-push: v|] =: do
+        List l <- here "l" >>= findValue isList
+        vs <- getList [$e|l|]
+        v <- here "v"
+
+        liftIO . writeIORef l $ V.cons v vs
 
         return (List l)
 
