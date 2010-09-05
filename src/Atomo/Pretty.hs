@@ -71,10 +71,9 @@ instance Pretty Object where
         ]
       where
         prettyMethod (Slot { mPattern = p, mValue = v }) =
-            pretty p <+> text ":=" <+> prettyFrom CDefine v
+            pretty p <+> text ":=" <++> prettyFrom CDefine v
         prettyMethod (Method { mPattern = p, mExpr = e }) =
-            pretty p <+> text ":=" <+> prettyFrom CDefine e
-
+            pretty p <+> text ":=" <++> prettyFrom CDefine e
 
 instance Pretty Message where
     prettyFrom _ (Single _ n t) = prettyFrom CSingle t <+> text n
@@ -138,6 +137,7 @@ instance Pretty Expr where
       where
         exprs = sep . punctuate (text ";") $ map pretty es
     prettyFrom _ (EDispatchObject {}) = text "dispatch"
+    prettyFrom CDefine (EVM {}) = text "..."
     prettyFrom _ (EVM {}) = text "<vm>"
     prettyFrom _ (EList _ es)
         | all isPrimChar es = text $ show (map (\(Primitive _ (Char c)) -> c) es)
@@ -196,9 +196,10 @@ instance Pretty Delegates where
 
 
 prettyStack :: Expr -> Doc
+prettyStack (EVM {}) = text "... internal ..."
 prettyStack e =
     case eLocation e of
-        Nothing -> pretty e
+        Nothing -> text "(...)" $$ nest 2 (pretty e)
         Just s -> text (show s) $$ nest 2 (pretty e)
 
 internal :: String -> Doc -> Doc
@@ -228,3 +229,11 @@ keyword k
     | all (`elem` opLetters) k = k
     | otherwise                = k ++ ":"
 
+infixr 4 <++>
+
+-- similar to <+>, but the right-hand side will be nested 2 levels
+-- if it's longer than 50 chars
+(<++>) :: Doc -> Doc -> Doc
+(<++>) a b
+    | length (show b) > 50 = a $$ nest 2 b
+    | otherwise = a <+> b
