@@ -3,3 +3,27 @@ val ensuring: p do: b := {
     p call: [val]
     res
 } call
+
+v match: (b: Block) := {
+    find = { l |
+        if: l empty?
+            then: { @no-match } -- TODO: error
+            else: {
+                pair = l head
+
+                pattern = pair targets head as: Pattern
+                expr = pair targets (at: 1)
+
+                match = pattern matches?: v
+
+                if: (match == @no)
+                    then: { find call: [l tail] }
+                    else: {
+                        @(yes: obj) = match
+                        obj join: (Block new: [expr] in: b scope)
+                    }
+            }
+    }
+
+    find call: [b contents]
+} call
