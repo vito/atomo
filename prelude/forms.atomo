@@ -1,5 +1,3 @@
-infix right ->
-
 val ensuring: p do: b := {
     res = b call: [val]
     p call: [val]

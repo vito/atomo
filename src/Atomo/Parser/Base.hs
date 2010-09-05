@@ -29,7 +29,7 @@ def = P.LanguageDef
     , P.opStart = oneOf opLetters
     , P.opLetter = alphaNum <|> oneOf opLetters
     , P.reservedOpNames = ["=", ":=", ",", "|", "_"]
-    , P.reservedNames = ["dispatch", "infix"]
+    , P.reservedNames = ["dispatch", "operator"]
     , P.caseSensitive = True
     }
 

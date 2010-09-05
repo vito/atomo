@@ -125,7 +125,8 @@ initEnv = do
         ]
 
     preludes =
-        [ "block"
+        [ "operators"
+        , "block"
         , "bool"
         , "comparable"
         , "forms"

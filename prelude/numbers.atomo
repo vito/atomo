@@ -1,7 +1,3 @@
-infix right 8 ^
-infix 7 %, *, /
-infix 6 +, -
-
 (n: Integer) even? := 2 divides?: n
 (n: Integer) odd? := n even? not
 

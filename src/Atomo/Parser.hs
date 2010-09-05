@@ -31,7 +31,7 @@ pLiteral = try pBlock <|> try pString <|> try pList <|> try pParticle <|> pPrimi
 
 pOperator :: Parser Expr
 pOperator = tagged (do
-    reserved "infix"
+    reserved "operator"
 
     st <- getState
     info <- choice
