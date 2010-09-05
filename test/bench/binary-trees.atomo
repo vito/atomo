@@ -1,0 +1,45 @@
+Tree = Object clone
+Nil = Tree clone
+Node = Tree clone
+
+Min = 4
+Max = (Min + 2) max: 10
+
+Tree create: data depth: 0 :=
+    Node clone do: {
+        data = data
+        left = Nil
+        right = Nil
+    }
+Tree create: data depth: (d: Integer) :=
+    Node clone do: {
+        data = data
+        left = Tree create: ((data * 2) - 1) depth: (d - 1)
+        right = Tree create: (data * 2) depth: (d - 1)
+    }
+
+Nil check := 0
+(n: Node) check := n data + n left check - n right check
+
+depth-loop: start max: max :=
+    start to: max by: 2 do: { depth |
+        n = 2 ^ (max - depth + Min)
+        res = sum-loop: n depth: depth acc: 0
+        ((2 * n) show .. "\ttrees of depth " .. depth show .. "\tcheck: " .. res show) print
+    }
+
+sum-loop: n depth: d acc: _ :=
+    (n down-to: 1) (map: { n |
+        (Tree create: n depth: d) check + (Tree create: (-1 * n) depth: d) check
+    }) sum
+
+{
+    stretch = Max + 1
+    stretched = (Tree create: 0 depth: stretch) check
+    ("stretch tree of depth " .. stretch show .. "\tcheck: " .. stretched show) print
+
+    depth-loop: Min max: Max
+
+    long-lived = (Tree create: 0 depth: Max) check
+    ("long-lived tree of depth " .. Max show .. "\tcheck: " .. long-lived show) print
+} time print
