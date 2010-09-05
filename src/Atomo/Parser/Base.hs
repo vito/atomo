@@ -160,31 +160,35 @@ wsMany1 p = do
 wsMany :: Show a => Parser a -> Parser [a]
 wsMany = indentAware chainContinue (return False) True
 
+wsManyStart :: Show a => Parser a -> Parser a -> Parser [a]
+wsManyStart s p = do
+    ps <- indentAwareStart chainContinue (return False) True s p
+    if null ps
+        then fail "needed more than one"
+        else return ps
+
 chainContinue n o = debug ("chainContinue", o, n) $ sourceLine o == sourceLine n || sourceColumn n > sourceColumn o
 
 indentAware :: Show a => (SourcePos -> SourcePos -> Bool) -> Parser Bool -> Bool -> Parser a -> Parser [a]
-indentAware cmp delim allowSeq p = do
+indentAware cmp delim allowSeq p = indentAwareStart cmp delim allowSeq p p
+
+indentAwareStart :: Show a => (SourcePos -> SourcePos -> Bool) -> Parser Bool -> Bool -> Parser a -> Parser a -> Parser [a]
+indentAwareStart cmp delim allowSeq s p = do
     start <- getPosition
-    dump ("in indentAware", start)
     wsmany start start []
   where
     wsmany o i es = choice
         [ try $ do
-            dump ("trying parser in wsmany", o, i, es)
-            x <- p
-            dump ("parse ok", x)
+            x <- if null es then s else p
+
             new <- lookAhead (whiteSpace >> getPosition)
-            newSpaceOnly <- lookAhead (spacing >> getPosition)
+            sequential <- fmap (== new) $ lookAhead (spacing >> getPosition)
+
             delimited <- option False $ try delim
-            dump ("new indent", new, o, cmp new o)
-            if delimited || cmp new o || (allowSeq && newSpaceOnly == new)
-                then do
-                    whiteSpace
-                    dump ("after whitespace")
-                    next <- wsmany o new es
-                    dump ("rest", next)
-                    return (x : next)
-                else return (x : es)
+
+            if delimited || cmp new o || (allowSeq && sequential)
+                then whiteSpace >> wsmany o new (es ++ [x])
+                else return (es ++ [x])
         , return es
         ]
 

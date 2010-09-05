@@ -127,10 +127,12 @@ pdCascade :: Parser Expr
 pdCascade = do
     dump "trying cascade"
     pos <- getPosition
-    start <- fmap DNormal (try pLiteral <|> pCall <|> parens pExpr) <|> cascaded
-    chain <- wsMany cascaded
-    dump ("got cascade", start:chain)
-    return $ dispatches pos (start:chain)
+
+    chain <- wsManyStart
+        (fmap DNormal (try pLiteral <|> pCall <|> parens pExpr) <|> cascaded)
+        cascaded
+
+    return $ dispatches pos chain
   where
     cascaded = fmap DParticle $ choice
         [ try (cSingle False)
@@ -213,13 +215,18 @@ toBinaryOps (EKeyword h (n:ns) (v:vs))
 toBinaryOps u = error $ "cannot toBinaryOps: " ++ show u
 
 parser :: Parser [Expr]
-parser = whiteSpace >> wsBlock pExpr
+parser = do
+    whiteSpace
+    es <- wsBlock pExpr
+    whiteSpace
+    eof
+    return es
 
 parseFile :: String -> IO (Either ParseError [Expr])
 parseFile = parseFromFile parser
 
 parseInput :: String -> Either ParseError [Expr]
-parseInput = runParser (do { r <- parser; whiteSpace; eof; return r }) () "<input>"
+parseInput = runParser parser () "<input>"
 
 parse :: Parser a -> String -> Either ParseError a
 parse p = runParser p () "<parse>"
