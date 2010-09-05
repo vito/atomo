@@ -10,18 +10,15 @@ v match: (b: Block) :=
         else: {
             es = b contents
 
-            pair = es head
-            pattern = pair targets head as: Pattern
-            expr := pair targets (at: 1)
+            (p . e . _) = es head targets
 
-            match = pattern matches?: v
-
+            match = (p as: Pattern) matches?: v
             if: (match == @no)
                 then: {
                     v match: (Block new: (es tail) in: b scope)
                 }
                 else: {
                     @(yes: obj) = match
-                    obj join: (Block new: [expr] in: b scope)
+                    obj join: (Block new: [e] in: b scope)
                 }
         }
