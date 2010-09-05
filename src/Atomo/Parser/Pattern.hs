@@ -141,15 +141,13 @@ ppMatch = do
     return $ PMatch v
 
 ppHeadTail :: Parser Pattern
-ppHeadTail = do
-    dump ("trying pHeadTail")
-    h <- pHead
-    dump ("got head", h)
-    dot
-    t <- pPattern
-    dump ("got tail", t)
-    return $ PHeadTail h t
+ppHeadTail = parens subHT
   where
+    subHT = do
+        h <- pHead
+        dot
+        t <- try subHT <|> pPattern
+        return $ PHeadTail h t
     pHead = choice
         [ try ppNamed
         , try ppMatch
