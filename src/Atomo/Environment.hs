@@ -319,18 +319,48 @@ dispatch !m = do
     find <- findFirstMethod m vs
     case find of
         Just method -> runMethod method m
-        Nothing -> throwError $ DidNotUnderstand m
+        Nothing ->
+            case vs of
+                [v] -> sendDNU v
+                _ -> sendDNUs vs 0
   where
     vs =
         case m of
             Single { mTarget = t } -> [t]
             Keyword { mTargets = ts } -> ts
 
+    sendDNU v = do
+        find <- findMethod v (dnuSingle v)
+        case find of
+            Nothing -> throwError $ DidNotUnderstand m
+            Just method -> runMethod method (dnuSingle v)
+
+    sendDNUs [] _ = throwError $ DidNotUnderstand m
+    sendDNUs (v:vs) n = do
+        find <- findMethod v (dnu v n)
+        case find of
+            Nothing -> sendDNUs vs (n + 1)
+            Just method -> runMethod method (dnu v n)
+
+    dnu v n = Keyword
+        (hash ["did-not-understand", "at"])
+        ["did-not-understand", "at"]
+        [v, Message m, Integer n]
+
+    dnuSingle v = Keyword
+        (hash ["did-not-understand"])
+        ["did-not-understand"]
+        [v, Message m]
+
+
 -- | find a method on object `o' that responds to `m', searching its
 -- delegates if necessary
-findMethod :: IDs -> Message -> Object -> VM (Maybe Method)
-findMethod is m o = do
-    case relevant is o m of
+findMethod :: Value -> Message -> VM (Maybe Method)
+findMethod v m = do
+    is <- gets ids
+    r <- orefFor v
+    o <- liftIO (readIORef r)
+    case relevant (is { idMatch = r }) o m of
         Nothing -> findFirstMethod m (oDelegates o)
         Just mt -> return (Just mt)
     
@@ -338,11 +368,7 @@ findMethod is m o = do
 findFirstMethod :: Message -> [Value] -> VM (Maybe Method)
 findFirstMethod _ [] = return Nothing
 findFirstMethod m (v:vs) = do
-    r <- orefFor v
-    is <- gets ids
-
-    liftIO (readIORef r)
-        >>= findMethod (is { idMatch = r }) m
+    findMethod v m
         >>= maybe (findFirstMethod m vs) (return . Just)
 
 -- | find a relevant method for message `m' on object `o'

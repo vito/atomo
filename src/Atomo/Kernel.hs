@@ -58,10 +58,7 @@ load = do
                     PMSingle n -> Single (hash n) n x
                     PMKeyword ns mvs -> Keyword (hash ns) ns (completeKP mvs [x])
 
-        is <- gets ids
-
-        objectFor x
-            >>= findMethod is completed
+        findMethod x completed
             >>= bool . isJust
 
     [$p|(s: String) as: String|] =: do
