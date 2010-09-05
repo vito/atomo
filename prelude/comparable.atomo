@@ -1,3 +1,7 @@
+infix 4 ==, /=, <, <=, >=, >
+infix right 3 &&
+infix right 2 ||
+
 x max: y :=
     if: (x > y) then: { x } else: { y }
 

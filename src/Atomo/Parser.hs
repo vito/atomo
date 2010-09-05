@@ -1,15 +1,16 @@
 module Atomo.Parser where
 
+import Control.Monad.Error
+import Control.Monad.State
 import Data.Hashable (hash)
 import Data.Maybe (fromJust)
 import Text.Parsec
-import Text.Parsec.String
 
 import Atomo.Debug
 import Atomo.Parser.Base
 import {-# SOURCE #-} Atomo.Parser.Pattern
 import Atomo.Parser.Primitive
-import Atomo.Types
+import Atomo.Types hiding (string)
 
 -- the types of values in Dispatch syntax
 data Dispatch
@@ -17,13 +18,43 @@ data Dispatch
     | DNormal Expr
     deriving Show
 
+defaultPrec :: Integer
+defaultPrec = 5
+
 pExpr :: Parser Expr
-pExpr = try pDefine <|> try pSet <|> try pDispatch <|> pLiteral <|> parens pExpr
+pExpr = try pOperator <|> try pDefine <|> try pSet <|> try pDispatch <|> pLiteral <|> parens pExpr
     <?> "expression"
 
 pLiteral :: Parser Expr
 pLiteral = try pBlock <|> try pString <|> try pList <|> try pParticle <|> pPrimitive
     <?> "literal"
+
+pOperator :: Parser Expr
+pOperator = tagged (do
+    reserved "infix"
+
+    st <- getState
+    info <- choice
+        [ try $ do
+            a <- choice
+                [ symbol "right" >> return ARight
+                , symbol "left" >> return ALeft
+                ]
+            prec <- option defaultPrec (try integer)
+            return (a, prec)
+        , fmap ((,) ALeft) integer
+        ]
+
+    pos <- getPosition
+    t <- lookAhead anyToken
+
+    ops <- commaSep1 operator
+
+    forM_ ops $ \name ->
+        modifyState ((name, info) :)
+
+    return (Primitive Nothing (particle "ok")))
+    <?> "operator pragma"
 
 pParticle :: Parser Expr
 pParticle = tagged (do
@@ -77,9 +108,8 @@ pdKeys :: Parser Expr
 pdKeys = do
     pos <- getPosition
     ks <- keywords EKeyword (ETop (Just pos)) pdCascade
-    dump ("pdKeys: got keywords", ks)
-    dump ("pdKeys: to binary operators", toBinaryOps ks)
-    return $ Dispatch (Just pos) (toBinaryOps ks)
+    ops <- getState
+    return $ Dispatch (Just pos) (toBinaryOps ops ks)
     <?> "keyword dispatch"
 
 pdCascade :: Parser Expr
@@ -182,21 +212,20 @@ cKeyword wc = do
         n <- identifier
         return (Dispatch Nothing (ESingle (hash n) n (ETop (Just pos))))
 
--- 1 * 2 + 3 => (1 * 2) + 3
--- 1 + 2 * 3 => (1 + 2) * 3
--- 1 a: 2 + 3 b: 4 => (1 a: 2) + (3 b: 4)
--- 1 x: 2 || 3 y: 4 || 5 z: 6 => (1 x: 2) || ((3 y: 4) || (5 z: 6))
-toBinaryOps :: EMessage -> EMessage
-toBinaryOps done@(EKeyword _ [_] [_, _]) = done
-toBinaryOps (EKeyword h (n:ns) (v:vs))
-    | rightAssoc n =
+-- work out precadence, associativity, etc. from a stream of operators
+-- the input is a keyword EMessage with a mix of operators and identifiers
+-- as its name, e.g. EKeyword { emNames = ["+", "*", "remainder"] }
+toBinaryOps :: Operators -> EMessage -> EMessage
+toBinaryOps _ done@(EKeyword _ [_] [_, _]) = done
+toBinaryOps ops (EKeyword h (n:ns) (v:vs))
+    | nextFirst =
          EKeyword (hash [n]) [n]
             [ v
             , Dispatch (eLocation v)
-                (toBinaryOps (EKeyword (hash ns) ns vs))
+                (toBinaryOps ops (EKeyword (hash ns) ns vs))
             ]
     | isOperator n =
-        toBinaryOps . EKeyword (hash ns) ns $
+        toBinaryOps ops . EKeyword (hash ns) ns $
             (Dispatch (eLocation v) (EKeyword (hash [n]) [n] [v, head vs]):tail vs)
     | nonOperators == ns = EKeyword h (n:ns) (v:vs)
     | null nonOperators && length vs > 2 =
@@ -204,7 +233,7 @@ toBinaryOps (EKeyword h (n:ns) (v:vs))
             [ Dispatch (eLocation v) $
                 EKeyword (hash [n]) [n] [v, head vs]
             , Dispatch (eLocation v) $
-                toBinaryOps (EKeyword (hash (tail ns)) (tail ns) (tail vs))
+                toBinaryOps ops (EKeyword (hash (tail ns)) (tail ns) (tail vs))
             ]
     | otherwise =
         EKeyword (hash (n:nonOperators))
@@ -212,7 +241,7 @@ toBinaryOps (EKeyword h (n:ns) (v:vs))
             (concat
                 [ [v]
                 , take numNonOps vs
-                , [ Dispatch (eLocation v) $ toBinaryOps
+                , [ Dispatch (eLocation v) $ toBinaryOps ops
                         (EKeyword (hash (drop numNonOps ns))
                             (drop numNonOps ns)
                             (drop numNonOps vs)) ]
@@ -221,11 +250,20 @@ toBinaryOps (EKeyword h (n:ns) (v:vs))
     numNonOps = length nonOperators
     nonOperators = takeWhile (not . isOperator) ns
     isOperator = all (`elem` opLetters)
+    nextFirst = isOperator n && (nextHigher || nextAssoc)
+    nextHigher = not (null ns) && prec (head ns) > prec n
+    nextAssoc = assoc n == ARight
 
-    -- a few operators that imply right-associativity
-    -- TODO?: associativity parser state
-    rightAssoc = (`elem` ["->", "=>"])
-toBinaryOps u = error $ "cannot toBinaryOps: " ++ show u
+    assoc n =
+        case lookup n ops of
+            Nothing -> ALeft
+            Just (a, _) -> a
+
+    prec n =
+        case lookup n ops of
+            Nothing -> defaultPrec
+            Just (_, p) -> p
+toBinaryOps _ u = error $ "cannot toBinaryOps: " ++ show u
 
 parser :: Parser [Expr]
 parser = do
@@ -235,11 +273,27 @@ parser = do
     eof
     return es
 
+cparser :: Parser (Operators, [Expr])
+cparser = do
+    r <- parser
+    s <- getState
+    return (s, r)
+
 parseFile :: String -> IO (Either ParseError [Expr])
-parseFile = parseFromFile parser
+parseFile fn = fmap (runParser parser [] fn) (readFile fn)
 
 parseInput :: String -> Either ParseError [Expr]
-parseInput = runParser parser () "<input>"
+parseInput = runParser parser [] "<input>"
 
 parse :: Parser a -> String -> Either ParseError a
-parse p = runParser p () "<parse>"
+parse p = runParser p [] "<parse>"
+
+-- | parse input i from source s, maintaining parser state between parses
+continuedParse :: String -> String -> VM [Expr]
+continuedParse i s = do
+    ps <- gets parserState
+    case runParser cparser ps s i of
+        Left e -> throwError (ParseError e)
+        Right (ps', es) -> do
+            modify (\s -> s { parserState = ps' })
+            return es

@@ -595,18 +595,17 @@ loadFile filename = do
 
     case takeExtension file of
         ".atomo" -> do
-            parsed <- liftIO (parseFile file)
-            case parsed of
-                Left e -> throwError (ParseError e)
-                Right ast -> do
-                    modify (\s -> s { loadPath = [path] })
+            source <- liftIO (readFile file)
+            ast <- continuedParse source file
 
-                    mapM_ eval ast
+            modify (\s -> s { loadPath = [path] })
 
-                    modify $ \s -> s
-                        { loadPath = lpath
-                        , loaded = file : loaded s
-                        }
+            mapM_ eval ast
+
+            modify $ \s -> s
+                { loadPath = lpath
+                , loaded = file : loaded s
+                }
 
         {-".hs" -> do-}
             {-int <- H.runInterpreter $ do-}

@@ -34,7 +34,7 @@ e = QuasiQuoter quoteExprExp undefined
 
 parsePattern :: Monad m => String -> (String, Int, Int) -> m Pattern
 parsePattern s (file, line, col) =
-    case runParser p () "" s of
+    case runParser p [] "<qq>" s of
         Left e -> fail (show e)
         Right e -> return e
   where
@@ -62,7 +62,7 @@ quotePatternExp s = do
 
 parseExpr :: Monad m => String -> (String, Int, Int) -> m Expr
 parseExpr s (file, line, col) =
-    case runParser p () "" s of
+    case runParser p [] "<qq>" s of
         Left e -> fail (show e)
         Right e -> return e
   where

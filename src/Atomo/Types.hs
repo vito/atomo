@@ -173,7 +173,13 @@ data Env =
         , loaded :: [FilePath]
         , stack :: [Expr]
         , call :: Call
+        , parserState :: Operators
         }
+
+type Operators = [(String, (Assoc, Integer))]
+
+data Assoc = ALeft | ARight
+    deriving (Eq, Show)
 
 -- meta information for the dispatch
 data Call =
@@ -260,6 +266,7 @@ startEnv = Env
     , loaded = []
     , stack = []
     , call = error "call not set"
+    , parserState = []
     }
 
 particle :: String -> Value

@@ -7,16 +7,18 @@ import Data.Char
 import Data.Hashable (hash)
 import Data.List (nub, sort)
 import Text.Parsec
-import Text.Parsec.String (Parser)
 import qualified Text.Parsec.Token as P
 
-import Atomo.Types (Expr(..))
+import Atomo.Types (Expr(..), Operators)
+
+
+type Parser = Parsec String Operators
 
 
 opLetters :: [Char]
 opLetters = "~!@#$%^&*-_=+./\\|<>?"
 
-def :: P.GenLanguageDef String a Identity
+def :: P.GenLanguageDef String Operators Identity
 def = P.LanguageDef
     { P.commentStart = "{-"
     , P.commentEnd = "-}"
@@ -27,11 +29,11 @@ def = P.LanguageDef
     , P.opStart = oneOf opLetters
     , P.opLetter = alphaNum <|> oneOf opLetters
     , P.reservedOpNames = ["=", ":=", ",", "|", "_"]
-    , P.reservedNames = ["dispatch"]
+    , P.reservedNames = ["dispatch", "infix"]
     , P.caseSensitive = True
     }
 
-tp :: P.GenTokenParser String () Identity
+tp :: P.GenTokenParser String Operators Identity
 tp = makeTokenParser def
 
 lexeme :: Parser a -> Parser a
@@ -225,7 +227,7 @@ tagged p = do
     r <- p
     return r { eLocation = Just pos }
 
-makeTokenParser :: P.GenLanguageDef String () Identity -> P.GenTokenParser String () Identity
+makeTokenParser :: P.GenLanguageDef String Operators Identity -> P.GenTokenParser String Operators Identity
 makeTokenParser languageDef
     = P.TokenParser{ P.identifier = identifier
                    , P.reserved = reserved
@@ -552,7 +554,7 @@ makeTokenParser languageDef
     -- White space & symbols
     -----------------------------------------------------------
     delimit name
-        = do{ whiteSpace; symbol name }
+        = try $ do{ whiteSpace; symbol name }
 
     open = symbol
 
@@ -566,9 +568,10 @@ makeTokenParser languageDef
         = do{ x <- p; spacing; return x  }
 
     --whiteSpace
-    whiteSpace = do spacing
-                    skipMany (try $ spacing >> newline)
-                    spacing
+    whiteSpace = do
+        spacing
+        skipMany (try $ spacing >> newline)
+        spacing
 
 whiteSpace :: Parser ()
 whiteSpace = P.whiteSpace tp

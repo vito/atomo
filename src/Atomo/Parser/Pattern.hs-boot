@@ -1,7 +1,6 @@
 module Atomo.Parser.Pattern (pPattern, ppDefine, ppSet) where
 
-import Text.Parsec.String
-
+import Atomo.Parser.Base (Parser)
 import Atomo.Types
 
 pPattern :: Parser Pattern

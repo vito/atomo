@@ -1,7 +1,6 @@
 module Atomo.Parser.Primitive where
 
 import Text.Parsec
-import Text.Parsec.String (Parser)
 
 import Atomo.Parser.Base
 import Atomo.Types as T

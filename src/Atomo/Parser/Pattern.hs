@@ -2,7 +2,6 @@ module Atomo.Parser.Pattern where
 
 import Data.Hashable (hash)
 import Text.Parsec
-import Text.Parsec.String
 
 import Atomo.Debug
 import Atomo.Parser

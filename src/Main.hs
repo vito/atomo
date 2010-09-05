@@ -5,7 +5,6 @@ import Control.Monad.State
 import System.Console.Haskeline
 import System.Environment (getArgs, getEnv)
 import System.FilePath
-import Text.Parsec (ParseError)
 
 import Atomo.Environment
 import Atomo.Parser
@@ -22,15 +21,17 @@ main = do
             exec (repl (r == ["-d"]))
         ["-e", expr] ->
             exec $ do
-                r <- evalAST (parseInput expr)
+                ast <- continuedParse expr "<input>"
+                r <- evalAll ast
                 liftIO (print $ pretty r)
         [fn] -> do
-            ast <- parseFile fn
+            source <- readFile fn
 
             let path = takeDirectory (normalise fn)
             exec $ do
                 modify (\s -> s { loadPath = path:loadPath s })
-                evalAST ast
+                ast <- continuedParse source fn
+                evalAll ast
                 return ()
         {-["-make", fn] -> parseFile fn >>= compileAST-}
         _ -> putStrLn . unlines $
@@ -60,7 +61,7 @@ repl quiet = do
             Just part | not (bracesBalanced $ input ++ part) ->
                 repl' (input ++ part) r
             Just expr -> do
-                res <- fmap Right (evalAST (parseInput (input ++ expr))) `catchError` (return . Left)
+                res <- fmap Right (continuedParse (input ++ expr) "<input>" >>= evalAll) `catchError` (return . Left)
 
                 case res of
                     Right v -> liftIO . print . pretty $ v
@@ -77,7 +78,3 @@ repl quiet = do
             | b `elem` "([{" = 1 + hangingBraces ss
             | b `elem` ")]}" = hangingBraces ss - 1
             | otherwise = hangingBraces ss
-
-evalAST :: Either ParseError [Expr] -> VM Value
-evalAST (Left e) = throwError $ ParseError e
-evalAST (Right ok) = evalAll ok

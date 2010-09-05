@@ -1,3 +1,5 @@
+infix right ->
+
 val ensuring: p do: b := {
     res = b call: [val]
     p call: [val]
@@ -15,7 +17,7 @@ v match: (b: Block) :=
             match = (p as: Pattern) matches?: v
             if: (match == @no)
                 then: {
-                    v match: (Block new: (es tail) in: b scope)
+                    v match: (Block new: es tail in: b scope)
                 }
                 else: {
                     @(yes: obj) = match
