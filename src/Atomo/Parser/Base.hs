@@ -199,7 +199,7 @@ keyword p = try $ do
         name <- ident
         char ':'
         return name) <|> operator
-    space
+    whiteSpace1 -- TODO: this was space, but seeing if this works too
     target <- p
     return (name, target)
 
@@ -572,6 +572,9 @@ makeTokenParser languageDef
 
 whiteSpace :: Parser ()
 whiteSpace = P.whiteSpace tp
+
+whiteSpace1 :: Parser ()
+whiteSpace1 = (space <|> newline) >> whiteSpace
 
 simpleSpace :: Parser ()
 simpleSpace = skipMany1 $ satisfy (`elem` " \t\f\v\xa0")
