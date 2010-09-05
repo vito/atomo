@@ -411,6 +411,12 @@ match _ PAny _ = True
 match ids (PList ps) (List v) = matchAll ids ps vs
   where
     vs = V.toList $ unsafePerformIO (readIORef v)
+match ids (PHeadTail hp tp) (List v) =
+    V.length vs > 0 && match ids hp h && match ids tp t
+  where
+    vs = unsafePerformIO (readIORef v)
+    h = V.head vs
+    t = List (unsafePerformIO (newIORef (V.tail vs)))
 match _ (PPMSingle a) (Particle (PMSingle b)) = a == b
 match ids (PPMKeyword ans aps) (Particle (PMKeyword bns mvs)) =
     ans == bns && matchParticle ids aps mvs
@@ -483,6 +489,12 @@ bindings' (PPMKeyword _ ps) (Particle (PMKeyword _ mvs)) = concat
 bindings' (PList ps) (List v) = concat (zipWith bindings' ps vs)
   where
     vs = V.toList $ unsafePerformIO (readIORef v)
+bindings' (PHeadTail hp tp) (List v) =
+    bindings' hp h ++ bindings' tp t
+  where
+    vs = unsafePerformIO (readIORef v)
+    h = V.head vs
+    t = List (unsafePerformIO (newIORef (V.tail vs)))
 bindings' _ _ = []
 
 
