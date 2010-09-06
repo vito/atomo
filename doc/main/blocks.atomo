@@ -1,0 +1,167 @@
+#title:{Blocks}tag:"blocks"
+
+Blocks are the bread and butter of Atomo. They represent chunks of unevaluated code - sort of like lists of expressions. They are first-class values and can be passed around, called, torn apart, created programmatically, sent between processes, etc.
+
+#define:{
+    Block new: expressions
+    | expressions is-a?: List
+    > Expression
+}body:{
+    Returns a new #atomo:Block expression with #atomo:l as its contents. The list may contain a mix of #atomo:Expressions and regular values; the values will be converted to #atomo:Expressions.
+
+    Note that this returns an #atomo:Expression, not a #atomo:Block. This basically just means it isn't bound to a scope yet. You must send #atomo:evaluate to it to turn it into a #atomo:Block.
+
+    #example:({
+        orig = { a = 1; a + 1 }
+        Block new: orig contents
+    })
+}
+
+#define:{
+    b call
+    | b is-a?: Block
+    > any
+}body:{
+    Returns the result of evaluating each expression in #atomo:b, in order, in a new lexical scope delegating to the block's outer scope. #atomo:(call)ing a block does not affect its outer scope.
+
+    NOTE: Sending #atomo:call to an empty block is currently undefined behaviour. Right now it throws an error. I haven't decided what I want to happen there, but if I go soft I may just have it yield #atomo:(@ok).
+
+    #example:({
+        a = 42
+        { a = 1; a + 1 } call
+        a
+    })
+}
+
+#define:{
+    b call: l
+    | b is-a?: Block
+    | l is-a?: List
+    > any
+}body:{
+    Like #atomo:call, but passes some extra arguments along to #atomo:b. Any number of arguments may be passed to the block; it can use however many it wants.
+
+    #example:({
+        { a b | a + b } call: [1, 4]
+        { a | a + 1 } call: [1]
+        { 1 + 1 } call: [42]
+    })
+
+    Note that the arguments also do not affect the outer scope:
+
+    #example:({
+        a = 42
+        { a | a + 1 } call: [10]
+        a
+    })
+}
+
+#define:{
+    b contents
+    | b is-a?: Block
+    > List
+}body:{
+    Returns a list of the expressions contained in #atomo:b.
+
+    #example:({
+        {a = 1; a + 1} contents
+    })
+}
+
+#define:{
+    b scope
+    | b is-a?: Block
+    > Object
+}body:{
+    Returns the scope that the #atomo:b was evaluated in.
+
+    #example:({
+        a = 1
+        {} scope a
+    })
+}
+
+#define:{
+    b arguments
+    | b is-a?: Block
+    > List
+}body:{
+    Returns a list of the block's arguments, which are #atomo:(Pattern)s.
+
+    #example:({
+        { a (x . _) 0 | a + x } arguments
+    })
+}
+
+#define:{
+    b in-scope
+    | b is-a?: Block
+    > is-a?: Block
+}body:{
+    Returns a faux object that delegates to the original block, #atomo:b, but has its own #atomo:call and #atomo:(call:) methods defined. These overrides evaluate the block in its original scope, as opposed to lexically, via #atomo:(join:) and #atomo:(join:with:).
+
+    #example:({
+        a = 42
+        { a = 1; a } call
+        a
+        { a = 1; a } in-scope call
+        a
+    })
+}
+
+#define:{
+    start to: end by: diff do: b
+    | start is-a?: Integer
+    | end is-a?: Integer
+    | diff is-a?: Integer
+    | b is-a?: Block
+    > @ok
+}body:{
+    Calls #atomo:b with each integer in the range from #atomo:start to #atomo:end inclusive, by adding #atomo:diff to the current number.
+
+    #example:({
+        0 to: 5 by: 2 do: { n | ("Counting up... " .. n show) print }
+        5 to: 0 by: -1 do: { n | ("Counting down... " .. n show) print }
+    })
+}
+
+#define:{
+    n times: b
+    | n is-a?: Integer
+    | b is-a?: Block
+    > @ok
+}body:{
+    Alias for #atomo:(1 up-to: n do: b in-scope).
+
+    #example:({
+        5 times: { "Odelay!" print }
+    })
+}
+
+#define:{
+    start up-to: end do: b
+    | start is-a?: Integer
+    | end is-a?: Integer
+    | b is-a?: Block
+    > @ok
+}body:{
+    Alias for #atomo:(start to: end by: 1 do: b).
+}
+
+#define:{
+    start down-to: end do: b
+    | start is-a?: Integer
+    | end is-a?: Integer
+    | b is-a?: Block
+    > @ok
+}body:{
+    Alias for #atomo:(start to: end by: -1 do: b).
+}
+
+#define:{
+    b repeat
+    | b is-a?: Block
+    > none
+}body:{
+    Repeatedly sends #atomo:call to #atomo:b. Never returns.
+}

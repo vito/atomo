@@ -1,0 +1,178 @@
+#title:{Getting Started}tag:"getting-started"
+
+
+#section:{A quick introduction to Atomo}
+
+Atomo is a unique combination of many programming ideas - prototyping, message-passing, pattern matching, multiple dispatch, and message-passing concurrency being the primary ones. It uses eager evaluation, and does not have a #italic:{null} type. It supports multiple inheritance via delegation. And it's mind-bogglingly dynamic.
+
+This guide will get you up and running with the very basics of the Atomo programming language. It assumes you have some prior programming experience, though not necessarily with a language like Atomo.
+
+
+#section:{Installation}
+
+Atomo may be installed through the #link:{Cabal}to:{http://www.haskell.org/cabal/} package managing system:
+
+#verbatim:{cabal install atomo}
+
+Alternatively, you can install it from the repository at #link:{darcsden}to:{http://darcsden.com/alex/atomo}:
+
+#verbatim:{
+    darcs get http://darcsden.com/alex/atomo
+    cd atomo
+    cabal install
+}
+
+Once that's all done, just make sure #code:{~/.cabal/bin} is in your #code:{$PATH}, and you should be all set!
+
+
+#section:{Fire it up!}
+
+To start up the Atomo REPL, just type in "atomo" at your prompt:
+
+#verbatim:{
+    $ atomo
+    >
+}
+
+Now you're in the Atomo #italic:{read-evaluate-print loop}, which - as you may have guessed - takes in Atomo code, evaluates it, and prints the result repeatedly. You probably won't be able to do much since we haven't gotten very far yet, but here's some basic math, just for a quick taste:
+
+#interaction:({
+    1 + 1
+    6 * 7
+    20 sqrt
+})
+
+The REPL is readline-style, with history navigation. To exit the REPL, hit Ctrl+D.
+
+#section:{Define & Dispatch}
+
+There are two primary concepts in Atomo that lay the foundation for the entire language: #italic:{defining} and #italic:{dispatching}.
+
+Defining sets a value or expression to respond to some message. Dispatching is sending a message to get a value back.
+
+#interaction:({
+    a = 1
+    a
+})
+
+Here we're defining a method on the top-level object that responds to the message #atomo:a by returning the integer #atomo:1. We then dispatch the message #atomo:a and get that integer back.
+
+There are two operators for defining methods: #atomo:(=) and #atomo:(:=). The #atomo:(=) operator sets a value to respond to a message, while #atomo:(:=) defines a method that responds to a message by evaluating its expression. Generally you'll use #atomo:(:=) for defining methods, and #atomo:(=) for setting values.
+
+To illustrate this example, we'll define a method that simply prints #atomo:"Hello, world!", but using both operators. Note that #atomo:print outputs the value and returns that same value back.
+
+#interaction:({
+    y := "Hello, world!" print
+    x = "Goodbye, world!" print
+    y
+    x
+})
+
+As you can see, #italic:{Goodbye, world!} was printed immediately after defining #atomo:x, with subsequent dispatches for #atomo:x simply returning the value that was printed. Conversely, #atomo:y dutifully prints #italic:{Hello, world!} with every dispatch. Also, the #atomo:(=) operator returns its value, which lets you initialize multiple methods to the same value:
+
+#interaction:({
+    a = b = 0
+    a
+    b
+    a = a + 1
+    a
+    b
+})
+
+
+#section:{Lexical Scoping via Delegation}
+
+You'll notice earlier I used the term #italic:{top-level object} for describing the scope of the #atomo:a definition. This is the entirety of Atomo's scoping system. It's objects all the way down. The nearest lexical scope to a point in your code (henceforth called the #italic:{top-level} or #italic:{top}) is simply an object that delegates down the chain to the surrounding scope, and so on and son on until it hits #italic:{bottom}.
+
+This brings you tons of delicious dynamic power, because scopes are simply objects, first-class values. Want to see what a method is for the context in which your method was called? Just use #atomo:(dispatch sender). Send a message to that and you're all set. This is exactly how input and output works - they all use #atomo:(dispatch sender current-input-port) and #atomo:current-output-port for determining where to read and write to/from. Even #atomo:(Block)s will let you dig into their outer scope, via #atomo:scope.
+
+#interaction:({
+    x = 1
+    foo := ("x is: " .. dispatch sender x show) print
+    foo
+    { x = 42; foo } call
+    { current-input-port = Port new: "doc/main/getting-started.atomo"; read-line } call
+})
+
+What with the scoping system being objects and all, this means you can go beyond just defining "variables". When you see #atomo:(x = 1), it's not saying "set the variable #atomo:x to #atomo:1", it's saying "define a method on the top-level object that responds to #atomo:x by yielding #atomo:1". But you aren't limited to single messages like #atomo:x. Oh, no. Feel free to define a keyword method if you want, it works just fine:
+
+#interaction:({
+    foo: x := ("fooing: " .. x show) print
+    foo: 42
+    foo: "hello"
+})
+
+Which brings me to...
+
+#section:{Keywords}
+
+In Atomo, you're either dispatching #italic:{single messages}, such as #atomo:make-sandwich, or a keyword-delimited message with multiple values, known as #italic:{keyword messages}.
+
+#example:({
+    [1, 2, 3] at: 0
+    1 + 1
+    [1, 2, 3, 4] at: 3 put: 5
+})
+
+The syntax for keyword dispatch is very flexible, to ease the flow of writing code that uses chains of them. For example, this syntax is perfectly valid, and is called #italic:{cascading}:
+
+#verbatim:{
+    1 (+ 2) (divides?: 6) not
+}
+
+This gets parsed as regular ol' dispatching, as in:
+
+#atomo-block:(1 (+ 2) (divides?: 6) not)
+
+Those parentheses at the front come at a huge cost to the flow of your writing - every time you want to add a dispatch, you would have to go back to the beginning, add a #code:{(}, and find where you were. Keyword cascades remedy that by allowing you to use parentheses wherever you are to effectively turn them into a single-dispatch syntax.
+
+
+#section:{Messages & Multiple Dispatch}
+
+In Atomo, there is no "call a method Y on object X." It's all just sending messages. When you send a message to something, it may or may not understand it - it isn't a reference to a solid method definition in any sense. So if it doesn't know how to handle the message, you get "message not understood," not "method not found."
+
+This way of thinking makes a huge difference in how you reason about things in Atomo, especially when it comes to #italic:{multiple dispatch}. In a nutshell, multiple dispatch means you define your methods in terms of everything involved - not just one object. When you define a keyword method, it has a number of roles - objects that the method involves. If a message is not understood by one role, it moves on to the next, and so on.
+
+If no roles understand the message, it sends either #atomo:(did-not-understand:) (for single messages) or #atomo:(did-not-understand:at:) (for keyword messages) to each object involved until one handles it. If none of them respond, you get an error.
+
+#example:({
+    x = Object clone
+    x did-not-understand: m := "I have no idea what you mean by this: " .. m show
+    x make-me-a-sandwich
+})
+
+That's a lot to swallow right now, so let's just dive in and play around with this thing. We'll do a small Rock-Paper-Scissors structure.
+
+#interaction:({
+    Rock = Object clone
+    Paper = Object clone
+    Scissors = Object clone
+
+    Rock beats?: Scissors = True
+    Paper beats?: Rock = True
+    Scissors beats?: Paper = True
+    _ beats?: _ = False
+
+    Rock beats?: Paper
+    Rock beats?: Scissors
+})
+
+There are three objects involved in this simple definition - #atomo:Rock, #atomo:Paper, and #atomo:Scissors. We define the #atomo:(beats?:) method, which has two #italic:{roles} and determines whether the object in the first role beats the object in the second. The first three cases are the standard rules for rock-paper-scissors, while the fourth definition is the catch-all - it always returns #atomo:False, but only if the other combinations don't match. The catch-all definition is chosen as a last resort, because the most precise definition wins.
+
+Note: The actual method value is inserted on every object involved. When we say #atomo:(Rock beats?: Scissors = True), the left-hand side refers to the objects themselves - this is not pattern matching. Those could be any arbitrary expression that yields an object. When we use #code:{_} (wildcard) and no other roles are specified, as in the catch-all definition, it assumes #atomo:Object. If you want, you can type in #atomo:Rock, #atomo:Paper or #atomo:Scissors at the REPL and see a nice printout of the methods themselves, as they exist on the object.
+
+
+#section:{Putting it all together...}
+
+Now that that's all over with, let's get familiar with some of the basics of Atomo. First off: lists!
+
+Lists are...lists of values. #atomo:["They", @look, like, this]. The brackets (#code:{[]}) surround a comma-separated list of values, of any length. You can do all kinds of things with them, but I recommend you head on over to #reference:{lists} later on to see the mind-bogglingly large collection of methods.
+
+For now, though, let's just play around. Let's try putting two lists together. This is done with the #atomo:(..) operator.
+
+#interaction:({
+    [1, 2, 3] .. [4, 5, 6]
+    "foo" .. "bar"
+})
+
+Note that this (and any other #atomo:List method) also works for #atomo:(String)s, because they're just lists of #atomo:(Char)s.

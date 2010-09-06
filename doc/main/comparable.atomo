@@ -1,0 +1,59 @@
+#title:{Comparable}tag:"comparable"
+
+#define:{
+    a equals: b
+    > Bool
+}body:{
+    Performs a strict equality check on #atomo:a and #atomo:b using internal comparison. Usually you'll want #atomo:(==), but this may be used for checking identity, etc.
+}
+
+#define:{
+    a < b
+    > Bool
+}body:{
+    Is #atomo:a less than #atomo:b?
+}
+
+#define:{
+    a > b
+    > Bool
+}body:{
+    Is #atomo:a greater than #atomo:b?
+}
+
+#define:{
+    a <= b
+    > Bool
+}body:{
+    Is #atomo:a less than or equal to #atomo:b?
+}
+
+#define:{
+    a >= b
+    > Bool
+}body:{
+    Is #atomo:a greater than or equal to #atomo:b?
+}
+
+#define:{
+    a == b
+    > Bool
+}body:{
+    Is #atomo:a equivalent to #atomo:b?
+
+    For your definitions, this should be a deep equality check, as opposed to #atomo:(equals:).
+}
+
+#define:{
+    a max: b
+    > any
+}body:{
+    Returns the larger of #atomo:a and #atomo:b using the comparison operator #atomo:(>).
+}
+
+#define:{
+    a max: b
+    > any
+}body:{
+    Returns the smaller of #atomo:a and #atomo:b using the comparison operator #atomo:(<).
+}

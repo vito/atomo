@@ -1,0 +1,13 @@
+#title:{Atomo}tag:"index"
+
+#table-of-contents
+
+#include-section:"doc/main/getting-started.atomo"
+#include-section:"doc/main/core.atomo"
+#include-section:"doc/main/lists.atomo"
+#include-section:"doc/main/blocks.atomo"
+#include-section:"doc/main/concurrency.atomo"
+#include-section:"doc/main/numbers.atomo"
+#include-section:"doc/main/comparable.atomo"
+#include-section:"doc/main/io.atomo"
+

@@ -1,0 +1,73 @@
+#title:{Input & Output}tag:"io"
+
+Atomo uses an I/O system similar to Scheme - methods for reading/writing internally use #atomo:current-input-port or #atomo:current-output-port, which can be overridden lexically. The methods will act on the closest one to their caller via #atomo:(dispatch sender).
+
+#define:{
+    Port
+    > Port
+}body:{
+    An object to read/write to. Typically has one slot, #atomo:handle, which points to the file descriptor (a Haskell #code:{Handle}).
+}
+
+#define:{
+    current-output-port
+    > Port
+}body:{
+    The #atomo:Port that #atomo:print, et al. output to.
+}
+
+#define:{
+    current-input-port
+    > Port
+}body:{
+    The #atomo:Port that is used for reading input, via #atomo:read-line, #atomo:read, etc.
+}
+
+#define:{
+    o print
+    | o responds-to?: @(as: String)
+    > o
+}body:{
+    Outputs #atomo:(o as: String) to #atomo:current-output-port, followed by a linebreak.
+}
+
+#define:{
+    read
+    > o
+}body:{
+    Reads an object from #atomo:current-input-port.
+}
+
+#define:{
+    read-line
+    > String
+}body:{
+    Reads one line of text from #atomo:current-input-port.
+}
+
+#define:{
+    with-input-from: p do: a
+    | p is-a?: Port || p is-a?: String
+    | a is-a?: Block
+    > any
+}body:{
+    Override #atomo:current-input-port in a new scope, executing #atomo:a in that scope and returning its result.
+
+    If #atomo:p is a #atomo:String, it is considered a filename, and that file is opened for reading. The file is automatically closed.
+
+    If #atomo:p is a #atomo:Port, it is used for input.
+}
+
+#define:{
+    with-output-to: p do: a
+    | p is-a?: Port || p is-a?: String
+    | a is-a?: Block
+    > any
+}body:{
+    Override #atomo:current-output-port in a new scope, executing #atomo:a in that scope and returning its result.
+
+    If #atomo:p is a #atomo:String, it is considered a filename, and that file is opened for writing. The file is created if it doesn't exist, or overwritten if it does. The file is automatically closed.
+
+    If #atomo:p is a #atomo:Port, it is used for output.
+}
+

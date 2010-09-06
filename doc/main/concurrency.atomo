@@ -1,0 +1,80 @@
+#title:{Concurrency}tag:"concurrency"
+
+Atomo uses message-passing concurrency akin to Erlang.
+
+#define:{
+    self
+    > Process
+}body:{
+    Returns the current #atomo:Process.
+
+    #example:({
+        self
+    })
+}
+
+#define:{
+    b spawn
+    | b is-a?: Block
+    > Process
+}body:{
+    Executes #atomo:(b call) in a separate process, and returns that new process.
+
+    #example:({
+        { (1 + 1) print } spawn
+    })
+}
+
+#define:{
+    b spawn: l
+    | b is-a?: Block
+    | l is-a?: List
+    > Process
+}body:{
+    Like #atomo:spawn, but executes #atomo:(b call: l) instead.
+
+    #example:({
+        { a | (a + 1) print } spawn: [41]
+    })
+}
+
+#define:{
+    p ! v
+    | p is-a?: Process
+    > p
+}body:{
+    Sends the value #atomo:v to process #atomo:p, and returns #atomo:p.
+
+    #example:({
+        p = { receive ! @pong } spawn
+        p ! self
+        receive
+    })
+}
+
+#define:{
+    receive
+    > any
+}body:{
+    Waits for a message, blocking until one is received.
+
+    #example:({
+        { main | "hello!" print; main ! @done } spawn: [self]
+        receive
+    })
+}
+
+#define:{
+    p stop
+    | p is-a?: Process
+    > @ok
+}body:{
+    Immediately kills the process #atomo:p.
+}
+
+#define:{
+    halt
+    > @ok
+}body:{
+    Immediately shuts down the Atomo VM, when called from #italic:{any} process.
+}

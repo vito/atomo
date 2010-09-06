@@ -1,0 +1,160 @@
+#title:{Numbers}tag:"numbers"
+
+#define:{
+    a + b
+    | a is-a?: Integer
+    | b is-a?: Integer
+    > Integer
+}body:{
+    Performs addition on #atomo:a and #atomo:b and returns an #atomo:Integer.
+}
+
+#define:{
+    a + b
+    > Double
+}body:{
+    Performs addition on #atomo:a and #atomo:b and returns a #atomo:Double.
+
+    Called with any combination of #atomo:Integer and #atomo:Double (or two #atomo:Doubles).
+}
+
+#define:{
+    a - b
+    | a is-a?: Integer
+    | b is-a?: Integer
+    > Integer
+}body:{
+    Performs subtraction on #atomo:a and #atomo:b and returns an #atomo:Integer.
+}
+
+#define:{
+    a - b
+    > Double
+}body:{
+    Performs subtraction on #atomo:a and #atomo:b and returns a #atomo:Double.
+
+    Called with any combination of #atomo:Integer and #atomo:Double (or two #atomo:Doubles).
+}
+
+#define:{
+    a * b
+    | a is-a?: Integer
+    | b is-a?: Integer
+    > Integer
+}body:{
+    Performs multiplication on #atomo:a and #atomo:b and returns an #atomo:Integer.
+}
+
+#define:{
+    a * b
+    > Double
+}body:{
+    Performs multiplication on #atomo:a and #atomo:b and returns a #atomo:Double.
+
+    Called with any combination of #atomo:Integer and #atomo:Double (or two #atomo:Doubles).
+}
+
+#define:{
+    a / b
+    | a is-a?: Integer
+    | b is-a?: Integer
+    > Integer
+}body:{
+    Performs division on #atomo:a and #atomo:b and returns an #atomo:Integer.
+}
+
+#define:{
+    a / b
+    > Double
+}body:{
+    Performs division on #atomo:a and #atomo:b and returns a #atomo:Double.
+
+    Called with any combination of #atomo:Integer and #atomo:Double (or two #atomo:Doubles).
+}
+
+#define:{
+    a ^ b
+    | a is-a?: Integer
+    | b is-a?: Integer
+    > Integer
+}body:{
+    Performs exponentiation on #atomo:a and #atomo:b and returns an #atomo:Integer.
+}
+
+#define:{
+    a ^ b
+    > Double
+}body:{
+    Performs exponentiation on #atomo:a and #atomo:b and returns a #atomo:Double.
+
+    Called with any combination of #atomo:Integer and #atomo:Double (or two #atomo:Doubles).
+}
+
+#define:{
+    a % b
+    | a is-a?: Integer
+    | b is-a?: Integer
+    > Integer
+}body:{
+    Modulus operator.
+}
+
+#define:{
+    a quotient: b
+    | a is-a?: Integer
+    | b is-a?: Integer
+    > Integer
+}body:{
+    Returns the quotient of dividing #atomo:a by #atomo:b.
+}
+
+#define:{
+    a remainder: b
+    | a is-a?: Integer
+    | b is-a?: Integer
+    > Integer
+}body:{
+    Returns the remainder of dividing #atomo:a by #atomo:b.
+}
+
+#define:{
+    n sqrt
+    | n is-a?: Integer || n is-a?: Double
+    > Double
+}body:{
+    Returns the square root of #atomo:n.
+}
+
+#define:{
+    n even?
+    | n is-a?: Integer
+    > Bool
+}body:{
+    Is #atomo:n even?.
+}
+
+#define:{
+    n even?
+    | n is-a?: Integer
+    > Bool
+}body:{
+    Is #atomo:n odd?.
+}
+
+#define:{
+    a divides?: b
+    | a is-a?: Integer
+    | b is-a?: Integer
+    > Bool
+}body:{
+    Does #atomo:a divide #atomo:b?
+}
+
+#define:{
+    a divisible-by?: b
+    | a is-a?: Integer
+    | b is-a?: Integer
+    > Bool
+}body:{
+    Alias for #atomo:(b divides?: a).
+}

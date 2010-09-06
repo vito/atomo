@@ -1,0 +1,120 @@
+#title:{Core}tag:"core"
+
+#define:{
+    this
+    > Object
+}body:{
+    Returns the prototype representing the current scope. For example, typing in #atomo:this in the REPL will return the current prototype:
+
+    #example:({
+        this
+        a = 1
+        this
+    })
+
+    This is implemented like so:
+
+    #atomo-block:(this := dispatch sender)
+}
+
+#define:{
+    o clone
+    > Object
+}body:{
+    Returns a new prototype, delegating to #atomo:o.
+}
+
+#define:{
+    x delegates-to: y
+    > @ok
+}body:{
+    Adds #atomo:y to #atomo:(x)'s list of delegates.
+}
+
+#define:{
+    x is-a?: y
+    > Bool
+}body:{
+    Returns #atomo:True if #atomo:x is equal to #atomo:y or delegates to it, directly or indirectly.
+
+    #example:({
+        X = Object clone
+        Y = Object clone
+        X is-a?: X
+        Y is-a?: X
+        Y delegates-to: X
+        Y is-a?: X
+    })
+}
+
+#define:{
+    x responds-to?: p
+    | p is-a?: Particle
+    > Bool
+}body:{
+    Check if prototype #atomo:x would respond to the partial message #atomo:p (completed with #atomo:x to form a #atomo:Message).
+
+    #example:({
+        X = Object clone
+        X responds-to?: @foo
+        X foo = 42
+        X responds-to?: @foo
+        
+        1 responds-to?: @(+ 2)
+        1 responds-to?: @(+ "foo")
+    })
+}
+
+#define:{
+    x show
+    > String
+}body:{
+    Convert #atomo:x to a proper representation of that value in code (if possible).
+
+    #example:({
+        10 show
+        "foo" show
+        False show
+    })
+}
+
+#define:{
+    load: filename
+    | filename is-a?: String
+    > @ok
+}body:{
+    Executes the file #atomo:filename in the current scope.
+
+    Loaded files are remembered (by their canonicalized, absolute path), so subsequent attempts to load them will be a no-op, returning #atomo:(@ok).
+}
+
+#define:{
+    v do: b
+    | b is-a?: Block
+    > v
+}body:{
+    Execute #atomo:b with #atomo:v as its top scope. The block's original scope is also available. Note that while inside the block, #atomo:this will always refer to the original value, not the one possibly being modified in the block. After the block completes, its top value replaces #atomo:v.
+}
+
+#define:{
+    v join: b
+    | b is-a?: Block
+    > any
+}body:{
+    Like #atomo:(do:), but returns the result of the block's execution.
+
+    #example:({
+        True join: { not }
+    })
+
+    This can be useful for executing a block in the current scope:
+
+    #example:({
+        blk = { x = 1; x + a }
+
+        Object clone do: {
+            a = 42
+            res = join: blk
+        }
+    })
+}

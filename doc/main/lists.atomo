@@ -1,0 +1,495 @@
+#title:{Lists}tag:"lists"
+
+#define:{
+    l length
+    | l is-a?: List
+    > Integer
+}body:{
+    Returns the length of the list #atomo:l.
+
+    #example:({
+        [1, 2, 3] length
+    })
+}
+
+#define:{
+    l empty?
+    | l is-a?: List
+    > Bool
+}body:{
+    Is the list #atomo:l empty?
+
+    #example:({
+        [] empty?
+        [1, 2, 3] empty?
+    })
+}
+
+#define:{
+    l at: index
+    | l is-a?: List
+    | index is-a?: Integer
+    > any
+}body:{
+    Returns the list's value at #atomo:index.
+
+    #example:({
+        [1, 2, 3] at: 1
+    })
+}
+
+#define:{
+    l at: index put: v
+    | l is-a?: List
+    | index is-a?: Integer
+    > List
+}body:{
+    Replace the value at #atomo:index with #atomo:v.
+
+    #example:({
+        numbers = [1, 2, 3]
+        numbers at: 1 put: 5
+        numbers
+    })
+}
+
+#define:{
+    l head
+    | l is-a?: List
+    > any
+}body:{
+    Returns the first value of the list.
+
+    #example:({
+        [1, 2, 3] head
+    })
+}
+
+#define:{
+    l last
+    | l is-a?: List
+    > any
+}body:{
+    Returns the last value of the list.
+
+    #example:({
+        [1, 2, 3] last
+    })
+}
+
+#define:{
+    l init
+    | l is-a?: List
+    > List
+}body:{
+    Returns all but the last value of the list.
+
+    #example:({
+        [1, 2, 3] init
+    })
+}
+
+#define:{
+    l tail
+    | l is-a?: List
+    > List
+}body:{
+    Returns all but the first value of the list.
+
+    #example:({
+        [1, 2, 3] tail
+    })
+}
+
+#define:{
+    l from: start to: end
+    | l is-a?: List
+    | start is-a?: Integer
+    | end is-a?: Integer
+    > List
+}body:{
+    Returns the slice of elements from #atomo:start to #atomo:end of #atomo:l.
+
+    #example:({
+        [1, 2, 3, 4, 5] from: 1 to: 3
+    })
+}
+
+#define:{
+    l take: n
+    | l is-a?: List
+    | n is-a?: Integer
+    > List
+}body:{
+    Returns a list of the first #atomo:n values of the list.
+
+    #example:({
+        [1, 2, 3, 4, 5] take: 2
+    })
+}
+
+#define:{
+    l drop: n
+    | l is-a?: List
+    | n is-a?: Integer
+    > List
+}body:{
+    Returns a list of the values after #atomo:n values have been dropped from the start of the list.
+
+    #example:({
+        [1, 2, 3, 4, 5] drop: 2
+    })
+}
+
+#define:{
+    v replicate: n
+    | n is-a?: Integer
+    > List
+}body:{
+    Returns a list of #atomo:v replicated #atomo:n times.
+
+    #example:({
+        "Odelay!" replicate: 5
+    })
+}
+
+#define:{
+    b repeat: n
+    | b responds-to?: @call
+    | n is-a?: Integer
+    > List
+}body:{
+    Returns a list containing the results of #atomo:n #atomo:(call)s of #atomo:b.
+
+    #example:({
+        with-input-from: "doc/main/lists.atomo" do: {
+            { read-line } repeat: 3
+        }
+    })
+    
+    Here we're reading 3 lines of text from the file #atomo:"doc/main/lists.atomo" (the source for the documentation you're reading).
+}
+
+#define:{
+    a .. b
+    | a is-a?: List
+    | b is-a?: List
+    > List
+}body:{
+    Appends the two lists #atomo:a and #atomo:b.
+
+    #example:({
+        [1, 2, 3] .. [4, 5, 6]
+        "foo" .. "bar"
+    })
+}
+
+#define:{
+    l reverse
+    | l is-a?: List
+    > List
+}body:{
+    Returns a new list, a reversal of #atomo:l.
+
+    #example:({
+        [1, 2, 3] reverse
+        "redrum" reverse
+    })
+}
+
+#define:{
+    l map: a
+    | l is-a?: List
+    | a responds-to?: @call:
+    > List
+}body:{
+    Returns a new list, with #atomo:call: sent to #atomo:a with each value in #atomo:l.
+
+    #example:({
+        [1, 2, 3] map: { n | n + 1 }
+        [1, 2, 3] map: @(* 2)
+    })
+}
+
+#define:{
+    x zip: y with: a
+    | x is-a?: List
+    | y is-a?: List
+    | a responds-to?: @call:
+    > List
+}body:{
+    "Zips" up the two lists #atomo:x and #atomo:y but calling #atomo:a with the respective values of each list.
+
+    The list it returns is as long as the shorter list.
+
+    #example:({
+        [1, 2, 3] zip: [4, 5, 6] with: { a b | a * b }
+        [1, 7, 4] zip: [4, 5, 6, 0] with: @min:
+    })
+}
+
+#define:{
+    l filter: p
+    | l is-a?: List
+    | p responds-to?: @call:
+    > List
+}body:{
+    Returns a list of all values in #atomo:l that satisfy the predicate #atomo:p.
+
+    #example:({
+        [1, 2, 3, 4, 5] filter: @odd?
+        [1, 2, 3, 2, 1] filter: { n | n == 3 }
+    })
+}
+
+#define:{
+    l reduce: b
+    | l is-a?: List
+    | b responds-to?: @call:
+    > any
+}body:{
+    Alias for #atomo:(l tail reduce: b with: l head). The list must have at least one value.
+
+    #example:({
+        [1, 2, 3, 4, 5] reduce: @*
+    })
+}
+
+#define:{
+    l reduce: b with: v
+    | l is-a?: List
+    | b responds-to?: @call:
+    > any
+}body:{
+    Reduces the list to a single value by "folding" over it, with #atomo:v as the initial value.
+
+    #example:({
+        [1, 2, 3, 4, 5] reduce: @*
+        [] reduce: @* with: 1
+    })
+}
+
+#define:{
+    l concat
+    | l is-a?: List
+    > List
+}body:{
+    Reduces a list by appending all of its values. The list's values must all be lists.
+
+    #example:({
+        [[1, 2], [3, 4, 5], [6]] concat
+        [] concat
+    })
+}
+
+#define:{
+    l sum
+    | l is-a?: List
+    > any
+}body:{
+    Reduces a list with #atomo:(+) and #atomo:0.
+
+    #example:({
+        [1, 2, 3] sum
+        [] sum
+    })
+}
+
+#define:{
+    l product
+    | l is-a?: List
+    > any
+}body:{
+    Reduces a list with #atomo:(*) and #atomo:1.
+
+    #example:({
+        [1, 2, 3] product
+        [] product
+    })
+}
+
+#define:{
+    l maximum
+    | l is-a?: List
+    > any
+}body:{
+    Reduces a list with #atomo:(max:). The list must not be empty.
+
+    #example:({
+        [1, 2, 3] maximum
+    })
+}
+
+#define:{
+    l minimum
+    | l is-a?: List
+    > any
+}body:{
+    Reduces a list with #atomo:(min:). The list must not be empty.
+
+    #example:({
+        [1, 2, 3] minimum
+    })
+}
+
+#define:{
+    l all? p
+    | l is-a?: List
+    | p responds-to?: @call:
+    > Bool
+}body:{
+    Checks if all values in #atomo:l satisfy the predicate #atomo:p.
+
+    #example:({
+        [1, 3, 5] all?: @odd?
+        [1, 3, 6] all?: @odd?
+        [] all?: @odd?
+    })
+}
+
+#define:{
+    l any? p
+    | l is-a?: List
+    | p responds-to?: @call:
+    > Bool
+}body:{
+    Checks if any values in #atomo:l satisfy the predicate #atomo:p.
+
+    #example:({
+        [2, 3, 6] any?: @odd?
+        [2, 4, 6] any?: @odd?
+        [] any?: @odd?
+    })
+}
+
+#define:{
+    l and
+    | l is-a?: List
+    > Bool
+}body:{
+    Check if all values in the list are #atomo:True.
+
+    #example:({
+        [1 == 1, 'a' == 'a'] and
+        [1 == 1, 'a' == 'b'] and
+        [] and
+    })
+}
+
+#define:{
+    l or
+    | l is-a?: List
+    > Bool
+}body:{
+    Check if any values in the list are #atomo:True.
+
+    #example:({
+        [1 == 1, 'a' == 'a'] or
+        [1 == 1, 'a' == 'b'] or
+        [1 == 2, 'a' == 'c'] or
+        [] or
+    })
+}
+
+#define:{
+    l contains?: v
+    | l is-a?: List
+    > Bool
+}body:{
+    Check if #atomo:v is a member of the list #atomo:l.
+
+    #example:({
+        "abc" contains?: 'a'
+        "abc" contains?: 'd'
+    })
+}
+
+#define:{
+    start to: end by: diff
+    | start is-a?: Integer
+    | end is-a?: Integer
+    | diff is-a?: Integer
+    > List
+}body:{
+    Efficiently generate a list from the range #atomo:start to #atomo:end, inclusive, by adding #atomo:diff to each integer.
+
+    #example:({
+        0 to: 5 by: 2
+    })
+}
+
+#define:{
+    start up-to: end
+    | start is-a?: Integer
+    | end is-a?: Integer
+    > List
+}body:{
+    Alias for #atomo:(start to: end by: 1).
+}
+
+#define:{
+    start down-to: end
+    | start is-a?: Integer
+    | end is-a?: Integer
+    > List
+}body:{
+    Alias for #atomo:(start to: end by: -1).
+}
+
+#define:{
+    start .. end
+    | start is-a?: Integer
+    | end is-a?: Integer
+    > List
+}body:{
+    Efficiently generate a sequence of integers between #atomo:start and #atomo:end, inclusive.
+
+    #example:({
+        0 .. 5
+        5 .. 0
+    })
+}
+
+#define:{
+    start ... end
+    | start is-a?: Integer
+    | end is-a?: Integer
+    > List
+}body:{
+    Efficiently generate a sequence of integers between #atomo:start and #atomo:end, exclusive.
+
+    #example:({
+        0 ... 5
+        5 ... 0
+    })
+}
+
+#define:{
+    l push: v
+    | l is-a?: List
+    > List
+}body:{
+    Pushes #atomo:v onto the end of the list.
+
+    #example:({
+        a = [1, 2, 3]
+        a push: 4
+        a
+        [5, 6, 7] push: 8
+    })
+}
+
+#define:{
+    l << v
+    | l is-a?: List
+    > List
+}body:{
+    Alias for #atomo:(l push: v).
+
+    #example:({
+        a = [1, 2, 3]
+        a << 4
+        a
+        [5, 6, 7] << 8
+    })
+}
