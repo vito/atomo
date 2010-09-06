@@ -1,0 +1,105 @@
+HTML = Object clone
+
+Association = Object clone
+a -> b := Association clone do: { from = a; to = b }
+
+Self-Closing = ["base", "meta", "link", "hr", "br", "param", "img", "area", "input", "col", "frame"]
+
+
+-- creating elements with no content
+-- keyword dispatch adds attributes
+(h: HTML) did-not-understand: (m: Message) := {
+    elem = HTML new do: {
+        tag = m particle name
+        attribute-mode = True
+    }
+
+    h content << elem
+
+    elem
+} call
+
+-- creating elements with content
+(h: HTML) did-not-understand: (m: Message) at: 0 := {
+    if: h attribute-mode
+        then: {
+            attr-names = m particle names
+            attr-values = m targets tail
+            attrs = attr-names zip: attr-values with: @->
+            h attributes = h attributes .. attrs
+        }
+        else: {
+            content = m targets (at: 1)
+            attr-names = m particle names tail
+            attr-values = m targets (drop: 2)
+            elem = HTML new do: {
+                tag = m particle names (at: 0)
+                attributes = attr-names zip: attr-values with: @->
+            }
+
+            if: (content is-a?: Block)
+                then: { elem do: content }
+                else: { elem content = [content] }
+
+            h content << elem
+        }
+} call
+
+(h: HTML) cdata: x :=
+    h content << x
+
+(h: HTML) doctype :=
+    h cdata: "<!DOCTYPE html>"
+
+(h: HTML) as: String := {
+    c = h content (map: { c |
+        if: (c is-a?: String)
+            then: { c }
+            else: { c as: String }
+    }) concat
+
+    attrs = h attributes (map: { a |
+        " " .. a from .. "=\"" .. a to .. "\""
+    }) concat
+
+    if: (h tag empty?)
+        then: { c }
+        else: {
+            if: (c empty? && (Self-Closing contains?: h tag))
+                then: { "<" .. h tag .. attrs .. " />" }
+                else: {
+                    "<" .. h tag .. attrs .. ">" .. c .. "</" .. h tag .. ">"
+                }
+        }
+} call
+
+HTML new :=
+    HTML clone do: {
+        tag = ""
+        attributes = []
+        content = []
+        attribute-mode = False
+    }
+
+
+HTML new (do: {
+    doctype
+    html: {
+        head: {
+            meta do: {
+                http-equiv: "content-type"
+                content: "text/html; charset=utf-8"
+            }
+
+            title: "Getting Started"
+            link rel: "stylesheet" type: "text/css" href: "a.css"
+        }
+        body: {
+            p: "foo"
+
+            div: {
+                span: "blah!"
+            }
+        } class: "some-class" id: "hello"
+    }
+}) print
