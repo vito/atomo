@@ -56,8 +56,8 @@ load = do
 
         let completed =
                 case p of
-                    PMSingle n -> Single (hash n) n x
                     PMKeyword ns mvs -> Keyword (hash ns) ns (completeKP mvs [x])
+                    PMSingle n -> Single (hash n) n x
 
         findMethod x completed
             >>= bool . isJust

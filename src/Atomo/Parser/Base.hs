@@ -5,7 +5,7 @@ module Atomo.Parser.Base where
 import Control.Monad.Identity
 import Data.Char
 import Data.Hashable (hash)
-import Data.List (nub, sort)
+import Data.List (nub, sort, (\\))
 import Text.Parsec
 import qualified Text.Parsec.Token as P
 
@@ -26,7 +26,7 @@ def = P.LanguageDef
     , P.nestedComments = True
     , P.identStart = letter <|> oneOf "_"
     , P.identLetter = alphaNum <|> P.opLetter def
-    , P.opStart = oneOf opLetters
+    , P.opStart = oneOf (opLetters \\ "@")
     , P.opLetter = alphaNum <|> oneOf opLetters
     , P.reservedOpNames = ["=", ":=", ",", "|", "_"]
     , P.reservedNames = ["dispatch", "operator"]

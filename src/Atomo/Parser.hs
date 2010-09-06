@@ -195,7 +195,7 @@ cKeyword wc = do
     <?> "keyword segment"
   where
     keywordVal
-        | wc = value <|> wildcard
+        | wc = wildcard <|> value
         | otherwise = value
 
     value = fmap Just $ choice
