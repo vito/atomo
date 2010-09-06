@@ -133,6 +133,7 @@ initEnv = do
         , "list"
         , "numbers"
         , "port"
+        , "timer"
         ]
 
 

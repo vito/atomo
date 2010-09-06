@@ -126,6 +126,7 @@ load = do
     loadParticle
     loadPattern
     loadPorts
+    loadTime
   where
     joinWith t (Block s ps es) as
         | length ps > length as = throwError . ErrorMsg . unwords $
@@ -248,15 +249,6 @@ loadBlock = do
     [$p|(b: Block) contents|] =: do
         Block _ _ es <- here "b" >>= findValue isBlock
         list (map Expression es)
-
-    -- TODO: this probably shouldn't be in the kernel, but
-    -- there aren't any timing primitives yet
-    [$p|(b: Block) time|] =: do
-        Block s _ es <- here "b" >>= findValue isBlock
-        before <- liftIO getPOSIXTime
-        doBlock M.empty s es
-        after <- liftIO getPOSIXTime
-        return $ Double (fromRational . toRational $ after - before)
     
 loadExpression :: VM ()
 loadExpression = do
@@ -370,12 +362,6 @@ loadConcurrency = do
 
                     return ()
                 return (Process chan tid)
-
-    -- TODO: move this somewhere more sensible
-    [$p|(n: Integer) sleep|] =: do
-        Integer n <- here "n" >>= findValue isInteger
-        liftIO (threadDelay (fromIntegral n))
-        return (particle "ok")
 
     [$p|(p: Process) stop|] =: do
         Process _ tid <- here "p" >>= findValue isProcess
@@ -1037,6 +1023,25 @@ loadPorts = do
         [$p|p|] =:: port
         [$p|p handle|] =:: Haskell (toDyn hdl)
         here "p"
+
+
+loadTime :: VM ()
+loadTime = do
+    ([$p|Timer|] =::) =<< eval [$e|Object clone|]
+
+    [$p|Timer now|] =:
+        fmap (Double . fromRational . toRational) (liftIO getPOSIXTime)
+
+    [$p|Timer sleep: (n: Integer)|] =: do
+        Integer n <- here "n" >>= findValue isInteger
+        liftIO (threadDelay (fromIntegral n))
+        return (particle "ok")
+
+    [$p|Timer sleep: (d: Double)|] =: do
+        Double d <- here "d" >>= findValue isDouble
+        liftIO (threadDelay (floor d))
+        return (particle "ok")
+
 
 completeKP :: [Maybe Value] -> [Value] -> [Value]
 completeKP [] [] = []
