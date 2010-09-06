@@ -1021,6 +1021,31 @@ loadPorts = do
         liftIO (hClose (fromDyn hdl (error "port handle invalid!"))) -- TODO
         return (particle "ok")
 
+    [$p|(p: Port) open?|] =: do
+        Haskell hdl <- eval [$e|p handle|]
+        liftIO (hIsOpen (fromDyn hdl (error "port handle invalid!"))) -- TODO
+            >>= bool
+
+    [$p|(p: Port) readable?|] =: do
+        Haskell hdl <- eval [$e|p handle|]
+        liftIO (hIsReadable (fromDyn hdl (error "port handle invalid!"))) -- TODO
+            >>= bool
+
+    [$p|(p: Port) writable?|] =: do
+        Haskell hdl <- eval [$e|p handle|]
+        liftIO (hIsWritable (fromDyn hdl (error "port handle invalid!"))) -- TODO
+            >>= bool
+
+    [$p|(p: Port) seekable?|] =: do
+        Haskell hdl <- eval [$e|p handle|]
+        liftIO (hIsSeekable (fromDyn hdl (error "port handle invalid!"))) -- TODO
+            >>= bool
+
+    [$p|(p: Port) closed?|] =: do
+        Haskell hdl <- eval [$e|p handle|]
+        liftIO (hIsClosed (fromDyn hdl (error "port handle invalid!"))) -- TODO
+            >>= bool
+
     [$p|(p: Port) ready?|] =: do
         Haskell hdl <- eval [$e|p handle|]
         liftIO (hReady (fromDyn hdl (error "port handle invalid!"))) -- TODO
@@ -1038,7 +1063,7 @@ loadPorts = do
         List str <- eval [$e|x as: String|]
         cs <- fmap V.toList (liftIO (readIORef str))
 
-        let hdl = fromDyn h stdout
+        let hdl = fromDyn h (error "current-output-port handle invalid!")
 
         if all isChar cs
             then do
@@ -1049,7 +1074,7 @@ loadPorts = do
 
     [$p|read-line|] =: do
         Haskell inh <- eval [$e|dispatch sender current-input-port handle|]
-        line <- liftIO (hGetLine (fromDyn inh stdin))
+        line <- liftIO (hGetLine (fromDyn inh (error "current-input-port handle invalid!"))) -- TODO
         string line
   where
     portObj hdl = newScope $ do
