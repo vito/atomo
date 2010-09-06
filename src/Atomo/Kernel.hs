@@ -276,6 +276,12 @@ loadExpression = do
             ESingle {} -> return (particle "single")
             EKeyword {} -> return (particle "keyword")
 
+    [$p|(e: Expression) particle-type|] =: do
+        Expression (EParticle _ p) <- here "e" >>= findValue isExpression
+        case p of
+            EPMKeyword {} -> return (particle "keyword")
+            EPMSingle {} -> return (particle "single")
+
     [$p|(e: Expression) target|] =: do
         Expression (Dispatch _ (ESingle { emTarget = t })) <- here "e" >>= findValue isExpression
         return (Expression t)
@@ -291,6 +297,21 @@ loadExpression = do
     [$p|(e: Expression) targets|] =: do
         Expression (Dispatch _ (EKeyword { emTargets = vs })) <- here "e" >>= findValue isExpression
         list (map Expression vs)
+
+    [$p|(e: Expression) name|] =: do
+        Expression (EParticle _ (EPMSingle n)) <- here "e" >>= findValue isExpression
+        string n
+
+    [$p|(e: Expression) names|] =: do
+        Expression (EParticle _ (EPMKeyword ns _)) <- here "e" >>= findValue isExpression
+        mapM string ns >>= list
+
+    [$p|(e: Expression) values|] =: do
+        Expression (EParticle _ (EPMKeyword _ mes)) <- here "e" >>= findValue isExpression
+        list $
+            map
+                (maybe (particle "none") (keyParticle ["ok"] . ([Nothing] ++) . (:[]). Just . Expression))
+                mes
 
     [$p|(e: Expression) contents|] =: do
         Expression (EList _ es) <- here "e" >>= findValue isExpression
@@ -659,12 +680,25 @@ loadParticle = do
                     else dispatch (Single (hash n) n (head vs))
 
     [$p|(p: Particle) name|] =: do
-        Particle (PMSingle n) <- here "p"
+        Particle (PMSingle n) <- here "p" >>= findValue isParticle
         list (map Char n)
 
     [$p|(p: Particle) names|] =: do
-        Particle (PMKeyword ns _) <- here "p"
+        Particle (PMKeyword ns _) <- here "p" >>= findValue isParticle
         mapM (list . map Char) ns >>= list
+
+    [$p|(p: Particle) values|] =: do
+        (Particle (PMKeyword _ mvs)) <- here "p" >>= findValue isParticle
+        list $
+            map
+                (maybe (particle "none") (keyParticle ["ok"] . ([Nothing] ++) . (:[]). Just))
+                mvs
+
+    [$p|(p: Particle) type|] =: do
+        Particle p <- here "p" >>= findValue isParticle
+        case p of
+            PMKeyword {} -> return (particle "keyword")
+            PMSingle {} -> return (particle "single")
 
 loadList :: VM ()
 loadList = do
