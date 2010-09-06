@@ -1,6 +1,5 @@
 #title:{Getting Started}tag:"getting-started"
 
-
 #section:{A quick introduction to Atomo}
 
 Atomo is a unique combination of many programming ideas - prototyping, message-passing, pattern matching, multiple dispatch, and message-passing concurrency being the primary ones. It uses eager evaluation, and does not have a #italic:{null} type. It supports multiple inheritance via delegation. And it's mind-bogglingly dynamic.
