@@ -306,6 +306,7 @@ targets is (PNamed _ p) = targets is p
 targets _ PSelf = gets top >>= orefFor >>= return . (: [])
 targets is PAny = return [idObject is]
 targets is (PList _) = return [idList is]
+targets is (PHeadTail _ _) = return [idList is]
 targets _ p = error $ "no targets for " ++ show p
 
 
