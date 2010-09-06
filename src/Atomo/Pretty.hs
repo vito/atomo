@@ -210,8 +210,13 @@ braces d = char '{' <+> d <+> char '}'
 
 headlessKeywords' :: (a -> Doc) -> [String] -> [a] -> Doc
 headlessKeywords' p (k:ks) (v:vs) =
-    text (keyword k) <+> p v <+> headlessKeywords' p ks vs
+    text (keyword k) <+> p v <++> headlessKeywords'' p ks vs
 headlessKeywords' _ _ _ = empty
+
+headlessKeywords'' :: (a -> Doc) -> [String] -> [a] -> Doc
+headlessKeywords'' p (k:ks) (v:vs) =
+    text (keyword k) <+> p v <+++> headlessKeywords'' p ks vs
+headlessKeywords'' _ _ _ = empty
 
 keywords' :: (a -> Doc) -> [String] -> [a] -> Doc
 keywords' p ks (v:vs) =
@@ -229,10 +234,16 @@ keyword k
     | all (`elem` opLetters) k = k
     | otherwise                = k ++ ":"
 
-infixr 4 <++>
+infixr 4 <++>, <+++>
 
 -- similar to <+>, but the second half will be nested to prevent long lines
 (<++>) :: Doc -> Doc -> Doc
 (<++>) a b
     | length (show a ++ show b) > 80 = a $$ nest 2 b
+    | otherwise = a <+> b
+
+-- similar to <++>, but without nesting
+(<+++>) :: Doc -> Doc -> Doc
+(<+++>) a b
+    | length (show a ++ show b) > 80 = a $$ b
     | otherwise = a <+> b
