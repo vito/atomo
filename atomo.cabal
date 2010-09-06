@@ -14,18 +14,49 @@ cabal-version:       >= 1.2
 data-files:          prelude/*.atomo
 
 
-executable atomo
-  hs-source-dirs:     src
-  main-is:            Main.hs
-  
-  ghc-prof-options:   -prof -auto-all -caf-all
-  ghc-options:        -O2 -Wall -threaded -fno-warn-unused-do-bind
-                      -funfolding-use-threshold=9999
+library
+  hs-source-dirs:    src
 
-  -- Packages needed in order to build this package.
   build-depends:
     base >= 4,
-    bytestring,
+    containers,
+    directory,
+    filepath,
+    hashable,
+    -- haskeline,
+    mtl,
+    parsec >= 3.0.0,
+    pretty,
+    -- pretty-show,
+    template-haskell,
+    time,
+    vector
+
+  exposed-modules:
+    Atomo.Debug,
+    Atomo.Environment,
+    Atomo.Haskell,
+    Atomo.Kernel,
+    Atomo.Method,
+    Atomo.Parser,
+    Atomo.Parser.Base,
+    Atomo.Parser.Pattern,
+    Atomo.Parser.Primitive,
+    Atomo.Pretty,
+    Atomo.Types,
+    Paths_atomo
+
+
+executable atomo
+  hs-source-dirs:    src
+  main-is:           Main.hs
+  
+  ghc-prof-options:  -prof -auto-all -caf-all
+  ghc-options:       -O2 -Wall -threaded -fno-warn-unused-do-bind
+                     -funfolding-use-threshold=9999
+
+  build-depends:
+    base >= 4,
     containers,
     directory,
     filepath,
