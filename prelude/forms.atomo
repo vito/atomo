@@ -10,7 +10,7 @@ v match: (b: Block) :=
         else: {
             es = b contents
 
-            (p . e . _) = es head targets
+            [p, e] = es head targets
 
             match = (p as: Pattern) matches?: v
             if: (match == @no)
