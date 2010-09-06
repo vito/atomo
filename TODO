@@ -1,0 +1,7 @@
+* keyword particles that start with a value
+* finish up the QuickCheck parser test
+* more environment tests
+* rationals: 1/2 * 6/5 = 3/5
+* fix pattern-matching on strings
+* fix "-> if: ..."
+* fix "1 (a: b c)
