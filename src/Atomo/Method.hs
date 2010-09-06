@@ -12,6 +12,10 @@ import Atomo.Environment
 --   LT = higher-precision
 --   GT = lower-precision
 comparePrecision :: Pattern -> Pattern -> Ordering
+comparePrecision (PNamed _ a) (PNamed _ b) =
+    comparePrecision a b
+comparePrecision (PNamed _ a) b = comparePrecision a b
+comparePrecision a (PNamed _ b) = comparePrecision a b
 comparePrecision PAny PAny = EQ
 comparePrecision PSelf PSelf = EQ
 comparePrecision (PMatch (Reference a)) (PMatch (Reference b))
@@ -30,8 +34,6 @@ comparePrecision (PSingle { ppTarget = at }) (PSingle { ppTarget = bt }) =
     comparePrecision at bt
 comparePrecision (PKeyword { ppTargets = as }) (PKeyword { ppTargets = bs }) =
     compareHeads as bs
-comparePrecision (PNamed _ a) (PNamed _ b) =
-    comparePrecision a b
 comparePrecision (PObject _) (PObject _) = EQ
 comparePrecision PAny _ = GT
 comparePrecision _ PAny = LT
@@ -49,8 +51,6 @@ comparePrecision (PHeadTail _ _) _ = LT
 comparePrecision _ (PHeadTail _ _) = GT
 comparePrecision (PObject _) _ = LT
 comparePrecision _ (PObject _) = GT
-comparePrecision (PNamed _ a) b = comparePrecision a b
-comparePrecision a (PNamed _ b) = comparePrecision a b
 comparePrecision _ _ = GT
 
 compareHeads :: [Pattern] -> [Pattern] -> Ordering
