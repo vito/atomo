@@ -384,6 +384,11 @@ loadConcurrency = do
 
 loadNumeric :: VM ()
 loadNumeric = do
+    eval [$e|Object clone|] >>= ([$p|Number|] =::)
+
+    eval [$e|Integer delegates-to: Number|]
+    eval [$e|Double delegates-to: Number|]
+
     [$p|(a: Integer) sqrt|] =: do
         Integer a <- here "a" >>= findValue isInteger
         return (Double (sqrt (fromIntegral a)))
