@@ -199,7 +199,8 @@ cKeyword wc = do
         | otherwise = value
 
     value = fmap Just $ choice
-        [ pLiteral
+        [ pDispatch
+        , pLiteral
         , pExpr
         , singleDispatch
         , parens pExpr
