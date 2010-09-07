@@ -129,6 +129,7 @@ instance Pretty Expr where
     prettyFrom _ (Define _ p v) = prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v
     prettyFrom _ (Set _ p v)    = prettyFrom CDefine p <+> text "=" <++> prettyFrom CDefine v
     prettyFrom CKeyword (Dispatch _ m@(EKeyword {})) = parens $ pretty m
+    prettyFrom CSingle (Dispatch _ m@(EKeyword {})) = parens $ pretty m
     prettyFrom c (Dispatch _ m) = prettyFrom c m
     prettyFrom c (Primitive _ v) = prettyFrom c v
     prettyFrom _ (EBlock _ ps es)
@@ -151,7 +152,7 @@ instance Pretty Expr where
 
 instance Pretty EMessage where
     prettyFrom _ (ESingle _ n (ETop {})) = text n
-    prettyFrom c (ESingle _ n t) = prettyFrom c t <+> text n
+    prettyFrom _ (ESingle _ n t) = prettyFrom CSingle t <+> text n
     prettyFrom _ (EKeyword _ ns (ETop {}:es)) = headlessKeywords ns es
     prettyFrom _ (EKeyword _ ns es) = keywords ns es
 
