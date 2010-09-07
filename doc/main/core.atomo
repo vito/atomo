@@ -1,10 +1,57 @@
 #title:{Core}tag:"core"
 
 #define:{
+    p = e
+    | p is-a?: Pattern
+    | e is-a?: Expression
+    > e
+}body:{
+    Pattern-match #atomo:p on #atomo:e, inserting the bindings from the match into the current scope. Returns the value it's matching on.
+
+    #example:({
+        a = 1
+        [x, y] = [2, 3]
+        @(ok: foo) = @(ok: 4)
+        [a, x, y, foo]
+    })
+
+    In addition to simple pattern-matching, #atomo:(=) can also define methods, however it always evaluates the right-hand side before insertion, unlike its brethren #atomo:(:=).
+
+    #example:({
+        a = 1
+        X = Object clone
+        X b = a + 2
+        X b
+    })
+}
+
+#define:{
+    p := e
+    | p is-a?: Pattern
+    | e is-a?: Expression
+    > @ok
+}body:{
+    Defines #atomo:e to be evaluated when the message described by #atomo:p is dispatched to any of its targets. Returns #atomo:(@ok).
+
+    When defining a method of the same name as an existing one, it will be inserted with the most precise first. If two patterns are equivalent, the new method replaces the old.
+
+    The expression is evaluated with the bindings from the pattern as well as the context of the definition in scope.
+
+    #example:({
+        0 fib := 1
+        1 fib := 1
+        (n: Integer) fib := (n - 2) fib + (n - 1) fib
+        5 fib
+    })
+
+    This defines three #atomo:fib methods on Integer. Note that the order of the definitions doesn't matter; they are inserted in order of precision, so the #atomo:0 and #atomo:1 pattern-matches always beat the more general #atomo:Integer match.
+}
+
+#define:{
     this
     > Object
 }body:{
-    Returns the prototype representing the current scope. For example, typing in #atomo:this in the REPL will return the current prototype:
+    Returns the object representing the current scope. For example, typing in #atomo:this in the REPL will return the current object:
 
     #example:({
         this
@@ -21,7 +68,7 @@
     o clone
     > Object
 }body:{
-    Returns a new prototype, delegating to #atomo:o.
+    Returns a new object, delegating to #atomo:o.
 }
 
 #define:{
@@ -52,7 +99,7 @@
     | p is-a?: Particle
     > Bool
 }body:{
-    Check if prototype #atomo:x would respond to the partial message #atomo:p (completed with #atomo:x to form a #atomo:Message).
+    Check if object #atomo:x would respond to the partial message #atomo:p (completed with #atomo:x to form a #atomo:Message).
 
     #example:({
         X = Object clone
