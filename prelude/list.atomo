@@ -8,3 +8,9 @@
     if: (x (take: y length) == y)
         then: { True }
         else: { x tail includes?: y }
+
+[] join: _ := []
+[x] join: _ := x
+(x . xs) join: (d: List) :=
+    x .. d .. (xs join: d)
+
