@@ -7,10 +7,11 @@ import Control.Monad.Error
 import Control.Monad.State
 import Data.Dynamic
 import Data.IORef
+import Data.Typeable
 import Text.Parsec (ParseError, SourcePos)
 import qualified Data.Vector as V
 import qualified Data.IntMap as M
-{-import qualified Language.Haskell.Interpreter as H-}
+import qualified Language.Haskell.Interpreter as H
 
 type VM = ErrorT AtomoError (StateT Env IO)
 
@@ -73,7 +74,7 @@ data AtomoError
     | ParseError ParseError
     | DidNotUnderstand Message
     | Mismatch Pattern Value
-    {-| ImportError H.InterpreterError-}
+    | ImportError H.InterpreterError
     deriving Show
 
 -- pattern-matches
@@ -241,6 +242,8 @@ instance Show VVector where
 instance Show (VM a) where
     show _ = "VM"
 
+instance Typeable (VM a) where
+    typeOf _ = mkTyConApp (mkTyCon "VM") [typeOf ()]
 
 startEnv :: Env
 startEnv = Env

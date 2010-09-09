@@ -7,6 +7,7 @@ import Text.PrettyPrint hiding (braces)
 import System.IO.Unsafe
 import qualified Data.IntMap as M
 import qualified Data.Vector as V
+import qualified Language.Haskell.Interpreter as H
 
 import Atomo.Types
 import Atomo.Parser.Base (opLetters)
@@ -179,14 +180,14 @@ instance Pretty AtomoError where
         text "parse error:" $$ nest 2 (text (show e))
     prettyFrom _ (Mismatch p v) =
         text "pattern" <+> char '<' <> pretty p <> char '>' <+> text "did not match value:" <+> pretty v
-    {-pretty (ImportError (H.UnknownError s)) =-}
-        {-text "import error:" <+> text s-}
-    {-pretty (ImportError (H.WontCompile ges)) =-}
-        {-text "import error:" <+> sep (map text (map H.errMsg ges))-}
-    {-pretty (ImportError (H.NotAllowed s)) =-}
-        {-text "import error:" <+> text s-}
-    {-pretty (ImportError (H.GhcException s)) =-}
-        {-text "import error:" <+> text s-}
+    prettyFrom _ (ImportError (H.UnknownError s)) =
+        text "import error:" <+> text s
+    prettyFrom _ (ImportError (H.WontCompile ges)) =
+        text "import error:" <+> sep (map text (map H.errMsg ges))
+    prettyFrom _ (ImportError (H.NotAllowed s)) =
+        text "import error:" <+> text s
+    prettyFrom _ (ImportError (H.GhcException s)) =
+        text "import error:" <+> text s
 
 
 instance Pretty Delegates where

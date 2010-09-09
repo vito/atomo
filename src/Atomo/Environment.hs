@@ -14,6 +14,7 @@ import System.FilePath
 import System.IO.Unsafe
 import qualified Data.IntMap as M
 import qualified Data.Vector as V
+import qualified Language.Haskell.Interpreter as H
 
 import {-# SOURCE #-} Atomo.Method
 import Atomo.Parser
@@ -610,17 +611,15 @@ loadFile filename = do
                 , loaded = file : loaded s
                 }
 
-        {-".hs" -> do-}
-            {-int <- H.runInterpreter $ do-}
-                {-H.loadModules [filename]-}
-                {-H.setTopLevelModules ["Main"]-}
-                {-H.interpret "load" (H.as :: VM ())-}
+        ".hs" -> do
+            int <- H.runInterpreter $ do
+                H.loadModules [filename]
+                H.setTopLevelModules ["Main"]
+                H.interpret "load" (H.as :: VM ())
 
-            {-load <- case int of-}
-                {-Left ie -> throwError (ImportError ie)-}
-                {-Right r -> return r-}
+            load <- either (throwError . ImportError) return int
 
-            {-load-}
+            load
 
         _ -> throwError . ErrorMsg $ "don't know how to load " ++ file
   where
