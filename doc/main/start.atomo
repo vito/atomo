@@ -10,4 +10,5 @@
 #include-section:"doc/main/numbers.atomo"
 #include-section:"doc/main/comparable.atomo"
 #include-section:"doc/main/io.atomo"
+#include-section:"doc/main/timer.atomo"
 

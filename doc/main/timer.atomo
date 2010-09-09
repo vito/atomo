@@ -1,0 +1,219 @@
+#title:{Timer}
+
+#section:{The Timer Object}
+
+#define:{
+    Timer now
+    > Double
+}body:{
+    Returns the current UNIX timestamp in seconds.
+
+    #example:({ Timer now })
+}
+
+#define:{
+    Timer sleep: duration
+    | duration is-a?: Number
+    > @ok
+}body:{
+    Delays the current process's execution by #atomo:duration microseconds.
+
+    #example:({
+        Timer sleep: 1 millisecond
+    })
+}
+
+#define:{
+    Timer do: action every: duration
+    | action is-a?: Block
+    | duration is-a?: Number
+    > Process
+}body:{
+    Spawns a new process that repeatedly calls #atomo:action at repeated intervals of #atomo:duration microseconds.
+
+    #example:({
+        p = Timer do: { "hello" print } every: 0.5 seconds
+        Timer sleep: 1 second
+        p stop
+    })
+}
+
+#define:{
+    Timer do: action after: duration
+    | action is-a?: Block
+    | duration is-a?: Number
+    > Process
+}body:{
+    Spawns a new process that calls #atomo:action after #atomo:duration microseconds.
+
+    #example:({
+        p = Timer do: { "hello" print } after: 0.5 seconds
+        Timer sleep: 1 second
+        p stop
+    })
+}
+
+
+#section:{Unit Helpers}
+
+There are many methods defined for use with #atomo:Timer so you don't have to do a bunch of calculations or repeat a bunch of 0s.
+
+#define:{
+    n us
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #atomo:n microseconds. This is effectively a no-op, returning the same number back, since Timer already uses microsecond precision.
+}
+
+#define:{
+    n microseconds
+    | n is-a?: Number
+    > Number
+}body:{
+    See #atomo:(us).
+}
+
+#define:{
+    n microsecond
+    | n is-a?: Number
+    > Number
+}body:{
+    See #atomo:(us).
+}
+
+#define:{
+    n ms
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #atomo:n milliseconds.
+}
+
+#define:{
+    n milliseconds
+    | n is-a?: Number
+    > Number
+}body:{
+    See #atomo:(ms).
+}
+
+#define:{
+    n millisecond
+    | n is-a?: Number
+    > Number
+}body:{
+    See #atomo:(ms).
+}
+
+#define:{
+    n seconds
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #atomo:n in seconds.
+}
+
+#define:{
+    n second
+    | n is-a?: Number
+    > Number
+}body:{
+    See #atomo:(seconds).
+}
+
+#define:{
+    n minutes
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #atomo:n in minutes.
+}
+
+#define:{
+    n minute
+    | n is-a?: Number
+    > Number
+}body:{
+    See #atomo:(minutes).
+}
+
+#define:{
+    n hours
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #atomo:n in hours.
+}
+
+#define:{
+    n hour
+    | n is-a?: Number
+    > Number
+}body:{
+    See #atomo:(hours).
+}
+
+#define:{
+    n days
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #atomo:n in days.
+}
+
+#define:{
+    n day
+    | n is-a?: Number
+    > Number
+}body:{
+    See #atomo:(days).
+}
+
+#define:{
+    n weeks
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #atomo:n in weeks.
+}
+
+#define:{
+    n week
+    | n is-a?: Number
+    > Number
+}body:{
+    See #atomo:(weeks).
+}
+
+#define:{
+    n months
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #atomo:n in months.
+}
+
+#define:{
+    n month
+    | n is-a?: Number
+    > Number
+}body:{
+    See #atomo:(months).
+}
+
+#define:{
+    n years
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #atomo:n in years.
+}
+
+#define:{
+    n year
+    | n is-a?: Number
+    > Number
+}body:{
+    See #atomo:(years).
+}
