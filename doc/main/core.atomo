@@ -1,31 +1,6 @@
 #title:{Core}tag:"core"
 
 #define:{
-    p = e
-    | p is-a?: Pattern
-    | e is-a?: Expression
-    > e
-}body:{
-    Pattern-match #atomo:p on #atomo:e, inserting the bindings from the match into the current scope. Returns the value it's matching on.
-
-    #example:({
-        a = 1
-        [x, y] = [2, 3]
-        @(ok: foo) = @(ok: 4)
-        [a, x, y, foo]
-    })
-
-    In addition to simple pattern-matching, #atomo:(=) can also define methods, however it always evaluates the right-hand side before insertion, unlike its brethren #atomo:(:=).
-
-    #example:({
-        a = 1
-        X = Object clone
-        X b = a + 2
-        X b
-    })
-}
-
-#define:{
     p := e
     | p is-a?: Pattern
     | e is-a?: Expression
@@ -45,6 +20,30 @@
     })
 
     This defines three #atomo:fib methods on Integer. Note that the order of the definitions doesn't matter; they are inserted in order of precision, so the #atomo:0 and #atomo:1 pattern-matches always beat the more general #atomo:Integer match.
+}
+
+#define:{
+    p = v
+    | p is-a?: Pattern
+    > v
+}body:{
+    Pattern-match #atomo:p on #atomo:v, inserting the bindings from the match into the current scope. Returns the value it's matching on (#atomo:v).
+
+    #example:({
+        a = 1
+        [x, y] = [2, 3]
+        @(ok: foo) = @(ok: 4)
+        [a, x, y, foo]
+    })
+
+    In addition to simple pattern-matching, #atomo:(=) can also define methods, however it always evaluates the right-hand side before insertion, unlike its brethren #atomo:(:=).
+
+    #example:({
+        a = 1
+        X = Object clone
+        X b = a + 2
+        X b
+    })
 }
 
 #define:{
@@ -79,12 +78,28 @@
 }
 
 #define:{
+    x delegates-to?: y
+    > Bool
+}body:{
+    Returns #atomo:True if #atomo:x delegates to #atomo:y.
+
+    #example:({
+        X = Object clone
+        Y = Object clone
+        Y delegates-to?: X
+        Y delegates-to: X
+        Y delegates-to?: X
+    })
+}
+
+#define:{
     x is-a?: y
     > Bool
 }body:{
     Returns #atomo:True if #atomo:x is equal to #atomo:y or delegates to it, directly or indirectly.
 
     #example:({
+        1 is-a?: Integer
         X = Object clone
         Y = Object clone
         X is-a?: X
