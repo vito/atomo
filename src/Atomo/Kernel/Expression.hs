@@ -19,6 +19,7 @@ load = do
             Dispatch {} -> return (particle "dispatch")
             Define {} -> return (particle "define")
             Set {} -> return (particle "set")
+            Operator {} -> return (particle "operator")
             Primitive {} -> return (particle "primitive")
             EBlock {} -> return (particle "block")
             EDispatchObject {} -> return (particle "call")

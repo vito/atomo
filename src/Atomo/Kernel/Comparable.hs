@@ -9,6 +9,12 @@ import Atomo.Haskell
 
 load :: VM ()
 load = do
+    mapM_ eval $
+        [ [$e|operator 4 ==, /=, <, <=, >=, >|]
+        , [$e|operator right 3 &&|]
+        , [$e|operator right 2 |||]
+        ]
+
     [$p|a equals: b|] =: do
         a <- here "a"
         b <- here "b"

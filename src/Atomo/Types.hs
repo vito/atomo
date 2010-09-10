@@ -119,6 +119,12 @@ data Expr
         { eLocation :: Maybe SourcePos
         , eMessage :: EMessage
         }
+    | Operator
+        { eLocation :: Maybe SourcePos
+        , eNames :: [String]
+        , eAssoc :: Assoc
+        , ePrec :: Integer
+        }
     | Primitive
         { eLocation :: Maybe SourcePos
         , eValue :: !Value

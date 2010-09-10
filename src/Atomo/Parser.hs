@@ -50,7 +50,7 @@ pOperator = tagged (do
     forM_ ops $ \name ->
         modifyState ((name, info) :)
 
-    return (Primitive Nothing (particle "ok")))
+    return (Operator Nothing ops (fst info) (snd info)))
     <?> "operator pragma"
 
 pParticle :: Parser Expr

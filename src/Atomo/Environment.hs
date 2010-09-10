@@ -142,8 +142,7 @@ initEnv = do
         ]
 
     preludes =
-        [ "operators"
-        , "block"
+        [ "block"
         , "bool"
         , "comparable"
         , "forms"
@@ -195,6 +194,11 @@ eval e = eval' e `catchError` pushStack
     eval' (Dispatch { eMessage = EKeyword { emID = i, emNames = ns, emTargets = ts } }) = do
         vs <- mapM eval ts
         dispatch (Keyword i ns vs)
+    eval' (Operator { eNames = ns, eAssoc = a, ePrec = p }) = do
+        forM_ ns $ \n -> lift . modify $ \s ->
+            s { parserState = (n, (a, p)) : parserState s }
+
+        return (particle "ok")
     eval' (Primitive { eValue = v }) = return v
     eval' (EBlock { eArguments = as, eContents = es }) = do
         t <- lift (gets top)

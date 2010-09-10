@@ -94,6 +94,7 @@ exprToExp :: Expr -> Exp
 exprToExp (Define l p e) = AppE (AppE (expr "Define" l) (patternToExp p)) (exprToExp e)
 exprToExp (Set l p e) = AppE (AppE (expr "Set" l) (patternToExp p)) (exprToExp e)
 exprToExp (Dispatch l m) = AppE (expr "Dispatch" l) (emessageToExp m)
+exprToExp (Operator l ns a p) = AppE (AppE (AppE (expr "Operator" l) (ListE (map (LitE . StringL) ns))) (assocToExp a)) (LitE (IntegerL p))
 exprToExp (Primitive l v) = AppE (expr "Primitive" l) (valueToExp v)
 exprToExp (EBlock l as es) =
     AppE (AppE (expr "EBlock" l) (ListE (map patternToExp as))) (ListE (map exprToExp es))
@@ -106,6 +107,10 @@ exprToExp (ETop l) =
     expr "ETop" l
 exprToExp (EParticle l p) =
     AppE (expr "EParticle" l) (eparticleToExp p)
+
+assocToExp :: Assoc -> Exp
+assocToExp ALeft = ConE (mkName "ALeft")
+assocToExp ARight = ConE (mkName "ARight")
 
 messageToExp :: Message -> Exp
 messageToExp (Keyword i ns vs) =

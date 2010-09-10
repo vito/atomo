@@ -132,6 +132,11 @@ instance Pretty Expr where
     prettyFrom CKeyword (Dispatch _ m@(EKeyword {})) = parens $ pretty m
     prettyFrom CSingle (Dispatch _ m@(EKeyword {})) = parens $ pretty m
     prettyFrom c (Dispatch _ m) = prettyFrom c m
+    prettyFrom _ (Operator _ ns a i) =
+        text "operator" <+> assoc a <+> integer i <+> sep (punctuate comma (map text ns))
+      where
+        assoc ALeft = text "left"
+        assoc ARight = text "right"
     prettyFrom c (Primitive _ v) = prettyFrom c v
     prettyFrom _ (EBlock _ ps es)
         | null ps = braces exprs

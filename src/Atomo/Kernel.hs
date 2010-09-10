@@ -26,6 +26,8 @@ import qualified Atomo.Kernel.Time as Time
 
 load :: VM ()
 load = do
+    eval [$e|operator right ->|]
+
     [$p|this|] =::: [$e|dispatch sender|]
 
     [$p|(x: Object) clone|] =: do

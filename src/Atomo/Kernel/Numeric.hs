@@ -7,6 +7,12 @@ import Atomo.Haskell
 
 load :: VM ()
 load = do
+    mapM_ eval $
+        [ [$e|operator right 8 ^|]
+        , [$e|operator 7 %, *, /|]
+        , [$e|operator 6 +, -|]
+        ]
+
     eval [$e|Object clone|] >>= ([$p|Number|] =::)
 
     eval [$e|Integer delegates-to: Number|]
