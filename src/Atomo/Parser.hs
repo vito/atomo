@@ -34,7 +34,6 @@ pOperator :: Parser Expr
 pOperator = tagged (do
     reserved "operator"
 
-    st <- getState
     info <- choice
         [ try $ do
             a <- choice
@@ -45,9 +44,6 @@ pOperator = tagged (do
             return (a, prec)
         , fmap ((,) ALeft) integer
         ]
-
-    pos <- getPosition
-    t <- lookAhead anyToken
 
     ops <- commaSep1 operator
 
@@ -256,13 +252,13 @@ toBinaryOps ops (EKeyword h (n:ns) (v:vs))
     nextHigher = not (null ns) && prec (head ns) > prec n
     nextAssoc = assoc n == ARight
 
-    assoc n =
-        case lookup n ops of
+    assoc n' =
+        case lookup n' ops of
             Nothing -> ALeft
             Just (a, _) -> a
 
-    prec n =
-        case lookup n ops of
+    prec n' =
+        case lookup n' ops of
             Nothing -> defaultPrec
             Just (_, p) -> p
 toBinaryOps _ u = error $ "cannot toBinaryOps: " ++ show u
@@ -297,5 +293,5 @@ continuedParse i s = do
     case runParser cparser ps s i of
         Left e -> throwError (ParseError e)
         Right (ps', es) -> do
-            lift . modify $ \s -> s { parserState = ps' }
+            lift . modify $ \e -> e { parserState = ps' }
             return es

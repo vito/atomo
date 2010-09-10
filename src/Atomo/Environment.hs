@@ -603,8 +603,8 @@ orefFrom _ v = error $ "no orefFrom for: " ++ show v
 -- load a file, either .atomo or .hs
 loadFile :: FilePath -> VM ()
 loadFile filename = do
-    lpath <- lift $ gets loadPath
-    file <- findFile ("":lpath)
+    initialPath <- lift $ gets loadPath
+    file <- findFile ("":initialPath)
 
     alreadyLoaded <- lift $ gets ((file `elem`) . loaded)
     if alreadyLoaded
@@ -621,7 +621,7 @@ loadFile filename = do
             mapM_ eval ast
 
             lift . modify $ \s -> s
-                { loadPath = lpath
+                { loadPath = initialPath
                 , loaded = file : loaded s
                 }
 

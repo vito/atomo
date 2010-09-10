@@ -302,6 +302,7 @@ toString = liftM (map (\(Char c) -> c)) . toList
 
 toList :: MonadIO m => Value -> m [Value]
 toList (List vr) = liftM V.toList (liftIO (readIORef vr))
+toList v = error $ "no toList for: " ++ show v
 
 single :: String -> Value -> Message
 {-# INLINE single #-}
@@ -326,6 +327,12 @@ esingle n = ESingle (hash n) n
 ekeyword :: [String] -> [Expr] -> EMessage
 {-# INLINE ekeyword #-}
 ekeyword ns = EKeyword (hash ns) ns
+
+completeKP :: [Maybe Value] -> [Value] -> [Value]
+completeKP [] [] = []
+completeKP (Nothing:mvs') (v:vs') = v : completeKP mvs' vs'
+completeKP (Just v:mvs') vs' = v : completeKP mvs' vs'
+completeKP mvs' vs' = error $ "impossible: completeKP on " ++ show (mvs', vs')
 
 -- | Is a value a Block?
 isBlock :: Value -> Bool
