@@ -294,6 +294,12 @@ list = list' . V.fromList
 list' :: MonadIO m => V.Vector Value -> m Value
 list' = liftM List . liftIO . newIORef
 
+toString :: Value -> IO String
+toString = fmap (map (\(Char c) -> c)) . toList
+
+toList :: Value -> IO [Value]
+toList (List vr) = fmap V.toList (readIORef vr)
+
 -- | Is a value a Block?
 isBlock :: Value -> Bool
 isBlock (Block _ _ _) = True
