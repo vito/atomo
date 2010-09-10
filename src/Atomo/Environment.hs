@@ -15,6 +15,7 @@ import System.IO.Unsafe
 import qualified Data.IntMap as M
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
+import qualified Text.PrettyPrint as P
 
 import {-# SOURCE #-} Atomo.Method
 import Atomo.Parser
@@ -77,6 +78,16 @@ printError err = do
     modify (\s -> s { stack = [] })
   where
     traceback = fmap (reverse . take 10 . reverse) (gets stack)
+
+prettyVM :: Value -> VM P.Doc
+prettyVM (List vr) = do
+    vs <- fmap V.toList (liftIO (readIORef vr))
+    pvs <- mapM prettyVM vs
+    return . P.brackets . P.hsep . P.punctuate P.comma $ pvs
+prettyVM r@(Reference _) = do
+    s <- dispatch (Single (hash "show") "show" r) >>= liftIO . toString
+    return (P.text s)
+prettyVM v = return (pretty v)
 
 -- | set up the primitive objects, etc.
 initEnv :: VM ()

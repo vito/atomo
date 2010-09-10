@@ -8,7 +8,6 @@ import System.FilePath
 
 import Atomo.Environment
 import Atomo.Parser
-import Atomo.Pretty
 import Atomo.Types
 
 
@@ -23,7 +22,8 @@ main = do
             exec $ do
                 ast <- continuedParse expr "<input>"
                 r <- evalAll ast
-                liftIO (print $ pretty r)
+                p <- prettyVM r
+                liftIO (print p)
         [fn] -> do
             source <- readFile fn
 
@@ -64,7 +64,7 @@ repl quiet = do
                 res <- fmap Right (continuedParse (input ++ expr) "<input>" >>= evalAll) `catchError` (return . Left)
 
                 case res of
-                    Right v -> liftIO . print . pretty $ v
+                    Right v -> prettyVM v >>= liftIO . print
                     Left e -> printError e
 
                 repl' "" r
