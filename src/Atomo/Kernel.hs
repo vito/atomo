@@ -670,7 +670,7 @@ loadParticle = do
                     then throwError . ErrorMsg . unwords $
                             [ "particle needs"
                             , show blanks
-                            , "values to complete,"
+                            , "values to complete, given"
                             , show (length vs)
                             ]
                     else dispatch (Keyword (hash ns) ns $ completeKP mvs vs)
