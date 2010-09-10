@@ -15,8 +15,8 @@ import Control.Concurrent
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Class
-import Control.Monad.Trans.Error (Error(..), throwError, catchError)
-import Control.Monad.Trans.State
+import Control.Monad.Trans.Error hiding (liftCallCC, liftListen, liftPass)
+import Control.Monad.Trans.State hiding (liftCallCC, liftListen, liftPass)
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
 import Text.Parsec

@@ -70,10 +70,12 @@ load = do
 
     [$p|(x: Object) as: String|] =::: [$e|x show|]
 
-    [$p|(x: Object) show|] =:
-        here "x"
-            >>= prettyVM
-            >>= string . show
+    [$p|(x: Object) show|] =: do
+        v <- here "x"
+
+        if isReference v
+            then string (show (pretty v))
+            else prettyVM v >>= string . show
 
     [$p|(x: Object) dump|] =: do
         x <- here "x"
