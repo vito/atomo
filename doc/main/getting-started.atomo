@@ -152,25 +152,43 @@ If no roles understand the message, it sends either #atomo:(did-not-understand:)
     x make-me-a-sandwich
 })
 
-That's a lot to swallow right now, so let's just dive in and play around with this thing. We'll do a small Rock-Paper-Scissors structure.
+That's a lot to swallow right now, so let's just dive in and play around with this thing. We'll do a small Rock-Paper-Scissors structure. First we'll define the three different objects involved in the game:
+
+#(rps = Object clone)
 
 #interaction:({
     Rock = Object clone
     Paper = Object clone
     Scissors = Object clone
+})on:rps
 
+Pretty simple - to make a new object just clone #atomo:Object. Here we have #atomo:Rock, #atomo:Paper, and #atomo:Scissors defined and ready for action. Now comes the fun part - defining how the game works!
+
+#interaction:({
     Rock beats?: Scissors = True
     Paper beats?: Rock = True
     Scissors beats?: Paper = True
     _ beats?: _ = False
+})on:rps
 
+The #atomo:(beats?:) method has two #italic:{roles} - the first one is being checked to see if it "beats" the second one. In this case, the standard rules apply - rock beats scissors, paper beats rock, and scissors beats paper. Let's try it out!
+
+#interaction:({
     Rock beats?: Paper
     Rock beats?: Scissors
-})
+})on:rps
 
-There are three objects involved in this simple definition - #atomo:Rock, #atomo:Paper, and #atomo:Scissors. We define the #atomo:(beats?:) method, which has two #italic:{roles} and determines whether the object in the first role beats the object in the second. The first three cases are the standard rules for rock-paper-scissors, while the fourth definition is the catch-all - it always returns #atomo:False, but only if the other combinations don't match. The catch-all definition is chosen as a last resort, because the most precise definition wins.
+Hooray! It works! Above we defined the three winning cases, and left all the other cases to fall into the catch-all - the one defined with #atomo:_ in place of both roles. This method is the least precise out of all of them, so it only gets chosen if none of the other, more specific, definitions match the dispatch. Hence, all losing combinations yield #atomo:False.
 
-Note: The actual method value is inserted on every object involved. When we say #atomo:(Rock beats?: Scissors = True), the left-hand side refers to the objects themselves - this is not pattern matching. Those could be any arbitrary expression that yields an object. When we use #code:{_} (wildcard) and no other roles are specified, as in the catch-all definition, it assumes #atomo:Object. If you want, you can type in #atomo:Rock, #atomo:Paper or #atomo:Scissors at the REPL and see a nice printout of the methods themselves, as they exist on the object.
+Just for fun, let's take a peek at what the objects themselves look like now.
+
+#interaction:({
+    Rock
+    Paper
+    Scissors
+})on:rps
+
+As you can see, the #atomo:(beats?:) method is placed on all roles involved.
 
 
 #section:{Putting it all together...}
