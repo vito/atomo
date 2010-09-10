@@ -24,11 +24,11 @@ library
     filepath,
     hashable,
     hint,
-    mtl,
     parsec >= 3.0.0,
     pretty,
     template-haskell,
     time,
+    transformers,
     vector
 
   exposed-modules:
@@ -68,4 +68,5 @@ executable atomo
     pretty-show,
     template-haskell,
     time,
+    transformers,
     vector

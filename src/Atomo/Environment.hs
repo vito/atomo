@@ -1,12 +1,14 @@
 {-# LANGUAGE BangPatterns #-}
 module Atomo.Environment where
 
-import Control.Monad.Error
-import Control.Monad.State
+import Control.Monad (filterM, forM, forM_)
+import Control.Monad.IO.Class
+import Control.Monad.Trans.Class
+import Control.Monad.Trans.Error
+import Control.Monad.Trans.State
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan
 import Data.IORef
-import Data.Hashable
 import Data.List (nub)
 import Data.Maybe (isJust)
 import System.Directory
@@ -39,7 +41,7 @@ execWith x e = do
     haltChan <- newChan
 
     forkIO $ do
-        runWith (go x >> gets halt >>= liftIO) e
+        runWith (go x >> lift (gets halt) >>= liftIO) e
             { halt = writeChan haltChan ()
             }
 
@@ -75,9 +77,9 @@ printError err = do
     liftIO (putStrLn "")
     liftIO . print . pretty $ err
 
-    modify (\s -> s { stack = [] })
+    lift . modify $ \s -> s { stack = [] }
   where
-    traceback = fmap (reverse . take 10 . reverse) (gets stack)
+    traceback = fmap (reverse . take 10 . reverse) (lift $ gets stack)
 
 prettyVM :: Value -> VM P.Doc
 prettyVM v@(List vr) = do
@@ -88,7 +90,7 @@ prettyVM v@(List vr) = do
     pvs <- mapM prettyVM vs
     return . P.brackets . P.hsep . P.punctuate P.comma $ pvs
 prettyVM r@(Reference _) = do
-    s <- dispatch (Single (hash "show") "show" r) >>= liftIO . toString
+    s <- dispatch (single "show" r) >>= liftIO . toString
     return (P.text s)
 prettyVM v = return (pretty v)
 
@@ -101,24 +103,24 @@ initEnv = do
 
     -- top scope is a proto delegating to the root object
     topObj <- newObject $ \o -> o { oDelegates = [object] }
-    modify $ \e -> e { top = topObj }
+    lift . modify $ \e -> e { top = topObj }
 
     -- define Object as the root object
-    define (PSingle (hash "Object") "Object" PSelf) (Primitive Nothing object)
-    modify $ \e -> e { primitives = (primitives e) { idObject = rORef object } }
+    define (psingle "Object" PSelf) (Primitive Nothing object)
+    lift . modify $ \e -> e { primitives = (primitives e) { idObject = rORef object } }
 
     -- this thread's channel
     chan <- liftIO newChan
-    modify $ \e -> e { channel = chan }
+    lift . modify $ \e -> e { channel = chan }
 
     -- define primitive objects
     forM_ primObjs $ \(n, f) -> do
         o <- newObject $ \o -> o { oDelegates = [object] }
-        define (PSingle (hash n) n PSelf) (Primitive Nothing o)
-        modify $ \e -> e { primitives = f (primitives e) (rORef o) }
+        define (psingle n PSelf) (Primitive Nothing o)
+        lift . modify $ \e -> e { primitives = f (primitives e) (rORef o) }
 
-    listObj <- gets (idList . primitives)
-    define (PSingle (hash "String") "String" PSelf) (Primitive Nothing (Reference listObj))
+    listObj <- lift $ gets (idList . primitives)
+    define (psingle "String" PSelf) (Primitive Nothing (Reference listObj))
 
     Kernel.load
 
@@ -162,7 +164,7 @@ eval :: Expr -> VM Value
 eval e = eval' e `catchError` pushStack
   where
     pushStack err = do
-        modify $ \s -> s { stack = e : stack s }
+        lift . modify $ \s -> s { stack = e : stack s }
         throwError err
 
     eval' (Define { ePattern = p, eExpr = ev }) = do
@@ -179,7 +181,7 @@ eval e = eval' e `catchError` pushStack
     eval' (Set { ePattern = p, eExpr = ev }) = do
         v <- eval ev
 
-        is <- gets primitives
+        is <- lift $ gets primitives
         if match is p v
             then do
                 forM_ (bindings' p v) $ \(p', v') -> do
@@ -195,16 +197,16 @@ eval e = eval' e `catchError` pushStack
         dispatch (Keyword i ns vs)
     eval' (Primitive { eValue = v }) = return v
     eval' (EBlock { eArguments = as, eContents = es }) = do
-        t <- gets top
+        t <- lift (gets top)
         return (Block t as es)
     eval' (EDispatchObject {}) = do
-        c <- gets call
+        c <- lift $ gets call
         newObject $ \o -> o
             { oMethods =
                 ( toMethods
-                    [ (PSingle (hash "sender") "sender" PSelf, callSender c)
-                    , (PSingle (hash "message") "message" PSelf, Message (callMessage c))
-                    , (PSingle (hash "context") "context" PSelf, callContext c)
+                    [ (psingle "sender" PSelf, callSender c)
+                    , (psingle "message" PSelf, Message (callMessage c))
+                    , (psingle "context" PSelf, callContext c)
                     ]
                 , M.empty
                 )
@@ -217,7 +219,7 @@ eval e = eval' e `catchError` pushStack
         mvs <- forM mes $
             maybe (return Nothing) (fmap Just . eval)
         return (Particle $ PMKeyword ns mvs)
-    eval' (ETop {}) = gets top
+    eval' (ETop {}) = lift (gets top)
     eval' (EVM { eAction = x }) = x
 
 -- | evaluating multiple expressions, returning the last result
@@ -238,7 +240,7 @@ newObject f = fmap Reference . liftIO $
 -- TODO: rebuild error stack
 withTop :: Value -> VM a -> VM a
 withTop t x = do
-    e <- get
+    e <- lift get
     Right res <- liftIO (runWith action (e { top = t }))
     either mergeStack return res
   where
@@ -246,12 +248,12 @@ withTop t x = do
         res <- (fmap Right x) `catchError` (return . Left)
         case res of
             Left e -> do
-                s <- gets stack
+                s <- lift $ gets stack
                 return (Left (s, e))
             Right r -> return (Right r)
 
     mergeStack (st, e) = do
-        modify (\s -> s { stack = st })
+        lift . modify $ \s -> s { stack = st }
         throwError e
 
 
@@ -263,7 +265,7 @@ withTop t x = do
 -- | define a pattern to evaluate an expression
 define :: Pattern -> Expr -> VM ()
 define !p !e = do
-    is <- gets primitives
+    is <- lift $ gets primitives
     newp <- methodPattern p
     os <- targets is newp
     m <- method newp e
@@ -281,7 +283,7 @@ define !p !e = do
             obj { oMethods = ms }
   where
     method p' (Primitive _ v) = return (\o -> Slot (setSelf o p') v)
-    method p' e' = gets top >>= \t -> return (\o -> Method (setSelf o p') t e')
+    method p' e' = lift (gets top) >>= \t -> return (\o -> Method (setSelf o p') t e')
 
     methodPattern p'@(PSingle { ppTarget = t }) = do
         t' <- methodPattern t
@@ -318,7 +320,7 @@ targets is (PKeyword _ _ ps) = do
     ts <- mapM (targets is) ps
     return (nub (concat ts))
 targets is (PNamed _ p) = targets is p
-targets _ PSelf = gets top >>= orefFor >>= return . (: [])
+targets _ PSelf = lift (gets top) >>= orefFor >>= return . (: [])
 targets is PAny = return [idObject is]
 targets is (PList _) = return [idList is]
 targets is (PHeadTail _ _) = return [idList is]
@@ -359,13 +361,11 @@ dispatch !m = do
             Nothing -> sendDNUs vs' (n + 1)
             Just method -> runMethod method (dnu v n)
 
-    dnu v n = Keyword
-        (hash ["did-not-understand", "at"])
+    dnu v n = keyword
         ["did-not-understand", "at"]
         [v, Message m, Integer n]
 
-    dnuSingle v = Keyword
-        (hash ["did-not-understand"])
+    dnuSingle v = keyword
         ["did-not-understand"]
         [v, Message m]
 
@@ -374,7 +374,7 @@ dispatch !m = do
 -- delegates if necessary
 findMethod :: Value -> Message -> VM (Maybe Method)
 findMethod v m = do
-    is <- gets primitives
+    is <- lift $ gets primitives
     r <- orefFor v
     o <- liftIO (readIORef r)
     case relevant (is { idMatch = r }) o m of
@@ -470,7 +470,7 @@ runMethod (Method { mPattern = p, mTop = t, mExpr = e }) m = do
         , oMethods = (bindings p m, M.empty)
         }
 
-    modify $ \e' -> e'
+    lift . modify $ \e' -> e'
         { call = Call
             { callSender = top e'
             , callMessage = m
@@ -483,7 +483,7 @@ runMethod (Method { mPattern = p, mTop = t, mExpr = e }) m = do
 -- evaluate an action in a new scope
 newScope :: VM a -> VM a
 newScope x = do
-    t <- gets top
+    t <- lift $ gets top
     nt <- newObject $ \o -> o
         { oDelegates = [t]
         }
@@ -499,7 +499,7 @@ bindings (PKeyword { ppTargets = ps }) (Keyword { mTargets = ts }) =
 bindings p m = error $ "impossible: bindings on " ++ show (p, m)
 
 bindings' :: Pattern -> Value -> [(Pattern, Value)]
-bindings' (PNamed n p) v = (PSingle (hash n) n PSelf, v) : bindings' p v
+bindings' (PNamed n p) v = (psingle n PSelf, v) : bindings' p v
 bindings' (PPMKeyword _ ps) (Particle (PMKeyword _ mvs)) = concat
     $ map (\(p, Just v) -> bindings' p v)
     $ filter (isJust . snd)
@@ -555,8 +555,8 @@ getList e = eval e >>= findValue isList >>= \(List v) -> liftIO . readIORef $ v
 
 here :: String -> VM Value
 here n =
-    gets top
-        >>= dispatch . (Single (hash n) n)
+    lift (gets top)
+        >>= dispatch . (single n)
 
 bool :: Bool -> VM Value
 {-# INLINE bool #-}
@@ -583,7 +583,7 @@ objectFor v = orefFor v >>= liftIO . readIORef
 
 orefFor :: Value -> VM ORef
 {-# INLINE orefFor #-}
-orefFor v = gets primitives >>= \is -> return $ orefFrom is v
+orefFor v = lift (gets primitives) >>= \is -> return $ orefFrom is v
 
 orefFrom :: IDs -> Value -> ORef
 {-# INLINE orefFrom #-}
@@ -603,10 +603,10 @@ orefFrom _ v = error $ "no orefFrom for: " ++ show v
 -- load a file, either .atomo or .hs
 loadFile :: FilePath -> VM ()
 loadFile filename = do
-    lpath <- gets loadPath
+    lpath <- lift $ gets loadPath
     file <- findFile ("":lpath)
 
-    alreadyLoaded <- gets ((file `elem`) . loaded)
+    alreadyLoaded <- lift $ gets ((file `elem`) . loaded)
     if alreadyLoaded
         then return ()
         else do
@@ -616,17 +616,17 @@ loadFile filename = do
             source <- liftIO (readFile file)
             ast <- continuedParse source file
 
-            modify (\s -> s { loadPath = [path] })
+            lift . modify $ \s -> s { loadPath = [path] }
 
             mapM_ eval ast
 
-            modify $ \s -> s
+            lift . modify $ \s -> s
                 { loadPath = lpath
                 , loaded = file : loaded s
                 }
 
         ".hs" -> do
-            int <- H.runInterpreter $ do
+            int <- liftIO . H.runInterpreter $ do
                 H.loadModules [filename]
                 H.setTopLevelModules ["Main"]
                 H.interpret "load" (H.as :: VM ())

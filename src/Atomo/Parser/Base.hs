@@ -4,7 +4,6 @@ module Atomo.Parser.Base where
 
 import Control.Monad.Identity
 import Data.Char
-import Data.Hashable (hash)
 import Data.List (nub, sort, (\\))
 import Text.Parsec
 import qualified Text.Parsec.Token as P
@@ -205,7 +204,7 @@ keyword p = try $ do
     target <- p
     return (name, target)
 
-keywords :: Show a => (Int -> [String] -> [a] -> b) -> a -> Parser a -> Parser b
+keywords :: Show a => ([String] -> [a] -> b) -> a -> Parser a -> Parser b
 keywords c d p = do
     (first, ks) <- choice
         [ try $ do
@@ -219,7 +218,7 @@ keywords c d p = do
 
     let (ns, ps) = unzip ks
 
-    return $ c (hash ns) ns (first:ps)
+    return $ c ns (first:ps)
 
 tagged :: Parser Expr -> Parser Expr
 tagged p = do

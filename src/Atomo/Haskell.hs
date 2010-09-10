@@ -2,9 +2,10 @@
 module Atomo.Haskell
     ( module Control.Concurrent
     , module Control.Monad
-    , module Control.Monad.Trans
-    , module Control.Monad.Error.Class
-    , module Control.Monad.State.Class
+    , module Control.Monad.IO.Class
+    , module Control.Monad.Trans.Class
+    , module Control.Monad.Trans.Error
+    , module Control.Monad.Trans.State
     , module Atomo.Types
     , p
     , e
@@ -12,9 +13,10 @@ module Atomo.Haskell
 
 import Control.Concurrent
 import Control.Monad
-import Control.Monad.Error.Class
-import Control.Monad.State.Class
-import Control.Monad.Trans
+import Control.Monad.IO.Class
+import Control.Monad.Trans.Class
+import Control.Monad.Trans.Error (Error(..), throwError, catchError)
+import Control.Monad.Trans.State
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
 import Text.Parsec

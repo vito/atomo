@@ -9,7 +9,7 @@ import qualified Data.IntMap as M
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
 
-import Atomo.Types
+import Atomo.Types hiding (keyword)
 import Atomo.Parser.Base (opLetters)
 
 

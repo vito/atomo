@@ -1,7 +1,9 @@
 module Main where
 
-import Control.Monad.Error
-import Control.Monad.State
+import Control.Monad.IO.Class
+import Control.Monad.Trans.Class
+import Control.Monad.Trans.Error
+import Control.Monad.Trans.State
 import System.Console.Haskeline
 import System.Environment (getArgs, getEnv)
 import System.FilePath
@@ -29,7 +31,7 @@ main = do
 
             let path = takeDirectory (normalise fn)
             exec $ do
-                modify (\s -> s { loadPath = path:loadPath s })
+                lift . modify $ \s -> s { loadPath = path:loadPath s }
                 ast <- continuedParse source fn
                 evalAll ast
                 return ()

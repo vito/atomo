@@ -1,8 +1,9 @@
 module Atomo.Parser where
 
-import Control.Monad.Error
-import Control.Monad.State
-import Data.Hashable (hash)
+import Control.Monad (forM_)
+import Control.Monad.Trans.Class
+import Control.Monad.Trans.Error
+import Control.Monad.Trans.State
 import Data.Maybe (fromJust)
 import Text.Parsec
 
@@ -10,7 +11,7 @@ import Atomo.Debug
 import Atomo.Parser.Base
 import {-# SOURCE #-} Atomo.Parser.Pattern
 import Atomo.Parser.Primitive
-import Atomo.Types hiding (string)
+import Atomo.Types hiding (keyword, string)
 
 -- the types of values in Dispatch syntax
 data Dispatch
@@ -107,7 +108,7 @@ pDispatch = choice
 pdKeys :: Parser Expr
 pdKeys = do
     pos <- getPosition
-    ks <- keywords EKeyword (ETop (Just pos)) pdCascade
+    ks <- keywords ekeyword (ETop (Just pos)) pdCascade
     ops <- getState
     return $ Dispatch (Just pos) (toBinaryOps ops ks)
     <?> "keyword dispatch"
@@ -133,18 +134,18 @@ pdCascade = do
     dispatches p (DNormal e:ps) =
         dispatches' p ps e
     dispatches p (DParticle (EPMSingle n):ps) =
-        dispatches' p ps (Dispatch (Just p) $ ESingle (hash n) n (ETop (Just p)))
+        dispatches' p ps (Dispatch (Just p) $ esingle n (ETop (Just p)))
     dispatches p (DParticle (EPMKeyword ns (Nothing:es)):ps) =
-        dispatches' p ps (Dispatch (Just p) $ EKeyword (hash ns) ns (ETop (Just p):map fromJust es))
+        dispatches' p ps (Dispatch (Just p) $ ekeyword ns (ETop (Just p):map fromJust es))
     dispatches _ ds = error $ "impossible: dispatches on " ++ show ds
 
     -- roll a list of partial messages into a bunch of dispatches
     dispatches' :: SourcePos -> [Dispatch] -> Expr -> Expr
     dispatches' _ [] acc = acc
     dispatches' p (DParticle (EPMKeyword ns (Nothing:es)):ps) acc =
-        dispatches' p ps (Dispatch (Just p) $ EKeyword (hash ns) ns (acc : map fromJust es))
+        dispatches' p ps (Dispatch (Just p) $ ekeyword ns (acc : map fromJust es))
     dispatches' p (DParticle (EPMSingle n):ps) acc =
-        dispatches' p ps (Dispatch (Just p) $ ESingle (hash n) n acc)
+        dispatches' p ps (Dispatch (Just p) $ esingle n acc)
     dispatches' _ x y = error $ "impossible: dispatches' on " ++ show (x, y)
 
 pList :: Parser Expr
@@ -211,7 +212,7 @@ cKeyword wc = do
     singleDispatch = tagged $ do
         pos <- getPosition
         n <- identifier
-        return (Dispatch Nothing (ESingle (hash n) n (ETop (Just pos))))
+        return (Dispatch Nothing (esingle n (ETop (Just pos))))
 
 -- work out precadence, associativity, etc. from a stream of operators
 -- the input is a keyword EMessage with a mix of operators and identifiers
@@ -220,30 +221,30 @@ toBinaryOps :: Operators -> EMessage -> EMessage
 toBinaryOps _ done@(EKeyword _ [_] [_, _]) = done
 toBinaryOps ops (EKeyword h (n:ns) (v:vs))
     | nextFirst =
-         EKeyword (hash [n]) [n]
+         ekeyword [n]
             [ v
             , Dispatch (eLocation v)
-                (toBinaryOps ops (EKeyword (hash ns) ns vs))
+                (toBinaryOps ops (ekeyword ns vs))
             ]
     | isOperator n =
-        toBinaryOps ops . EKeyword (hash ns) ns $
-            (Dispatch (eLocation v) (EKeyword (hash [n]) [n] [v, head vs]):tail vs)
+        toBinaryOps ops . ekeyword ns $
+            (Dispatch (eLocation v) (ekeyword [n] [v, head vs]):tail vs)
     | nonOperators == ns = EKeyword h (n:ns) (v:vs)
     | null nonOperators && length vs > 2 =
-        EKeyword (hash [head ns]) [head ns]
+        ekeyword [head ns]
             [ Dispatch (eLocation v) $
-                EKeyword (hash [n]) [n] [v, head vs]
+                ekeyword [n] [v, head vs]
             , Dispatch (eLocation v) $
-                toBinaryOps ops (EKeyword (hash (tail ns)) (tail ns) (tail vs))
+                toBinaryOps ops (ekeyword (tail ns) (tail vs))
             ]
     | otherwise =
-        EKeyword (hash (n:nonOperators))
+        ekeyword
             (n : nonOperators)
             (concat
                 [ [v]
                 , take numNonOps vs
                 , [ Dispatch (eLocation v) $ toBinaryOps ops
-                        (EKeyword (hash (drop numNonOps ns))
+                        (ekeyword
                             (drop numNonOps ns)
                             (drop numNonOps vs)) ]
                 ])
@@ -292,9 +293,9 @@ parse p = runParser p [] "<parse>"
 -- | parse input i from source s, maintaining parser state between parses
 continuedParse :: String -> String -> VM [Expr]
 continuedParse i s = do
-    ps <- gets parserState
+    ps <- lift (gets parserState)
     case runParser cparser ps s i of
         Left e -> throwError (ParseError e)
         Right (ps', es) -> do
-            modify (\s -> s { parserState = ps' })
+            lift . modify $ \s -> s { parserState = ps' }
             return es

@@ -1,13 +1,12 @@
 module Atomo.Parser.Pattern where
 
-import Data.Hashable (hash)
 import Text.Parsec
 
 import Atomo.Debug
 import Atomo.Parser
 import Atomo.Parser.Base
 import Atomo.Parser.Primitive
-import Atomo.Types
+import Atomo.Types hiding (keyword)
 
 pPattern :: Parser Pattern
 pPattern = choice
@@ -61,7 +60,7 @@ ppSingle = do
 
     dump ("single", t, v)
 
-    return $ PSingle (hash v) v t
+    return $ psingle v t
   where
     cLast (Dispatch _ (ESingle _ n _)) = return n
     cLast _ = fail "last target of dispatch chain is not a single messsage"
@@ -84,7 +83,7 @@ ppSingle = do
 
 
 ppKeywords :: Parser Pattern
-ppKeywords = keywords PKeyword PSelf pObjectPattern
+ppKeywords = keywords pkeyword PSelf pObjectPattern
 
 ppNamed :: Parser Pattern
 ppNamed = parens $ do
@@ -113,7 +112,7 @@ ppObject = choice
     name = do
         pos <- getPosition
         n <- capIdentifier
-        return $ Dispatch (Just pos) (ESingle (hash n) n (ETop (Just pos)))
+        return $ Dispatch (Just pos) (esingle n (ETop (Just pos)))
 
 ppAny :: Parser Pattern
 ppAny = ppWildcard

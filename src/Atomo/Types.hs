@@ -3,9 +3,12 @@ module Atomo.Types where
 
 import Control.Concurrent (ThreadId)
 import Control.Concurrent.Chan
-import Control.Monad.Error
-import Control.Monad.State
+import Control.Monad (liftM)
+import Control.Monad.IO.Class
+import Control.Monad.Trans.Error
+import Control.Monad.Trans.State
 import Data.Dynamic
+import Data.Hashable (hash)
 import Data.IORef
 import Data.Typeable
 import Text.Parsec (ParseError, SourcePos)
@@ -294,11 +297,35 @@ list = list' . V.fromList
 list' :: MonadIO m => V.Vector Value -> m Value
 list' = liftM List . liftIO . newIORef
 
-toString :: Value -> IO String
-toString = fmap (map (\(Char c) -> c)) . toList
+toString :: MonadIO m => Value -> m String
+toString = liftM (map (\(Char c) -> c)) . toList
 
-toList :: Value -> IO [Value]
-toList (List vr) = fmap V.toList (readIORef vr)
+toList :: MonadIO m => Value -> m [Value]
+toList (List vr) = liftM V.toList (liftIO (readIORef vr))
+
+single :: String -> Value -> Message
+{-# INLINE single #-}
+single n = Single (hash n) n
+
+keyword :: [String] -> [Value] -> Message
+{-# INLINE keyword #-}
+keyword ns = Keyword (hash ns) ns
+
+psingle :: String -> Pattern -> Pattern
+{-# INLINE psingle #-}
+psingle n = PSingle (hash n) n
+
+pkeyword :: [String] -> [Pattern] -> Pattern
+{-# INLINE pkeyword #-}
+pkeyword ns = PKeyword (hash ns) ns
+
+esingle :: String -> Expr -> EMessage
+{-# INLINE esingle #-}
+esingle n = ESingle (hash n) n
+
+ekeyword :: [String] -> [Expr] -> EMessage
+{-# INLINE ekeyword #-}
+ekeyword ns = EKeyword (hash ns) ns
 
 -- | Is a value a Block?
 isBlock :: Value -> Bool

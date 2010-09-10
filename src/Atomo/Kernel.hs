@@ -3,7 +3,6 @@
 module Atomo.Kernel (load) where
 
 import Data.Dynamic
-import Data.Hashable (hash)
 import Data.IORef
 import Data.Maybe (isJust)
 import Data.Time.Clock.POSIX (getPOSIXTime)
@@ -56,8 +55,8 @@ load = do
 
         let completed =
                 case p of
-                    PMKeyword ns mvs -> Keyword (hash ns) ns (completeKP mvs [x])
-                    PMSingle n -> Single (hash n) n x
+                    PMKeyword ns mvs -> keyword ns (completeKP mvs [x])
+                    PMSingle n -> single n x
 
         findMethod x completed
             >>= bool . isJust
@@ -86,7 +85,7 @@ load = do
 
         -- escape from the method scope back to the sender
         sender <- eval [$e|dispatch sender|]
-        modify $ \e -> e { top = sender }
+        lift . modify $ \e -> e { top = sender }
 
         if all isChar fn
             then loadFile (map (\(Char c) -> c) fn)
@@ -196,7 +195,7 @@ load = do
 
                     withTop blockScope (evalAll es)
       where
-        bs = addMethod (Slot (PSingle (hash "this") "this" PSelf) t) $
+        bs = addMethod (Slot (psingle "this" PSelf) t) $
                 toMethods . concat $ zipWith bindings' ps as
 
         merge (os, ok) (ns, nk) =
@@ -344,7 +343,7 @@ loadConcurrency = do
         v <- liftIO (readChan chan)
         return v
 
-    [$p|halt|] =: gets halt >>= liftIO >> return (particle "ok")
+    [$p|halt|] =: lift (gets halt) >>= liftIO >> return (particle "ok")
 
     [$p|(p: Process) ! v|] =: do
         Process chan _ <- here "p" >>= findValue isProcess
@@ -613,7 +612,7 @@ loadComparable = do
 
         if length as == length bs
             then do
-                eqs <- zipWithM (\a b -> dispatch (Keyword (hash ["=="]) ["=="] [a, b])) as bs
+                eqs <- zipWithM (\a b -> dispatch (keyword ["=="] [a, b])) as bs
                 true <- bool True
                 bool (all (== true) eqs)
             else bool False
@@ -630,11 +629,11 @@ loadComparable = do
         true <- bool True
         case (a, b) of
             (Single ai _ at, Single bi _ bt) -> do
-                t <- dispatch (Keyword (hash ["=="]) ["=="] [at, bt])
+                t <- dispatch (keyword ["=="] [at, bt])
                 bool (ai == bi && t == true)
             (Keyword ai _ avs, Keyword bi _ bvs)
                 | ai == bi && length avs == length bvs -> do
-                eqs <- zipWithM (\x y -> dispatch (Keyword (hash ["=="]) ["=="] [x, y])) avs bvs
+                eqs <- zipWithM (\x y -> dispatch (keyword ["=="] [x, y])) avs bvs
                 bool (all (== true) eqs)
             _ -> bool False
 
@@ -652,7 +651,7 @@ loadComparable = do
                     case (mx, my) of
                         (Nothing, Nothing) -> return true
                         (Just x, Just y) ->
-                            dispatch (Keyword (hash ["=="]) ["=="] [x, y])
+                            dispatch (keyword ["=="] [x, y])
                         _ -> bool False) avs bvs
                 bool (all (== true) eqs)
             _ -> bool False
@@ -674,11 +673,11 @@ loadParticle = do
                             , "values to complete, given"
                             , show (length vs)
                             ]
-                    else dispatch (Keyword (hash ns) ns $ completeKP mvs vs)
+                    else dispatch (keyword ns $ completeKP mvs vs)
             PMSingle n -> do
                 if length vs == 0
                     then throwError . ErrorMsg $ "particle needs 1 values to complete, given 0"
-                    else dispatch (Single (hash n) n (head vs))
+                    else dispatch (single n (head vs))
 
     [$p|(p: Particle) name|] =: do
         Particle (PMSingle n) <- here "p" >>= findValue isParticle
@@ -751,7 +750,7 @@ loadList = do
         b <- here "b"
         Integer n <- here "n" >>= findValue isInteger
         vs <- V.replicateM (fromIntegral n) $
-            dispatch (Single (hash "call") "call" b)
+            dispatch (single "call" b)
         list' vs
 
     [$p|(a: List) .. (b: List)|] =: do
@@ -768,7 +767,7 @@ loadList = do
 
         nvs <- V.mapM (\v -> do
             as <- list' (V.singleton v)
-            dispatch (Keyword (hash ["call"]) ["call"] [b, as])) vs
+            dispatch (keyword ["call"] [b, as])) vs
 
         list' nvs
 
@@ -781,7 +780,7 @@ loadList = do
 
         nvs <- V.zipWithM (\x y -> do
             as <- list' (V.fromList [x, y])
-            dispatch (Keyword (hash ["call"]) ["call"] [b, as])) xs ys
+            dispatch (keyword ["call"] [b, as])) xs ys
 
         list' nvs
 
@@ -792,7 +791,7 @@ loadList = do
         t <- bool True
         nvs <- V.filterM (\v -> do
             as <- list' (V.singleton v)
-            check <- dispatch (Keyword (hash ["call"]) ["call"] [b, as])
+            check <- dispatch (keyword ["call"] [b, as])
             return (check == t)) vs
 
         list' nvs
@@ -803,7 +802,7 @@ loadList = do
 
         V.fold1M (\x acc -> do
             as <- list [x, acc]
-            dispatch (Keyword (hash ["call"]) ["call"] [b, as])) vs
+            dispatch (keyword ["call"] [b, as])) vs
 
     [$p|(l: List) reduce: b with: v|] =: do
         vs <- getList [$e|l|]
@@ -812,7 +811,7 @@ loadList = do
 
         V.foldM (\x acc -> do
             as <- list [x, acc]
-            dispatch (Keyword (hash ["call"]) ["call"] [b, as])) v vs
+            dispatch (keyword ["call"] [b, as])) v vs
 
     [$p|(l: List) concat|] =::: [$e|l reduce: @.. with: []|]
     [$p|(l: List) sum|] =::: [$e|l reduce: @+ with: 0|]
@@ -827,7 +826,7 @@ loadList = do
         t <- bool True
         nvs <- V.mapM (\v -> do
             as <- list' (V.singleton v)
-            check <- dispatch (Keyword (hash ["call"]) ["call"] [b, as])
+            check <- dispatch (keyword ["call"] [b, as])
             return (check == t)) vs
 
         bool (V.and nvs)
@@ -839,7 +838,7 @@ loadList = do
         t <- bool True
         nvs <- V.mapM (\v -> do
             as <- list' (V.singleton v)
-            check <- dispatch (Keyword (hash ["call"]) ["call"] [b, as])
+            check <- dispatch (keyword ["call"] [b, as])
             return (check == t)) vs
 
         bool (V.or nvs)
@@ -865,16 +864,16 @@ loadList = do
         Integer y <- here "y" >>= findValue isInteger
 
         if x < y
-            then dispatch (Keyword (hash ["up-to"]) ["up-to"] [Integer x, Integer y])
-            else dispatch (Keyword (hash ["down-to"]) ["down-to"] [Integer x, Integer y])
+            then dispatch (keyword ["up-to"] [Integer x, Integer y])
+            else dispatch (keyword ["down-to"] [Integer x, Integer y])
 
     [$p|(x: Integer) ... (y: Integer)|] =: do
         Integer x <- here "x" >>= findValue isInteger
         Integer y <- here "y" >>= findValue isInteger
 
         if x < y
-            then dispatch (Keyword (hash ["up-to"]) ["up-to"] [Integer x, Integer (y - 1)])
-            else dispatch (Keyword (hash ["down-to"]) ["down-to"] [Integer x, Integer (y + 1)])
+            then dispatch (keyword ["up-to"] [Integer x, Integer (y - 1)])
+            else dispatch (keyword ["down-to"] [Integer x, Integer (y + 1)])
 
     [$p|(x: Integer) to: (y: Integer) by: (d: Integer)|] =: do
         Integer x <- here "x" >>= findValue isInteger
@@ -937,7 +936,7 @@ loadPattern = do
     [$p|(p: Pattern) matches?: v|] =: do
         Pattern p <- here "p" >>= findValue isPattern
         v <- here "v"
-        ids <- gets primitives
+        ids <- lift (gets primitives)
 
         if match ids p v
             then do
