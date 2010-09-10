@@ -80,8 +80,11 @@ printError err = do
     traceback = fmap (reverse . take 10 . reverse) (gets stack)
 
 prettyVM :: Value -> VM P.Doc
-prettyVM (List vr) = do
+prettyVM v@(List vr) = do
     vs <- fmap V.toList (liftIO (readIORef vr))
+    if all isChar vs
+        then return (pretty v)
+        else do
     pvs <- mapM prettyVM vs
     return . P.brackets . P.hsep . P.punctuate P.comma $ pvs
 prettyVM r@(Reference _) = do

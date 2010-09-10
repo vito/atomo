@@ -73,7 +73,8 @@ load = do
 
     [$p|(x: Object) show|] =:
         here "x"
-            >>= string . show . pretty
+            >>= prettyVM
+            >>= string . show
 
     [$p|(x: Object) dump|] =: do
         x <- here "x"
