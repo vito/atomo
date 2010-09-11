@@ -1,0 +1,39 @@
+load: "examples/html.atomo"
+load: "examples/web.hs"
+
+Association = Object clone
+a -> b := Association clone do: { from = a; to = b }
+(a: Association) show := a from show .. " -> " .. a to show
+
+Demo = Website clone do: {
+    routes = [
+        "/" -> @index,
+
+        "hello/:name" -> @hello:,
+
+        -- assigning a route to a block to be called
+        -- first arg is Demo, but we ignore it here
+        "some/:block/:args" -> { _ b a | "Got: " .. [b, a] show }
+    ]
+}
+
+Demo index =
+    HTML new (do: {
+        doctype
+        html: {
+            head: {
+                title: "Hi!"
+            }
+            body: {
+                h1: "Hello, world!"
+                p: "Hop on over to the REPL and add some methods to the Demo object!"
+                p: { a: "Another page!" href: "/hello/world" }
+            }
+        }
+    }) (as: String)
+
+Demo hello: name := "Hello, " .. name .. "!"
+
+-- be sure to load this in the REPL and play around with
+-- Demo, adding new routes at runtime
+DemoProcess = { Demo start-on: 8000 } spawn
