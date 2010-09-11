@@ -2,13 +2,13 @@
 
 #table-of-contents
 
-#include-section:"doc/main/getting-started.atomo"
-#include-section:"doc/main/core.atomo"
-#include-section:"doc/main/lists.atomo"
-#include-section:"doc/main/blocks.atomo"
-#include-section:"doc/main/concurrency.atomo"
-#include-section:"doc/main/numbers.atomo"
-#include-section:"doc/main/comparable.atomo"
-#include-section:"doc/main/io.atomo"
-#include-section:"doc/main/timer.atomo"
+#include-section:"getting-started.atomo"
+#include-section:"core.atomo"
+#include-section:"lists.atomo"
+#include-section:"blocks.atomo"
+#include-section:"concurrency.atomo"
+#include-section:"numbers.atomo"
+#include-section:"comparable.atomo"
+#include-section:"io.atomo"
+#include-section:"timer.atomo"
 
