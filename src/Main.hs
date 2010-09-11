@@ -5,7 +5,8 @@ import Control.Monad.Trans.Class
 import Control.Monad.Trans.Error
 import Control.Monad.Trans.State
 import System.Console.Haskeline
-import System.Environment (getArgs, getEnv)
+import System.Directory (getHomeDirectory)
+import System.Environment (getArgs)
 import System.FilePath
 
 import Atomo.Environment
@@ -38,18 +39,18 @@ main = do
         {-["-make", fn] -> parseFile fn >>= compileAST-}
         _ -> putStrLn . unlines $
             [ "usage:"
-            , "\tthe\t\tstart the REPL"
-            , "\tthe -d\t\tstart the REPL in quiet mode"
-            , "\tthe -e EXPR\t\tevaluate EXPR and output the result"
-            , "\tthe FILENAME\trun FILENAME"
+            , "\tatomo\t\tstart the REPL"
+            , "\tatomo -d\t\tstart the REPL in quiet mode"
+            , "\tatomo -e EXPR\t\tevaluate EXPR and output the result"
+            , "\tatomo FILENAME\trun FILENAME"
             ]
 
 repl :: Bool -> VM ()
 repl quiet = do
-    home <- liftIO $ getEnv "HOME"
+    home <- liftIO getHomeDirectory
     repl' "" $ runInputT
         defaultSettings
-            { historyFile = Just (home ++ "/.the_history")
+            { historyFile = Just (home </> ".atomo_history")
             }
   where
     repl' input r = do
