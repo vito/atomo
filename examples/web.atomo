@@ -1,10 +1,6 @@
 load: "examples/html.atomo"
 load: "examples/web.hs"
 
-Association = Object clone
-a -> b := Association clone do: { from = a; to = b }
-(a: Association) show := a from show .. " -> " .. a to show
-
 Demo = Website clone do: {
     routes = [
         "/" -> @index,

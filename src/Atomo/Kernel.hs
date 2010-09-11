@@ -25,6 +25,7 @@ import qualified Atomo.Kernel.Pattern as Pattern
 import qualified Atomo.Kernel.Ports as Ports
 import qualified Atomo.Kernel.Time as Time
 import qualified Atomo.Kernel.Bool as Bool
+import qualified Atomo.Kernel.Association as Association
 
 load :: VM ()
 load = do
@@ -142,6 +143,7 @@ load = do
     Ports.load
     Time.load
     Bool.load
+    Association.load
 
     prelude
 

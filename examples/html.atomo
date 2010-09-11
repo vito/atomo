@@ -1,8 +1,5 @@
 HTML = Object clone
 
-Association = Object clone
-a -> b := Association clone do: { from = a; to = b }
-
 Self-Closing = ["base", "meta", "link", "hr", "br", "param", "img", "area", "input", "col", "frame"]
 
 
