@@ -46,6 +46,7 @@ library
     Atomo.Kernel.Ports,
     Atomo.Kernel.Time,
     Atomo.Kernel.Bool,
+    Atomo.Kernel.Association,
     Atomo.Method,
     Atomo.Parser,
     Atomo.Parser.Base,
