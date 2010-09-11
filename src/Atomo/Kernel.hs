@@ -2,6 +2,7 @@
 module Atomo.Kernel (load) where
 
 import Data.IORef
+import Data.List ((\\))
 import Data.Maybe (isJust)
 import qualified Data.IntMap as M
 import qualified Data.Vector as V
@@ -185,14 +186,14 @@ joinWith t (Block s ps bes) as
             Reference r -> do
                 Object ds ms <- objectFor t
                 blockScope <- newObject $ \o -> o
-                    { oDelegates = s:ds
+                    { oDelegates = ds ++ [s]
                     , oMethods = ms
                     }
 
                 res <- withTop blockScope (evalAll bes)
                 new <- objectFor blockScope
                 liftIO $ writeIORef r new
-                    { oDelegates = tail (oDelegates new)
+                    { oDelegates = init (oDelegates new)
                     , oMethods = oMethods new
                     }
 
@@ -218,17 +219,20 @@ joinWith t (Block s ps bes) as
                     { oMethods = ms
                     }
 
+                -- the 3 additional scopes for the block
+                let fakes = [pseudoScope, doppelganger, s]
+
                 -- the main scope, methods are taken from here and merged with
                 -- the originals. delegates to the pseudoscope and doppelganger
                 -- so it has their methods in scope, but definitions go here
                 blockScope <- newObject $ \o -> o
-                    { oDelegates = (pseudoScope:doppelganger:s:ds)
+                    { oDelegates = ds ++ fakes
                     }
 
                 res <- withTop blockScope (evalAll bes)
                 new <- objectFor blockScope
                 liftIO (writeIORef r new
-                    { oDelegates = drop 3 (oDelegates new)
+                    { oDelegates = oDelegates new \\ fakes
                     , oMethods = merge ms (oMethods new)
                     })
 
