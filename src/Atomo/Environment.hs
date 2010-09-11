@@ -648,3 +648,21 @@ delegatesTo f t = do
         | otherwise = do
             o <- objectFor d
             delegatesTo' (oDelegates o ++ ds)
+
+isA :: Value -> Value -> VM Bool
+isA x y = do
+    xr <- orefFor x
+    yr <- orefFor y
+
+    if xr == yr
+        then return True
+        else do
+            ds <- fmap oDelegates (objectFor x)
+            isA' ds
+  where
+    isA' [] = return False
+    isA' (d:ds) = do
+        di <- isA d y
+        if di
+            then return True
+            else isA' ds

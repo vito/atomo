@@ -55,12 +55,7 @@ load = do
     [$p|(x: Object) is-a?: (y: Object)|] =: do
         x <- here "x"
         y <- here "y"
-        xr <- orefFor x
-        yr <- orefFor y
-
-        if xr == yr
-            then bool True
-            else delegatesTo x y >>= bool
+        isA x y >>= bool
 
     [$p|(x: Object) responds-to?: (p: Particle)|] =: do
         x <- here "x"
