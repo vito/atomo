@@ -35,7 +35,7 @@ load = mapM_ eval [$es|
     while: (test: Block) do: (action: Block) :=
         when: test call
             do: {
-                action scope do: action
+                action context do: action
                 while: test do: action
             }
 

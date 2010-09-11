@@ -164,11 +164,11 @@ prelude = mapM_ eval [$es|
                 match = (p as: Pattern) matches?: v
                 if: (match == @no)
                     then: {
-                        v match: (Block new: es tail in: b scope)
+                        v match: (Block new: es tail in: b context)
                     }
                     else: {
                         @(yes: obj) = match
-                        obj join: (Block new: [e] in: b scope)
+                        obj join: (Block new: [e] in: b context)
                     }
             }
 |]
