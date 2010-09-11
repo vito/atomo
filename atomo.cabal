@@ -34,14 +34,25 @@ library
     Atomo.Environment,
     Atomo.Haskell,
     Atomo.Kernel,
+    Atomo.Kernel.Numeric,
+    Atomo.Kernel.List,
+    Atomo.Kernel.Block,
+    Atomo.Kernel.Expression,
+    Atomo.Kernel.Concurrency,
+    Atomo.Kernel.Message,
+    Atomo.Kernel.Comparable,
+    Atomo.Kernel.Particle,
+    Atomo.Kernel.Pattern,
+    Atomo.Kernel.Ports,
+    Atomo.Kernel.Time,
+    Atomo.Kernel.Bool,
     Atomo.Method,
     Atomo.Parser,
     Atomo.Parser.Base,
     Atomo.Parser.Pattern,
     Atomo.Parser.Primitive,
     Atomo.Pretty,
-    Atomo.Types,
-    Paths_atomo
+    Atomo.Types
 
 
 executable atomo
