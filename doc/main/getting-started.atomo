@@ -97,11 +97,11 @@ This brings you tons of delicious dynamic power, because scopes are simply objec
     x
 })
 
-#atomo:(Block)s provide a #atomo:context method for grabbing the scope in which they were defined. Putting the pieces together, #atomo:in-scope is easily defined - which converts a block into one that is evalulated in its original scope:
+#atomo:(Block)s provide a #atomo:context method for grabbing the scope in which they were defined. Putting the pieces together, #atomo:in-context is easily defined - which converts a block into one that is evalulated in its original scope:
 
 #interaction:({
     a = 1
-    { a = a + 1 } in-scope call
+    { a = a + 1 } in-context call
     a
 })
 

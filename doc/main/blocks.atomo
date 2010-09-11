@@ -94,7 +94,7 @@ Blocks are the bread and butter of Atomo. They represent chunks of unevaluated c
 }
 
 #define:{
-    b in-scope
+    b in-context
     | b is-a?: Block
     > is-a?: Block
 }body:{
@@ -104,7 +104,7 @@ Blocks are the bread and butter of Atomo. They represent chunks of unevaluated c
         a = 42
         { a = 1; a } call
         a
-        { a = 1; a } in-scope call
+        { a = 1; a } in-context call
         a
     })
 }
@@ -131,7 +131,7 @@ Blocks are the bread and butter of Atomo. They represent chunks of unevaluated c
     | b is-a?: Block
     > @ok
 }body:{
-    Alias for #atomo:(1 up-to: n do: b in-scope).
+    Alias for #atomo:(1 up-to: n do: b in-context).
 
     #example:({
         5 times: { "Odelay!" print }

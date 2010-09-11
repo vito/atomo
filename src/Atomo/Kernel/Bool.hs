@@ -30,7 +30,7 @@ load = mapM_ eval [$es|
         b call
 
     when: (b: Bool) do: (action: Block) :=
-        if: b then: action in-scope else: { @ok }
+        if: b then: action in-context else: { @ok }
 
     while: (test: Block) do: (action: Block) :=
         when: test call

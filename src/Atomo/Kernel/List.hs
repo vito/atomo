@@ -240,7 +240,7 @@ load = do
 prelude :: VM ()
 prelude = mapM_ eval [$es|
     (l: List) each: (b: Block) := {
-        l map: b in-scope
+        l map: b in-context
         l
     } call
 

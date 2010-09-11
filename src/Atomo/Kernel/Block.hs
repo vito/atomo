@@ -44,7 +44,7 @@ load = do
                 ]
             else doBlock (toMethods . concat $ zipWith bindings' ps vs) s es
 
-    [$p|(b: Block) scope|] =: do
+    [$p|(b: Block) context|] =: do
         Block s _ _ <- here "b" >>= findValue isBlock
         return s
 
@@ -63,11 +63,11 @@ prelude :: VM ()
 prelude = mapM_ eval [$es|
     (b: Block) repeat := { b call; b repeat } call
 
-    (b: Block) in-scope :=
+    (b: Block) in-context :=
         Object clone do: {
             delegates-to: b
-            call := b scope join: b
-            call: vs := b scope join: b with: vs
+            call := b context join: b
+            call: vs := b context join: b with: vs
         }
 
     (a: Block) .. (b: Block) :=
@@ -83,5 +83,5 @@ prelude = mapM_ eval [$es|
         start to: end by: -1 do: b
 
     (n: Integer) times: (b: Block) :=
-        1 up-to: n do: b in-scope
+        1 up-to: n do: b in-context
 |]
