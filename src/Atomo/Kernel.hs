@@ -190,7 +190,7 @@ joinWith t (Block s ps bes) as
                 res <- withTop blockScope (evalAll bes)
                 new <- objectFor blockScope
                 liftIO $ writeIORef r new
-                    { oDelegates = init (oDelegates new)
+                    { oDelegates = oDelegates new \\ [s]
                     , oMethods = oMethods new
                     }
 
