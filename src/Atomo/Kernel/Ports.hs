@@ -108,9 +108,35 @@ load = do
         Haskell inh <- eval [$e|dispatch sender current-input-port handle|]
         line <- liftIO (hGetLine (fromDyn inh (error "current-input-port handle invalid!"))) -- TODO
         string line
+
+    prelude
   where
     portObj hdl = newScope $ do
         port <- eval [$e|Port clone|]
         [$p|p|] =:: port
         [$p|p handle|] =:: Haskell (toDyn hdl)
         here "p"
+
+
+prelude :: VM ()
+prelude = mapM_ eval [$es|
+    with-output-to: (fn: String) do: b :=
+        Port (new: fn) ensuring: @close do: { file |
+            with-output-to: file do: b
+        }
+
+    with-output-to: (p: Port) do: b := {
+        current-output-port = p
+        join: b
+    } call
+
+    with-input-from: (fn: String) do: (b: Block) :=
+        Port (new: fn) ensuring: @close do: { file |
+            with-input-from: file do: b
+        }
+
+    with-input-from: (p: Port) do: (b: Block) := {
+        current-input-port = p
+        join: b
+    } call
+|]

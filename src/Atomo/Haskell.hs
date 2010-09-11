@@ -9,6 +9,7 @@ module Atomo.Haskell
     , module Atomo.Types
     , p
     , e
+    , es
     ) where
 
 import Control.Concurrent
@@ -34,41 +35,26 @@ p = QuasiQuoter quotePatternExp undefined
 e :: QuasiQuoter
 e = QuasiQuoter quoteExprExp undefined
 
-parsePattern :: Monad m => String -> (String, Int, Int) -> m Pattern
-parsePattern s (file, line, col) =
-    case runParser p [] "<qq>" s of
-        Left e -> fail (show e)
-        Right e -> return e
-  where
-    p = do
-        pos <- getPosition
-        setPosition $
-            (flip setSourceName) file $
-            (flip setSourceLine) line $
-            (flip setSourceColumn) col $
-            pos
-        whiteSpace
-        p <- ppDefine
-        eof
-        return p
+es :: QuasiQuoter
+es = QuasiQuoter quoteExprsExp undefined
 
-quotePatternExp :: String -> TH.ExpQ
-quotePatternExp s = do
+withLocation :: (String -> (String, Int, Int) -> Q a) -> (a -> Exp) -> String -> TH.ExpQ
+withLocation p c s = do
     l <- TH.location
-    pat <- parsePattern s
+    r <- p s
         ( TH.loc_filename l
         , fst $ TH.loc_start l
         , snd $ TH.loc_start l
         )
-    return (patternToExp pat)
+    return (c r)
 
-parseExpr :: Monad m => String -> (String, Int, Int) -> m Expr
-parseExpr s (file, line, col) =
-    case runParser p [] "<qq>" s of
+parsing :: Monad m => Parser a -> String -> (String, Int, Int) -> m a
+parsing p s (file, line, col) =
+    case runParser pp [] "<qq>" s of
         Left e -> fail (show e)
         Right e -> return e
   where
-    p = do
+    pp = do
         pos <- getPosition
         setPosition $
             (flip setSourceName) file $
@@ -76,19 +62,28 @@ parseExpr s (file, line, col) =
             (flip setSourceColumn) col $
             pos
         whiteSpace
-        e <- pExpr
+        e <- p
+        whiteSpace
         eof
         return e
 
+parsePattern :: Monad m => String -> (String, Int, Int) -> m Pattern
+parsePattern = parsing ppDefine
+
+quotePatternExp :: String -> TH.ExpQ
+quotePatternExp = withLocation parsePattern patternToExp
+
+parseExpr :: Monad m => String -> (String, Int, Int) -> m Expr
+parseExpr = parsing pExpr
+
 quoteExprExp :: String -> TH.ExpQ
-quoteExprExp s = do
-    l <- TH.location
-    e <- parseExpr s
-        ( TH.loc_filename l
-        , fst $ TH.loc_start l
-        , snd $ TH.loc_start l
-        )
-    return (exprToExp e)
+quoteExprExp = withLocation parseExpr exprToExp
+
+parseExprs :: Monad m => String -> (String, Int, Int) -> m [Expr]
+parseExprs = parsing (wsBlock pExpr)
+
+quoteExprsExp :: String -> TH.ExpQ
+quoteExprsExp = withLocation parseExprs (ListE . map exprToExp)
 
 exprToExp :: Expr -> Exp
 exprToExp (Define l p e) = AppE (AppE (expr "Define" l) (patternToExp p)) (exprToExp e)

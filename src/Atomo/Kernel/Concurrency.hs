@@ -30,18 +30,18 @@ load = do
         here "p"
 
     [$p|(b: Block) spawn|] =: do
-        Block s as es <- here "b" >>= findValue isBlock
+        Block s as bes <- here "b" >>= findValue isBlock
 
         if length as > 0
             then throwError . ErrorMsg $ "block expects " ++ show (length as) ++ ", given 0"
             else do
                 st <- lift get
                 chan <- liftIO newChan
-                tid <- liftIO $ forkIO (runWith (go $ doBlock M.empty s es >> return ()) (st { channel = chan }) >> return ())
+                tid <- liftIO $ forkIO (runWith (go $ doBlock M.empty s bes >> return ()) (st { channel = chan }) >> return ())
                 return (Process chan tid)
 
     [$p|(b: Block) spawn: (l: List)|] =: do
-        Block s as es <- here "b" >>= findValue isBlock
+        Block s as bes <- here "b" >>= findValue isBlock
         vs <- fmap V.toList $ getList [$e|l|]
 
         if length as > length vs
@@ -56,7 +56,7 @@ load = do
                 chan <- liftIO newChan
                 tid <- liftIO . forkIO $ do
                     runWith
-                        (go $ doBlock (toMethods . concat $ zipWith bindings' as vs) s es >> return ())
+                        (go $ doBlock (toMethods . concat $ zipWith bindings' as vs) s bes >> return ())
                         (st { channel = chan })
 
                     return ()

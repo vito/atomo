@@ -25,8 +25,6 @@ import Atomo.Pretty
 import Atomo.Types
 import {-# SOURCE #-} qualified Atomo.Kernel as Kernel
 
-import Paths_atomo
-
 
 -----------------------------------------------------------------------------
 -- Execution ----------------------------------------------------------------
@@ -123,10 +121,6 @@ initEnv = do
     define (psingle "String" PSelf) (Primitive Nothing (Reference listObj))
 
     Kernel.load
-
-    forM_ preludes $ \m ->
-        liftIO (getDataFileName ("prelude/" ++ m))
-            >>= loadFile
   where
     primObjs =
         [ ("Block", \is r -> is { idBlock = r })
@@ -139,17 +133,6 @@ initEnv = do
         , ("Particle", \is r -> is { idParticle = r })
         , ("Process", \is r -> is { idProcess = r })
         , ("Pattern", \is r -> is { idPattern = r })
-        ]
-
-    preludes =
-        [ "block"
-        , "bool"
-        , "comparable"
-        , "forms"
-        , "list"
-        , "numbers"
-        , "port"
-        , "timer"
         ]
 
 

@@ -1,4 +1,5 @@
 {-# LANGUAGE QuasiQuotes #-}
+{-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.Kernel.Block (load) where
 
 import qualified Data.IntMap as M
@@ -54,3 +55,33 @@ load = do
     [$p|(b: Block) contents|] =: do
         Block _ _ es <- here "b" >>= findValue isBlock
         list (map Expression es)
+
+    prelude
+
+
+prelude :: VM ()
+prelude = mapM_ eval [$es|
+    (b: Block) repeat := { b call; b repeat } call
+
+    (b: Block) in-scope :=
+        Object clone do: {
+            delegates-to: b
+            call := b scope join: b
+            call: vs := b scope join: b with: vs
+        }
+
+    (a: Block) .. (b: Block) :=
+        Block new: (a contents .. b contents)
+
+    (start: Integer) to: (end: Integer) by: (diff: Integer) do: b :=
+        (start to: end by: diff) each: b
+
+    (start: Integer) up-to: (end: Integer) do: b :=
+        start to: end by: 1 do: b
+
+    (start: Integer) down-to: (end: Integer) do: b :=
+        start to: end by: -1 do: b
+
+    (n: Integer) times: (b: Block) :=
+        1 up-to: n do: b in-scope
+|]

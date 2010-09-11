@@ -23,6 +23,7 @@ import qualified Atomo.Kernel.Particle as Particle
 import qualified Atomo.Kernel.Pattern as Pattern
 import qualified Atomo.Kernel.Ports as Ports
 import qualified Atomo.Kernel.Time as Time
+import qualified Atomo.Kernel.Bool as Bool
 
 load :: VM ()
 load = do
@@ -139,79 +140,111 @@ load = do
     Pattern.load
     Ports.load
     Time.load
+    Bool.load
+
+    prelude
+
+
+prelude :: VM ()
+prelude = mapM_ eval [$es|
+    v ensuring: p do: b := {
+        res = b call: [v]
+        p call: [v]
+        res
+    } call
+
+    v match: (b: Block) :=
+        if: b contents empty?
+            then: { @no-match }
+            else: {
+                es = b contents
+                [p, e] = es head targets
+
+                match = (p as: Pattern) matches?: v
+                if: (match == @no)
+                    then: {
+                        v match: (Block new: es tail in: b scope)
+                    }
+                    else: {
+                        @(yes: obj) = match
+                        obj join: (Block new: [e] in: b scope)
+                    }
+            }
+|]
+
+joinWith :: Value -> Value -> [Value] -> VM Value
+joinWith t (Block s ps bes) as
+    | length ps > length as = throwError . ErrorMsg . unwords $
+        [ "block expects"
+        , show (length ps)
+        , "arguments, given"
+        , show (length as)
+        ]
+    | null as = do
+        case t of
+            Reference r -> do
+                Object ds ms <- objectFor t
+                blockScope <- newObject $ \o -> o
+                    { oDelegates = s:ds
+                    , oMethods = ms
+                    }
+
+                res <- withTop blockScope (evalAll bes)
+                new <- objectFor blockScope
+                liftIO $ writeIORef r new
+                    { oDelegates = tail (oDelegates new)
+                    , oMethods = oMethods new
+                    }
+
+                return res
+            _ -> do
+                blockScope <- newObject $ \o -> o
+                    { oDelegates = [t, s]
+                    }
+
+                withTop blockScope (evalAll bes)
+    | otherwise = do
+        -- a toplevel scope with transient definitions
+        pseudoScope <- newObject $ \o -> o
+            { oMethods = (bs, M.empty)
+            }
+
+        case t of
+            Reference r -> do
+                Object ds ms <- objectFor t
+                -- the original prototype, but without its delegations
+                -- this is to prevent dispatch loops
+                doppelganger <- newObject $ \o -> o
+                    { oMethods = ms
+                    }
+
+                -- the main scope, methods are taken from here and merged with
+                -- the originals. delegates to the pseudoscope and doppelganger
+                -- so it has their methods in scope, but definitions go here
+                blockScope <- newObject $ \o -> o
+                    { oDelegates = (pseudoScope:doppelganger:s:ds)
+                    }
+
+                res <- withTop blockScope (evalAll bes)
+                new <- objectFor blockScope
+                liftIO (writeIORef r new
+                    { oDelegates = drop 3 (oDelegates new)
+                    , oMethods = merge ms (oMethods new)
+                    })
+
+                return res
+            _ -> do
+                blockScope <- newObject $ \o -> o
+                    { oDelegates = [t, pseudoScope, s]
+                    }
+
+                withTop blockScope (evalAll bes)
   where
-    joinWith t (Block s ps es) as
-        | length ps > length as = throwError . ErrorMsg . unwords $
-            [ "block expects"
-            , show (length ps)
-            , "arguments, given"
-            , show (length as)
-            ]
-        | null as = do
-            case t of
-                Reference r -> do
-                    Object ds ms <- objectFor t
-                    blockScope <- newObject $ \o -> o
-                        { oDelegates = s:ds
-                        , oMethods = ms
-                        }
+    bs = addMethod (Slot (psingle "this" PSelf) t) $
+            toMethods . concat $ zipWith bindings' ps as
 
-                    res <- withTop blockScope (evalAll es)
-                    new <- objectFor blockScope
-                    liftIO $ writeIORef r new
-                        { oDelegates = tail (oDelegates new)
-                        , oMethods = oMethods new
-                        }
-
-                    return res
-                _ -> do
-                    blockScope <- newObject $ \o -> o
-                        { oDelegates = [t, s]
-                        }
-
-                    withTop blockScope (evalAll es)
-        | otherwise = do
-            -- a toplevel scope with transient definitions
-            pseudoScope <- newObject $ \o -> o
-                { oMethods = (bs, M.empty)
-                }
-
-            case t of
-                Reference r -> do
-                    Object ds ms <- objectFor t
-                    -- the original prototype, but without its delegations
-                    -- this is to prevent dispatch loops
-                    doppelganger <- newObject $ \o -> o
-                        { oMethods = ms
-                        }
-
-                    -- the main scope, methods are taken from here and merged with
-                    -- the originals. delegates to the pseudoscope and doppelganger
-                    -- so it has their methods in scope, but definitions go here
-                    blockScope <- newObject $ \o -> o
-                        { oDelegates = (pseudoScope:doppelganger:s:ds)
-                        }
-
-                    res <- withTop blockScope (evalAll es)
-                    new <- objectFor blockScope
-                    liftIO (writeIORef r new
-                        { oDelegates = drop 3 (oDelegates new)
-                        , oMethods = merge ms (oMethods new)
-                        })
-
-                    return res
-                _ -> do
-                    blockScope <- newObject $ \o -> o
-                        { oDelegates = [t, pseudoScope, s]
-                        }
-
-                    withTop blockScope (evalAll es)
-      where
-        bs = addMethod (Slot (psingle "this" PSelf) t) $
-                toMethods . concat $ zipWith bindings' ps as
-
-        merge (os, ok) (ns, nk) =
-            ( foldl (flip addMethod) os (concat $ M.elems ns)
-            , foldl (flip addMethod) ok (concat $ M.elems nk)
-            )
-    joinWith _ v _ = error $ "impossible: joinWith on " ++ show v
+    merge (os, ok) (ns, nk) =
+        ( foldl (flip addMethod) os (concat $ M.elems ns)
+        , foldl (flip addMethod) ok (concat $ M.elems nk)
+        )
+joinWith _ v _ = error $ "impossible: joinWith on " ++ show v

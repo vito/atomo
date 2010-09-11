@@ -233,3 +233,25 @@ load = do
         liftIO . writeIORef l $ V.cons v vs
 
         return (List l)
+
+    prelude
+
+
+prelude :: VM ()
+prelude = mapM_ eval [$es|
+    (l: List) each: (b: Block) := {
+        l map: b in-scope
+        l
+    } call
+
+    [] includes?: List := False
+    (x: List) includes?: (y: List) :=
+        if: (x (take: y length) == y)
+            then: { True }
+            else: { x tail includes?: y }
+
+    [] join: _ := []
+    [x] join: _ := x
+    (x . xs) join: (d: List) :=
+        x .. d .. (xs join: d)
+|]

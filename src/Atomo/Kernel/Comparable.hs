@@ -197,3 +197,15 @@ load = do
                         _ -> bool False) avs bvs
                 bool (all (== true) eqs)
             _ -> bool False
+
+    prelude
+
+
+prelude :: VM ()
+prelude = mapM_ eval [$es|
+    x max: y :=
+        if: (x > y) then: { x } else: { y }
+
+    x min: y :=
+        if: (x < y) then: { x } else: { y }
+|]
