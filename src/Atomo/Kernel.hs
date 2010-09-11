@@ -181,7 +181,7 @@ joinWith t (Block s ps bes) as
         , "arguments, given"
         , show (length as)
         ]
-    | null as = do
+    | null as || null ps = do
         case t of
             Reference r -> do
                 Object ds ms <- objectFor t
