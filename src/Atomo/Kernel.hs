@@ -47,6 +47,7 @@ load = do
 
         from <- liftIO (readIORef f)
         liftIO $ writeIORef f (from { oDelegates = oDelegates from ++ [t] })
+
         return (particle "ok")
 
     [$p|(x: Object) delegates-to?: (y: Object)|] =: do
@@ -214,27 +215,24 @@ joinWith t (Block s ps bes) as
                     { oMethods = ms
                     }
 
-                -- the 3 additional scopes for the block
-                let fakes = [pseudoScope, doppelganger, s]
-
                 -- the main scope, methods are taken from here and merged with
                 -- the originals. delegates to the pseudoscope and doppelganger
                 -- so it has their methods in scope, but definitions go here
                 blockScope <- newObject $ \o -> o
-                    { oDelegates = ds ++ fakes
+                    { oDelegates = pseudoScope : doppelganger : ds ++ [s]
                     }
 
                 res <- withTop blockScope (evalAll bes)
                 new <- objectFor blockScope
                 liftIO (writeIORef r new
-                    { oDelegates = oDelegates new \\ fakes
+                    { oDelegates = oDelegates new \\ [pseudoScope, doppelganger, s]
                     , oMethods = merge ms (oMethods new)
                     })
 
                 return res
             _ -> do
                 blockScope <- newObject $ \o -> o
-                    { oDelegates = [t, pseudoScope, s]
+                    { oDelegates = [pseudoScope, t, s]
                     }
 
                 withTop blockScope (evalAll bes)
