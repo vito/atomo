@@ -193,6 +193,7 @@ instance Pretty AtomoError where
         text "import error:" <+> text s
     prettyFrom _ (ImportError (H.GhcException s)) =
         text "import error:" <+> text s
+    prettyFrom _ (ValueError v) = text "error:" <+> pretty v
 
 
 instance Pretty Delegates where

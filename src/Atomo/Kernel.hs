@@ -27,6 +27,7 @@ import qualified Atomo.Kernel.Time as Time
 import qualified Atomo.Kernel.Bool as Bool
 import qualified Atomo.Kernel.Association as Association
 import qualified Atomo.Kernel.Parameter as Parameter
+import qualified Atomo.Kernel.Exception as Exception
 
 load :: VM ()
 load = do
@@ -141,17 +142,15 @@ load = do
     Ports.load
     Time.load
     Bool.load
+    Exception.load
 
     prelude
 
 
 prelude :: VM ()
 prelude = mapM_ eval [$es|
-    v ensuring: p do: b := {
-        res = b call: [v]
-        p call: [v]
-        res
-    } call
+    v ensuring: p do: b :=
+        { b call: [v] } ensuring: { p call: [v] }
 
     v match: (b: Block) :=
         if: b contents empty?

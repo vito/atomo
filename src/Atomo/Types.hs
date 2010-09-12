@@ -78,6 +78,7 @@ data AtomoError
     | DidNotUnderstand Message
     | Mismatch Pattern Value
     | ImportError H.InterpreterError
+    | ValueError Value
     deriving Show
 
 -- pattern-matches
