@@ -137,9 +137,22 @@ load = do
         fn <- here "fn" >>= findValue isList >>= toString
         liftIO (canonicalizePath fn) >>= string
 
+    [$p|File make-relative: (fn: String)|] =: do
+        fn <- here "fn" >>= findValue isList >>= toString
+        liftIO (makeRelativeToCurrentDirectory fn) >>= string
+
     [$p|File exists?: (fn: String)|] =: do
         fn <- here "fn" >>= findValue isList >>= toString
         liftIO (doesFileExist fn) >>= bool
+
+    [$p|File find-executable: (name: String)|] =: do
+        name <- here "name" >>= findValue isList >>= toString
+        find <- liftIO (findExecutable name)
+        case find of
+            Nothing -> return (particle "none")
+            Just fn -> do
+                str <- string fn
+                return (keyParticle ["ok"] [Nothing, Just str])
 
     [$p|Directory create: (path: String)|] =: do
         path <- here "path" >>= findValue isList >>= toString
