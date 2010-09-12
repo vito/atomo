@@ -2,6 +2,7 @@
 module Atomo.Kernel.Ports (load) where
 
 import Data.Dynamic
+import System.Directory
 import System.IO
 import qualified Data.Vector as V
 
@@ -12,8 +13,9 @@ import Atomo.Pretty
 
 load :: VM ()
 load = do
-    port <- eval [$e|Object clone|]
-    [$p|Port|] =:: port
+    ([$p|Port|] =::) =<< eval [$e|Object clone|]
+    ([$p|File|] =::) =<< eval [$e|Object clone|]
+    ([$p|Directory|] =::) =<< eval [$e|Object clone|]
 
     sinp <- portObj stdin
     soutp <- portObj stdout
@@ -108,6 +110,98 @@ load = do
         Haskell inh <- eval [$e|dispatch sender current-input-port handle|]
         line <- liftIO (hGetLine (fromDyn inh (error "current-input-port handle invalid!"))) -- TODO
         string line
+
+    [$p|File new: (fn: String)|] =::: [$e|Port new: fn|]
+    [$p|File open: (fn: String)|] =::: [$e|Port new: fn|]
+
+    [$p|File delete: (fn: String)|] =: do
+        fn <- here "fn" >>= findValue isList >>= toString
+        liftIO (removeFile fn)
+        return (particle "ok")
+
+    [$p|File move: (from: String) to: (to: String)|] =:::
+        [$e|File rename: from to: to|]
+    [$p|File rename: (from: String) to: (to: String)|] =: do
+        from <- here "from" >>= findValue isList >>= toString
+        to <- here "to" >>= findValue isList >>= toString
+        liftIO (renameFile from to)
+        return (particle "ok")
+
+    [$p|File copy: (from: String) to: (to: String)|] =: do
+        from <- here "from" >>= findValue isList >>= toString
+        to <- here "to" >>= findValue isList >>= toString
+        liftIO (copyFile from to)
+        return (particle "ok")
+
+    [$p|File canonicalize-path: (fn: String)|] =: do
+        fn <- here "fn" >>= findValue isList >>= toString
+        liftIO (canonicalizePath fn) >>= string
+
+    [$p|File exists?: (fn: String)|] =: do
+        fn <- here "fn" >>= findValue isList >>= toString
+        liftIO (doesFileExist fn) >>= bool
+
+    [$p|Directory create: (path: String)|] =: do
+        path <- here "path" >>= findValue isList >>= toString
+        liftIO (createDirectory path)
+        return (particle "ok")
+
+    [$p|Directory create-if-missing: (path: String)|] =: do
+        path <- here "path" >>= findValue isList >>= toString
+        liftIO (createDirectoryIfMissing False path)
+        return (particle "ok")
+
+    [$p|Directory create-tree-if-missing: (path: String)|] =: do
+        path <- here "path" >>= findValue isList >>= toString
+        liftIO (createDirectoryIfMissing True path)
+        return (particle "ok")
+
+    [$p|Directory remove: (path: String)|] =: do
+        path <- here "path" >>= findValue isList >>= toString
+        liftIO (removeDirectory path)
+        return (particle "ok")
+
+    [$p|Directory remove-recursive: (path: String)|] =: do
+        path <- here "path" >>= findValue isList >>= toString
+        liftIO (removeDirectoryRecursive path)
+        return (particle "ok")
+
+    [$p|Directory move: (from: String) to: (to: String)|] =:::
+        [$e|Directory rename: from to: to|]
+    [$p|Directory rename: (from: String) to: (to: String)|] =: do
+        from <- here "from" >>= findValue isList >>= toString
+        to <- here "to" >>= findValue isList >>= toString
+        liftIO (renameDirectory from to)
+        return (particle "ok")
+
+    [$p|Directory contents: (path: String)|] =: do
+        path <- here "path" >>= findValue isList >>= toString
+        liftIO (getDirectoryContents path) >>= mapM string >>= list
+
+    [$p|Directory current|] =:
+        liftIO getCurrentDirectory >>= string
+
+    [$p|Directory current: (path: String)|] =: do
+        path <- here "path" >>= findValue isList >>= toString
+        liftIO (setCurrentDirectory path)
+        return (particle "ok")
+
+    [$p|Directory home|] =:
+        liftIO getHomeDirectory >>= string
+
+    [$p|Directory user-data-for: (app: String)|] =: do
+        app <- here "app" >>= findValue isList >>= toString
+        liftIO (getAppUserDataDirectory app) >>= string
+
+    [$p|Directory user-documents|] =:
+        liftIO getUserDocumentsDirectory >>= string
+
+    [$p|Directory temporary|] =:
+        liftIO getTemporaryDirectory >>= string
+
+    [$p|Directory exists?: (path: String)|] =: do
+        path <- here "path" >>= findValue isList >>= toString
+        liftIO (doesDirectoryExist path) >>= bool
 
     prelude
   where
