@@ -16,7 +16,7 @@ load = do
 
     [$p|Timer sleep: (n: Integer)|] =: do
         Integer n <- here "n" >>= findValue isInteger
-        liftIO (threadDelay (fromIntegral n))
+        liftIO (sleepFor n)
         return (particle "ok")
 
     [$p|Timer sleep: (d: Double)|] =: do
@@ -26,6 +26,13 @@ load = do
 
     prelude
 
+
+sleepFor :: Integer -> IO ()
+sleepFor n
+    | n > fromIntegral limit = threadDelay limit >> sleepFor (n - fromIntegral limit)
+    | otherwise = threadDelay (fromIntegral n)
+  where
+    limit = maxBound :: Int
 
 prelude :: VM ()
 prelude = mapM_ eval [$es|
