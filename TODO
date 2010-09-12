@@ -7,3 +7,4 @@
 * fix "-1 sqrt"
 * list splitting
 * command-line arguments
+* optional commas in lists (like semicolons are for blocks)
