@@ -2,7 +2,8 @@
 * finish up the QuickCheck parser test
 * more environment tests
 * rationals: 1/2 * 6/5 = 3/5
-* fix pattern-matching on strings
 * fix "-> if: ..."
-* make Bool a primitive, add and/or short-circuiting operators
+* make Bool a primitive, add and/or short-circuiting operators?
 * fix "-1 sqrt"
+* list splitting
+* command-line arguments
