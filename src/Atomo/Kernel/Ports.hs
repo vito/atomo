@@ -24,8 +24,8 @@ load = do
     [$p|Port standard-output|] =:: soutp
     [$p|Port standard-error|] =:: serrp
 
-    [$p|current-output-port|] =:: soutp
-    [$p|current-input-port|] =:: sinp
+    ([$p|current-output-port|] =::) =<< eval [$e|Parameter new: Port standard-output|]
+    ([$p|current-input-port|] =::) =<< eval [$e|Parameter new: Port standard-input|]
 
     [$p|Port new: (fn: String)|] =::: [$e|Port new: fn mode: @read-write|]
     [$p|Port new: (fn: String) mode: (m: Particle)|] =: do
@@ -93,7 +93,7 @@ load = do
 
     [$p|(x: Object) print|] =: do
         x <- here "x"
-        Haskell h <- eval [$e|dispatch sender current-output-port handle|]
+        Haskell h <- eval [$e|current-output-port _? handle|]
 
         cs <- fmap V.toList $ getList [$e|x as: String|]
 
@@ -107,7 +107,7 @@ load = do
             else throwError $ ErrorMsg "@as:String returned non-String"
 
     [$p|read-line|] =: do
-        Haskell inh <- eval [$e|dispatch sender current-input-port handle|]
+        Haskell inh <- eval [$e|current-input-port _? handle|]
         line <- liftIO (hGetLine (fromDyn inh (error "current-input-port handle invalid!"))) -- TODO
         string line
 
@@ -219,18 +219,14 @@ prelude = mapM_ eval [$es|
             with-output-to: file do: b
         }
 
-    with-output-to: (p: Port) do: b := {
-        current-output-port = p
-        join: b
-    } call
+    with-output-to: (p: Port) do: b :=
+        with: current-output-port as: p do: b
 
     with-input-from: (fn: String) do: (b: Block) :=
         Port (new: fn) ensuring: @close do: { file |
             with-input-from: file do: b
         }
 
-    with-input-from: (p: Port) do: (b: Block) := {
-        current-input-port = p
-        join: b
-    } call
+    with-input-from: (p: Port) do: (b: Block) :=
+        with: current-output-port as: p do: b
 |]

@@ -26,6 +26,7 @@ import qualified Atomo.Kernel.Ports as Ports
 import qualified Atomo.Kernel.Time as Time
 import qualified Atomo.Kernel.Bool as Bool
 import qualified Atomo.Kernel.Association as Association
+import qualified Atomo.Kernel.Parameter as Parameter
 
 load :: VM ()
 load = do
@@ -126,6 +127,8 @@ load = do
         joinWith v b as
 
 
+    Association.load
+    Parameter.load
     Numeric.load
     List.load
     Block.load
@@ -138,7 +141,6 @@ load = do
     Ports.load
     Time.load
     Bool.load
-    Association.load
 
     prelude
 
