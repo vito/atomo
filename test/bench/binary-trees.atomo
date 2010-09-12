@@ -24,11 +24,11 @@ Nil check := 0
 depth-loop: start max: max :=
     start to: max by: 2 do: { depth |
         n = 2 ^ (max - depth + Min)
-        res = sum-loop: n depth: depth acc: 0
+        res = sum-loop: n depth: depth
         ((2 * n) show .. "\ttrees of depth " .. depth show .. "\tcheck: " .. res show) print
     }
 
-sum-loop: n depth: d acc: _ :=
+sum-loop: n depth: d :=
     (n down-to: 1) (map: { n |
         (Tree create: n depth: d) check + (Tree create: (-1 * n) depth: d) check
     }) sum
