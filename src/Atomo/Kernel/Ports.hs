@@ -241,5 +241,5 @@ prelude = mapM_ eval [$es|
         }
 
     with-input-from: (p: Port) do: (b: Block) :=
-        with: current-output-port as: p do: b
+        with: current-input-port as: p do: b
 |]
