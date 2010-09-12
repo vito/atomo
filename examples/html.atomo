@@ -1,6 +1,13 @@
 HTML = Object clone
-
 Self-Closing = ["base", "meta", "link", "hr", "br", "param", "img", "area", "input", "col", "frame"]
+
+HTML new :=
+    HTML clone do: {
+        tag = ""
+        attributes = []
+        content = []
+        attribute-mode = False
+    }
 
 
 -- creating elements with no content
@@ -69,14 +76,6 @@ Self-Closing = ["base", "meta", "link", "hr", "br", "param", "img", "area", "inp
                 }
         }
 } call
-
-HTML new :=
-    HTML clone do: {
-        tag = ""
-        attributes = []
-        content = []
-        attribute-mode = False
-    }
 
 
 HTML new (do: {
