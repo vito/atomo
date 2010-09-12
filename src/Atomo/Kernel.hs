@@ -149,9 +149,6 @@ load = do
 
 prelude :: VM ()
 prelude = mapM_ eval [$es|
-    v ensuring: p do: b :=
-        { b call: [v] } ensuring: { p call: [v] }
-
     v match: (b: Block) :=
         if: b contents empty?
             then: { @no-match }

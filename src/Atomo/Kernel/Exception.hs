@@ -39,12 +39,16 @@ load = do
                 return r)
             (\err -> eval [$e|cleanup call|] >> throwError err)
 
+    [$p|v ensuring: p do: b|] =:::
+        [$e|{ b call: [v] } ensuring: { p call: [v] }|]
+
+
 
 asValue :: AtomoError -> VM Value
 asValue (ErrorMsg s) = string s
-asValue (ParseError e) = do
+asValue (ParseError pe) = do
     obj <- lift $ gets (idObject . primitives)
-    msg <- string (show e)
+    msg <- string (show pe)
     newObject $ \o -> o
         { oMethods = (toMethods
             [ (psingle "type" PSelf, particle "parse")
@@ -61,19 +65,19 @@ asValue (DidNotUnderstand m) = do
             ], M.empty)
         , oDelegates = [Reference obj]
         }
-asValue (Mismatch p v) = do
+asValue (Mismatch pat v) = do
     obj <- lift $ gets (idObject . primitives)
     newObject $ \o -> o
         { oMethods = (toMethods
             [ (psingle "type" PSelf, particle "mismatch")
-            , (psingle "pattern" PSelf, Pattern p)
+            , (psingle "pattern" PSelf, Pattern pat)
             , (psingle "value" PSelf, v)
             ], M.empty)
         , oDelegates = [Reference obj]
         }
-asValue (ImportError e) = do
+asValue (ImportError ie) = do
     obj <- lift $ gets (idObject . primitives)
-    str <- string (show e)
+    str <- string (show ie)
     newObject $ \o -> o
         { oMethods = (toMethods
             [ (psingle "type" PSelf, particle "import")
