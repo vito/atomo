@@ -207,20 +207,9 @@ cKeyword wc = do
         | wc = wildcard <|> value
         | otherwise = value
 
-    value = fmap Just $ choice
-        [ pDispatch
-        , pLiteral
-        , pExpr
-        , singleDispatch
-        , parens pExpr
-        ]
+    value = fmap Just pdCascade
 
     wildcard = symbol "_" >> return Nothing
-
-    singleDispatch = tagged $ do
-        pos <- getPosition
-        n <- identifier
-        return (Dispatch Nothing (esingle n (ETop (Just pos))))
 
 -- work out precadence, associativity, etc. from a stream of operators
 -- the input is a keyword EMessage with a mix of operators and identifiers
