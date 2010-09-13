@@ -127,6 +127,9 @@ load = do
     [$p|File new: (fn: String)|] =::: [$e|Port new: fn|]
     [$p|File open: (fn: String)|] =::: [$e|Port new: fn|]
 
+    [$p|File read: (fn: String)|] =:::
+        [$e|Port (new: fn mode: @read) ensuring: @close do: @contents|]
+
     [$p|File delete: (fn: String)|] =: do
         fn <- here "fn" >>= findValue isList >>= toString
         liftIO (removeFile fn)
