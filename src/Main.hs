@@ -70,23 +70,27 @@ repl quiet = do
             Just part | not (bracesBalanced $ input ++ part) ->
                 repl' (input ++ part) r
             Just expr -> do
-                res <- fmap Right (continuedParse (input ++ expr) "<input>" >>= evalAll) `catchError` (return . Left)
-
-                case res of
-                    Right v -> prettyVM v >>= liftIO . print
-                    Left e -> printError e
+                catchError
+                    (evaluate expr >>= prettyVM >>= liftIO . print)
+                    printError
 
                 repl' "" r
 
             Nothing -> askQuit (repl' input r)
       where
+        evaluate expr =
+            continuedParse (input ++ expr) "<input>"
+                >>= evalAll
+
         prompt
             | quiet = ""
             | null input = "> "
             | otherwise = ". "
 
     askQuit continue = do
-        r <- liftIO . runInputT defaultSettings $ getInputChar "really quit? (y/n) "
+        r <- liftIO . runInputT defaultSettings $
+            getInputChar "really quit? (y/n) "
+
         case r of
             Just 'y' -> return ()
             Just 'n' -> continue
@@ -97,6 +101,8 @@ repl quiet = do
         hangingBraces :: String -> Int
         hangingBraces [] = 0
         hangingBraces (b:ss)
+            | b == '"' = hangingBraces (tail $ dropWhile (/= '"') ss)
+            | b == '\'' = hangingBraces (tail $ dropWhile (/= '\'') ss)
             | b `elem` "([{" = 1 + hangingBraces ss
             | b `elem` ")]}" = hangingBraces ss - 1
             | otherwise = hangingBraces ss
