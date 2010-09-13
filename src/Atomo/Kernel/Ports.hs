@@ -4,6 +4,7 @@ module Atomo.Kernel.Ports (load) where
 import Data.Dynamic
 import System.Directory
 import System.IO
+import qualified Data.ByteString.Char8 as CBS
 import qualified Data.Vector as V
 
 import Atomo.Environment
@@ -46,58 +47,12 @@ load = do
 
         portObj hdl
 
-    [$p|(p: Port) flush|] =: do
-        Haskell hdl <- eval [$e|p handle|]
-        liftIO (hFlush (fromDyn hdl (error "port handle invalid!"))) -- TODO
-        return (particle "ok")
-
-    [$p|(p: Port) close|] =: do
-        Haskell hdl <- eval [$e|p handle|]
-        liftIO (hClose (fromDyn hdl (error "port handle invalid!"))) -- TODO
-        return (particle "ok")
-
-    [$p|(p: Port) open?|] =: do
-        Haskell hdl <- eval [$e|p handle|]
-        liftIO (hIsOpen (fromDyn hdl (error "port handle invalid!"))) -- TODO
-            >>= bool
-
-    [$p|(p: Port) readable?|] =: do
-        Haskell hdl <- eval [$e|p handle|]
-        liftIO (hIsReadable (fromDyn hdl (error "port handle invalid!"))) -- TODO
-            >>= bool
-
-    [$p|(p: Port) writable?|] =: do
-        Haskell hdl <- eval [$e|p handle|]
-        liftIO (hIsWritable (fromDyn hdl (error "port handle invalid!"))) -- TODO
-            >>= bool
-
-    [$p|(p: Port) seekable?|] =: do
-        Haskell hdl <- eval [$e|p handle|]
-        liftIO (hIsSeekable (fromDyn hdl (error "port handle invalid!"))) -- TODO
-            >>= bool
-
-    [$p|(p: Port) closed?|] =: do
-        Haskell hdl <- eval [$e|p handle|]
-        liftIO (hIsClosed (fromDyn hdl (error "port handle invalid!"))) -- TODO
-            >>= bool
-
-    [$p|(p: Port) ready?|] =: do
-        Haskell hdl <- eval [$e|p handle|]
-        liftIO (hReady (fromDyn hdl (error "port handle invalid!"))) -- TODO
-            >>= bool
-
-    [$p|(p: Port) eof?|] =: do
-        Haskell hdl <- eval [$e|p handle|]
-        liftIO (hIsEOF (fromDyn hdl (error "port handle invalid!"))) -- TODO
-            >>= bool
-
-    [$p|(x: Object) print|] =: do
+    [$p|(x: Object) print|] =::: [$e|current-output-port _? print: x|]
+    [$p|(p: Port) print: x|] =: do
         x <- here "x"
-        Haskell h <- eval [$e|current-output-port _? handle|]
+        hdl <- getHandle [$e|p handle|]
 
         cs <- fmap V.toList $ getList [$e|x as: String|]
-
-        let hdl = fromDyn h (error "current-output-port handle invalid!")
 
         if all isChar cs
             then do
@@ -106,10 +61,68 @@ load = do
                 return x
             else throwError $ ErrorMsg "@as:String returned non-String"
 
-    [$p|read-line|] =: do
-        Haskell inh <- eval [$e|current-input-port _? handle|]
-        line <- liftIO (hGetLine (fromDyn inh (error "current-input-port handle invalid!"))) -- TODO
-        string line
+    [$p|(x: Object) display|] =::: [$e|current-output-port _? display: x|]
+    [$p|(p: Port) display: x|] =: do
+        x <- here "x"
+        hdl <- getHandle [$e|p handle|]
+
+        cs <- fmap V.toList $ getList [$e|x as: String|]
+
+        if all isChar cs
+            then do
+                liftIO (hPutStr hdl (map (\(Char c) -> c) cs))
+                liftIO (hFlush hdl)
+                return x
+            else throwError $ ErrorMsg "@as:String returned non-String"
+
+    [$p|read-line|] =::: [$e|current-input-port _? read-line|]
+    [$p|(p: Port) read-line|] =: do
+        getHandle [$e|p handle|] >>= liftIO . hGetLine
+            >>= string
+
+    [$p|contents|] =::: [$e|current-input-port _? contents|]
+    [$p|(p: Port) contents|] =:
+        getHandle [$e|p handle|] >>= liftIO . CBS.hGetContents
+            >>= string . CBS.unpack
+
+    [$p|(p: Port) flush|] =:
+        getHandle [$e|p handle|] >>= liftIO . hFlush
+            >> return (particle "ok")
+
+    [$p|(p: Port) close|] =:
+        getHandle [$e|p handle|] >>= liftIO . hClose
+            >> return (particle "ok")
+
+    [$p|(p: Port) open?|] =:
+        getHandle [$e|p handle|] >>= liftIO . hIsOpen
+            >>= bool
+
+    [$p|(p: Port) readable?|] =:
+        getHandle [$e|p handle|] >>= liftIO . hIsReadable
+            >>= bool
+
+    [$p|(p: Port) writable?|] =:
+        getHandle [$e|p handle|] >>= liftIO . hIsWritable
+            >>= bool
+
+    [$p|(p: Port) seekable?|] =:
+        getHandle [$e|p handle|] >>= liftIO . hIsSeekable
+            >>= bool
+
+    [$p|(p: Port) closed?|] =:
+        getHandle [$e|p handle|] >>= liftIO . hIsClosed
+            >>= bool
+
+    [$p|ready?|] =::: [$e|current-input-port _? ready?|]
+    [$p|(p: Port) ready?|] =:
+        getHandle [$e|p handle|] >>= liftIO . hReady
+            >>= bool
+
+    [$p|eof?|] =::: [$e|current-input-port _? eof?|]
+    [$p|(p: Port) eof?|] =:
+        getHandle [$e|p handle|] >>= liftIO . hIsEOF
+            >>= bool
+
 
     [$p|File new: (fn: String)|] =::: [$e|Port new: fn|]
     [$p|File open: (fn: String)|] =::: [$e|Port new: fn|]
@@ -153,6 +166,7 @@ load = do
             Just fn -> do
                 str <- string fn
                 return (keyParticle ["ok"] [Nothing, Just str])
+
 
     [$p|Directory create: (path: String)|] =: do
         path <- here "path" >>= findValue isList >>= toString
@@ -223,6 +237,10 @@ load = do
         [$p|p|] =:: port
         [$p|p handle|] =:: Haskell (toDyn hdl)
         here "p"
+
+    getHandle ex = do
+        Haskell hdl <- eval ex
+        return (fromDyn hdl (error "handle invalid"))
 
 
 prelude :: VM ()

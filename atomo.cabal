@@ -17,6 +17,7 @@ library
 
   build-depends:
     base >= 4,
+    bytestring,
     containers,
     directory,
     filepath,
@@ -68,6 +69,7 @@ executable atomo
 
   build-depends:
     base >= 4,
+    bytestring,
     containers,
     directory,
     filepath,
