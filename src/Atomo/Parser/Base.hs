@@ -148,17 +148,20 @@ charLiteral = P.charLiteral tp
 colon :: Parser ()
 colon = char ':' >> return ()
 
-wsBlock :: Show a => Parser a -> Parser [a]
-wsBlock = indentAware (\n o -> sourceColumn n == sourceColumn o) (delimit ";" >> return True) False
+wsBlock :: Parser a -> Parser [a]
+wsBlock = wsDelim ";"
 
-wsMany1 :: Show a => Parser a -> Parser [a]
+wsDelim :: String -> Parser a -> Parser [a]
+wsDelim d = indentAware (\n o -> sourceColumn n == sourceColumn o) (delimit d >> return True) False
+
+wsMany1 :: Parser a -> Parser [a]
 wsMany1 p = do
     ps <- indentAware chainContinue (return False) True p
     if null ps
         then fail "needed more than one"
         else return ps
 
-wsMany :: Show a => Parser a -> Parser [a]
+wsMany :: Parser a -> Parser [a]
 wsMany = indentAware chainContinue (return False) True
 
 wsManyStart :: Show a => Parser a -> Parser a -> Parser [a]
@@ -171,10 +174,10 @@ wsManyStart s p = do
 chainContinue :: SourcePos -> SourcePos -> Bool
 chainContinue n o = sourceLine o == sourceLine n || sourceColumn n > sourceColumn o
 
-indentAware :: Show a => (SourcePos -> SourcePos -> Bool) -> Parser Bool -> Bool -> Parser a -> Parser [a]
+indentAware :: (SourcePos -> SourcePos -> Bool) -> Parser Bool -> Bool -> Parser a -> Parser [a]
 indentAware cmp delim allowSeq p = indentAwareStart cmp delim allowSeq p p
 
-indentAwareStart :: Show a => (SourcePos -> SourcePos -> Bool) -> Parser Bool -> Bool -> Parser a -> Parser a -> Parser [a]
+indentAwareStart :: (SourcePos -> SourcePos -> Bool) -> Parser Bool -> Bool -> Parser a -> Parser a -> Parser [a]
 indentAwareStart cmp delim allowSeq s p = do
     start <- getPosition
     wsmany start []

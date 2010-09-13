@@ -157,7 +157,7 @@ pdCascade = do
     dispatches' _ x y = error $ "impossible: dispatches' on " ++ show (x, y)
 
 pList :: Parser Expr
-pList = (tagged . fmap (EList Nothing) $ brackets (commaSep pExpr))
+pList = (tagged . fmap (EList Nothing) $ brackets (wsDelim "," pExpr))
     <?> "list"
 
 pString :: Parser Expr
