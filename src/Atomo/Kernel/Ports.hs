@@ -246,7 +246,7 @@ prelude = mapM_ eval [$es|
 
     with-all-output-to: (fn: String) do: b :=
         Port (new: fn) ensuring: @close do: { file |
-            with-output-to: file do: b
+            with-all-output-to: file do: b
         }
 
     with-all-output-to: (p: Port) do: b :=
@@ -254,7 +254,7 @@ prelude = mapM_ eval [$es|
 
     with-all-input-from: (fn: String) do: (b: Block) :=
         Port (new: fn) ensuring: @close do: { file |
-            with-input-from: file do: b
+            with-all-input-from: file do: b
         }
 
     with-all-input-from: (p: Port) do: (b: Block) :=
