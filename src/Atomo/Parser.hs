@@ -116,7 +116,7 @@ pdKeys = do
         return (Dispatch (Just p) (toBinaryOps ops msg))
 
     ckeywd pos = do
-        ks <- many1 $ keyword pdCascade
+        ks <- wsMany1 $ keyword pdCascade
         let (ns, es) = unzip ks
         return $ ekeyword ns (ETop (Just pos):es)
         <?> "keyword segment"
