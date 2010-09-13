@@ -104,10 +104,22 @@ pDispatch = choice
 pdKeys :: Parser Expr
 pdKeys = do
     pos <- getPosition
-    ks <- keywords ekeyword (ETop (Just pos)) pdCascade
+    msg <- keywords ekeyword (ETop (Just pos)) (try pdCascade <|> headless)
     ops <- getState
-    return $ Dispatch (Just pos) (toBinaryOps ops ks)
+    return $ Dispatch (Just pos) (toBinaryOps ops msg)
     <?> "keyword dispatch"
+  where
+    headless = do
+        p <- getPosition
+        msg <- ckeywd p
+        ops <- getState
+        return (Dispatch (Just p) (toBinaryOps ops msg))
+
+    ckeywd pos = do
+        ks <- many1 $ keyword pdCascade
+        let (ns, es) = unzip ks
+        return $ ekeyword ns (ETop (Just pos):es)
+        <?> "keyword segment"
 
 pdCascade :: Parser Expr
 pdCascade = do
