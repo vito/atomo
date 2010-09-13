@@ -1,9 +1,9 @@
 module Main where
 
 import Control.Monad.IO.Class
-import Control.Monad.Trans.Class
 import Control.Monad.Trans.Error
-import Control.Monad.Trans.State
+import Data.Char (isSpace)
+import Prelude hiding (catch)
 import System.Console.Haskeline
 import System.Directory (getHomeDirectory)
 import System.Environment (getArgs)
@@ -21,46 +21,52 @@ main = do
     case args of
         r | null r || r == ["-d"] ->
             exec (repl (r == ["-d"]))
+
         ["-e", expr] ->
             exec $ do
                 ast <- continuedParse expr "<input>"
                 r <- evalAll ast
                 p <- prettyVM r
                 liftIO (print p)
-        [fn] -> do
-            source <- readFile fn
 
-            let path = takeDirectory (normalise fn)
-            exec $ do
-                lift . modify $ \s -> s { loadPath = path:loadPath s }
-                ast <- continuedParse source fn
-                evalAll ast
-                return ()
-        {-["-make", fn] -> parseFile fn >>= compileAST-}
+        ["-s", expr] -> exec $ do
+            ast <- continuedParse expr "<input>"
+            evalAll ast
+            repl False
+
+        ["-l", fn] -> exec $ do
+            loadFile fn
+            repl False
+
+        [fn] | not (head fn == '-') ->
+            exec (loadFile fn)
+
         _ -> putStrLn . unlines $
             [ "usage:"
             , "\tatomo\t\tstart the REPL"
-            , "\tatomo -d\t\tstart the REPL in quiet mode"
-            , "\tatomo -e EXPR\t\tevaluate EXPR and output the result"
-            , "\tatomo FILENAME\trun FILENAME"
+            , "\tatomo -d\tstart the REPL in quiet mode"
+            , "\tatomo -e EXPR\tevaluate EXPR and output the result"
+            , "\tatomo -s EXPR\tevaluate EXPR and start the REPL"
+            , "\tatomo -l FILE\tload FILENAME and start the REPL"
+            , "\tatomo FILE\texecute FILE"
             ]
 
 repl :: Bool -> VM ()
 repl quiet = do
     home <- liftIO getHomeDirectory
-    repl' "" $ runInputT
-        defaultSettings
-            { historyFile = Just (home </> ".atomo_history")
-            }
+    repl' "" $ runInput home . withInterrupt
   where
+    escape Interrupt = return Nothing
+
+    runInput home = runInputT defaultSettings
+        { historyFile = Just (home </> ".atomo_history")
+        }
+
     repl' input r = do
-        me <- liftIO . r $ getInputLine $
-            if quiet
-                then ""
-                else if null input then "> " else ". "
+        me <- liftIO (catch (r $ getInputLine prompt) escape)
 
         case me of
-            Just "" -> repl' input r
+            Just blank | null (dropWhile isSpace blank) -> repl' input r
             Just part | not (bracesBalanced $ input ++ part) ->
                 repl' (input ++ part) r
             Just expr -> do
@@ -71,7 +77,20 @@ repl quiet = do
                     Left e -> printError e
 
                 repl' "" r
-            Nothing -> return ()
+
+            Nothing -> askQuit (repl' input r)
+      where
+        prompt
+            | quiet = ""
+            | null input = "> "
+            | otherwise = ". "
+
+    askQuit continue = do
+        r <- liftIO . runInputT defaultSettings $ getInputChar "really quit? (y/n) "
+        case r of
+            Just 'y' -> return ()
+            Just 'n' -> continue
+            _ -> askQuit continue
 
     bracesBalanced s = hangingBraces s == 0
       where
