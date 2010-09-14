@@ -1,6 +1,6 @@
 #title:{Input & Output}tag:"io"
 
-Atomo uses an I/O system similar to Scheme - methods for reading/writing internally use #atomo:current-input-port or #atomo:current-output-port, which can be overridden lexically. The methods will act on the closest one to their caller via #atomo:(dispatch sender).
+Atomo uses an I/O system similar to Scheme - methods for reading/writing internally use #atomo:current-input-port or #atomo:current-output-port, which can be overridden via parameterization. Certain methods, e.g. #atomo:print and #atomo:read-line, will act on whatever those parameters are.
 
 #define:{
     Port
@@ -11,16 +11,16 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
 
 #define:{
     current-output-port
-    > Port
+    > Parameter
 }body:{
-    The #atomo:Port that #atomo:print, et al. output to.
+    A #atomo:Parameter containing the default port used for printing output.
 }
 
 #define:{
     current-input-port
-    > Port
+    > Parameter
 }body:{
-    The #atomo:Port that is used for reading input, via #atomo:read-line, #atomo:read, etc.
+    A #atomo:Parameter containing the default port used for getting input.
 }
 
 #define:{

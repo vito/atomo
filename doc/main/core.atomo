@@ -65,9 +65,27 @@
 
 #define:{
     o clone
-    > Object
+    > is-a?: o
 }body:{
     Returns a new object, delegating to #atomo:o.
+}
+
+#define:{
+    o new
+    > is-a?: o
+}body:{
+    Similar to #atomo:clone, but often does certain initialization stuff like setting default values.
+
+    Note: this method, along with #atomo:(new:), is just listed here so that links in the documentation will point to these more general descriptions rather than a more specific, but wrong, definition. It is not defined for #atomo:Object.
+}
+
+#define:{
+    o new: x
+    > is-a?: o
+}body:{
+    Similar to #atomo:new, but with an additional argument used for initialization.
+
+    Note: this method, along with #atomo:new, is just listed here so that links in the documentation will point to these more general descriptions rather than a more specific, but wrong, definition. It is not defined for #atomo:Object.
 }
 
 #define:{
