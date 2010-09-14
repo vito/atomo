@@ -1,6 +1,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Atomo.Kernel.Ports (load) where
 
+import Data.Char (isSpace)
 import Data.Dynamic
 import System.Directory
 import System.IO
@@ -9,6 +10,7 @@ import qualified Data.Vector as V
 
 import Atomo.Environment
 import Atomo.Haskell
+import Atomo.Parser
 import Atomo.Pretty
 
 
@@ -74,6 +76,22 @@ load = do
                 liftIO (hFlush hdl)
                 return x
             else throwError $ ErrorMsg "@as:String returned non-String"
+
+    [$p|read|] =::: [$e|current-input-port _? read|]
+    [$p|(p: Port) read|] =: do
+        h <- getHandle [$e|p handle|]
+
+        segment <- liftIO (hGetSegment h)
+        parsed <- continuedParse segment "<read>"
+
+        let isPrimitive (Primitive {}) = True
+            isPrimitive (EList { eContents = es }) = all isPrimitive es
+            isPrimitive _ = False
+
+        case parsed of
+            [] -> throwError . ErrorMsg $ "impossible: no expressions parsed from input"
+            es | all isPrimitive es -> evalAll es
+            (e:_) -> return (Expression e)
 
     [$p|read-line|] =::: [$e|current-input-port _? read-line|]
     [$p|(p: Port) read-line|] =: do
@@ -244,6 +262,44 @@ load = do
     getHandle ex = do
         Haskell hdl <- eval ex
         return (fromDyn hdl (error "handle invalid"))
+
+    hGetSegment :: Handle -> IO String
+    hGetSegment h = dropSpaces >> hGetSegment'
+      where
+        dropSpaces = do
+            c <- hLookAhead h
+            if isSpace c
+                then hGetChar h >> dropSpaces
+                else return ()
+
+        hGetSegment' = do
+            end <- hIsEOF h
+
+            if end
+                then return ""
+                else do
+
+            c <- hGetChar h
+
+            case c of
+                '"' -> hGetUntil h '"' >>= return . (c:)
+                '(' -> hGetUntil h ')' >>= return . (c:)
+                '{' -> hGetUntil h '}' >>= return . (c:)
+                '[' -> hGetUntil h ']' >>= return . (c:)
+                s | isSpace s -> return [c]
+                _ -> do
+                    cs <- hGetSegment'
+                    return (c:cs)
+
+    hGetUntil :: Handle -> Char -> IO String
+    hGetUntil h x = do
+        c <- hGetChar h
+
+        if c == x
+            then return [c]
+            else do
+                cs <- hGetUntil h x
+                return (c:cs)
 
 
 prelude :: VM ()
