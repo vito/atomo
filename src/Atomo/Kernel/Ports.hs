@@ -3,6 +3,7 @@ module Atomo.Kernel.Ports (load) where
 
 import Data.Char (isSpace)
 import Data.Dynamic
+import Data.Maybe (catMaybes)
 import System.Directory
 import System.IO
 import qualified Data.ByteString.Char8 as CBS
@@ -85,6 +86,9 @@ load = do
         parsed <- continuedParse segment "<read>"
 
         let isPrimitive (Primitive {}) = True
+            isPrimitive (EParticle { eParticle = EPMSingle _ }) = True
+            isPrimitive (EParticle { eParticle = EPMKeyword _ es }) =
+                all isPrimitive (catMaybes es)
             isPrimitive (EList { eContents = es }) = all isPrimitive es
             isPrimitive _ = False
 
@@ -283,6 +287,7 @@ load = do
 
             case c of
                 '"' -> hGetUntil h '"' >>= return . (c:)
+                '\'' -> hGetUntil h '\'' >>= return . (c:)
                 '(' -> hGetUntil h ')' >>= return . (c:)
                 '{' -> hGetUntil h '}' >>= return . (c:)
                 '[' -> hGetUntil h ']' >>= return . (c:)
