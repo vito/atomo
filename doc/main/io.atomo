@@ -10,10 +10,112 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
 }
 
 #define:{
+    Port new: filename mode: mode
+    | filename is-a?: String
+    | [@read, @write, @read-write, @append] contains?: mode
+    > Port
+}body:{
+    Open the file #atomo:filename and return a #atomo:Port for performing I/O.
+}
+
+#define:{
+    Port new: filename
+    | filename is-a?: String
+    > Port
+}body:{
+    Alias for #atomo:(Port new: filename mode: @read-write).
+}
+
+#define:{
+    Port standard-input
+    > Port
+}body:{
+    Standard input port (stdin).
+}
+
+#define:{
+    Port standard-output
+    > Port
+}body:{
+    Standard output port (stdout).
+}
+
+#define:{
+    Port standard-error
+    > Port
+}body:{
+    Standard error port (stderr).
+}
+
+#define:{
+    p print: v
+    | p is-a?: Port
+    | v responds-to?: @(as: String)
+    > v
+}body:{
+    Outputs #atomo:(v as: String) to #atomo:p, followed by a linebreak.
+}
+
+#define:{
+    p display: v
+    | p is-a?: Port
+    | v responds-to?: @(as: String)
+    > v
+}body:{
+    Outputs #atomo:(v as: String) to #atomo:p.
+}
+
+#define:{
+    p read
+    | p is-a?: Port
+    > any
+}body:{
+    Reads a primitive value from #atomo:p. A primitive value is an integer, double, character, string, or lists and particles that contain primitive values. For anything else, if the parse is successful it returns it as an #atomo:Expression. This includes blocks an arbitrary paranthesized expressions, or lists/particles containing non-primitives.
+
+    The idea is that any value returned by #atomo:read is safe; anything else is returned unevaluated.
+}
+
+#define:{
+    p read-line
+    | p is-a?: Port
+    > String
+}body:{
+    Read a line of text from #atomo:p.
+}
+
+#define:{
+    p contents
+    | p is-a?: Port
+    > String
+}body:{
+    Read in #atomo:p's entire contents, blocking until the end of the input is reached.
+}
+
+#define:{
+    p flush
+    | p is-a?: Port
+    > @ok
+}body:{
+    Flush #atomo:p's output. #atomo:print and #atomo:display automatically perform this task for you.
+}
+
+#define:{
+    p close
+    | p is-a?: Port
+    > @ok
+}body:{
+    Close #atomo:p, flushing any output.
+}
+
+#section:{Parameters}
+
+#define:{
     current-output-port
     > Parameter
 }body:{
     A #atomo:Parameter containing the default port used for printing output.
+
+    Default is #atomo:(Port standard-output).
 }
 
 #define:{
@@ -21,6 +123,8 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     > Parameter
 }body:{
     A #atomo:Parameter containing the default port used for getting input.
+
+    Default is #atomo:(Port standard-input).
 }
 
 #define:{
@@ -46,27 +150,27 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
 }
 
 #define:{
-    with-input-from: p do: a
+    with-input-from: p do: action
     | p is-a?: Port || p is-a?: String
     | a is-a?: Block
     > any
 }body:{
-    Override #atomo:current-input-port in a new scope, executing #atomo:a in that scope and returning its result.
+    Parameterize #atomo:current-input-port and execute #atomo:action, returning its result.
 
-    If #atomo:p is a #atomo:String, it is considered a filename, and that file is opened for reading. The file is automatically closed.
+    If #atomo:p is a #atomo:String, it is considered a filename, and that file is opened for reading. The file is automatically closed after the block's execution.
 
     If #atomo:p is a #atomo:Port, it is used for input.
 }
 
 #define:{
-    with-output-to: p do: a
+    with-output-to: p do: action
     | p is-a?: Port || p is-a?: String
     | a is-a?: Block
     > any
 }body:{
-    Override #atomo:current-output-port in a new scope, executing #atomo:a in that scope and returning its result.
+    Parameterize #atomo:current-output-port and execute #atomo:action, returning its result.
 
-    If #atomo:p is a #atomo:String, it is considered a filename, and that file is opened for writing. The file is created if it doesn't exist, or overwritten if it does. The file is automatically closed.
+    If #atomo:p is a #atomo:String, it is considered a filename, and that file is opened for writing. The file is created if it doesn't exist, or overwritten if it does. The file is automatically closed after the block's execution.
 
     If #atomo:p is a #atomo:Port, it is used for output.
 }
