@@ -119,6 +119,10 @@ load = do
         getHandle [$e|p handle|] >>= liftIO . hIsOpen
             >>= bool
 
+    [$p|(p: Port) closed?|] =:
+        getHandle [$e|p handle|] >>= liftIO . hIsClosed
+            >>= bool
+
     [$p|(p: Port) readable?|] =:
         getHandle [$e|p handle|] >>= liftIO . hIsReadable
             >>= bool
@@ -129,10 +133,6 @@ load = do
 
     [$p|(p: Port) seekable?|] =:
         getHandle [$e|p handle|] >>= liftIO . hIsSeekable
-            >>= bool
-
-    [$p|(p: Port) closed?|] =:
-        getHandle [$e|p handle|] >>= liftIO . hIsClosed
             >>= bool
 
     [$p|ready?|] =::: [$e|current-input-port _? ready?|]

@@ -11,7 +11,7 @@ load = mapM_ eval [$es|
 
     Parameter = Object clone
     Parameter new: v := Parameter clone do: {
-        value: _ = v
+        set-default: v
     }
 
     (p: Parameter) _? := p value: self
