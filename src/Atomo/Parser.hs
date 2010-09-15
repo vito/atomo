@@ -198,7 +198,7 @@ cSingle p = do
 
 cKeyword :: Bool -> Parser EParticle
 cKeyword wc = do
-    ks <- parens . many1 $ keyword keywordVal
+    ks <- parens $ many1 keywords
     let (ns, vs) = unzip ks
     return $ EPMKeyword ns (Nothing:vs)
     <?> "keyword segment"
@@ -208,6 +208,18 @@ cKeyword wc = do
         | otherwise = value
 
     value = fmap Just pdCascade
+
+    keywords = do
+        name <- try (do
+            name <- ident
+            char ':'
+            return name) <|> operator
+        whiteSpace1
+        target <-
+            if all (`elem` opLetters) name
+                then fmap Just pDispatch
+                else keywordVal
+        return (name, target)
 
     wildcard = symbol "_" >> return Nothing
 

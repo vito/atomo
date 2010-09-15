@@ -203,7 +203,7 @@ keyword p = try $ do
         name <- ident
         char ':'
         return name) <|> operator
-    whiteSpace1 -- TODO: this was space, but seeing if this works too
+    whiteSpace1
     target <- p
     return (name, target)
 
