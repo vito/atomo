@@ -69,15 +69,15 @@ Blocks are the bread and butter of Atomo. They represent chunks of unevaluated c
 }
 
 #define:{
-    b scope
+    b context
     | b is-a?: Block
     > Object
 }body:{
-    Returns the scope that the #atomo:b was evaluated in.
+    Returns the context that the #atomo:b was evaluated in.
 
     #example:({
         a = 1
-        {} scope a
+        {} context a
     })
 }
 

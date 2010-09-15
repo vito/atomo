@@ -147,9 +147,9 @@ This way of thinking makes a huge difference in how you reason about things in A
 If no roles understand the message, it sends either #atomo:(did-not-understand:) (for single messages) or #atomo:(did-not-understand:at:) (for keyword messages) to each object involved until one handles it. If none of them respond, you get an error.
 
 #example:({
-    x = Object clone
-    x did-not-understand: m := "I have no idea what you mean by this: " .. m show
-    x make-me-a-sandwich
+    X = Object clone
+    X did-not-understand: m := "I have no idea what you mean by this: " .. m show
+    X make-me-a-sandwich
 })
 
 That's a lot to swallow right now, so let's just dive in and play around with this thing. Let's write a small Rock-Paper-Scissors game. First we'll define the three different objects involved in the game:
