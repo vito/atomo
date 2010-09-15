@@ -198,7 +198,7 @@ cSingle p = do
 
 cKeyword :: Bool -> Parser EParticle
 cKeyword wc = do
-    ks <- parens $ many1 keywords
+    ks <- parens $ many1 keyword'
     let (ns, vs) = unzip ks
     return $ EPMKeyword ns (Nothing:vs)
     <?> "keyword segment"
@@ -207,17 +207,22 @@ cKeyword wc = do
         | wc = wildcard <|> value
         | otherwise = value
 
-    value = fmap Just pdCascade
+    keywordDispatch
+        | wc = wildcard <|> dispatch
+        | otherwise = dispatch
 
-    keywords = do
+    value = fmap Just pdCascade
+    dispatch = fmap Just pDispatch
+
+    keyword' = do
         name <- try (do
             name <- ident
             char ':'
             return name) <|> operator
         whiteSpace1
         target <-
-            if all (`elem` opLetters) name
-                then fmap Just pDispatch
+            if isOperator name
+                then keywordDispatch
                 else keywordVal
         return (name, target)
 
@@ -260,7 +265,6 @@ toBinaryOps ops (EKeyword h (n:ns) (v:vs))
   where
     numNonOps = length nonOperators
     nonOperators = takeWhile (not . isOperator) ns
-    isOperator = all (`elem` opLetters)
     nextFirst = isOperator n && (nextHigher || nextAssoc)
     nextHigher = not (null ns) && prec (head ns) > prec n
     nextAssoc = assoc n == ARight
@@ -275,6 +279,9 @@ toBinaryOps ops (EKeyword h (n:ns) (v:vs))
             Nothing -> defaultPrec
             Just (_, p) -> p
 toBinaryOps _ u = error $ "cannot toBinaryOps: " ++ show u
+
+isOperator :: String -> Bool
+isOperator = all (`elem` opLetters)
 
 parser :: Parser [Expr]
 parser = do
