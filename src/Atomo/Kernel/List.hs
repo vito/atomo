@@ -10,6 +10,8 @@ import Atomo.Haskell
 
 load :: VM ()
 load = do
+    eval [$e|operator right .|]
+
     [$p|(l: List) length|] =:
         getList [$e|l|] >>= return . Integer . fromIntegral . V.length
 
