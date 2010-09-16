@@ -14,11 +14,17 @@ load = mapM_ eval [$es|
     True delegates-to: Bool
     False delegates-to: Bool
 
-    True && True := True
-    Bool && Bool := False
+    True && True = True
+    Bool && Bool = False
 
-    True || Bool := True
+    False and: _ = False
+    True and: (b: Block) := b call
+
+    True || Bool = True
     False || (b: Bool) := b
+
+    True or: _ = True
+    False or: (b: Block) := b call
 
     True not := False
     False not := True
