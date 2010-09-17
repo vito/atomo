@@ -124,6 +124,27 @@ load = do
             as <- list [x, acc]
             dispatch (keyword ["call"] [b, as])) v vs
 
+    [$p|(l: List) reduce-right: b|] =: do
+        vs <- getList [$e|l|]
+        b <- here "b"
+
+        if V.null vs
+            then throwError (ErrorMsg "@reduce-right: empty list")
+            else do
+
+        foldr1MV (\x acc -> do
+            as <- list [x, acc]
+            dispatch (keyword ["call"] [b, as])) vs
+
+    [$p|(l: List) reduce-right: b with: v|] =: do
+        vs <- getList [$e|l|]
+        b <- here "b"
+        v <- here "v"
+
+        foldrMV (\x acc -> do
+            as <- list [x, acc]
+            dispatch (keyword ["call"] [b, as])) v vs
+
     [$p|(l: List) concat|] =::: [$e|l reduce: @.. with: []|]
     [$p|(l: List) sum|] =::: [$e|l reduce: @+ with: 0|]
     [$p|(l: List) product|] =::: [$e|l reduce: @* with: 1|]
@@ -249,6 +270,19 @@ load = do
 
         mapM list (splitWhen (== d) l) >>= list
 
+    [$p|(l: List) sort|] =:
+        getList [$e|l|] >>= sortVM . V.toList >>= list
+
+    [$p|(l: List) sort-by: cmp|] =: do
+        t <- bool True
+        vs <- fmap V.toList (getList [$e|l|])
+        cmp <- here "cmp"
+
+        sortByVM (\a b -> do
+            as <- list [a, b]
+            r <- dispatch (keyword ["call"] [cmp, as])
+            return (r == t)) vs >>= list
+
     prelude
 
 
@@ -270,3 +304,54 @@ prelude = mapM_ eval [$es|
     (x . xs) join: (d: List) :=
         x .. d .. (xs join: d)
 |]
+
+foldr1MV :: (Value -> Value -> VM Value) -> V.Vector Value -> VM Value
+foldr1MV f vs = foldrMV f (V.last vs) (V.init vs)
+
+foldrMV :: (Value -> Value -> VM Value) -> Value -> V.Vector Value -> VM Value
+foldrMV _ acc vs | V.null vs = return acc
+foldrMV f acc vs = do
+    rest <- foldrMV f acc (V.tail vs)
+    f (V.head vs) rest
+
+sortVM :: [Value] -> VM [Value]
+sortVM = sortByVM gt
+  where
+    gt a b = do
+        t <- bool True
+        r <- dispatch (keyword [">"] [a, b])
+        return (r == t)
+
+sortByVM :: (Value -> Value -> VM Bool) -> [Value] -> VM [Value]
+sortByVM = mergesort
+
+mergesort :: (Value -> Value -> VM Bool) -> [Value] -> VM [Value]
+mergesort cmp = mergesort' cmp . map (\x -> [x])
+
+mergesort' :: (Value -> Value -> VM Bool) -> [[Value]] -> VM [Value]
+mergesort' _ [] = return []
+mergesort' _ [xs] = return xs
+mergesort' cmp xss = merge_pairs cmp xss >>= mergesort' cmp
+
+merge_pairs :: (Value -> Value -> VM Bool) -> [[Value]] -> VM [[Value]]
+merge_pairs _ [] = return []
+merge_pairs _ [xs] = return [xs]
+merge_pairs cmp (xs:ys:xss) = do
+    z <- merge cmp xs ys
+    zs <- merge_pairs cmp xss
+    return (z:zs)
+
+merge :: (Value -> Value -> VM Bool) -> [Value] -> [Value] -> VM [Value]
+merge _ [] ys = return ys
+merge _ xs [] = return xs
+merge cmp (x:xs) (y:ys) = do
+    o <- cmp x y
+
+    if o
+        then do
+            rest <- merge cmp (x:xs) ys
+            return (y:rest)
+        else do
+            rest <- merge cmp xs (y:ys)
+            return (x:rest)
+
