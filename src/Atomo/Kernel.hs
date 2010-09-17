@@ -106,16 +106,13 @@ load = do
         liftIO (putStrLn (prettyShow x))
         return x
 
-    [$p|load: (fn: String)|] =: do
-        fn <- fmap V.toList $ getList [$e|fn|]
+    [$p|(t: Object) load: (fn: String)|] =: do
+        t <- here "t"
+        fn <- here "fn" >>= toString
 
-        -- escape from the method scope back to the sender
-        sender <- eval [$e|dispatch sender|]
-        lift . modify $ \s -> s { top = sender }
+        lift . modify $ \s -> s { top = t }
 
-        if all isChar fn
-            then loadFile (map (\(Char c) -> c) fn)
-            else throwError $ ErrorMsg "@load: applied to non-String"
+        loadFile fn
 
         return (particle "ok")
 
