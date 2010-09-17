@@ -599,7 +599,17 @@ loadFile filename = do
         else do
 
     case takeExtension file of
-        ".atomo" -> do
+        ".hs" -> do
+            int <- liftIO . H.runInterpreter $ do
+                H.loadModules [filename]
+                H.setTopLevelModules ["Main"]
+                H.interpret "load" (H.as :: VM ())
+
+            load <- either (throwError . ImportError) return int
+
+            load
+
+        _ -> do
             source <- liftIO (readFile file)
             ast <- continuedParse source file
 
@@ -612,17 +622,6 @@ loadFile filename = do
                 , loaded = file : loaded s
                 }
 
-        ".hs" -> do
-            int <- liftIO . H.runInterpreter $ do
-                H.loadModules [filename]
-                H.setTopLevelModules ["Main"]
-                H.interpret "load" (H.as :: VM ())
-
-            load <- either (throwError . ImportError) return int
-
-            load
-
-        _ -> throwError . ErrorMsg $ "don't know how to load " ++ file
   where
     path = takeDirectory (normalise filename)
 
