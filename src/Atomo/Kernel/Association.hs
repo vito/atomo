@@ -7,7 +7,7 @@ import Atomo.Haskell
 
 load :: VM ()
 load = mapM_ eval [$es|
-    operator right ->
+    operator right 1 ->
 
     Association = Object clone
     a -> b := Association clone do: { from = a; to = b }
