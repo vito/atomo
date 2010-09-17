@@ -22,23 +22,22 @@ main = do
         r | null r || r == ["-d"] ->
             exec (repl (r == ["-d"]))
 
-        ["-e", expr] ->
-            exec $ do
-                ast <- continuedParse expr "<input>"
-                r <- evalAll ast
-                p <- prettyVM r
-                liftIO (print p)
+        ("-e":expr:_) -> exec $ do
+            ast <- continuedParse expr "<input>"
+            r <- evalAll ast
+            p <- prettyVM r
+            liftIO (print p)
 
-        ["-s", expr] -> exec $ do
+        ("-s":expr:_) -> exec $ do
             ast <- continuedParse expr "<input>"
             evalAll ast
             repl False
 
-        ["-l", fn] -> exec $ do
+        ("-l":fn:_) -> exec $ do
             loadFile fn
             repl False
 
-        [fn] | not (head fn == '-') ->
+        (fn:_) | not (head fn == '-') ->
             exec (loadFile fn)
 
         _ -> putStrLn . unlines $
