@@ -2,6 +2,7 @@
 module Atomo.Kernel.List (load) where
 
 import Data.IORef
+import Data.List.Split
 import qualified Data.Vector as V
 
 import Atomo.Environment
@@ -235,6 +236,18 @@ load = do
         liftIO . writeIORef l $ V.cons v vs
 
         return (List l)
+
+    [$p|(l: List) split: (d: List)|] =: do
+        l <- fmap V.toList (getList [$e|l|])
+        d <- fmap V.toList (getList [$e|d|])
+
+        mapM list (splitOn d l) >>= list
+
+    [$p|(l: List) split-on: d|] =: do
+        l <- fmap V.toList (getList [$e|l|])
+        d <- here "d"
+
+        mapM list (splitWhen (== d) l) >>= list
 
     prelude
 
