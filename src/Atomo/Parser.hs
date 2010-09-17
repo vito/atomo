@@ -283,6 +283,7 @@ isOperator = all (`elem` opLetters)
 
 parser :: Parser [Expr]
 parser = do
+    optional (string "#!" >> manyTill anyToken newline)
     whiteSpace
     es <- wsBlock pExpr
     whiteSpace
