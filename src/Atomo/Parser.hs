@@ -265,9 +265,7 @@ toBinaryOps ops (EKeyword h (n:ns) (v:vs))
   where
     numNonOps = length nonOperators
     nonOperators = takeWhile (not . isOperator) ns
-    nextFirst = isOperator n && (nextHigher || nextAssoc)
-    nextHigher = not (null ns) && prec (head ns) > prec n
-    nextAssoc = assoc n == ARight
+    nextFirst = isOperator n && (null ns || (assoc n == ARight && prec (head ns) >= prec n) || prec (head ns) > prec n)
 
     assoc n' =
         case lookup n' ops of
