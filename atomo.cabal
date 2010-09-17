@@ -51,6 +51,7 @@ library
     Atomo.Kernel.Association,
     Atomo.Kernel.Parameter,
     Atomo.Kernel.Exception,
+    Atomo.Kernel.Environment,
     Atomo.Method,
     Atomo.Parser,
     Atomo.Parser.Base,

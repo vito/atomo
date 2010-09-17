@@ -28,6 +28,7 @@ import qualified Atomo.Kernel.Bool as Bool
 import qualified Atomo.Kernel.Association as Association
 import qualified Atomo.Kernel.Parameter as Parameter
 import qualified Atomo.Kernel.Exception as Exception
+import qualified Atomo.Kernel.Environment as Environment
 
 load :: VM ()
 load = do
@@ -144,6 +145,7 @@ load = do
     Time.load
     Bool.load
     Exception.load
+    Environment.load
 
     prelude
 
