@@ -226,9 +226,14 @@ load = do
         liftIO (renameDirectory from to)
         return (particle "ok")
 
-    [$p|Directory contents: (path: String)|] =: do
-        path <- here "path" >>= findValue isList >>= toString
-        liftIO (getDirectoryContents path) >>= mapM string >>= list
+    [$p|Directory contents: (path: String)|] =:
+        here "path"
+            >>= findValue isList
+            >>= toString
+            >>= liftIO . getDirectoryContents
+            >>= return . filter (not . (`elem` [".", ".."]))
+            >>= mapM string
+            >>= list
 
     [$p|Directory current|] =:
         liftIO getCurrentDirectory >>= string
