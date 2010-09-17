@@ -82,6 +82,18 @@ load = do
 
     [$p|(x: Object) as: String|] =::: [$e|x show|]
 
+    [$p|(s: String) as: Integer|] =: do
+        s <- here "s" >>= findValue isList >>= toString
+        return (Integer (read s))
+
+    [$p|(s: String) as: Double|] =: do
+        s <- here "s" >>= findValue isList >>= toString
+        return (Double (read s))
+
+    [$p|(s: String) as: Char|] =: do
+        s <- here "s" >>= findValue isList >>= toString
+        return (Char (read s))
+
     [$p|(x: Object) show|] =: do
         v <- here "x"
 
