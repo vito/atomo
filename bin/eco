@@ -1,0 +1,35 @@
+#!/usr/bin/env atomo
+
+Environment arguments tail match: {
+    ("install" . _) -> {
+        pkg = Eco Package load-from: "package.eco"
+
+        target = Eco path-to: pkg
+
+        contents = "main.atomo" . "package.eco" . pkg include
+
+        Directory create-tree-if-missing: target
+
+        contents each: { c |
+            if: Directory (exists?: c)
+                then: { Directory copy: c to: (target </> c) }
+                else: { File copy: c to: (target </> c) }
+        }
+
+        pkg executables map: { e |
+            bin = [
+                "#!/usr/bin/env atomo"
+                "load: (Eco path-to: " .. pkg name show .. " version: (" .. pkg version show .. ")) / " .. e to show
+            ] join: "\n"
+
+            with-output-to: (Eco executable: e from) do: {
+                bin print
+            }
+        }
+    } call
+
+    _ -> {
+        "usage:" print
+        "\tinstall:\tinstall package to ~/.eco" print
+    } call
+}
