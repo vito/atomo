@@ -18,4 +18,10 @@ load = mapM_ eval [$es|
         if: (k == a from)
             then: { @(ok: a to) }
             else: { as lookup: k }
+
+    [] find: _ = @none
+    (a . as) find: k :=
+        if: (k == a from)
+            then: { @(ok: a) }
+            else: { as find: k }
 |]
