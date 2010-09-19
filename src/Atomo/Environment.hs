@@ -584,7 +584,7 @@ orefFrom _ v = error $ "no orefFrom for: " ++ show v
 loadFile :: FilePath -> VM ()
 loadFile filename = do
     initialPath <- lift $ gets loadPath
-    file <- findFile ("":initialPath)
+    file <- findFile (initialPath ++ [""])
 
     alreadyLoaded <- lift $ gets ((file `elem`) . loaded)
     if alreadyLoaded
