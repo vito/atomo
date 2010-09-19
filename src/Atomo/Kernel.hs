@@ -32,8 +32,6 @@ import qualified Atomo.Kernel.Environment as Environment
 
 load :: VM ()
 load = do
-    eval [$e|operator right ->|]
-
     [$p|this|] =::: [$e|dispatch sender|]
 
     [$p|(x: Object) clone|] =: do
