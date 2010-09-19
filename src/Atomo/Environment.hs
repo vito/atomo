@@ -580,16 +580,19 @@ orefFrom ids (Process _ _) = idProcess ids
 orefFrom ids (Pattern _) = idPattern ids
 orefFrom _ v = error $ "no orefFrom for: " ++ show v
 
--- load a file, either .atomo or .hs
-loadFile :: FilePath -> VM ()
-loadFile filename = do
+-- load a file, either .atomo or .hs, optionally remembering it
+-- to prevent loading multiple times
+loadFile :: Bool -> FilePath -> VM ()
+loadFile remember filename = do
     initialPath <- lift $ gets loadPath
     file <- findFile (initialPath ++ [""])
 
     alreadyLoaded <- lift $ gets ((file `elem`) . loaded)
-    if alreadyLoaded
+    if remember && alreadyLoaded
         then return ()
         else do
+
+    lift . modify $ \s -> s { loaded = file : loaded s }
 
     case takeExtension file of
         ".hs" -> do
@@ -606,18 +609,17 @@ loadFile filename = do
             source <- liftIO (readFile file)
             ast <- continuedParse source file
 
-            lift . modify $ \s -> s { loadPath = [path] }
+            lift . modify $ \s -> s
+                { loadPath = [takeDirectory file]
+                }
 
             mapM_ eval ast
 
             lift . modify $ \s -> s
                 { loadPath = initialPath
-                , loaded = file : loaded s
                 }
 
   where
-    path = takeDirectory (normalise filename)
-
     findFile [] = throwError (ErrorMsg ("file not found: " ++ filename)) -- TODO: proper error
     findFile (p:ps) = do
         check <- filterM (liftIO . doesFileExist . ((p </> filename) <.>)) exts

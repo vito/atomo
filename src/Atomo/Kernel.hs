@@ -112,7 +112,17 @@ load = do
 
         lift . modify $ \s -> s { top = t }
 
-        loadFile fn
+        loadFile False fn
+
+        return (particle "ok")
+
+    [$p|(t: Object) require: (fn: String)|] =: do
+        t <- here "t"
+        fn <- here "fn" >>= toString
+
+        lift . modify $ \s -> s { top = t }
+
+        loadFile True fn
 
         return (particle "ok")
 
