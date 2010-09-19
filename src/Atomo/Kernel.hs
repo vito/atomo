@@ -149,6 +149,7 @@ load = do
 
 
     Association.load
+    Bool.load
     Parameter.load
     Numeric.load
     List.load
@@ -161,7 +162,6 @@ load = do
     Pattern.load
     Ports.load
     Time.load
-    Bool.load
     Exception.load
     Environment.load
     Eco.load
