@@ -110,9 +110,8 @@ ppObject = choice
     ]
   where
     name = do
-        pos <- getPosition
-        n <- capIdentifier
-        return $ Dispatch (Just pos) (esingle n (ETop (Just pos)))
+        lookAhead capIdentifier
+        pdCascade
 
 ppAny :: Parser Pattern
 ppAny = ppWildcard
