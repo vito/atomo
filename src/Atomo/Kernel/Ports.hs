@@ -5,6 +5,7 @@ import Data.Char (isSpace)
 import Data.Dynamic
 import Data.Maybe (catMaybes)
 import System.Directory
+import System.FilePath ((</>), (<.>))
 import System.IO
 import qualified Data.ByteString.Char8 as CBS
 import qualified Data.Vector as V
@@ -226,6 +227,21 @@ load = do
         liftIO (renameDirectory from to)
         return (particle "ok")
 
+    [$p|Directory copy: (from: String) to: (to: String)|] =::: [$e|{
+        Directory create-tree-if-missing: to
+
+        Directory (contents: from) map: { c |
+            f = from / c
+            t = to / c
+
+            if: Directory (exists?: f)
+                then: { Directory copy: f to: t }
+                else: { File copy: f to: t }
+        }
+
+        @ok
+    } call|]
+
     [$p|Directory contents: (path: String)|] =:
         here "path"
             >>= findValue isList
@@ -259,6 +275,16 @@ load = do
     [$p|Directory exists?: (path: String)|] =: do
         path <- here "path" >>= findValue isList >>= toString
         liftIO (doesDirectoryExist path) >>= bool
+
+    [$p|(a: String) </> (b: String)|] =: do
+        a <- here "a" >>= findValue isList >>= toString
+        b <- here "b" >>= findValue isList >>= toString
+        string (a </> b)
+
+    [$p|(a: String) <.> (b: String)|] =: do
+        a <- here "a" >>= findValue isList >>= toString
+        b <- here "b" >>= findValue isList >>= toString
+        string (a <.> b)
 
     prelude
   where
