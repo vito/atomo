@@ -5,6 +5,7 @@ module Atomo.Kernel.Pattern (load) where
 import Atomo.Environment
 import Atomo.Haskell
 import Atomo.Method
+import Atomo.Pretty
 
 
 load :: VM ()
@@ -56,4 +57,4 @@ load = do
         return (PPMKeyword ns ps)
     toPattern (Primitive { eValue = v }) =
         return (PMatch v)
-    toPattern e = throwError . ErrorMsg $ "don't know how to convert to pattern: " ++ show (e)
+    toPattern e = throwError . ErrorMsg $ "don't know how to convert to pattern: " ++ show (pretty e)
