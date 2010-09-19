@@ -193,6 +193,57 @@ load = do
                 str <- string fn
                 return (keyParticle ["ok"] [Nothing, Just str])
 
+    [$p|File readable?: (fn: String)|] =:
+        here "fn" >>= findValue isList >>= toString
+            >>= fmap readable . liftIO . getPermissions
+            >>= bool
+
+    [$p|File writable?: (fn: String)|] =:
+        here "fn" >>= findValue isList >>= toString
+            >>= fmap writable . liftIO . getPermissions
+            >>= bool
+
+    [$p|File executable?: (fn: String)|] =:
+        here "fn" >>= findValue isList >>= toString
+            >>= fmap executable . liftIO . getPermissions
+            >>= bool
+
+    [$p|File searchable?: (fn: String)|] =:
+        here "fn" >>= findValue isList >>= toString
+            >>= fmap searchable . liftIO . getPermissions
+            >>= bool
+
+    [$p|File set-readable: (fn: String) to: (b: Bool)|] =: do
+        t <- bool True
+        b <- here "b"
+        fn <- here "fn" >>= findValue isList >>= toString
+        p <- liftIO (getPermissions fn)
+        liftIO (setPermissions fn (p { readable = b == t }))
+        return (particle "ok")
+
+    [$p|File set-writable: (fn: String) to: (b: Bool)|] =: do
+        t <- bool True
+        b <- here "b"
+        fn <- here "fn" >>= findValue isList >>= toString
+        p <- liftIO (getPermissions fn)
+        liftIO (setPermissions fn (p { writable = b == t }))
+        return (particle "ok")
+
+    [$p|File set-executable: (fn: String) to: (b: Bool)|] =: do
+        t <- bool True
+        b <- here "b"
+        fn <- here "fn" >>= findValue isList >>= toString
+        p <- liftIO (getPermissions fn)
+        liftIO (setPermissions fn (p { executable = b == t }))
+        return (particle "ok")
+
+    [$p|File set-searchable: (fn: String) to: (b: Bool)|] =: do
+        t <- bool True
+        b <- here "b"
+        fn <- here "fn" >>= findValue isList >>= toString
+        p <- liftIO (getPermissions fn)
+        liftIO (setPermissions fn (p { searchable = b == t }))
+        return (particle "ok")
 
     [$p|Directory create: (path: String)|] =: do
         path <- here "path" >>= findValue isList >>= toString
