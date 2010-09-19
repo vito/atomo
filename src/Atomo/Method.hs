@@ -1,11 +1,11 @@
 module Atomo.Method (addMethod, insertMethod, toMethods) where
 
+import Data.IORef
 import Data.List (elemIndices)
 import System.IO.Unsafe
 import qualified Data.IntMap as M
 
 import Atomo.Types
-import Atomo.Environment
 
 
 -- referring to the left side:
@@ -72,9 +72,11 @@ comparePrecisions as bs =
     lt = length $ elemIndices LT compared
 
 unsafeDelegatesTo :: Value -> Value -> Bool
-unsafeDelegatesTo x y = unsafePerformIO $ do
-    r <- run (delegatesTo x y)
-    either (error . show) return r
+unsafeDelegatesTo (Reference f) t =
+    t `elem` ds || any (flip unsafeDelegatesTo t) ds
+  where
+    ds = oDelegates (unsafePerformIO (readIORef f))
+unsafeDelegatesTo _ _ = False
 
 addMethod :: Method -> MethodMap -> MethodMap
 addMethod m mm =

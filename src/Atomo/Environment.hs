@@ -19,7 +19,7 @@ import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
 import qualified Text.PrettyPrint as P
 
-import {-# SOURCE #-} Atomo.Method
+import Atomo.Method
 import Atomo.Parser
 import Atomo.Pretty
 import Atomo.Types
