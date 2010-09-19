@@ -224,25 +224,18 @@ newObject f = fmap Reference . liftIO $
         }
 
 -- run x with t as its toplevel object
--- TODO: rebuild error stack
 withTop :: Value -> VM a -> VM a
 withTop t x = do
-    e <- lift get
-    Right res <- liftIO (runWith action (e { top = t }))
-    either mergeStack return res
-  where
-    action = do
-        res <- (fmap Right x) `catchError` (return . Left)
-        case res of
-            Left e -> do
-                s <- lift $ gets stack
-                return (Left (s, e))
-            Right r -> return (Right r)
+    o <- lift (gets top)
+    lift $ modify (\e -> e { top = t })
 
-    mergeStack (st, e) = do
-        lift . modify $ \s -> s { stack = st }
-        throwError e
+    res <- catchError x $ \err -> do
+        lift $ modify (\e -> e { top = o })
+        throwError err
 
+    lift $ modify (\e -> e { top = o })
+
+    return res
 
 
 -----------------------------------------------------------------------------
