@@ -1,36 +1,33 @@
 #!/usr/bin/env atomo
 
 Environment arguments tail match: {
-    ("install" . _) -> {
-        pkg = Eco Package load-from: "package.eco"
+    ("install" . path . _) ->
+        Eco install: path
 
-        target = Eco path-to: pkg
+    ("install" . _) ->
+        Eco install: "."
 
-        contents = "main.atomo" . "package.eco" . pkg include
+    ("uninstall" . name . version . _) ->
+        Eco uninstall: name version: (version as: Version)
 
-        Directory create-tree-if-missing: target
+    ("uninstall" . name . _) ->
+        Eco uninstall: name
 
-        contents each: { c |
-            if: Directory (exists?: c)
-                then: { Directory copy: c to: (target </> c) }
-                else: { File copy: c to: (target </> c) }
+    ("list" . _) ->
+        Eco packages each: { p |
+            pkgs = p to
+            p from print
+            ("\tdescription: " .. pkgs head description) print
+            ("\tlatest version: " .. pkgs head version (as: String)) print
+            ("\tavailable versions: " .. pkgs (map: { p | p version as: String }) (join: ", ")) print
+            "" print
         }
-
-        pkg executables map: { e |
-            bin = [
-                "#!/usr/bin/env atomo"
-                "pkg = Eco path-to: " .. pkg name show .. " version: (" .. pkg version show .. ")"
-                "load: (pkg </> " .. e to show .. ")"
-            ] join: "\n"
-
-            with-output-to: (Eco executable: e from) do: {
-                bin print
-            }
-        }
-    } call
 
     _ -> {
         "usage:" print
-        "\tinstall:\tinstall package to ~/.eco" print
+        "\tinstall PATH:\tinstall package at PATH to ~/.eco" print
+        "\tinstall:\tinstall package at cwd to ~/.eco" print
+        "\tuninstall NAME VERSION:\tuninstall package NAME version VERSION" print
+        "\tuninstall NAME:\tuninstall package all versions of package NAME" print
     } call
 }

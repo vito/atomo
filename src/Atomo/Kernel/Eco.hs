@@ -12,11 +12,11 @@ loadEco :: VM ()
 loadEco = mapM_ eval [$es|
     Eco = Object clone do: {
         -- all packages OK for loading
-        -- name -> [version]
+        -- name -> [package]
         packages = []
 
         -- versions loaded by @use:
-        -- name -> version
+        -- name -> package
         loaded = []
     }
 
@@ -27,20 +27,17 @@ loadEco = mapM_ eval [$es|
         executables = []
     }
 
-    (e: Eco) initialize := e initialize: "package.eco"
+    (e: Eco) initialize :=
+        e initialize: (Eco Package load-from: "package.eco")
 
-    (e: Eco) initialize: file := {
-        "initializing " (.. file) print
-
-        me = Eco Package load-from: file
-
-        me dependencies each: { c |
+    (e: Eco) initialize: pkg := {
+        pkg dependencies each: { c |
             e packages (find: c from) match: {
                 @none -> raise: ("required package not found: " .. c from .. " (satisfying " .. c to show .. ")")
 
                 -- filter out versions not satisfying our dependency
                 @(ok: d) -> {
-                    safe = d to (filter: @(join: c to))
+                    safe = d to (filter: { p | p version join: c to })
 
                     safe match: {
                         [] ->
@@ -48,14 +45,17 @@ loadEco = mapM_ eval [$es|
                                 [
                                     "no versions of package "
                                     d from
-                                    " (" .. d to (map: @(as: String)) (join: ", ") .. ")"
+                                    " (" .. d to (map: { p | p version as: String }) (join: ", ") .. ")"
                                     " satisfy constraint "
                                     c to show
-                                    " for package " .. me name show
+                                    " for package " .. pkg name show
                                 ] concat
-                        (v . _) -> {
+
+                        -- initialize the first safe version of the package
+                        (p . _) -> {
+                            -- remove unsafe versions from the ecosystem
                             d to = safe
-                            e initialize: (e path-to: d from version: v) </> "package" <.> "eco"
+                            e initialize: p
                         } call
                     }
                 } call
@@ -70,18 +70,61 @@ loadEco = mapM_ eval [$es|
 
         e packages = Directory (contents: eco) map: { c |
             versions = Directory (contents: (eco </> c))
-            c -> versions (map: @(as: Version)) (sort-by: @<)
+            pkgs = versions map: { v |
+                Eco Package load-from:
+                    (eco </> c </> v </> "package.eco")
+            }
+
+            c -> pkgs (sort-by: { a b | a version < b version })
         }
     } call
 
     Eco path-to: (c: Eco Package) :=
         Eco path-to: c name version: c version
 
+    Eco path-to: (name: String) :=
+        Directory home </> ".eco" </> "lib" </> name
+
     Eco path-to: (name: String) version: (v: Version) :=
-        Directory home </> ".eco" </> "lib" </> name </> (v as: String)
+        (Eco path-to: name) </> (v as: String)
 
     Eco executable: (name: String) :=
         Directory home </> ".eco" </> "bin" </> name
+
+    Eco install: (path: String) := {
+        pkg = Eco Package load-from: (path </> "package.eco")
+        target = Eco path-to: pkg
+
+        contents = "main.atomo" . ("package.eco" . pkg include)
+
+        Directory create-tree-if-missing: target
+
+        contents each: { c |
+            if: Directory (exists?: (path </> c))
+                then: { Directory copy: (path </> c) to: (target </> c) }
+                else: { File copy: (path </> c) to: (target </> c) }
+        }
+
+        pkg executables each: { e |
+            File copy: (path </> e to) to: (Eco executable: e from)
+            File set-executable: (Eco executable: e from) to: True
+        }
+    } call
+
+    Eco uninstall: (name: String) version: (version: Version) := {
+        path = Eco path-to: name version: version
+        pkg = Eco Package load-from: (path </> "package.eco")
+
+        Directory remove-recursive: path
+        pkg executables each: { e |
+            File remove: (Eco executable: e from)
+        }
+    } call
+
+    Eco uninstall: (name: String) :=
+        Directory (contents: (Eco path-to: name)) each: { v |
+            Eco uninstall: name version: (v as: Version)
+        }
 
     context use: (name: String) :=
         context use: name version: { True }
@@ -95,8 +138,8 @@ loadEco = mapM_ eval [$es|
                 Eco packages (lookup: name) match: {
                     @none -> raise: ("package not found: " .. name)
                     @(ok: []) -> raise: ("no versions for package: " .. name)
-                    @(ok: versions) -> {
-                        satisfactory = versions filter: @(join: check)
+                    @(ok: pkgs) -> {
+                        satisfactory = pkgs filter: { p | p version join: check }
 
                         when: satisfactory empty?
                             do: {
@@ -112,14 +155,13 @@ loadEco = mapM_ eval [$es|
 
                         Eco loaded << (name -> satisfactory head)
 
-                        context load:
-                            ((Eco path-to: name version: satisfactory head) </> "main" <.> "atomo")
+                        context load: ((Eco path-to: satisfactory head) </> "main.atomo")
                     } call
                 }
             } call
 
-            @(ok: v) ->
-                when: (v join: check) not
+            @(ok: p) ->
+                when: (p version join: check) not
                     do: { raise: ("package " .. name .. " already loaded, but version (" .. (v as: String) .. ") does not satisfy constraint " .. check show) }
         }
 
