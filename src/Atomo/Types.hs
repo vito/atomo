@@ -305,7 +305,12 @@ list' :: MonadIO m => V.Vector Value -> m Value
 list' = liftM List . liftIO . newIORef
 
 toString :: MonadIO m => Value -> m String
-toString = liftM (map (\(Char c) -> c)) . toList
+toString v = do
+    l <- toList v
+
+    if all isChar l
+        then return (map (\(Char c) -> c) l)
+        else error ("toString: not a valid string: " ++ show l)
 
 toList :: MonadIO m => Value -> m [Value]
 toList (List vr) = liftM V.toList (liftIO (readIORef vr))
