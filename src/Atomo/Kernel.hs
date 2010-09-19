@@ -29,6 +29,7 @@ import qualified Atomo.Kernel.Association as Association
 import qualified Atomo.Kernel.Parameter as Parameter
 import qualified Atomo.Kernel.Exception as Exception
 import qualified Atomo.Kernel.Environment as Environment
+import qualified Atomo.Kernel.Eco as Eco
 
 load :: VM ()
 load = do
@@ -163,6 +164,7 @@ load = do
     Bool.load
     Exception.load
     Environment.load
+    Eco.load
 
     prelude
 
