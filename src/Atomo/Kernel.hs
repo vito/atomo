@@ -110,7 +110,7 @@ load = do
 
         lift . modify $ \s -> s { top = t }
 
-        loadFile False fn
+        loadFile fn
 
         return (particle "ok")
 
@@ -120,7 +120,7 @@ load = do
 
         lift . modify $ \s -> s { top = t }
 
-        loadFile True fn
+        requireFile fn
 
         return (particle "ok")
 

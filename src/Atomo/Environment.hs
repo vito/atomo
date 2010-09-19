@@ -580,24 +580,36 @@ orefFrom ids (Process _ _) = idProcess ids
 orefFrom ids (Pattern _) = idPattern ids
 orefFrom _ v = error $ "no orefFrom for: " ++ show v
 
--- load a file, either .atomo or .hs, optionally remembering it
--- to prevent loading multiple times
-loadFile :: Bool -> FilePath -> VM ()
-loadFile remember filename = do
+-- load a file, remembering it to prevent repeated loading
+-- searches with cwd as lowest priority
+requireFile :: FilePath -> VM ()
+requireFile fn = do
     initialPath <- lift $ gets loadPath
-    file <- findFile (initialPath ++ [""])
+    file <- findFile (initialPath ++ [""]) fn
 
     alreadyLoaded <- lift $ gets ((file `elem`) . loaded)
-    if remember && alreadyLoaded
+    if alreadyLoaded
         then return ()
         else do
 
     lift . modify $ \s -> s { loaded = file : loaded s }
 
+    doLoad file
+
+-- load a file
+-- searches with cwd as highest priority
+loadFile :: FilePath -> VM ()
+loadFile fn = do
+    initialPath <- lift $ gets loadPath
+    findFile ("":initialPath) fn >>= doLoad
+
+-- execute a file
+doLoad :: FilePath -> VM ()
+doLoad file =
     case takeExtension file of
         ".hs" -> do
             int <- liftIO . H.runInterpreter $ do
-                H.loadModules [filename]
+                H.loadModules [file]
                 H.setTopLevelModules ["Main"]
                 H.interpret "load" (H.as :: VM ())
 
@@ -606,6 +618,8 @@ loadFile remember filename = do
             load
 
         _ -> do
+            initialPath <- lift $ gets loadPath
+
             source <- liftIO (readFile file)
             ast <- continuedParse source file
 
@@ -619,15 +633,16 @@ loadFile remember filename = do
                 { loadPath = initialPath
                 }
 
+-- | given a list of paths to search, find the file to load
+findFile :: [FilePath] -> FilePath -> VM FilePath
+findFile [] fn = throwError (ErrorMsg ("file not found: " ++ fn)) -- TODO: proper error
+findFile (p:ps) fn = do
+    check <- filterM (liftIO . doesFileExist . ((p </> fn) <.>)) exts
+
+    case check of
+        [] -> findFile ps fn
+        (ext:_) -> liftIO (canonicalizePath $ p </> fn <.> ext)
   where
-    findFile [] = throwError (ErrorMsg ("file not found: " ++ filename)) -- TODO: proper error
-    findFile (p:ps) = do
-        check <- filterM (liftIO . doesFileExist . ((p </> filename) <.>)) exts
-
-        case check of
-            [] -> findFile ps
-            (ext:_) -> liftIO (canonicalizePath $ p </> filename <.> ext)
-
     exts = ["", "atomo", "hs"]
 
 -- | does one value delegate to another?

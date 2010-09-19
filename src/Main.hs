@@ -34,11 +34,11 @@ main = do
             repl False
 
         ("-l":fn:_) -> exec $ do
-            loadFile False fn
+            loadFile fn
             repl False
 
         (fn:_) | not (head fn == '-') ->
-            exec (loadFile False fn)
+            exec (loadFile fn)
 
         _ -> putStrLn . unlines $
             [ "usage:"
