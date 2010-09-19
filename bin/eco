@@ -19,7 +19,8 @@ Environment arguments tail match: {
         pkg executables map: { e |
             bin = [
                 "#!/usr/bin/env atomo"
-                "load: (Eco path-to: " .. pkg name show .. " version: (" .. pkg version show .. ")) / " .. e to show
+                "pkg = Eco path-to: " .. pkg name show .. " version: (" .. pkg version show .. ")"
+                "load: (pkg </> " .. e to show .. ")"
             ] join: "\n"
 
             with-output-to: (Eco executable: e from) do: {
