@@ -282,23 +282,7 @@ load = do
 
     [$p|(a: String) starts-with?: (b: String)|] =::: [$e|b is-prefix-of?: a|]
     [$p|(a: String) ends-with?: (b: String)|] =::: [$e|b is-suffix-of?: a|]
-    [$p|(a: String) contains?: (b: String)|] =::: [$e|b is-infix-of?: a|]
-
-    [$p|(a: String) strip-prefix: (b: String)|] =: do
-        a <- getText [$e|a|]
-        b <- getText [$e|b|]
-
-        case T.stripPrefix b a of
-            Nothing -> return (particle "none")
-            Just t -> return (keyParticle ["ok"] [Nothing, Just (String t)])
-
-    [$p|(a: String) strip-suffix: (b: String)|] =: do
-        a <- getText [$e|a|]
-        b <- getText [$e|b|]
-
-        case T.stripSuffix b a of
-            Nothing -> return (particle "none")
-            Just t -> return (keyParticle ["ok"] [Nothing, Just (String t)])
+    [$p|(a: String) includes?: (b: String)|] =::: [$e|b is-infix-of?: a|]
 
     [$p|(s: String) filter: b|] =::: [$e|s (as: List) (filter: b) (as: String)|]
 

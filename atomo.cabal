@@ -87,7 +87,7 @@ executable atomo
     pretty-show,
     split,
     template-haskell,
-    text >= 0.8.1.0,
+    text,
     time,
     transformers,
     vector

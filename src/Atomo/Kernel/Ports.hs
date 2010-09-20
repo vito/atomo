@@ -8,7 +8,6 @@ import System.Directory
 import System.FilePath ((</>), (<.>))
 import System.IO
 import qualified Data.Text.IO as TIO
-import qualified Data.Vector as V
 
 import Atomo.Environment
 import Atomo.Haskell
@@ -82,15 +81,15 @@ load = do
 
         let isPrimitive (Primitive {}) = True
             isPrimitive (EParticle { eParticle = EPMSingle _ }) = True
-            isPrimitive (EParticle { eParticle = EPMKeyword _ es }) =
-                all isPrimitive (catMaybes es)
-            isPrimitive (EList { eContents = es }) = all isPrimitive es
+            isPrimitive (EParticle { eParticle = EPMKeyword _ ts }) =
+                all isPrimitive (catMaybes ts)
+            isPrimitive (EList { eContents = ts }) = all isPrimitive ts
             isPrimitive _ = False
 
         case parsed of
             [] -> throwError . ErrorMsg $ "impossible: no expressions parsed from input"
-            es | all isPrimitive es -> evalAll es
-            (e:_) -> return (Expression e)
+            is | all isPrimitive is -> evalAll is
+            (i:_) -> return (Expression i)
 
     [$p|read-line|] =::: [$e|current-input-port _? read-line|]
     [$p|(p: Port) read-line|] =: do
@@ -209,32 +208,32 @@ load = do
         t <- bool True
         b <- here "b"
         fn <- getString [$e|fn|]
-        p <- liftIO (getPermissions fn)
-        liftIO (setPermissions fn (p { readable = b == t }))
+        ps <- liftIO (getPermissions fn)
+        liftIO (setPermissions fn (ps { readable = b == t }))
         return (particle "ok")
 
     [$p|File set-writable: (fn: String) to: (b: Bool)|] =: do
         t <- bool True
         b <- here "b"
         fn <- getString [$e|fn|]
-        p <- liftIO (getPermissions fn)
-        liftIO (setPermissions fn (p { writable = b == t }))
+        ps <- liftIO (getPermissions fn)
+        liftIO (setPermissions fn (ps { writable = b == t }))
         return (particle "ok")
 
     [$p|File set-executable: (fn: String) to: (b: Bool)|] =: do
         t <- bool True
         b <- here "b"
         fn <- getString [$e|fn|]
-        p <- liftIO (getPermissions fn)
-        liftIO (setPermissions fn (p { executable = b == t }))
+        ps <- liftIO (getPermissions fn)
+        liftIO (setPermissions fn (ps { executable = b == t }))
         return (particle "ok")
 
     [$p|File set-searchable: (fn: String) to: (b: Bool)|] =: do
         t <- bool True
         b <- here "b"
         fn <- getString [$e|fn|]
-        p <- liftIO (getPermissions fn)
-        liftIO (setPermissions fn (p { searchable = b == t }))
+        ps <- liftIO (getPermissions fn)
+        liftIO (setPermissions fn (ps { searchable = b == t }))
         return (particle "ok")
 
     [$p|Directory create: (path: String)|] =: do
