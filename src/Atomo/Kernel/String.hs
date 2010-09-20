@@ -14,7 +14,7 @@ load = do
     [$p|(s: String) as: List|] =:
         getString [$e|s|] >>= list . map Char
 
-    [$p|(l: List) as: String|] =: do
+    [$p|(l: List) to-string|] =: do
         vs <- fmap V.toList (getList [$e|l|])
 
         if all isChar vs
@@ -263,7 +263,7 @@ load = do
     [$p|(s: String) sort|] =:
         getString [$e|s|] >>= return . string . sort
 
-    [$p|(s: String) sort-by: cmp|] =::: [$e|s (as: List) (sort-by: cmp) (as: String)|]
+    [$p|(s: String) sort-by: cmp|] =::: [$e|s (as: List) (sort-by: cmp) to-string|]
 
     [$p|(a: String) is-prefix-of?: (b: String)|] =: do
         a <- getText [$e|a|]
@@ -284,7 +284,7 @@ load = do
     [$p|(a: String) ends-with?: (b: String)|] =::: [$e|b is-suffix-of?: a|]
     [$p|(a: String) includes?: (b: String)|] =::: [$e|b is-infix-of?: a|]
 
-    [$p|(s: String) filter: b|] =::: [$e|s (as: List) (filter: b) (as: String)|]
+    [$p|(s: String) filter: b|] =::: [$e|s (as: List) (filter: b) to-string|]
 
     [$p|(x: String) zip: (y: String)|] =::: [$e|x zip: y with: @->|]
     [$p|(x: String) zip: (y: String) with: z|] =: do
