@@ -7,7 +7,7 @@ import Data.Maybe (catMaybes)
 import System.Directory
 import System.FilePath ((</>), (<.>))
 import System.IO
-import qualified Data.ByteString.Char8 as CBS
+import qualified Data.Text.IO as TIO
 import qualified Data.Vector as V
 
 import Atomo.Environment
@@ -34,7 +34,7 @@ load = do
 
     [$p|Port new: (fn: String)|] =::: [$e|Port new: fn mode: @read-write|]
     [$p|Port new: (fn: String) mode: (m: Particle)|] =: do
-        fn <- fmap (map (\(Char c) -> c) . V.toList) (getList [$e|fn|])
+        fn <- getString [$e|fn|]
         Particle m <- here "m" >>= findValue isParticle
 
         hdl <- case m of
@@ -56,28 +56,22 @@ load = do
         x <- here "x"
         hdl <- getHandle [$e|p handle|]
 
-        cs <- fmap V.toList $ getList [$e|x as: String|]
+        String s <- eval [$e|x as: String|] >>= findValue isString
 
-        if all isChar cs
-            then do
-                liftIO (hPutStrLn hdl (map (\(Char c) -> c) cs))
-                liftIO (hFlush hdl)
-                return x
-            else throwError $ ErrorMsg "@as:String returned non-String"
+        liftIO (TIO.hPutStrLn hdl s)
+        liftIO (hFlush hdl)
+        return x
 
     [$p|(x: Object) display|] =::: [$e|current-output-port _? display: x|]
     [$p|(p: Port) display: x|] =: do
         x <- here "x"
         hdl <- getHandle [$e|p handle|]
 
-        cs <- fmap V.toList $ getList [$e|x as: String|]
+        String s <- eval [$e|x as: String|] >>= findValue isString
 
-        if all isChar cs
-            then do
-                liftIO (hPutStr hdl (map (\(Char c) -> c) cs))
-                liftIO (hFlush hdl)
-                return x
-            else throwError $ ErrorMsg "@as:String returned non-String"
+        liftIO (TIO.hPutStr hdl s)
+        liftIO (hFlush hdl)
+        return x
 
     [$p|read|] =::: [$e|current-input-port _? read|]
     [$p|(p: Port) read|] =: do
@@ -100,13 +94,13 @@ load = do
 
     [$p|read-line|] =::: [$e|current-input-port _? read-line|]
     [$p|(p: Port) read-line|] =: do
-        getHandle [$e|p handle|] >>= liftIO . hGetLine
-            >>= string
+        getHandle [$e|p handle|] >>= liftIO . TIO.hGetLine
+            >>= return . String
 
     [$p|contents|] =::: [$e|current-input-port _? contents|]
     [$p|(p: Port) contents|] =:
-        getHandle [$e|p handle|] >>= liftIO . CBS.hGetContents
-            >>= string . CBS.unpack
+        getHandle [$e|p handle|] >>= liftIO . TIO.hGetContents
+            >>= return . String
 
     [$p|(p: Port) flush|] =:
         getHandle [$e|p handle|] >>= liftIO . hFlush
@@ -154,69 +148,67 @@ load = do
         [$e|Port (new: fn mode: @read) ensuring: @close do: @contents|]
 
     [$p|File delete: (fn: String)|] =: do
-        fn <- here "fn" >>= findValue isList >>= toString
+        fn <- getString [$e|fn|]
         liftIO (removeFile fn)
         return (particle "ok")
 
     [$p|File move: (from: String) to: (to: String)|] =:::
         [$e|File rename: from to: to|]
     [$p|File rename: (from: String) to: (to: String)|] =: do
-        from <- here "from" >>= findValue isList >>= toString
-        to <- here "to" >>= findValue isList >>= toString
+        from <- getString [$e|from|]
+        to <- getString [$e|to|]
         liftIO (renameFile from to)
         return (particle "ok")
 
     [$p|File copy: (from: String) to: (to: String)|] =: do
-        from <- here "from" >>= findValue isList >>= toString
-        to <- here "to" >>= findValue isList >>= toString
+        from <- getString [$e|from|]
+        to <- getString [$e|to|]
         liftIO (copyFile from to)
         return (particle "ok")
 
     [$p|File canonicalize-path: (fn: String)|] =: do
-        fn <- here "fn" >>= findValue isList >>= toString
-        liftIO (canonicalizePath fn) >>= string
+        fn <- getString [$e|fn|]
+        fmap string $ liftIO (canonicalizePath fn)
 
     [$p|File make-relative: (fn: String)|] =: do
-        fn <- here "fn" >>= findValue isList >>= toString
-        liftIO (makeRelativeToCurrentDirectory fn) >>= string
+        fn <- getString [$e|fn|]
+        fmap string $ liftIO (makeRelativeToCurrentDirectory fn)
 
     [$p|File exists?: (fn: String)|] =: do
-        fn <- here "fn" >>= findValue isList >>= toString
+        fn <- getString [$e|fn|]
         liftIO (doesFileExist fn) >>= bool
 
     [$p|File find-executable: (name: String)|] =: do
-        name <- here "name" >>= findValue isList >>= toString
+        name <- getString [$e|name|]
         find <- liftIO (findExecutable name)
         case find of
             Nothing -> return (particle "none")
-            Just fn -> do
-                str <- string fn
-                return (keyParticle ["ok"] [Nothing, Just str])
+            Just fn -> return (keyParticle ["ok"] [Nothing, Just (string fn)])
 
     [$p|File readable?: (fn: String)|] =:
-        here "fn" >>= findValue isList >>= toString
+        getString [$e|fn|]
             >>= fmap readable . liftIO . getPermissions
             >>= bool
 
     [$p|File writable?: (fn: String)|] =:
-        here "fn" >>= findValue isList >>= toString
+        getString [$e|fn|]
             >>= fmap writable . liftIO . getPermissions
             >>= bool
 
     [$p|File executable?: (fn: String)|] =:
-        here "fn" >>= findValue isList >>= toString
+        getString [$e|fn|]
             >>= fmap executable . liftIO . getPermissions
             >>= bool
 
     [$p|File searchable?: (fn: String)|] =:
-        here "fn" >>= findValue isList >>= toString
+        getString [$e|fn|]
             >>= fmap searchable . liftIO . getPermissions
             >>= bool
 
     [$p|File set-readable: (fn: String) to: (b: Bool)|] =: do
         t <- bool True
         b <- here "b"
-        fn <- here "fn" >>= findValue isList >>= toString
+        fn <- getString [$e|fn|]
         p <- liftIO (getPermissions fn)
         liftIO (setPermissions fn (p { readable = b == t }))
         return (particle "ok")
@@ -224,7 +216,7 @@ load = do
     [$p|File set-writable: (fn: String) to: (b: Bool)|] =: do
         t <- bool True
         b <- here "b"
-        fn <- here "fn" >>= findValue isList >>= toString
+        fn <- getString [$e|fn|]
         p <- liftIO (getPermissions fn)
         liftIO (setPermissions fn (p { writable = b == t }))
         return (particle "ok")
@@ -232,7 +224,7 @@ load = do
     [$p|File set-executable: (fn: String) to: (b: Bool)|] =: do
         t <- bool True
         b <- here "b"
-        fn <- here "fn" >>= findValue isList >>= toString
+        fn <- getString [$e|fn|]
         p <- liftIO (getPermissions fn)
         liftIO (setPermissions fn (p { executable = b == t }))
         return (particle "ok")
@@ -240,41 +232,41 @@ load = do
     [$p|File set-searchable: (fn: String) to: (b: Bool)|] =: do
         t <- bool True
         b <- here "b"
-        fn <- here "fn" >>= findValue isList >>= toString
+        fn <- getString [$e|fn|]
         p <- liftIO (getPermissions fn)
         liftIO (setPermissions fn (p { searchable = b == t }))
         return (particle "ok")
 
     [$p|Directory create: (path: String)|] =: do
-        path <- here "path" >>= findValue isList >>= toString
+        path <- getString [$e|path|]
         liftIO (createDirectory path)
         return (particle "ok")
 
     [$p|Directory create-if-missing: (path: String)|] =: do
-        path <- here "path" >>= findValue isList >>= toString
+        path <- getString [$e|path|]
         liftIO (createDirectoryIfMissing False path)
         return (particle "ok")
 
     [$p|Directory create-tree-if-missing: (path: String)|] =: do
-        path <- here "path" >>= findValue isList >>= toString
+        path <- getString [$e|path|]
         liftIO (createDirectoryIfMissing True path)
         return (particle "ok")
 
     [$p|Directory remove: (path: String)|] =: do
-        path <- here "path" >>= findValue isList >>= toString
+        path <- getString [$e|path|]
         liftIO (removeDirectory path)
         return (particle "ok")
 
     [$p|Directory remove-recursive: (path: String)|] =: do
-        path <- here "path" >>= findValue isList >>= toString
+        path <- getString [$e|path|]
         liftIO (removeDirectoryRecursive path)
         return (particle "ok")
 
     [$p|Directory move: (from: String) to: (to: String)|] =:::
         [$e|Directory rename: from to: to|]
     [$p|Directory rename: (from: String) to: (to: String)|] =: do
-        from <- here "from" >>= findValue isList >>= toString
-        to <- here "to" >>= findValue isList >>= toString
+        from <- getString [$e|from|]
+        to <- getString [$e|to|]
         liftIO (renameDirectory from to)
         return (particle "ok")
 
@@ -294,48 +286,45 @@ load = do
     } call|]
 
     [$p|Directory contents: (path: String)|] =:
-        here "path"
-            >>= findValue isList
-            >>= toString
+        getString [$e|path|]
             >>= liftIO . getDirectoryContents
             >>= return . filter (not . (`elem` [".", ".."]))
-            >>= mapM string
-            >>= list
+            >>= list . map string
 
     [$p|Directory current|] =:
-        liftIO getCurrentDirectory >>= string
+        fmap string $ liftIO getCurrentDirectory
 
     [$p|Directory current: (path: String)|] =: do
-        path <- here "path" >>= findValue isList >>= toString
+        path <- getString [$e|path|]
         liftIO (setCurrentDirectory path)
         return (particle "ok")
 
     [$p|Directory home|] =:
-        liftIO getHomeDirectory >>= string
+        fmap string $ liftIO getHomeDirectory
 
     [$p|Directory user-data-for: (app: String)|] =: do
-        app <- here "app" >>= findValue isList >>= toString
-        liftIO (getAppUserDataDirectory app) >>= string
+        app <- getString [$e|app|]
+        fmap string $ liftIO (getAppUserDataDirectory app)
 
     [$p|Directory user-documents|] =:
-        liftIO getUserDocumentsDirectory >>= string
+        fmap string $ liftIO getUserDocumentsDirectory
 
     [$p|Directory temporary|] =:
-        liftIO getTemporaryDirectory >>= string
+        fmap string $ liftIO getTemporaryDirectory
 
     [$p|Directory exists?: (path: String)|] =: do
-        path <- here "path" >>= findValue isList >>= toString
+        path <- getString [$e|path|]
         liftIO (doesDirectoryExist path) >>= bool
 
     [$p|(a: String) </> (b: String)|] =: do
-        a <- here "a" >>= findValue isList >>= toString
-        b <- here "b" >>= findValue isList >>= toString
-        string (a </> b)
+        a <- getString [$e|a|]
+        b <- getString [$e|b|]
+        return (string (a </> b))
 
     [$p|(a: String) <.> (b: String)|] =: do
-        a <- here "a" >>= findValue isList >>= toString
-        b <- here "b" >>= findValue isList >>= toString
-        string (a <.> b)
+        a <- getString [$e|a|]
+        b <- getString [$e|b|]
+        return (string (a <.> b))
 
     prelude
   where

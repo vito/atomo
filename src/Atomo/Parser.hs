@@ -27,7 +27,7 @@ pExpr = try pOperator <|> try pDefine <|> try pSet <|> try pDispatch <|> pLitera
     <?> "expression"
 
 pLiteral :: Parser Expr
-pLiteral = try pBlock <|> try pString <|> try pList <|> try pParticle <|> pPrimitive
+pLiteral = try pBlock <|> try pList <|> try pParticle <|> pPrimitive
     <?> "literal"
 
 pOperator :: Parser Expr
@@ -159,17 +159,6 @@ pdCascade = do
 pList :: Parser Expr
 pList = (tagged . fmap (EList Nothing) $ brackets (wsDelim "," pExpr))
     <?> "list"
-
-pString :: Parser Expr
-pString = tagged (do
-    p <- getPosition
-    s <- stringLiteral
-    return (toEList p s))
-    <?> "string"
-  where
-    toEList p
-        = EList Nothing
-        . map (\c -> Primitive (Just p) (Char c))
 
 pBlock :: Parser Expr
 pBlock = tagged (braces $ do

@@ -12,12 +12,16 @@ pPrimitive = tagged $ fmap (Primitive Nothing) pPrim
 pPrim :: Parser Value
 pPrim = choice
     [ pvChar
+    , pvString
     , try pvDouble
     , try pvInteger
     ]
 
 pvChar :: Parser Value
 pvChar = charLiteral >>= return . Char
+
+pvString :: Parser Value
+pvString = stringLiteral >>= return . T.string
 
 pvDouble :: Parser Value
 pvDouble = float >>= return . Double

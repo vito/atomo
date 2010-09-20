@@ -17,7 +17,6 @@ library
 
   build-depends:
     base >= 4,
-    bytestring,
     containers,
     directory,
     filepath,
@@ -27,6 +26,7 @@ library
     pretty,
     split,
     template-haskell,
+    text,
     time,
     transformers,
     vector
@@ -38,6 +38,7 @@ library
     Atomo.Kernel,
     Atomo.Kernel.Numeric,
     Atomo.Kernel.List,
+    Atomo.Kernel.String,
     Atomo.Kernel.Block,
     Atomo.Kernel.Expression,
     Atomo.Kernel.Concurrency,
@@ -74,7 +75,6 @@ executable atomo
 
   build-depends:
     base >= 4,
-    bytestring,
     containers,
     directory,
     filepath,
@@ -87,6 +87,7 @@ executable atomo
     pretty-show,
     split,
     template-haskell,
+    text >= 0.8.1.0,
     time,
     transformers,
     vector

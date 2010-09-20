@@ -45,14 +45,13 @@ load = do
 
 
 asValue :: AtomoError -> VM Value
-asValue (ErrorMsg s) = string s
+asValue (ErrorMsg s) = return (string s)
 asValue (ParseError pe) = do
     obj <- lift $ gets (idObject . primitives)
-    msg <- string (show pe)
     newObject $ \o -> o
         { oMethods = (toMethods
             [ (psingle "type" PSelf, particle "parse")
-            , (psingle "message" PSelf, msg)
+            , (psingle "message" PSelf, string (show pe))
             ], M.empty)
         , oDelegates = [Reference obj]
         }
@@ -77,11 +76,10 @@ asValue (Mismatch pat v) = do
         }
 asValue (ImportError ie) = do
     obj <- lift $ gets (idObject . primitives)
-    str <- string (show ie)
     newObject $ \o -> o
         { oMethods = (toMethods
             [ (psingle "type" PSelf, particle "import")
-            , (psingle "message" PSelf, str)
+            , (psingle "message" PSelf, string (show ie))
             ], M.empty)
         , oDelegates = [Reference obj]
         }

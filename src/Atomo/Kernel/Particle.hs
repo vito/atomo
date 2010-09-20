@@ -33,11 +33,11 @@ load = do
 
     [$p|(p: Particle) name|] =: do
         Particle (PMSingle n) <- here "p" >>= findValue isParticle
-        list (map Char n)
+        return (string n)
 
     [$p|(p: Particle) names|] =: do
         Particle (PMKeyword ns _) <- here "p" >>= findValue isParticle
-        mapM (list . map Char) ns >>= list
+        list (map string ns)
 
     [$p|(p: Particle) values|] =: do
         (Particle (PMKeyword _ mvs)) <- here "p" >>= findValue isParticle

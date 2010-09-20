@@ -58,11 +58,11 @@ load = do
 
     [$p|(e: Expression) name|] =: do
         Expression (EParticle _ (EPMSingle n)) <- here "e" >>= findValue isExpression
-        string n
+        return (string n)
 
     [$p|(e: Expression) names|] =: do
         Expression (EParticle _ (EPMKeyword ns _)) <- here "e" >>= findValue isExpression
-        mapM string ns >>= list
+        list (map string ns)
 
     [$p|(e: Expression) values|] =: do
         Expression (EParticle _ (EPMKeyword _ mes)) <- here "e" >>= findValue isExpression

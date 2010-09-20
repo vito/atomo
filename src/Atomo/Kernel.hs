@@ -15,6 +15,7 @@ import Atomo.Pretty
 
 import qualified Atomo.Kernel.Numeric as Numeric
 import qualified Atomo.Kernel.List as List
+import qualified Atomo.Kernel.String as String
 import qualified Atomo.Kernel.Block as Block
 import qualified Atomo.Kernel.Expression as Expression
 import qualified Atomo.Kernel.Concurrency as Concurrency
@@ -72,33 +73,28 @@ load = do
         findMethod x completed
             >>= bool . isJust
 
-    [$p|(s: String) as: String|] =: do
-        s <- here "s"
-        cs <- fmap V.toList (getList [$e|s|])
-        if all isChar cs
-            then return s
-            else string . show . pretty $ s
+    [$p|(s: String) as: String|] =::: [$e|s|]
 
     [$p|(x: Object) as: String|] =::: [$e|x show|]
 
     [$p|(s: String) as: Integer|] =: do
-        s <- here "s" >>= findValue isList >>= toString
+        s <- getString [$e|s|]
         return (Integer (read s))
 
     [$p|(s: String) as: Double|] =: do
-        s <- here "s" >>= findValue isList >>= toString
+        s <- getString [$e|s|]
         return (Double (read s))
 
     [$p|(s: String) as: Char|] =: do
-        s <- here "s" >>= findValue isList >>= toString
+        s <- getString [$e|s|]
         return (Char (read s))
 
     [$p|(x: Object) show|] =: do
         v <- here "x"
 
         if isReference v
-            then string (show (pretty v))
-            else prettyVM v >>= string . show
+            then return (string (show (pretty v)))
+            else prettyVM v >>= return . string . show
 
     [$p|(x: Object) dump|] =: do
         x <- here "x"
@@ -107,7 +103,7 @@ load = do
 
     [$p|(t: Object) load: (fn: String)|] =: do
         t <- here "t"
-        fn <- here "fn" >>= toString
+        fn <- getString [$e|fn|]
 
         lift . modify $ \s -> s { top = t }
 
@@ -117,7 +113,7 @@ load = do
 
     [$p|(t: Object) require: (fn: String)|] =: do
         t <- here "t"
-        fn <- here "fn" >>= toString
+        fn <- getString [$e|fn|]
 
         lift . modify $ \s -> s { top = t }
 
@@ -153,6 +149,7 @@ load = do
     Parameter.load
     Numeric.load
     List.load
+    String.load
     Block.load
     Expression.load
     Concurrency.load
@@ -173,7 +170,7 @@ prelude :: VM ()
 prelude = mapM_ eval [$es|
     v match: (b: Block) :=
         if: b contents empty?
-            then: { @no-match }
+            then: { raise: ("no matches for value " .. v show) }
             else: {
                 es = b contents
                 [p, e] = es head targets

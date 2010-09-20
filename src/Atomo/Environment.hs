@@ -15,6 +15,7 @@ import System.Directory
 import System.FilePath
 import System.IO.Unsafe
 import qualified Data.IntMap as M
+import qualified Data.Text as T
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
 import qualified Text.PrettyPrint as P
@@ -88,8 +89,8 @@ prettyVM v@(List vr) = do
     pvs <- mapM prettyVM vs
     return . P.brackets . P.hsep . P.punctuate P.comma $ pvs
 prettyVM r@(Reference _) = do
-    s <- dispatch (single "show" r) >>= liftIO . toString
-    return (P.text s)
+    s <- dispatch (single "show" r)
+    return (P.text (fromString s))
 prettyVM v = return (pretty v)
 
 -- | set up the primitive objects, etc.
@@ -117,9 +118,6 @@ initEnv = do
         define (psingle n PSelf) (Primitive Nothing o)
         lift . modify $ \e -> e { primitives = f (primitives e) (rORef o) }
 
-    listObj <- lift $ gets (idList . primitives)
-    define (psingle "String" PSelf) (Primitive Nothing (Reference listObj))
-
     Kernel.load
   where
     primObjs =
@@ -133,6 +131,7 @@ initEnv = do
         , ("Particle", \is r -> is { idParticle = r })
         , ("Process", \is r -> is { idProcess = r })
         , ("Pattern", \is r -> is { idPattern = r })
+        , ("String", \is r -> is { idString = r })
         ]
 
 
@@ -303,7 +302,12 @@ targets is (PNamed _ p) = targets is p
 targets _ PSelf = lift (gets top) >>= orefFor >>= return . (: [])
 targets is PAny = return [idObject is]
 targets is (PList _) = return [idList is]
-targets is (PHeadTail _ _) = return [idList is]
+targets is (PHeadTail h t) = do
+    ht <- targets is h
+    tt <- targets is t
+    if idChar is `elem` ht || idString is `elem` tt
+        then return [idList is, idString is]
+        else return [idList is]
 targets _ p = error $ "no targets for " ++ show p
 
 
@@ -415,6 +419,8 @@ match ids (PHeadTail hp tp) (List v) =
     vs = unsafePerformIO (readIORef v)
     h = V.head vs
     t = List (unsafePerformIO (newIORef (V.tail vs)))
+match ids (PHeadTail hp tp) (String t) | not (T.null t) =
+    match ids hp (Char (T.head t)) && match ids tp (String (T.tail t))
 match _ (PPMSingle a) (Particle (PMSingle b)) = a == b
 match ids (PPMKeyword ans aps) (Particle (PMKeyword bns mvs)) =
     ans == bns && matchParticle ids aps mvs
@@ -493,6 +499,8 @@ bindings' (PHeadTail hp tp) (List v) =
     vs = unsafePerformIO (readIORef v)
     h = V.head vs
     t = List (unsafePerformIO (newIORef (V.tail vs)))
+bindings' (PHeadTail hp tp) (String t) | not (T.null t) =
+    bindings' hp (Char (T.head t)) ++ bindings' tp (String (T.tail t))
 bindings' _ _ = []
 
 
@@ -514,7 +522,7 @@ pat =::: e = define pat e
 
 findValue :: (Value -> Bool) -> Value -> VM Value
 findValue t v | t v = return v
-findValue t v = findValue' t v >>= maybe (error "could not find a value satisfying the predecate") return
+findValue t v = findValue' t v >>= maybe (throwError . ErrorMsg $ "could not find a value in " ++ show (pretty v) ++ " satisfying the predecate") return
 
 findValue' :: (Value -> Bool) -> Value -> VM (Maybe Value)
 findValue' t v | t v = return (Just v)
@@ -529,6 +537,12 @@ findValue' t (Reference r) = do
             Nothing -> findDels ds
             Just v -> return (Just v)
 findValue' _ _ = return Nothing
+
+getString :: Expr -> VM String
+getString e = eval e >>= fmap fromString . findValue isString
+
+getText :: Expr -> VM T.Text
+getText e = eval e >>= findValue isString >>= \(String t) -> return t
 
 getList :: Expr -> VM (V.Vector Value)
 getList e = eval e >>= findValue isList >>= \(List v) -> liftIO . readIORef $ v
@@ -578,6 +592,7 @@ orefFrom ids (Message _) = idMessage ids
 orefFrom ids (Particle _) = idParticle ids
 orefFrom ids (Process _ _) = idProcess ids
 orefFrom ids (Pattern _) = idPattern ids
+orefFrom ids (String _) = idString ids
 orefFrom _ v = error $ "no orefFrom for: " ++ show v
 
 -- load a file, remembering it to prevent repeated loading

@@ -40,9 +40,8 @@ instance Pretty Value where
     prettyFrom _ (Expression e) = internal "expression" $ pretty e
     prettyFrom _ (Haskell v) = internal "haskell" $ text (show v)
     prettyFrom _ (Integer i) = integer i
-    prettyFrom _ (List l)
-        | not (null vs) && all isChar vs = text $ show (map (\(Char c) -> c) vs)
-        | otherwise = brackets . hsep . punctuate comma $ map (prettyFrom CList) vs
+    prettyFrom _ (List l) =
+        brackets . hsep . punctuate comma $ map (prettyFrom CList) vs
       where vs = V.toList (unsafePerformIO (readIORef l))
     prettyFrom _ (Message m) = internal "message" $ pretty m
     prettyFrom _ (Particle p) = char '@' <> pretty p
@@ -51,6 +50,7 @@ instance Pretty Value where
         internal "process" $ text (words (show tid) !! 1)
     prettyFrom CNone (Reference r) = pretty (unsafePerformIO (readIORef r))
     prettyFrom _ (Reference _) = internal "object" empty
+    prettyFrom _ (String s) = text (show s)
 
 instance Pretty Object where
     prettyFrom _ (Object ds (ss, ks)) = vcat
@@ -101,12 +101,8 @@ instance Pretty Pattern where
     prettyFrom _ (PKeyword _ ns (PSelf:vs)) =
         headlessKeywords ns vs
     prettyFrom _ (PKeyword _ ns vs) = keywords ns vs
-    prettyFrom _ (PList ps)
-        | not (null ps) && all isCharMatch ps = text (show (map (\(PMatch (Char c)) -> c) ps))
-        | otherwise = brackets . sep $ punctuate comma (map pretty ps)
-      where
-        isCharMatch (PMatch (Char _)) = True
-        isCharMatch _ = False
+    prettyFrom _ (PList ps) =
+        brackets . sep $ punctuate comma (map pretty ps)
     prettyFrom _ (PMatch v) = prettyFrom CPattern v
     prettyFrom _ (PNamed n PAny) = text n
     prettyFrom _ (PNamed n p) = parens $ text n <> colon <+> pretty p
@@ -146,12 +142,8 @@ instance Pretty Expr where
     prettyFrom _ (EDispatchObject {}) = text "dispatch"
     prettyFrom CDefine (EVM {}) = text "..."
     prettyFrom _ (EVM {}) = text "<vm>"
-    prettyFrom _ (EList _ es)
-        | all isPrimChar es = text $ show (map (\(Primitive _ (Char c)) -> c) es)
-        | otherwise = brackets . sep . punctuate comma $ map (prettyFrom CList) es
-      where
-        isPrimChar (Primitive _ (Char _)) = True
-        isPrimChar _ = False
+    prettyFrom _ (EList _ es) =
+        brackets . sep . punctuate comma $ map (prettyFrom CList) es
     prettyFrom c (EParticle _ p) = char '@' <> prettyFrom c p
     prettyFrom _ (ETop {}) = text "<top>"
 

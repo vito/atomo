@@ -22,6 +22,7 @@ import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
 import Text.Parsec
 import qualified Language.Haskell.TH as TH
+import qualified Data.Text as T
 
 import Atomo.Parser
 import Atomo.Parser.Pattern
@@ -150,6 +151,7 @@ valueToExp (Integer i) = AppE (ConE (mkName "Integer")) (LitE (IntegerL i))
 valueToExp (Message m) = AppE (ConE (mkName "Message")) (messageToExp m)
 valueToExp (Particle p) = AppE (ConE (mkName "Particle")) (particleToExp p)
 valueToExp (Pattern p) = AppE (ConE (mkName "Pattern")) (patternToExp p)
+valueToExp (String s) = AppE (VarE (mkName "string")) (LitE (StringL (T.unpack s)))
 valueToExp v = error $ "no valueToExp for: " ++ show v
 
 patternToExp :: Pattern -> Exp

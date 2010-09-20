@@ -82,15 +82,14 @@ load = do
 
         list' nvs
 
-    -- TODO: zip
-
+    [$p|(x: List) zip: (y: List)|] =::: [$e|x zip: y with: @->|]
     [$p|(x: List) zip: (y: List) with: b|] =: do
         xs <- getList [$e|x|]
         ys <- getList [$e|y|]
         b <- here "b"
 
         nvs <- V.zipWithM (\x y -> do
-            as <- list' (V.fromList [x, y])
+            as <- list [x, y]
             dispatch (keyword ["call"] [b, as])) xs ys
 
         list' nvs
@@ -101,7 +100,7 @@ load = do
 
         t <- bool True
         nvs <- V.filterM (\v -> do
-            as <- list' (V.singleton v)
+            as <- list [v]
             check <- dispatch (keyword ["call"] [b, as])
             return (check == t)) vs
 
@@ -188,6 +187,7 @@ load = do
     -- TODO: take-while, drop-while
 
     [$p|(l: List) contains?: v|] =::: [$e|l any?: @(== v)|]
+    [$p|v in?: (l: List)|] =::: [$e|l contains?: v|]
 
     -- TODO: find
 
@@ -299,8 +299,8 @@ prelude = mapM_ eval [$es|
             then: { True }
             else: { x tail includes?: y }
 
-    [] join: _ := []
-    [x] join: _ := x
+    [] join: List := []
+    [x] join: List := x
     (x . xs) join: (d: List) :=
         x .. d .. (xs join: d)
 |]

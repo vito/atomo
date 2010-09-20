@@ -12,8 +12,9 @@ import Data.Hashable (hash)
 import Data.IORef
 import Data.Typeable
 import Text.Parsec (ParseError, SourcePos)
-import qualified Data.Vector as V
 import qualified Data.IntMap as M
+import qualified Data.Text as T
+import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
 
 type VM = ErrorT AtomoError (StateT Env IO)
@@ -33,6 +34,7 @@ data Value
     | Reference
         { rORef :: {-# UNPACK #-} !ORef
         }
+    | String !T.Text
     deriving Show
 
 data Object =
@@ -187,8 +189,10 @@ data Env =
         , parserState :: Operators
         }
 
+-- simple mapping from operator name -> associativity and predence
 type Operators = [(String, (Assoc, Integer))]
 
+-- operator associativity
 data Assoc = ALeft | ARight
     deriving (Eq, Show)
 
@@ -215,6 +219,7 @@ data IDs =
         , idParticle :: ORef
         , idProcess :: ORef
         , idPattern :: ORef
+        , idString :: ORef
         }
 
 
@@ -231,6 +236,7 @@ instance Eq Value where
     List a == List b = a == b
     Process _ a == Process _ b = a == b
     Reference a == Reference b = a == b
+    String a == String b = a == b
     _ == _ = False
 
 -- helper synonyms
@@ -272,6 +278,7 @@ startEnv = Env
             , idParticle = error "idParticle not set"
             , idProcess = error "idProcess not set"
             , idPattern = error "idPattern not set"
+            , idString = error "idString not set"
             }
     , channel = error "channel not set"
     , halt = error "halt not set"
@@ -282,6 +289,10 @@ startEnv = Env
     , parserState = []
     }
 
+-----------------------------------------------------------------------------
+-- Helpers ------------------------------------------------------------------
+-----------------------------------------------------------------------------
+
 particle :: String -> Value
 {-# INLINE particle #-}
 particle = Particle . PMSingle
@@ -290,13 +301,9 @@ keyParticle :: [String] -> [Maybe Value] -> Value
 {-# INLINE keyParticle #-}
 keyParticle ns vs = Particle $ PMKeyword ns vs
 
-
------------------------------------------------------------------------------
--- Helpers ------------------------------------------------------------------
------------------------------------------------------------------------------
-
-string :: MonadIO m => String -> m Value
-string = list . map Char
+string :: String -> Value
+{-# INLINE string #-}
+string = String . T.pack
 
 list :: MonadIO m => [Value] -> m Value
 list = list' . V.fromList
@@ -304,13 +311,9 @@ list = list' . V.fromList
 list' :: MonadIO m => V.Vector Value -> m Value
 list' = liftM List . liftIO . newIORef
 
-toString :: MonadIO m => Value -> m String
-toString v = do
-    l <- toList v
-
-    if all isChar l
-        then return (map (\(Char c) -> c) l)
-        else error ("toString: not a valid string: " ++ show l)
+fromString :: Value -> String
+fromString (String s) = T.unpack s
+fromString v = error $ "no fromString for: " ++ show v
 
 toList :: MonadIO m => Value -> m [Value]
 toList (List vr) = liftM V.toList (liftIO (readIORef vr))
@@ -405,3 +408,8 @@ isProcess _ = False
 isReference :: Value -> Bool
 isReference (Reference _) = True
 isReference _ = False
+
+-- | Is a value a String?
+isString :: Value -> Bool
+isString (String _) = True
+isString _ = False
