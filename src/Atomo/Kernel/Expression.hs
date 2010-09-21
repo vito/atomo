@@ -13,6 +13,11 @@ load = do
         Expression e <- here "e" >>= findValue isExpression
         eval e
 
+    [$p|(e: Expression) evaluate-in: t|] =: do
+        Expression e <- here "e" >>= findValue isExpression
+        t <- here "t"
+        withTop t (eval e)
+
     [$p|(e: Expression) type|] =: do
         Expression e <- here "e" >>= findValue isExpression
         case e of
