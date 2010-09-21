@@ -47,4 +47,18 @@ load = mapM_ eval [$es|
 
     True show := "True"
     False show := "False"
+
+    otherwise := True
+
+    condition: (b: Block) :=
+        if: b contents empty?
+            then: { raise: "condition: no branches are true" }
+            else: {
+                es = b contents
+                [c, e] = es head targets
+
+                if: (c evaluate-in: b context)
+                    then: { e evaluate-in: b context }
+                    else: { condition: (Block new: es tail in: b context) }
+            }
 |]
