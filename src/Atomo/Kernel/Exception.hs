@@ -1,11 +1,8 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Atomo.Kernel.Exception (load) where
 
-import qualified Data.IntMap as M
-
 import Atomo.Environment
 import Atomo.Haskell
-import Atomo.Method
 
 
 load :: VM ()
@@ -17,16 +14,14 @@ load = do
     [$p|(action: Block) catch: (recover: Block)|] =:
         catchError (eval [$e|action call|]) $ \err -> do
             recover <- here "recover"
-            exc <- asValue err
-            args <- list [exc]
+            args <- list [asValue err]
 
             dispatch (keyword ["call"] [recover, args])
 
     [$p|(action: Block) catch: (recover: Block) ensuring: (cleanup: Block)|] =:
         catchError (eval [$e|action call|]) $ \err -> do
             recover <- here "recover"
-            exc <- asValue err
-            args <- list [exc]
+            args <- list [asValue err]
 
             res <- dispatch (keyword ["call"] [recover, args])
             eval [$e|cleanup call|]
@@ -44,43 +39,18 @@ load = do
 
 
 
-asValue :: AtomoError -> VM Value
-asValue (ErrorMsg s) = return (string s)
-asValue (ParseError pe) = do
-    obj <- lift $ gets (idObject . primitives)
-    newObject $ \o -> o
-        { oMethods = (toMethods
-            [ (psingle "type" PSelf, particle "parse")
-            , (psingle "message" PSelf, string (show pe))
-            ], M.empty)
-        , oDelegates = [Reference obj]
-        }
-asValue (DidNotUnderstand m) = do
-    obj <- lift $ gets (idObject . primitives)
-    newObject $ \o -> o
-        { oMethods = (toMethods
-            [ (psingle "type" PSelf, particle "did-not-understand")
-            , (psingle "message" PSelf, Message m)
-            ], M.empty)
-        , oDelegates = [Reference obj]
-        }
-asValue (Mismatch pat v) = do
-    obj <- lift $ gets (idObject . primitives)
-    newObject $ \o -> o
-        { oMethods = (toMethods
-            [ (psingle "type" PSelf, particle "mismatch")
-            , (psingle "pattern" PSelf, Pattern pat)
-            , (psingle "value" PSelf, v)
-            ], M.empty)
-        , oDelegates = [Reference obj]
-        }
-asValue (ImportError ie) = do
-    obj <- lift $ gets (idObject . primitives)
-    newObject $ \o -> o
-        { oMethods = (toMethods
-            [ (psingle "type" PSelf, particle "import")
-            , (psingle "message" PSelf, string (show ie))
-            ], M.empty)
-        , oDelegates = [Reference obj]
-        }
-asValue (ValueError v) = return v
+asValue :: AtomoError -> Value
+asValue (ErrorMsg s) = keyParticle ["error"] [Nothing, Just (string s)]
+asValue (ParseError pe) =
+    keyParticle ["parse-error"] [Nothing, Just (string (show pe))]
+asValue (DidNotUnderstand m) =
+    keyParticle ["did-not-understand"] [Nothing, Just (Message m)]
+asValue (Mismatch pat v) =
+    keyParticle
+        ["pattern", "did-not-match"]
+        [Nothing, Just (Pattern pat), Just v]
+asValue (ImportError ie) =
+    keyParticle ["import-error"] [Nothing, Just (string (show ie))]
+asValue (FileNotFound fn) =
+    keyParticle ["file-not-found"] [Nothing, Just (string fn)]
+asValue (ValueError v) = v
