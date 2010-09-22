@@ -31,10 +31,12 @@ import {-# SOURCE #-} qualified Atomo.Kernel as Kernel
 -- Execution ----------------------------------------------------------------
 -----------------------------------------------------------------------------
 
+-- | execute an action in a new thread, initializing the environment and
+-- printing a traceback on error
 exec :: VM () -> IO ()
 exec x = execWith (initEnv >> x) startEnv
 
--- execute an action, cleanly printing an error log on error
+-- | execute an action in a new thread, printing a traceback on error
 execWith :: VM () -> Env -> IO ()
 execWith x e = do
     haltChan <- newChan
@@ -48,6 +50,7 @@ execWith x e = do
 
     readChan haltChan
 
+-- | execute x, printing an error if there is one
 go :: VM () -> VM ()
 go x = do
     res <- (fmap Right x) `catchError` (return . Left)
@@ -55,12 +58,16 @@ go x = do
         Left err -> printError err
         Right _ -> return ()
 
+-- | execute x, initializing the environment with initEnv
 run :: VM a -> IO (Either AtomoError a)
 run x = runWith (initEnv >> x) startEnv
 
+-- | evaluate x with e as the environment
 runWith :: VM a -> Env -> IO (Either AtomoError a)
-runWith x s = evalStateT (runErrorT x) s
+runWith x e = evalStateT (runErrorT x) e
 
+-- | print an error, including the previous 10 expressions evaluated
+-- with the most recent on the bottom
 printError :: AtomoError -> VM ()
 printError err = do
     t <- traceback
@@ -80,6 +87,7 @@ printError err = do
   where
     traceback = fmap (reverse . take 10 . reverse) (lift $ gets stack)
 
+-- | spawn a process to execute x. returns the Process.
 spawn :: VM a -> VM Value
 spawn x = do
     e <- lift get
@@ -90,6 +98,7 @@ spawn x = do
 
     return (Process chan tid)
 
+-- | pretty-print by sending @show to the object
 prettyVM :: Value -> VM P.Doc
 prettyVM = fmap (P.text . fromString) . dispatch . (single "show")
 
@@ -237,7 +246,7 @@ newObject f = fmap Reference . liftIO $
         , oMethods = (M.empty, M.empty)
         }
 
--- run x with t as its toplevel object
+-- | run x with t as its toplevel object
 withTop :: Value -> VM a -> VM a
 withTop t x = do
     o <- lift (gets top)
@@ -305,7 +314,7 @@ define !p !e = do
     setSelf _ p' = p'
 
 
-
+-- | find the target objects for a pattern
 targets :: IDs -> Pattern -> VM [ORef]
 targets _ (PMatch v) = orefFor v >>= return . (: [])
 targets is (PSingle _ _ p) = targets is p
@@ -461,8 +470,8 @@ matchParticle ids (p:ps) (Just v:mvs) =
     match ids p v && matchParticle ids ps mvs
 matchParticle _ _ _ = False
 
--- evaluate a method in a scope with the pattern's bindings,
--- delegating to the method's context and setting the "dispatch" object
+-- | evaluate a method in a scope with the pattern's bindings, delegating to
+-- the method's context and setting the "dispatch" object
 runMethod :: Method -> Message -> VM Value
 runMethod (Slot { mValue = v }) _ = return v
 runMethod (Method { mPattern = p, mTop = t, mExpr = e }) m = do
@@ -481,7 +490,7 @@ runMethod (Method { mPattern = p, mTop = t, mExpr = e }) m = do
 
     withTop nt $ eval e
 
--- evaluate an action in a new scope
+-- | evaluate an action in a new scope
 newScope :: VM a -> VM a
 newScope x = do
     t <- lift $ gets top
@@ -499,6 +508,7 @@ bindings (PKeyword { ppTargets = ps }) (Keyword { mTargets = ts }) =
     toMethods $ concat (zipWith bindings' ps ts)
 bindings p m = error $ "impossible: bindings on " ++ show (p, m)
 
+-- | given a pattern and avalue, return the bindings as a list of pairs
 bindings' :: Pattern -> Value -> [(Pattern, Value)]
 bindings' (PNamed n p) v = (psingle n PSelf, v) : bindings' p v
 bindings' (PPMKeyword _ ps) (Particle (PMKeyword _ mvs)) = concat
@@ -526,15 +536,19 @@ bindings' _ _ = []
 
 infixr 0 =:, =::
 
+-- | define a method as an action returning a value
 (=:) :: Pattern -> VM Value -> VM ()
 pat =: vm = define pat (EVM Nothing vm)
 
+-- | define a slot to a given value
 (=::) :: Pattern -> Value -> VM ()
 pat =:: v = define pat (Primitive Nothing v)
 
+-- | define a method that evaluates e
 (=:::) :: Pattern -> Expr -> VM ()
 pat =::: e = define pat e
 
+-- | find a value from an object, searching its delegates
 findValue :: (Value -> Bool) -> Value -> VM Value
 findValue t v | t v = return v
 findValue t v = findValue' t v >>= maybe die return
@@ -545,6 +559,7 @@ findValue t v = findValue' t v >>= maybe die return
         , " satisfying the predecate"
         ]
 
+-- | findValue, but returning Nothing instead of failing
 findValue' :: (Value -> Bool) -> Value -> VM (Maybe Value)
 findValue' t v | t v = return (Just v)
 findValue' t (Reference r) = do
