@@ -81,17 +81,7 @@ printError err = do
     traceback = fmap (reverse . take 10 . reverse) (lift $ gets stack)
 
 prettyVM :: Value -> VM P.Doc
-prettyVM v@(List vr) = do
-    vs <- fmap V.toList (liftIO (readIORef vr))
-    if all isChar vs
-        then return (pretty v)
-        else do
-    pvs <- mapM prettyVM vs
-    return . P.brackets . P.hsep . P.punctuate P.comma $ pvs
-prettyVM r@(Reference _) = do
-    s <- dispatch (single "show" r)
-    return (P.text (fromString s))
-prettyVM v = return (pretty v)
+prettyVM = fmap (P.text . fromString) . dispatch . (single "show")
 
 -- | set up the primitive objects, etc.
 initEnv :: VM ()

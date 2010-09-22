@@ -89,12 +89,8 @@ load = do
         s <- getString [$e|s|]
         return (Char (read s))
 
-    [$p|(x: Object) show|] =: do
-        v <- here "x"
-
-        if isReference v
-            then return (string (show (pretty v)))
-            else prettyVM v >>= return . string . show
+    [$p|(x: Object) show|] =:
+        fmap (string . show . pretty) (here "x")
 
     [$p|(x: Object) dump|] =: do
         x <- here "x"
