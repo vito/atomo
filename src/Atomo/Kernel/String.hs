@@ -19,7 +19,7 @@ load = do
 
         if all isChar vs
             then return $ string (map (\(Char c) -> c) vs)
-            else throwError $ ErrorMsg "@as:String - list must contain only Chars"
+            else throwError $ ErrorMsg "@to-string - list must contain only Chars"
 
     [$p|(c: Char) singleton|] =: do
         Char c <- here "c" >>= findValue isChar

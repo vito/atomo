@@ -33,7 +33,7 @@ load = do
         Block s as bes <- here "b" >>= findValue isBlock
 
         if length as > 0
-            then throwError . ErrorMsg $ "block expects " ++ show (length as) ++ ", given 0"
+            then throwError (BlockArity (length as) 0)
             else do
                 st <- lift get
                 chan <- liftIO newChan
@@ -45,12 +45,7 @@ load = do
         vs <- fmap V.toList $ getList [$e|l|]
 
         if length as > length vs
-            then throwError . ErrorMsg . unwords $
-                [ "block expects"
-                , show (length as)
-                , "arguments, given"
-                , show (length vs)
-                ]
+            then throwError (BlockArity (length as) (length vs))
             else do
                 st <- lift get
                 chan <- liftIO newChan

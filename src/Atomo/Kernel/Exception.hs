@@ -40,17 +40,25 @@ load = do
 
 
 asValue :: AtomoError -> Value
-asValue (ErrorMsg s) = keyParticle ["error"] [Nothing, Just (string s)]
+asValue (ErrorMsg s) = keyParticleN ["error"] [string s]
 asValue (ParseError pe) =
-    keyParticle ["parse-error"] [Nothing, Just (string (show pe))]
+    keyParticleN ["parse-error"] [string (show pe)]
 asValue (DidNotUnderstand m) =
-    keyParticle ["did-not-understand"] [Nothing, Just (Message m)]
+    keyParticleN ["did-not-understand"] [Message m]
 asValue (Mismatch pat v) =
-    keyParticle
+    keyParticleN
         ["pattern", "did-not-match"]
-        [Nothing, Just (Pattern pat), Just v]
+        [Pattern pat, v]
 asValue (ImportError ie) =
-    keyParticle ["import-error"] [Nothing, Just (string (show ie))]
+    keyParticleN ["import-error"] [string (show ie)]
 asValue (FileNotFound fn) =
-    keyParticle ["file-not-found"] [Nothing, Just (string fn)]
+    keyParticleN ["file-not-found"] [string fn]
 asValue (ValueError v) = v
+asValue (ParticleArity e' g) =
+    keyParticleN
+        ["particle-needed", "given"]
+        [Integer (fromIntegral e'), Integer (fromIntegral g)]
+asValue (BlockArity e' g) =
+    keyParticleN
+        ["block-expected", "given"]
+        [Integer (fromIntegral e'), Integer (fromIntegral g)]

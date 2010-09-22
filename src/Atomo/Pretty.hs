@@ -186,8 +186,24 @@ instance Pretty AtomoError where
     prettyFrom _ (ImportError (H.GhcException s)) =
         text "import error:" <+> text s
     prettyFrom _ (FileNotFound fn) =
-        text "file not found: " <+> text fn
+        text "file not found:" <+> text fn
     prettyFrom _ (ValueError v) = text "error:" <+> pretty v
+    prettyFrom _ (ParticleArity e g) =
+        text . unwords $
+            [ "particle needs"
+            , show e
+            , "values to complete,"
+            , show g
+            , "given"
+            ]
+    prettyFrom _ (BlockArity e g) =
+        text . unwords $
+            [ "block expects"
+            , show e
+            , "arguments,"
+            , show g
+            , "given"
+            ]
 
 
 instance Pretty Delegates where

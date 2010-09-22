@@ -82,6 +82,8 @@ data AtomoError
     | ImportError H.InterpreterError
     | ValueError Value
     | FileNotFound String
+    | ParticleArity Int Int
+    | BlockArity Int Int
     deriving Show
 
 -- pattern-matches
@@ -301,6 +303,10 @@ particle = Particle . PMSingle
 keyParticle :: [String] -> [Maybe Value] -> Value
 {-# INLINE keyParticle #-}
 keyParticle ns vs = Particle $ PMKeyword ns vs
+
+keyParticleN :: [String] -> [Value] -> Value
+{-# INLINE keyParticleN #-}
+keyParticleN ns vs = keyParticle ns (Nothing:map Just vs)
 
 string :: String -> Value
 {-# INLINE string #-}

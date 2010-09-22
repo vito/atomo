@@ -28,7 +28,7 @@ load = do
         Block s as es <- here "b" >>= findValue isBlock
 
         if length as > 0
-            then throwError . ErrorMsg $ "block expects " ++ show (length as) ++ ", given 0"
+            then throwError (BlockArity (length as) 0)
             else doBlock M.empty s es
 
     [$p|(b: Block) call: (l: List)|] =: do
@@ -36,12 +36,7 @@ load = do
         vs <- fmap V.toList $ getList [$e|l|]
 
         if length ps > length vs
-            then throwError . ErrorMsg . unwords $
-                [ "block expects"
-                , show (length ps)
-                , "arguments, given"
-                , show (length vs)
-                ]
+            then throwError (BlockArity (length ps) (length vs))
             else doBlock (toMethods . concat $ zipWith bindings' ps vs) s es
 
     [$p|(b: Block) context|] =: do

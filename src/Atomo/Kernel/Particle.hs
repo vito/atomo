@@ -19,16 +19,11 @@ load = do
                 let blanks = length (filter (== Nothing) mvs)
 
                 if blanks > length vs
-                    then throwError . ErrorMsg . unwords $
-                            [ "particle needs"
-                            , show blanks
-                            , "values to complete, given"
-                            , show (length vs)
-                            ]
+                    then throwError (ParticleArity blanks (length vs))
                     else dispatch (keyword ns $ completeKP mvs vs)
             PMSingle n -> do
                 if length vs == 0
-                    then throwError . ErrorMsg $ "particle needs 1 values to complete, given 0"
+                    then throwError (ParticleArity 1 0)
                     else dispatch (single n (head vs))
 
     [$p|(p: Particle) name|] =: do
@@ -43,7 +38,7 @@ load = do
         (Particle (PMKeyword _ mvs)) <- here "p" >>= findValue isParticle
         list $
             map
-                (maybe (particle "none") (keyParticle ["ok"] . ([Nothing] ++) . (:[]). Just))
+                (maybe (particle "none") (keyParticleN ["ok"] . (:[])))
                 mvs
 
     [$p|(p: Particle) type|] =: do
