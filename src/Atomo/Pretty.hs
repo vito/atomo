@@ -185,6 +185,8 @@ instance Pretty AtomoError where
         text "import error:" <+> text s
     prettyFrom _ (ImportError (H.GhcException s)) =
         text "import error:" <+> text s
+    prettyFrom _ (FileNotFound fn) =
+        text "file not found: " <+> text fn
     prettyFrom _ (ValueError v) = text "error:" <+> pretty v
 
 

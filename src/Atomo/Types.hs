@@ -81,6 +81,7 @@ data AtomoError
     | Mismatch Pattern Value
     | ImportError H.InterpreterError
     | ValueError Value
+    | FileNotFound String
     deriving Show
 
 -- pattern-matches

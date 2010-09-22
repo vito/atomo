@@ -106,7 +106,9 @@ initEnv = do
 
     -- define Object as the root object
     define (psingle "Object" PSelf) (Primitive Nothing object)
-    lift . modify $ \e -> e { primitives = (primitives e) { idObject = rORef object } }
+    lift . modify $ \e -> e
+        { primitives = (primitives e) { idObject = rORef object }
+        }
 
     -- this thread's channel
     chan <- liftIO newChan
@@ -170,10 +172,22 @@ eval e = eval' e `catchError` pushStack
 
                 return v
             else throwError (Mismatch p v)
-    eval' (Dispatch { eMessage = ESingle { emID = i, emName = n, emTarget = t } }) = do
+    eval' (Dispatch
+            { eMessage = ESingle
+                { emID = i
+                , emName = n
+                , emTarget = t
+                }
+            }) = do
         v <- eval t
         dispatch (Single i n v)
-    eval' (Dispatch { eMessage = EKeyword { emID = i, emNames = ns, emTargets = ts } }) = do
+    eval' (Dispatch
+            { eMessage = EKeyword
+                { emID = i
+                , emNames = ns
+                , emTargets = ts
+                }
+            }) = do
         vs <- mapM eval ts
         dispatch (Keyword i ns vs)
     eval' (Operator { eNames = ns, eAssoc = a, ePrec = p }) = do
@@ -200,7 +214,8 @@ eval e = eval' e `catchError` pushStack
     eval' (EList { eContents = es }) = do
         vs <- mapM eval es
         list vs
-    eval' (EParticle { eParticle = EPMSingle n }) = return (Particle $ PMSingle n)
+    eval' (EParticle { eParticle = EPMSingle n }) =
+        return (Particle $ PMSingle n)
     eval' (EParticle { eParticle = EPMKeyword ns mes }) = do
         mvs <- forM mes $
             maybe (return Nothing) (fmap Just . eval)
@@ -252,17 +267,16 @@ define !p !e = do
         obj <- liftIO (readIORef o)
 
         let (oss, oks) = oMethods obj
-            ms =
-                case newp of
-                    PSingle {} -> (addMethod (m o) oss, oks)
-                    PKeyword {} -> (oss, addMethod (m o) oks)
-                    _ -> error $ "impossible: defining with pattern " ++ show newp
+            ms (PSingle {}) = (addMethod (m o) oss, oks)
+            ms (PKeyword {}) = (oss, addMethod (m o) oks)
+            ms x = error $ "impossible: defining with pattern " ++ show x
 
         liftIO . writeIORef o $
-            obj { oMethods = ms }
+            obj { oMethods = ms newp }
   where
     method p' (Primitive _ v) = return (\o -> Slot (setSelf o p') v)
-    method p' e' = lift (gets top) >>= \t -> return (\o -> Method (setSelf o p') t e')
+    method p' e' = lift (gets top) >>= \t ->
+        return (\o -> Method (setSelf o p') t e')
 
     methodPattern p'@(PSingle { ppTarget = t }) = do
         t' <- methodPattern t
@@ -364,7 +378,7 @@ findMethod v m = do
     case relevant (is { idMatch = r }) o m of
         Nothing -> findFirstMethod m (oDelegates o)
         Just mt -> return (Just mt)
-    
+
 -- | find the first value that has a method defiend for `m'
 findFirstMethod :: Message -> [Value] -> VM (Maybe Method)
 findFirstMethod _ [] = return Nothing
@@ -443,7 +457,8 @@ matchParticle :: IDs -> [Pattern] -> [Maybe Value] -> Bool
 matchParticle _ [] [] = True
 matchParticle ids (PAny:ps) (Nothing:mvs) = matchParticle ids ps mvs
 matchParticle ids (PNamed _ p:ps) mvs = matchParticle ids (p:ps) mvs
-matchParticle ids (p:ps) (Just v:mvs) = match ids p v && matchParticle ids ps mvs
+matchParticle ids (p:ps) (Just v:mvs) =
+    match ids p v && matchParticle ids ps mvs
 matchParticle _ _ _ = False
 
 -- evaluate a method in a scope with the pattern's bindings,
@@ -522,7 +537,13 @@ pat =::: e = define pat e
 
 findValue :: (Value -> Bool) -> Value -> VM Value
 findValue t v | t v = return v
-findValue t v = findValue' t v >>= maybe (throwError . ErrorMsg $ "could not find a value in " ++ show (pretty v) ++ " satisfying the predecate") return
+findValue t v = findValue' t v >>= maybe die return
+  where
+    die = throwError . ErrorMsg . concat $
+        [ "could not find a value in "
+        , show (pretty v)
+        , " satisfying the predecate"
+        ]
 
 findValue' :: (Value -> Bool) -> Value -> VM (Maybe Value)
 findValue' t v | t v = return (Just v)
@@ -545,7 +566,9 @@ getText :: Expr -> VM T.Text
 getText e = eval e >>= findValue isString >>= \(String t) -> return t
 
 getList :: Expr -> VM (V.Vector Value)
-getList e = eval e >>= findValue isList >>= \(List v) -> liftIO . readIORef $ v
+getList e = eval e
+    >>= findValue isList
+    >>= \(List v) -> liftIO . readIORef $ v
 
 here :: String -> VM Value
 here n =
@@ -649,8 +672,9 @@ doLoad file =
                 }
 
 -- | given a list of paths to search, find the file to load
+-- attempts to find the filename with .atomo and .hs extensions
 findFile :: [FilePath] -> FilePath -> VM FilePath
-findFile [] fn = throwError (ErrorMsg ("file not found: " ++ fn)) -- TODO: proper error
+findFile [] fn = throwError (FileNotFound fn)
 findFile (p:ps) fn = do
     check <- filterM (liftIO . doesFileExist . ((p </> fn) <.>)) exts
 
@@ -673,6 +697,8 @@ delegatesTo f t = do
             o <- objectFor d
             delegatesTo' (oDelegates o ++ ds)
 
+-- | is one value an instance of, equal to, or a delegation to another?
+-- for example, 1 is-a?: Integer, but 1 does not delegates-to?: Integer
 isA :: Value -> Value -> VM Bool
 isA x y = do
     xr <- orefFor x
