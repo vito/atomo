@@ -34,11 +34,7 @@ load = do
 
         if length as > 0
             then throwError (BlockArity (length as) 0)
-            else do
-                st <- lift get
-                chan <- liftIO newChan
-                tid <- liftIO $ forkIO (runWith (go $ doBlock M.empty s bes >> return ()) (st { channel = chan }) >> return ())
-                return (Process chan tid)
+            else spawn (doBlock M.empty s bes)
 
     [$p|(b: Block) spawn: (l: List)|] =: do
         Block s as bes <- here "b" >>= findValue isBlock
@@ -46,16 +42,8 @@ load = do
 
         if length as > length vs
             then throwError (BlockArity (length as) (length vs))
-            else do
-                st <- lift get
-                chan <- liftIO newChan
-                tid <- liftIO . forkIO $ do
-                    runWith
-                        (go $ doBlock (toMethods . concat $ zipWith bindings' as vs) s bes >> return ())
-                        (st { channel = chan })
-
-                    return ()
-                return (Process chan tid)
+            else spawn $
+                doBlock (toMethods . concat $ zipWith bindings' as vs) s bes
 
     [$p|(p: Process) stop|] =: do
         Process _ tid <- here "p" >>= findValue isProcess

@@ -80,6 +80,16 @@ printError err = do
   where
     traceback = fmap (reverse . take 10 . reverse) (lift $ gets stack)
 
+spawn :: VM a -> VM Value
+spawn x = do
+    e <- lift get
+    chan <- liftIO newChan
+    tid <- liftIO . forkIO $ do
+        runWith (go (x >> return ())) (e { channel = chan })
+        return ()
+
+    return (Process chan tid)
+
 prettyVM :: Value -> VM P.Doc
 prettyVM = fmap (P.text . fromString) . dispatch . (single "show")
 
