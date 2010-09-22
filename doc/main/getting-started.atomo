@@ -189,19 +189,3 @@ Just for fun, let's take a peek at what the objects themselves look like now.
 })on:rps
 
 As you can see, the #atomo:(beats?:) method is placed on all roles involved.
-
-
-#section:{Putting it all together...}
-
-Now that that's all over with, let's get familiar with some of the basics of Atomo. First off: lists!
-
-Lists are...lists of values. #atomo:["They", @look, like, this]. The brackets (#code:{[]}) surround a comma-separated list of values, of any length. You can do all kinds of things with them, but I recommend you head on over to #reference:{lists} later on to see the mind-bogglingly large collection of methods.
-
-For now, though, let's just play around. Let's try putting two lists together. This is done with the #atomo:(..) operator.
-
-#interaction:({
-    [1, 2, 3] .. [4, 5, 6]
-    "foo" .. "bar"
-})
-
-Note that this (and any other #atomo:List method) also works for #atomo:(String)s, because they're just lists of #atomo:(Char)s.
