@@ -149,8 +149,8 @@ load = do
         bool (a == b)
 
     [$p|(a: List) == (b: List)|] =: do
-        as <- getList [$e|a|]
-        bs <- getList [$e|b|]
+        as <- getVector [$e|a|]
+        bs <- getVector [$e|b|]
 
         if V.length as == V.length bs
             then do

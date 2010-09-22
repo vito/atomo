@@ -580,8 +580,11 @@ getString e = eval e >>= fmap fromString . findValue isString
 getText :: Expr -> VM T.Text
 getText e = eval e >>= findValue isString >>= \(String t) -> return t
 
-getList :: Expr -> VM (V.Vector Value)
-getList e = eval e
+getList :: Expr -> VM [Value]
+getList = fmap V.toList . getVector
+
+getVector :: Expr -> VM (V.Vector Value)
+getVector e = eval e
     >>= findValue isList
     >>= \(List v) -> liftIO . readIORef $ v
 

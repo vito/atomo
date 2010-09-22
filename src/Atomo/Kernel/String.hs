@@ -2,7 +2,6 @@
 module Atomo.Kernel.String where
 
 import Data.List (sort)
-import qualified Data.Vector as V
 import qualified Data.Text as T
 
 import Atomo.Environment
@@ -15,7 +14,7 @@ load = do
         getString [$e|s|] >>= list . map Char
 
     [$p|(l: List) to-string|] =: do
-        vs <- fmap V.toList (getList [$e|l|])
+        vs <- getList [$e|l|]
 
         if all isChar vs
             then return $ string (map (\(Char c) -> c) vs)
@@ -87,7 +86,7 @@ load = do
     [$p|(l: List) join|] =::: [$e|l reduce: @.. with: ""|]
 
     [$p|(l: List) join: (d: String)|] =: do
-        ts <- fmap V.toList (getList [$e|l|])
+        ts <- getList [$e|l|]
             >>= mapM (fmap (\(String t) -> t) . findValue isString)
 
         d <- getText [$e|d|]

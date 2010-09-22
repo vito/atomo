@@ -3,7 +3,6 @@
 module Atomo.Kernel.Block (load) where
 
 import qualified Data.IntMap as M
-import qualified Data.Vector as V
 
 import Atomo.Environment
 import Atomo.Haskell
@@ -17,7 +16,7 @@ load = do
 
     [$p|Block new: (l: List) in: t|] =: do
         t <- here "t"
-        es <- fmap V.toList $ getList [$e|l|]
+        es <- getList [$e|l|]
 
         let toExpr (Expression e') = e'
             toExpr v = Primitive Nothing v
@@ -33,7 +32,7 @@ load = do
 
     [$p|(b: Block) call: (l: List)|] =: do
         Block s ps es <- here "b" >>= findValue isBlock
-        vs <- fmap V.toList $ getList [$e|l|]
+        vs <- getList [$e|l|]
 
         if length ps > length vs
             then throwError (BlockArity (length ps) (length vs))

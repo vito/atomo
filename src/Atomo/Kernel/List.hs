@@ -14,41 +14,41 @@ load = do
     eval [$e|operator right .|]
 
     [$p|(l: List) length|] =:
-        getList [$e|l|] >>= return . Integer . fromIntegral . V.length
+        getVector [$e|l|] >>= return . Integer . fromIntegral . V.length
 
     [$p|(l: List) empty?|] =:
-        getList [$e|l|] >>= bool . V.null
+        getVector [$e|l|] >>= bool . V.null
 
     [$p|(l: List) at: (n: Integer)|] =: do
         Integer n <- here "n" >>= findValue isInteger
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         return (vs V.! fromIntegral n)
 
     [$p|(l: List) head|] =:
-        getList [$e|l|] >>= return . V.head
+        getVector [$e|l|] >>= return . V.head
 
     [$p|(l: List) last|] =:
-        getList [$e|l|] >>= return . V.last
+        getVector [$e|l|] >>= return . V.last
 
     [$p|(l: List) from: (s: Integer) to: (e: Integer)|] =: do
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         Integer start <- here "s" >>= findValue isInteger
         Integer end <- here "e" >>= findValue isInteger
         list' (V.slice (fromIntegral start) (fromIntegral end) vs)
 
     [$p|(l: List) init|] =:
-        getList [$e|l|] >>= list' . V.init
+        getVector [$e|l|] >>= list' . V.init
 
     [$p|(l: List) tail|] =:
-        getList [$e|l|] >>= list' . V.tail
+        getVector [$e|l|] >>= list' . V.tail
 
     [$p|(l: List) take: (n: Integer)|] =: do
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         Integer n <- here "n" >>= findValue isInteger
         list' (V.take (fromIntegral n) vs)
 
     [$p|(l: List) drop: (n: Integer)|] =: do
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         Integer n <- here "n" >>= findValue isInteger
         list' (V.drop (fromIntegral n) vs)
 
@@ -65,15 +65,15 @@ load = do
         list' vs
 
     [$p|(a: List) .. (b: List)|] =: do
-        as <- getList [$e|a|]
-        bs <- getList [$e|b|]
+        as <- getVector [$e|a|]
+        bs <- getVector [$e|b|]
         list' (as V.++ bs)
 
     [$p|(l: List) reverse|] =: do
-        getList [$e|l|] >>= list' . V.reverse
+        getVector [$e|l|] >>= list' . V.reverse
 
     [$p|(l: List) map: b|] =: do
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         b <- here "b"
 
         nvs <- V.mapM (\v -> do
@@ -84,8 +84,8 @@ load = do
 
     [$p|(x: List) zip: (y: List)|] =::: [$e|x zip: y with: @->|]
     [$p|(x: List) zip: (y: List) with: b|] =: do
-        xs <- getList [$e|x|]
-        ys <- getList [$e|y|]
+        xs <- getVector [$e|x|]
+        ys <- getVector [$e|y|]
         b <- here "b"
 
         nvs <- V.zipWithM (\x y -> do
@@ -95,7 +95,7 @@ load = do
         list' nvs
 
     [$p|(l: List) filter: b|] =: do
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         b <- here "b"
 
         t <- bool True
@@ -107,7 +107,7 @@ load = do
         list' nvs
 
     [$p|(l: List) reduce: b|] =: do
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         b <- here "b"
 
         V.fold1M (\x acc -> do
@@ -115,7 +115,7 @@ load = do
             dispatch (keyword ["call"] [b, as])) vs
 
     [$p|(l: List) reduce: b with: v|] =: do
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         b <- here "b"
         v <- here "v"
 
@@ -124,7 +124,7 @@ load = do
             dispatch (keyword ["call"] [b, as])) v vs
 
     [$p|(l: List) reduce-right: b|] =: do
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         b <- here "b"
 
         if V.null vs
@@ -136,7 +136,7 @@ load = do
             dispatch (keyword ["call"] [b, as])) vs
 
     [$p|(l: List) reduce-right: b with: v|] =: do
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         b <- here "b"
         v <- here "v"
 
@@ -151,7 +151,7 @@ load = do
     [$p|(l: List) minimum|] =::: [$e|l reduce: @min:|]
 
     [$p|(l: List) all?: b|] =: do
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         b <- here "b"
 
         t <- bool True
@@ -163,7 +163,7 @@ load = do
         bool (V.and nvs)
 
     [$p|(l: List) any?: b|] =: do
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         b <- here "b"
 
         t <- bool True
@@ -175,12 +175,12 @@ load = do
         bool (V.or nvs)
 
     [$p|(l: List) and|] =: do
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         t <- bool True
         bool (V.all (== t) vs)
 
     [$p|(l: List) or|] =: do
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         t <- bool True
         bool (V.any (== t) vs)
 
@@ -222,7 +222,7 @@ load = do
     -- destructive update
     [$p|(l: List) at: (n: Integer) put: v|] =: do
         List l <- here "l" >>= findValue isList
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
 
         Integer n <- here "n" >>= findValue isInteger
         v <- here "v"
@@ -232,7 +232,7 @@ load = do
         return (List l)
 
     [$p|v . (l: List)|] =: do
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         v <- here "v"
         l <- liftIO . newIORef $ V.cons v vs
         return (List l)
@@ -242,7 +242,7 @@ load = do
 
     [$p|(l: List) push: v|] =: do
         List l <- here "l" >>= findValue isList
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         v <- here "v"
 
         liftIO . writeIORef l $ V.snoc vs v
@@ -251,7 +251,7 @@ load = do
 
     [$p|(l: List) left-push: v|] =: do
         List l <- here "l" >>= findValue isList
-        vs <- getList [$e|l|]
+        vs <- getVector [$e|l|]
         v <- here "v"
 
         liftIO . writeIORef l $ V.cons v vs
@@ -259,23 +259,23 @@ load = do
         return (List l)
 
     [$p|(l: List) split: (d: List)|] =: do
-        l <- fmap V.toList (getList [$e|l|])
-        d <- fmap V.toList (getList [$e|d|])
+        l <- getList [$e|l|]
+        d <- getList [$e|d|]
 
         mapM list (splitOn d l) >>= list
 
     [$p|(l: List) split-on: d|] =: do
-        l <- fmap V.toList (getList [$e|l|])
+        l <- getList [$e|l|]
         d <- here "d"
 
         mapM list (splitWhen (== d) l) >>= list
 
     [$p|(l: List) sort|] =:
-        getList [$e|l|] >>= sortVM . V.toList >>= list
+        getList [$e|l|] >>= sortVM >>= list
 
     [$p|(l: List) sort-by: cmp|] =: do
         t <- bool True
-        vs <- fmap V.toList (getList [$e|l|])
+        vs <- getList [$e|l|]
         cmp <- here "cmp"
 
         sortByVM (\a b -> do

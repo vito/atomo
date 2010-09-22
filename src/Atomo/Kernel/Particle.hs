@@ -2,8 +2,6 @@
 {-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.Kernel.Particle (load) where
 
-import qualified Data.Vector as V
-
 import Atomo.Environment
 import Atomo.Haskell
 
@@ -12,7 +10,7 @@ load :: VM ()
 load = do
     [$p|(p: Particle) call: (l: List)|] =: do
         Particle p <- here "p" >>= findValue isParticle
-        vs <- fmap V.toList $ getList [$e|l|]
+        vs <- getList [$e|l|]
 
         case p of
             PMKeyword ns mvs -> do

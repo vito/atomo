@@ -5,7 +5,6 @@ import Data.IORef
 import Data.List ((\\))
 import Data.Maybe (isJust)
 import qualified Data.IntMap as M
-import qualified Data.Vector as V
 
 import Atomo.Debug
 import Atomo.Environment
@@ -125,7 +124,7 @@ load = do
     [$p|v do: (b: Block) with: (l: List)|] =: do
         v <- here "v"
         b <- here "b" >>= findValue isBlock
-        as <- fmap V.toList $ getList [$e|l|]
+        as <- getList [$e|l|]
         joinWith v b as
         return v
 
@@ -136,7 +135,7 @@ load = do
     [$p|v join: (b: Block) with: (l: List)|] =: do
         v <- here "v"
         b <- here "b" >>= findValue isBlock
-        as <- fmap V.toList $ getList [$e|l|]
+        as <- getList [$e|l|]
         joinWith v b as
 
 
