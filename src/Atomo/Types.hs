@@ -75,12 +75,11 @@ data Particle
     deriving Show
 
 data AtomoError
-    = ErrorMsg String
+    = Error Value
     | ParseError ParseError
     | DidNotUnderstand Message
     | Mismatch Pattern Value
     | ImportError H.InterpreterError
-    | ValueError Value
     | FileNotFound String
     | ParticleArity Int Int
     | BlockArity Int Int
@@ -229,8 +228,8 @@ data IDs =
 
 
 instance Error AtomoError where
-    noMsg = ErrorMsg ""
-    strMsg = ErrorMsg
+    noMsg = Error (string "")
+    strMsg = Error . string
 
 
 -- a basic Eq instance
@@ -312,11 +311,11 @@ keyParticleN ns vs = keyParticle ns (Nothing:map Just vs)
 
 raise :: [String] -> [Value] -> VM a
 {-# INLINE raise #-}
-raise ns vs = throwError . ValueError $ keyParticleN ns vs
+raise ns vs = throwError . Error $ keyParticleN ns vs
 
 raise' :: String -> VM a
 {-# INLINE raise' #-}
-raise' = throwError . ValueError . particle
+raise' = throwError . Error . particle
 
 string :: String -> Value
 {-# INLINE string #-}

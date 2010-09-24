@@ -9,7 +9,7 @@ load :: VM ()
 load = do
     [$p|raise: v|] =: do
         v <- here "v"
-        throwError (ValueError v)
+        throwError (Error v)
 
     [$p|(action: Block) catch: (recover: Block)|] =:
         catchError (eval [$e|action call|]) $ \err -> do
@@ -40,7 +40,7 @@ load = do
 
 
 asValue :: AtomoError -> Value
-asValue (ErrorMsg s) = keyParticleN ["error"] [string s]
+asValue (Error v) = v
 asValue (ParseError pe) =
     keyParticleN ["parse-error"] [string (show pe)]
 asValue (DidNotUnderstand m) =
@@ -53,7 +53,6 @@ asValue (ImportError ie) =
     keyParticleN ["import-error"] [string (show ie)]
 asValue (FileNotFound fn) =
     keyParticleN ["file-not-found"] [string fn]
-asValue (ValueError v) = v
 asValue (ParticleArity e' g) =
     keyParticleN
         ["particle-needed", "given"]

@@ -170,7 +170,7 @@ instance Pretty EParticle where
 
 
 instance Pretty AtomoError where
-    prettyFrom _ (ErrorMsg msg) = text msg
+    prettyFrom _ (Error v) = text "error:" <+> pretty v
     prettyFrom _ (DidNotUnderstand m) =
         text "message not understood:" $$ nest 2 (pretty m)
     prettyFrom _ (ParseError e) =
@@ -187,7 +187,6 @@ instance Pretty AtomoError where
         text "import error:" <+> text s
     prettyFrom _ (FileNotFound fn) =
         text "file not found:" <+> text fn
-    prettyFrom _ (ValueError v) = text "error:" <+> pretty v
     prettyFrom _ (ParticleArity e g) =
         text . unwords $
             [ "particle needs"
