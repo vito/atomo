@@ -3,6 +3,3 @@
 * more environment tests
 * rationals: 1/2 * 6/5 = 3/5
 * make Bool a primitive, add and/or short-circuiting operators?
-* list splitting
-* command-line arguments
-* optional commas in lists (like semicolons are for blocks)

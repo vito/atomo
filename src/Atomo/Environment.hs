@@ -234,7 +234,7 @@ eval e = eval' e `catchError` pushStack
 
 -- | evaluating multiple expressions, returning the last result
 evalAll :: [Expr] -> VM Value
-evalAll [] = throwError . ErrorMsg $ "cannot evaluate 0 expressions" -- TODO: proper error
+evalAll [] = throwError . ErrorMsg $ "cannot evaluate 0 expressions"
 evalAll [e] = eval e
 evalAll (e:es) = eval e >> evalAll es
 
