@@ -62,7 +62,7 @@ load = do
 
     [$p|(x: Object) responds-to?: (p: Particle)|] =: do
         x <- here "x"
-        Particle p' <- here "p" >>= findValue isParticle
+        Particle p' <- here "p" >>= findParticle
 
         let completed =
                 case p' of
@@ -118,23 +118,23 @@ load = do
 
     [$p|v do: (b: Block)|] =: do
         v <- here "v"
-        b <- here "b" >>= findValue isBlock
+        b <- here "b" >>= findBlock
         joinWith v b []
         return v
     [$p|v do: (b: Block) with: (l: List)|] =: do
         v <- here "v"
-        b <- here "b" >>= findValue isBlock
+        b <- here "b" >>= findBlock
         as <- getList [$e|l|]
         joinWith v b as
         return v
 
     [$p|v join: (b: Block)|] =: do
         v <- here "v"
-        b <- here "b" >>= findValue isBlock
+        b <- here "b" >>= findBlock
         joinWith v b []
     [$p|v join: (b: Block) with: (l: List)|] =: do
         v <- here "v"
-        b <- here "b" >>= findValue isBlock
+        b <- here "b" >>= findBlock
         as <- getList [$e|l|]
         joinWith v b as
 

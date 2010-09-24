@@ -24,14 +24,14 @@ load = do
         return (Block t [] (map toExpr es))
 
     [$p|(b: Block) call|] =: do
-        Block s as es <- here "b" >>= findValue isBlock
+        Block s as es <- here "b" >>= findBlock
 
         if length as > 0
             then throwError (BlockArity (length as) 0)
             else doBlock M.empty s es
 
     [$p|(b: Block) call: (l: List)|] =: do
-        Block s ps es <- here "b" >>= findValue isBlock
+        Block s ps es <- here "b" >>= findBlock
         vs <- getList [$e|l|]
 
         if length ps > length vs
@@ -39,15 +39,15 @@ load = do
             else doBlock (toMethods . concat $ zipWith bindings' ps vs) s es
 
     [$p|(b: Block) context|] =: do
-        Block s _ _ <- here "b" >>= findValue isBlock
+        Block s _ _ <- here "b" >>= findBlock
         return s
 
     [$p|(b: Block) arguments|] =: do
-        Block _ as _ <- here "b" >>= findValue isBlock
+        Block _ as _ <- here "b" >>= findBlock
         list (map Pattern as)
 
     [$p|(b: Block) contents|] =: do
-        Block _ _ es <- here "b" >>= findValue isBlock
+        Block _ _ es <- here "b" >>= findBlock
         list (map Expression es)
 
     prelude

@@ -19,11 +19,11 @@ load = do
     eval [$e|Double delegates-to: Number|]
 
     [$p|(a: Integer) sqrt|] =: do
-        Integer a <- here "a" >>= findValue isInteger
+        Integer a <- here "a" >>= findInteger
         return (Double (sqrt (fromIntegral a)))
 
     [$p|(a: Double) sqrt|] =: do
-        Double a <- here "a" >>= findValue isDouble
+        Double a <- here "a" >>= findDouble
         return (Double (sqrt a))
 
     [$p|(a: Integer) + (b: Integer)|] =: primII (+)
@@ -54,23 +54,23 @@ load = do
     prelude
   where
     primII f = do
-        Integer a <- here "a" >>= findValue isInteger
-        Integer b <- here "b" >>= findValue isInteger
+        Integer a <- here "a" >>= findInteger
+        Integer b <- here "b" >>= findInteger
         return (Integer (f a b))
 
     primID f = do
-        Integer a <- here "a" >>= findValue isInteger
-        Double b <- here "b" >>= findValue isDouble
+        Integer a <- here "a" >>= findInteger
+        Double b <- here "b" >>= findDouble
         return (Double (f (fromIntegral a) b))
 
     primDI f = do
-        Double a <- here "a" >>= findValue isDouble
-        Integer b <- here "b" >>= findValue isInteger
+        Double a <- here "a" >>= findDouble
+        Integer b <- here "b" >>= findInteger
         return (Double (f a (fromIntegral b)))
 
     primDD f = do
-        Double a <- here "a" >>= findValue isDouble
-        Double b <- here "b" >>= findValue isDouble
+        Double a <- here "a" >>= findDouble
+        Double b <- here "b" >>= findDouble
         return (Double (f a b))
 
 

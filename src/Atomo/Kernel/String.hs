@@ -21,7 +21,7 @@ load = do
             else raise' "list-not-homogenous"
 
     [$p|(c: Char) singleton|] =: do
-        Char c <- here "c" >>= findValue isChar
+        Char c <- here "c" >>= findChar
         return (String (T.singleton c))
 
     [$p|(s: String) length|] =:
@@ -31,7 +31,7 @@ load = do
         getText [$e|s|] >>= bool . T.null
 
     [$p|(s: String) at: (n: Integer)|] =: do
-        Integer n <- here "n" >>= findValue isInteger
+        Integer n <- here "n" >>= findInteger
         t <- getText [$e|s|]
         return . Char $ t `T.index` fromIntegral n
 
@@ -54,24 +54,24 @@ load = do
         getText [$e|s|] >>= return . String . T.tail
 
     [$p|(s: String) take: (n: Integer)|] =: do
-        Integer n <- here "n" >>= findValue isInteger
+        Integer n <- here "n" >>= findInteger
         getText [$e|s|] >>=
             return . String . T.take (fromIntegral n)
 
     [$p|(s: String) drop: (n: Integer)|] =: do
-        Integer n <- here "n" >>= findValue isInteger
+        Integer n <- here "n" >>= findInteger
         getText [$e|s|] >>=
             return . String . T.drop (fromIntegral n)
 
     -- TODO: take-while:, drop-while:
 
     [$p|(c: Char) repeat: (n: Integer)|] =: do
-        Char c <- here "c" >>= findValue isChar
-        Integer n <- here "n" >>= findValue isInteger
+        Char c <- here "c" >>= findChar
+        Integer n <- here "n" >>= findInteger
         return (string (replicate (fromIntegral n) c))
 
     [$p|(s: String) repeat: (n: Integer)|] =: do
-        Integer n <- here "n" >>= findValue isInteger
+        Integer n <- here "n" >>= findInteger
         getText [$e|s|] >>=
             return . String . T.replicate (fromIntegral n)
 
@@ -87,14 +87,14 @@ load = do
 
     [$p|(l: List) join: (d: String)|] =: do
         ts <- getList [$e|l|]
-            >>= mapM (fmap (\(String t) -> t) . findValue isString)
+            >>= mapM (fmap (\(String t) -> t) . findString)
 
         d <- getText [$e|d|]
 
         return (String (T.intercalate d ts))
 
     [$p|(s: String) intersperse: (c: Char)|] =: do
-        Char c <- here "c" >>= findValue isChar
+        Char c <- here "c" >>= findChar
         t <- getText [$e|s|]
         return (String (T.intersperse c t))
 
@@ -107,11 +107,11 @@ load = do
 
     [$p|(s: String) split-on: (d: Char)|] =: do
         s <- getText [$e|s|]
-        Char d <- here "d" >>= findValue isChar
+        Char d <- here "d" >>= findChar
         list (map String (T.splitBy (== d) s))
 
     [$p|(s: String) split-at: (n: Integer)|] =: do
-        Integer n <- here "n" >>= findValue isInteger
+        Integer n <- here "n" >>= findInteger
         s <- getText [$e|s|]
         let (a, b) = T.splitAt (fromIntegral n) s
         list [String a, String b]
@@ -141,7 +141,7 @@ load = do
         list (map String (T.tails s))
 
     [$p|(s: String) chunks-of: (n: Integer)|] =: do
-        Integer n <- here "n" >>= findValue isInteger
+        Integer n <- here "n" >>= findInteger
         s <- getText [$e|s|]
         list (map String (T.chunksOf (fromIntegral n) s))
 
@@ -171,13 +171,13 @@ load = do
     [$p|(s: String) each: (b: Block)|] =::: [$e|{ s map: b in-context; s } call|]
 
     [$p|(c: Char) . (s: String)|] =: do
-        Char c <- here "c" >>= findValue isChar
+        Char c <- here "c" >>= findChar
         s <- getText [$e|s|]
         return (String (T.cons c s))
 
     [$p|(s: String) << (c: Char)|] =: do
         s <- getText [$e|s|]
-        Char c <- here "c" >>= findValue isChar
+        Char c <- here "c" >>= findChar
         return (String (T.snoc s c))
 
     [$p|(haystack: String) replace: (needle: String) with: (new: String)|] =: do
@@ -197,22 +197,22 @@ load = do
 
     [$p|(s: String) left-justify: (length: Integer) with: (c: Char)|] =: do
         s <- getText [$e|s|]
-        Integer l <- here "length" >>= findValue isInteger
-        Char c <- here "c" >>= findValue isChar
+        Integer l <- here "length" >>= findInteger
+        Char c <- here "c" >>= findChar
 
         return (String (T.justifyLeft (fromIntegral l) c s))
 
     [$p|(s: String) right-justify: (length: Integer) with: (c: Char)|] =: do
         s <- getText [$e|s|]
-        Integer l <- here "length" >>= findValue isInteger
-        Char c <- here "c" >>= findValue isChar
+        Integer l <- here "length" >>= findInteger
+        Char c <- here "c" >>= findChar
 
         return (String (T.justifyRight (fromIntegral l) c s))
 
     [$p|(s: String) center: (length: Integer) with: (c: Char)|] =: do
         s <- getText [$e|s|]
-        Integer l <- here "length" >>= findValue isInteger
-        Char c <- here "c" >>= findValue isChar
+        Integer l <- here "length" >>= findInteger
+        Char c <- here "c" >>= findChar
 
         return (String (T.center (fromIntegral l) c s))
 
@@ -226,15 +226,15 @@ load = do
         getText [$e|s|] >>= return . String . T.stripEnd
 
     [$p|(s: String) strip: (c: Char)|] =: do
-        Char c <- here "c" >>= findValue isChar
+        Char c <- here "c" >>= findChar
         getText [$e|s|] >>= return . String . T.dropAround (== c)
 
     [$p|(s: String) strip-start: (c: Char)|] =: do
-        Char c <- here "c" >>= findValue isChar
+        Char c <- here "c" >>= findChar
         getText [$e|s|] >>= return . String . T.dropWhile (== c)
 
     [$p|(s: String) strip-end: (c: Char)|] =: do
-        Char c <- here "c" >>= findValue isChar
+        Char c <- here "c" >>= findChar
         getText [$e|s|] >>= return . String . T.dropWhileEnd (== c)
 
     [$p|(s: String) all?: b|] =::: [$e|(s as: List) all?: b|]
@@ -242,7 +242,7 @@ load = do
 
     [$p|(s: String) contains?: (c: Char)|] =: do
         t <- getText [$e|s|]
-        Char c <- here "c" >>= findValue isChar
+        Char c <- here "c" >>= findChar
         bool (T.any (== c) t)
 
     [$p|(c: Char) in?: (s: String)|] =::: [$e|s contains?: c|]

@@ -85,6 +85,7 @@ data AtomoError
     | ParticleArity Int Int
     | BlockArity Int Int
     | NoExpressions
+    | ValueNotFound String Value
     deriving Show
 
 -- pattern-matches

@@ -548,16 +548,13 @@ pat =:: v = define pat (Primitive Nothing v)
 (=:::) :: Pattern -> Expr -> VM ()
 pat =::: e = define pat e
 
--- | find a value from an object, searching its delegates
-findValue :: (Value -> Bool) -> Value -> VM Value
-findValue t v | t v = return v
-findValue t v = findValue' t v >>= maybe die return
+-- | find a value from an object, searching its delegates, throwing
+-- a descriptive error if it is not found
+findValue :: String -> (Value -> Bool) -> Value -> VM Value
+findValue _ t v | t v = return v
+findValue d t v = findValue' t v >>= maybe die return
   where
-    die = throwError . ErrorMsg . concat $
-        [ "could not find a value in "
-        , show (pretty v)
-        , " satisfying the given predicate"
-        ]
+    die = throwError (ValueNotFound d v)
 
 -- | findValue, but returning Nothing instead of failing
 findValue' :: (Value -> Bool) -> Value -> VM (Maybe Value)
@@ -574,18 +571,70 @@ findValue' t (Reference r) = do
             Just v -> return (Just v)
 findValue' _ _ = return Nothing
 
+findBlock :: Value -> VM Value
+{-# INLINE findBlock #-}
+findBlock = findValue "Block" isBlock
+
+findChar :: Value -> VM Value
+{-# INLINE findChar #-}
+findChar = findValue "Char" isChar
+
+findDouble :: Value -> VM Value
+{-# INLINE findDouble #-}
+findDouble = findValue "Double" isDouble
+
+findExpression :: Value -> VM Value
+{-# INLINE findExpression #-}
+findExpression = findValue "Expression" isExpression
+
+findHaskell :: Value -> VM Value
+{-# INLINE findHaskell #-}
+findHaskell = findValue "Haskell" isHaskell
+
+findInteger :: Value -> VM Value
+{-# INLINE findInteger #-}
+findInteger = findValue "Integer" isInteger
+
+findList :: Value -> VM Value
+{-# INLINE findList #-}
+findList = findValue "List" isList
+
+findMessage :: Value -> VM Value
+{-# INLINE findMessage #-}
+findMessage = findValue "Message" isMessage
+
+findParticle :: Value -> VM Value
+{-# INLINE findParticle #-}
+findParticle = findValue "Particle" isParticle
+
+findProcess :: Value -> VM Value
+{-# INLINE findProcess #-}
+findProcess = findValue "Process" isProcess
+
+findPattern :: Value -> VM Value
+{-# INLINE findPattern #-}
+findPattern = findValue "Pattern" isPattern
+
+findReference :: Value -> VM Value
+{-# INLINE findReference #-}
+findReference = findValue "Reference" isReference
+
+findString :: Value -> VM Value
+{-# INLINE findString #-}
+findString = findValue "String" isString
+
 getString :: Expr -> VM String
-getString e = eval e >>= fmap fromString . findValue isString
+getString e = eval e >>= fmap fromString . findString
 
 getText :: Expr -> VM T.Text
-getText e = eval e >>= findValue isString >>= \(String t) -> return t
+getText e = eval e >>= findString >>= \(String t) -> return t
 
 getList :: Expr -> VM [Value]
 getList = fmap V.toList . getVector
 
 getVector :: Expr -> VM (V.Vector Value)
 getVector e = eval e
-    >>= findValue isList
+    >>= findList
     >>= \(List v) -> liftIO . readIORef $ v
 
 here :: String -> VM Value

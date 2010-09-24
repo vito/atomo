@@ -10,12 +10,12 @@ import Atomo.Method
 load :: VM ()
 load = do
     [$p|(e: Expression) as: Pattern|] =: do
-        Expression e <- here "e" >>= findValue isExpression
+        Expression e <- here "e" >>= findExpression
         p <- toPattern e
         return (Pattern p)
 
     [$p|(p: Pattern) matches?: v|] =: do
-        Pattern p <- here "p" >>= findValue isPattern
+        Pattern p <- here "p" >>= findPattern
         v <- here "v"
         ids <- lift (gets primitives)
 

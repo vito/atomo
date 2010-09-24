@@ -20,7 +20,7 @@ load = do
         getVector [$e|l|] >>= bool . V.null
 
     [$p|(l: List) at: (n: Integer)|] =: do
-        Integer n <- here "n" >>= findValue isInteger
+        Integer n <- here "n" >>= findInteger
         vs <- getVector [$e|l|]
         return (vs V.! fromIntegral n)
 
@@ -32,8 +32,8 @@ load = do
 
     [$p|(l: List) from: (s: Integer) to: (e: Integer)|] =: do
         vs <- getVector [$e|l|]
-        Integer start <- here "s" >>= findValue isInteger
-        Integer end <- here "e" >>= findValue isInteger
+        Integer start <- here "s" >>= findInteger
+        Integer end <- here "e" >>= findInteger
         list' (V.slice (fromIntegral start) (fromIntegral end) vs)
 
     [$p|(l: List) init|] =:
@@ -44,22 +44,22 @@ load = do
 
     [$p|(l: List) take: (n: Integer)|] =: do
         vs <- getVector [$e|l|]
-        Integer n <- here "n" >>= findValue isInteger
+        Integer n <- here "n" >>= findInteger
         list' (V.take (fromIntegral n) vs)
 
     [$p|(l: List) drop: (n: Integer)|] =: do
         vs <- getVector [$e|l|]
-        Integer n <- here "n" >>= findValue isInteger
+        Integer n <- here "n" >>= findInteger
         list' (V.drop (fromIntegral n) vs)
 
     [$p|v replicate: (n: Integer)|] =: do
         v <- here "v"
-        Integer n <- here "n" >>= findValue isInteger
+        Integer n <- here "n" >>= findInteger
         list' (V.replicate (fromIntegral n) v)
 
     [$p|b repeat: (n: Integer)|] =: do
         b <- here "b"
-        Integer n <- here "n" >>= findValue isInteger
+        Integer n <- here "n" >>= findInteger
         vs <- V.replicateM (fromIntegral n) $
             dispatch (single "call" b)
         list' vs
@@ -190,25 +190,25 @@ load = do
     -- TODO: find
 
     [$p|(x: Integer) .. (y: Integer)|] =: do
-        Integer x <- here "x" >>= findValue isInteger
-        Integer y <- here "y" >>= findValue isInteger
+        Integer x <- here "x" >>= findInteger
+        Integer y <- here "y" >>= findInteger
 
         if x < y
             then dispatch (keyword ["up-to"] [Integer x, Integer y])
             else dispatch (keyword ["down-to"] [Integer x, Integer y])
 
     [$p|(x: Integer) ... (y: Integer)|] =: do
-        Integer x <- here "x" >>= findValue isInteger
-        Integer y <- here "y" >>= findValue isInteger
+        Integer x <- here "x" >>= findInteger
+        Integer y <- here "y" >>= findInteger
 
         if x < y
             then dispatch (keyword ["up-to"] [Integer x, Integer (y - 1)])
             else dispatch (keyword ["down-to"] [Integer x, Integer (y + 1)])
 
     [$p|(x: Integer) to: (y: Integer) by: (d: Integer)|] =: do
-        Integer x <- here "x" >>= findValue isInteger
-        Integer y <- here "y" >>= findValue isInteger
-        Integer d <- here "d" >>= findValue isInteger
+        Integer x <- here "x" >>= findInteger
+        Integer y <- here "y" >>= findInteger
+        Integer d <- here "d" >>= findInteger
 
         list' $ V.generate
             (fromIntegral $ abs ((y - x) `div` d) + 1)
@@ -219,10 +219,10 @@ load = do
 
     -- destructive update
     [$p|(l: List) at: (n: Integer) put: v|] =: do
-        List l <- here "l" >>= findValue isList
+        List l <- here "l" >>= findList
         vs <- getVector [$e|l|]
 
-        Integer n <- here "n" >>= findValue isInteger
+        Integer n <- here "n" >>= findInteger
         v <- here "v"
 
         liftIO . writeIORef l $ vs V.// [(fromIntegral n, v)]
@@ -239,7 +239,7 @@ load = do
     [$p|v >> (l: List)|] =::: [$e|l left-push: v|]
 
     [$p|(l: List) push: v|] =: do
-        List l <- here "l" >>= findValue isList
+        List l <- here "l" >>= findList
         vs <- getVector [$e|l|]
         v <- here "v"
 
@@ -248,7 +248,7 @@ load = do
         return (List l)
 
     [$p|(l: List) left-push: v|] =: do
-        List l <- here "l" >>= findValue isList
+        List l <- here "l" >>= findList
         vs <- getVector [$e|l|]
         v <- here "v"
 

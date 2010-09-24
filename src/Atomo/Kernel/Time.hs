@@ -15,12 +15,12 @@ load = do
         fmap (Double . fromRational . toRational) (liftIO getPOSIXTime)
 
     [$p|Timer sleep: (n: Integer)|] =: do
-        Integer n <- here "n" >>= findValue isInteger
+        Integer n <- here "n" >>= findInteger
         liftIO (sleepFor n)
         return (particle "ok")
 
     [$p|Timer sleep: (d: Double)|] =: do
-        Double d <- here "d" >>= findValue isDouble
+        Double d <- here "d" >>= findDouble
         liftIO (threadDelay (floor d))
         return (particle "ok")
 

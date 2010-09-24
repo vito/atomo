@@ -34,7 +34,7 @@ load = do
     [$p|Port new: (fn: String)|] =::: [$e|Port new: fn mode: @read-write|]
     [$p|Port new: (fn: String) mode: (m: Particle)|] =: do
         fn <- getString [$e|fn|]
-        Particle m <- here "m" >>= findValue isParticle
+        Particle m <- here "m" >>= findParticle
 
         hdl <- case m of
             PMSingle "read" ->
@@ -55,7 +55,7 @@ load = do
         x <- here "x"
         hdl <- getHandle [$e|p handle|]
 
-        String s <- eval [$e|x as: String|] >>= findValue isString
+        String s <- eval [$e|x as: String|] >>= findString
 
         liftIO (TIO.hPutStrLn hdl s)
         liftIO (hFlush hdl)
@@ -66,7 +66,7 @@ load = do
         x <- here "x"
         hdl <- getHandle [$e|p handle|]
 
-        String s <- eval [$e|x as: String|] >>= findValue isString
+        String s <- eval [$e|x as: String|] >>= findString
 
         liftIO (TIO.hPutStr hdl s)
         liftIO (hFlush hdl)

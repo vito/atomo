@@ -24,128 +24,128 @@ load = do
     [$p|(a: Object) /= (b: Object)|] =::: [$e|(a == b) not|]
 
     [$p|(a: Char) < (b: Char)|] =: do
-        Char a <- here "a" >>= findValue isChar
-        Char b <- here "b" >>= findValue isChar
+        Char a <- here "a" >>= findChar
+        Char b <- here "b" >>= findChar
         bool (a < b)
 
     [$p|(a: Integer) < (b: Integer)|] =: do
-        Integer a <- here "a" >>= findValue isInteger
-        Integer b <- here "b" >>= findValue isInteger
+        Integer a <- here "a" >>= findInteger
+        Integer b <- here "b" >>= findInteger
         bool (a < b)
 
     [$p|(a: Integer) < (b: Double)|] =: do
-        Integer a <- here "a" >>= findValue isInteger
-        Double b <- here "b" >>= findValue isDouble
+        Integer a <- here "a" >>= findInteger
+        Double b <- here "b" >>= findDouble
         bool (fromIntegral a < b)
 
     [$p|(a: Double) < (b: Integer)|] =: do
-        Double a <- here "a" >>= findValue isDouble
-        Integer b <- here "b" >>= findValue isInteger
+        Double a <- here "a" >>= findDouble
+        Integer b <- here "b" >>= findInteger
         bool (a < fromIntegral b)
 
     [$p|(a: Double) < (b: Double)|] =: do
-        Double a <- here "a" >>= findValue isDouble
-        Double b <- here "b" >>= findValue isDouble
+        Double a <- here "a" >>= findDouble
+        Double b <- here "b" >>= findDouble
         bool (a < b)
 
     [$p|(a: Char) > (b: Char)|] =: do
-        Char a <- here "a" >>= findValue isChar
-        Char b <- here "b" >>= findValue isChar
+        Char a <- here "a" >>= findChar
+        Char b <- here "b" >>= findChar
         bool (a > b)
 
     [$p|(a: Integer) > (b: Integer)|] =: do
-        Integer a <- here "a" >>= findValue isInteger
-        Integer b <- here "b" >>= findValue isInteger
+        Integer a <- here "a" >>= findInteger
+        Integer b <- here "b" >>= findInteger
         bool (a > b)
 
     [$p|(a: Integer) > (b: Double)|] =: do
-        Integer a <- here "a" >>= findValue isInteger
-        Double b <- here "b" >>= findValue isDouble
+        Integer a <- here "a" >>= findInteger
+        Double b <- here "b" >>= findDouble
         bool (fromIntegral a > b)
 
     [$p|(a: Double) > (b: Integer)|] =: do
-        Double a <- here "a" >>= findValue isDouble
-        Integer b <- here "b" >>= findValue isInteger
+        Double a <- here "a" >>= findDouble
+        Integer b <- here "b" >>= findInteger
         bool (a > fromIntegral b)
 
     [$p|(a: Double) > (b: Double)|] =: do
-        Double a <- here "a" >>= findValue isDouble
-        Double b <- here "b" >>= findValue isDouble
+        Double a <- here "a" >>= findDouble
+        Double b <- here "b" >>= findDouble
         bool (a > b)
 
     [$p|(a: Char) <= (b: Char)|] =: do
-        Char a <- here "a" >>= findValue isChar
-        Char b <- here "b" >>= findValue isChar
+        Char a <- here "a" >>= findChar
+        Char b <- here "b" >>= findChar
         bool (a <= b)
 
     [$p|(a: Integer) <= (b: Integer)|] =: do
-        Integer a <- here "a" >>= findValue isInteger
-        Integer b <- here "b" >>= findValue isInteger
+        Integer a <- here "a" >>= findInteger
+        Integer b <- here "b" >>= findInteger
         bool (a <= b)
 
     [$p|(a: Integer) <= (b: Double)|] =: do
-        Integer a <- here "a" >>= findValue isInteger
-        Double b <- here "b" >>= findValue isDouble
+        Integer a <- here "a" >>= findInteger
+        Double b <- here "b" >>= findDouble
         bool (fromIntegral a <= b)
 
     [$p|(a: Double) <= (b: Integer)|] =: do
-        Double a <- here "a" >>= findValue isDouble
-        Integer b <- here "b" >>= findValue isInteger
+        Double a <- here "a" >>= findDouble
+        Integer b <- here "b" >>= findInteger
         bool (a <= fromIntegral b)
 
     [$p|(a: Double) <= (b: Double)|] =: do
-        Double a <- here "a" >>= findValue isDouble
-        Double b <- here "b" >>= findValue isDouble
+        Double a <- here "a" >>= findDouble
+        Double b <- here "b" >>= findDouble
         bool (a <= b)
 
     [$p|(a: Char) >= (b: Char)|] =: do
-        Char a <- here "a" >>= findValue isChar
-        Char b <- here "b" >>= findValue isChar
+        Char a <- here "a" >>= findChar
+        Char b <- here "b" >>= findChar
         bool (a >= b)
 
     [$p|(a: Integer) >= (b: Integer)|] =: do
-        Integer a <- here "a" >>= findValue isInteger
-        Integer b <- here "b" >>= findValue isInteger
+        Integer a <- here "a" >>= findInteger
+        Integer b <- here "b" >>= findInteger
         bool (a >= b)
 
     [$p|(a: Integer) >= (b: Double)|] =: do
-        Integer a <- here "a" >>= findValue isInteger
-        Double b <- here "b" >>= findValue isDouble
+        Integer a <- here "a" >>= findInteger
+        Double b <- here "b" >>= findDouble
         bool (fromIntegral a >= b)
 
     [$p|(a: Double) >= (b: Integer)|] =: do
-        Double a <- here "a" >>= findValue isDouble
-        Integer b <- here "b" >>= findValue isInteger
+        Double a <- here "a" >>= findDouble
+        Integer b <- here "b" >>= findInteger
         bool (a >= fromIntegral b)
 
     [$p|(a: Double) >= (b: Double)|] =: do
-        Double a <- here "a" >>= findValue isDouble
-        Double b <- here "b" >>= findValue isDouble
+        Double a <- here "a" >>= findDouble
+        Double b <- here "b" >>= findDouble
         bool (a >= b)
 
     [$p|(a: Char) == (b: Char)|] =: do
-        Char a <- here "a" >>= findValue isChar
-        Char b <- here "b" >>= findValue isChar
+        Char a <- here "a" >>= findChar
+        Char b <- here "b" >>= findChar
         bool (a == b)
 
     [$p|(a: Integer) == (b: Integer)|] =: do
-        Integer a <- here "a" >>= findValue isInteger
-        Integer b <- here "b" >>= findValue isInteger
+        Integer a <- here "a" >>= findInteger
+        Integer b <- here "b" >>= findInteger
         bool (a == b)
 
     [$p|(a: Integer) == (b: Double)|] =: do
-        Integer a <- here "a" >>= findValue isInteger
-        Double b <- here "b" >>= findValue isDouble
+        Integer a <- here "a" >>= findInteger
+        Double b <- here "b" >>= findDouble
         bool (fromIntegral a == b)
 
     [$p|(a: Double) == (b: Integer)|] =: do
-        Double a <- here "a" >>= findValue isDouble
-        Integer b <- here "b" >>= findValue isInteger
+        Double a <- here "a" >>= findDouble
+        Integer b <- here "b" >>= findInteger
         bool (a == fromIntegral b)
 
     [$p|(a: Double) == (b: Double)|] =: do
-        Double a <- here "a" >>= findValue isDouble
-        Double b <- here "b" >>= findValue isDouble
+        Double a <- here "a" >>= findDouble
+        Double b <- here "b" >>= findDouble
         bool (a == b)
 
     [$p|(a: List) == (b: List)|] =: do
@@ -160,13 +160,13 @@ load = do
             else bool False
 
     [$p|(a: Process) == (b: Process)|] =: do
-        Process _ a <- here "a" >>= findValue isProcess
-        Process _ b <- here "b" >>= findValue isProcess
+        Process _ a <- here "a" >>= findProcess
+        Process _ b <- here "b" >>= findProcess
         bool (a == b)
 
     [$p|(a: Message) == (b: Message)|] =: do
-        Message a <- here "a" >>= findValue isMessage
-        Message b <- here "b" >>= findValue isMessage
+        Message a <- here "a" >>= findMessage
+        Message b <- here "b" >>= findMessage
 
         true <- bool True
         case (a, b) of
@@ -180,8 +180,8 @@ load = do
             _ -> bool False
 
     [$p|(a: Particle) == (b: Particle)|] =: do
-        Particle a <- here "a" >>= findValue isParticle
-        Particle b <- here "b" >>= findValue isParticle
+        Particle a <- here "a" >>= findParticle
+        Particle b <- here "b" >>= findParticle
 
         true <- bool True
         case (a, b) of

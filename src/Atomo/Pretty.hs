@@ -205,6 +205,8 @@ instance Pretty AtomoError where
             , "given"
             ]
     prettyFrom _ NoExpressions = text "no expressions to evaluate"
+    prettyFrom _ (ValueNotFound d v) =
+        text ("could not find a " ++ d ++ " in") <+> pretty v
 
 
 instance Pretty Delegates where

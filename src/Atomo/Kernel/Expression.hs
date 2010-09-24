@@ -4,22 +4,21 @@ module Atomo.Kernel.Expression (load) where
 
 import Atomo.Environment
 import Atomo.Haskell
-import Atomo.Pretty
 
 
 load :: VM ()
 load = do
     [$p|(e: Expression) evaluate|] =: do
-        Expression e <- here "e" >>= findValue isExpression
+        Expression e <- here "e" >>= findExpression
         eval e
 
     [$p|(e: Expression) evaluate-in: t|] =: do
-        Expression e <- here "e" >>= findValue isExpression
+        Expression e <- here "e" >>= findExpression
         t <- here "t"
         withTop t (eval e)
 
     [$p|(e: Expression) type|] =: do
-        Expression e <- here "e" >>= findValue isExpression
+        Expression e <- here "e" >>= findExpression
         case e of
             Dispatch {} -> return (particle "dispatch")
             Define {} -> return (particle "define")
@@ -34,23 +33,23 @@ load = do
             EParticle {} -> return (particle "particle")
 
     [$p|(e: Expression) dispatch-type|] =: do
-        Expression (Dispatch _ d) <- here "e" >>= findValue isExpression
+        Expression (Dispatch _ d) <- here "e" >>= findExpression
         case d of
             ESingle {} -> return (particle "single")
             EKeyword {} -> return (particle "keyword")
 
     [$p|(e: Expression) particle-type|] =: do
-        Expression (EParticle _ p) <- here "e" >>= findValue isExpression
+        Expression (EParticle _ p) <- here "e" >>= findExpression
         case p of
             EPMKeyword {} -> return (particle "keyword")
             EPMSingle {} -> return (particle "single")
 
     [$p|(e: Expression) target|] =: do
-        Expression (Dispatch _ (ESingle { emTarget = t })) <- here "e" >>= findValue isExpression
+        Expression (Dispatch _ (ESingle { emTarget = t })) <- here "e" >>= findExpression
         return (Expression t)
 
     [$p|(e: Expression) particle|] =: do
-        Expression (Dispatch _ em) <- here "e" >>= findValue isExpression
+        Expression (Dispatch _ em) <- here "e" >>= findExpression
 
         case em of
             EKeyword { emNames = ns } ->
@@ -58,38 +57,38 @@ load = do
             ESingle { emName = n } -> return (particle n)
 
     [$p|(e: Expression) targets|] =: do
-        Expression (Dispatch _ (EKeyword { emTargets = vs })) <- here "e" >>= findValue isExpression
+        Expression (Dispatch _ (EKeyword { emTargets = vs })) <- here "e" >>= findExpression
         list (map Expression vs)
 
     [$p|(e: Expression) name|] =: do
-        Expression (EParticle _ (EPMSingle n)) <- here "e" >>= findValue isExpression
+        Expression (EParticle _ (EPMSingle n)) <- here "e" >>= findExpression
         return (string n)
 
     [$p|(e: Expression) names|] =: do
-        Expression (EParticle _ (EPMKeyword ns _)) <- here "e" >>= findValue isExpression
+        Expression (EParticle _ (EPMKeyword ns _)) <- here "e" >>= findExpression
         list (map string ns)
 
     [$p|(e: Expression) values|] =: do
-        Expression (EParticle _ (EPMKeyword _ mes)) <- here "e" >>= findValue isExpression
+        Expression (EParticle _ (EPMKeyword _ mes)) <- here "e" >>= findExpression
         list $
             map
                 (maybe (particle "none") (keyParticle ["ok"] . ([Nothing] ++) . (:[]). Just . Expression))
                 mes
 
     [$p|(e: Expression) contents|] =: do
-        Expression (EList _ es) <- here "e" >>= findValue isExpression
+        Expression (EList _ es) <- here "e" >>= findExpression
         list (map Expression es)
 
     [$p|(e: Expression) pattern|] =: do
-        Expression e <- here "e" >>= findValue isExpression
+        Expression e <- here "e" >>= findExpression
         case e of
             Set { ePattern = p } -> return (Pattern p)
             Define { ePattern = p } -> return (Pattern p)
-            _ -> throwError $ ErrorMsg $ "no @pattern for " ++ show (pretty e)
+            _ -> raise ["no-pattern-for"] [Expression e]
 
     [$p|(e: Expression) expression|] =: do
-        Expression e <- here "e" >>= findValue isExpression
+        Expression e <- here "e" >>= findExpression
         case e of
             Set { eExpr = e } -> return (Expression e)
             Define { eExpr = e } -> return (Expression e)
-            _ -> throwError $ ErrorMsg $ "no @expression for " ++ show (pretty (Expression e))
+            _ -> raise ["no-expression-for"] [Expression e]

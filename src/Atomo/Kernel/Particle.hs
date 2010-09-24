@@ -9,7 +9,7 @@ import Atomo.Haskell
 load :: VM ()
 load = do
     [$p|(p: Particle) call: (l: List)|] =: do
-        Particle p <- here "p" >>= findValue isParticle
+        Particle p <- here "p" >>= findParticle
         vs <- getList [$e|l|]
 
         case p of
@@ -25,22 +25,22 @@ load = do
                     else dispatch (single n (head vs))
 
     [$p|(p: Particle) name|] =: do
-        Particle (PMSingle n) <- here "p" >>= findValue isParticle
+        Particle (PMSingle n) <- here "p" >>= findParticle
         return (string n)
 
     [$p|(p: Particle) names|] =: do
-        Particle (PMKeyword ns _) <- here "p" >>= findValue isParticle
+        Particle (PMKeyword ns _) <- here "p" >>= findParticle
         list (map string ns)
 
     [$p|(p: Particle) values|] =: do
-        (Particle (PMKeyword _ mvs)) <- here "p" >>= findValue isParticle
+        (Particle (PMKeyword _ mvs)) <- here "p" >>= findParticle
         list $
             map
                 (maybe (particle "none") (keyParticleN ["ok"] . (:[])))
                 mvs
 
     [$p|(p: Particle) type|] =: do
-        Particle p <- here "p" >>= findValue isParticle
+        Particle p <- here "p" >>= findParticle
         case p of
             PMKeyword {} -> return (particle "keyword")
             PMSingle {} -> return (particle "single")
