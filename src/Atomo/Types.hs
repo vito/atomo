@@ -84,6 +84,7 @@ data AtomoError
     | FileNotFound String
     | ParticleArity Int Int
     | BlockArity Int Int
+    | NoExpressions
     deriving Show
 
 -- pattern-matches

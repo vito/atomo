@@ -62,3 +62,4 @@ asValue (BlockArity e' g) =
     keyParticleN
         ["block-expected", "given"]
         [Integer (fromIntegral e'), Integer (fromIntegral g)]
+asValue NoExpressions = particle "no-expressions"

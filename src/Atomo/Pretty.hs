@@ -204,6 +204,7 @@ instance Pretty AtomoError where
             , show g
             , "given"
             ]
+    prettyFrom _ NoExpressions = text "no expressions to evaluate"
 
 
 instance Pretty Delegates where
