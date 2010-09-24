@@ -309,6 +309,14 @@ keyParticleN :: [String] -> [Value] -> Value
 {-# INLINE keyParticleN #-}
 keyParticleN ns vs = keyParticle ns (Nothing:map Just vs)
 
+raise :: [String] -> [Value] -> VM a
+{-# INLINE raise #-}
+raise ns vs = throwError . ValueError $ keyParticleN ns vs
+
+raise' :: String -> VM a
+{-# INLINE raise' #-}
+raise' = throwError . ValueError . particle
+
 string :: String -> Value
 {-# INLINE string #-}
 string = String . T.pack
