@@ -556,7 +556,7 @@ findValue t v = findValue' t v >>= maybe die return
     die = throwError . ErrorMsg . concat $
         [ "could not find a value in "
         , show (pretty v)
-        , " satisfying the predecate"
+        , " satisfying the given predicate"
         ]
 
 -- | findValue, but returning Nothing instead of failing

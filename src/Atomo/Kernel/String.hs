@@ -18,7 +18,7 @@ load = do
 
         if all isChar vs
             then return $ string (map (\(Char c) -> c) vs)
-            else throwError $ ErrorMsg "@to-string - list must contain only Chars"
+            else raise' "list-not-homogenous"
 
     [$p|(c: Char) singleton|] =: do
         Char c <- here "c" >>= findValue isChar
@@ -35,21 +35,21 @@ load = do
         t <- getText [$e|s|]
         return . Char $ t `T.index` fromIntegral n
 
-    [$p|"" head|] =: throwError (ErrorMsg "head: empty string")
+    [$p|"" head|] =: raise' "empty-string"
     [$p|(s: String) head|] =:
         getText [$e|s|] >>= return . Char . T.head
 
-    [$p|"" last|] =: throwError (ErrorMsg "last: empty string")
+    [$p|"" last|] =: raise' "empty-string"
     [$p|(s: String) last|] =:
         getText [$e|s|] >>= return . Char . T.last
 
     -- TODO: @from:to:
 
-    [$p|"" init|] =: throwError (ErrorMsg "init: empty string")
+    [$p|"" init|] =: raise' "empty-string"
     [$p|(s: String) init|] =:
         getText [$e|s|] >>= return . String . T.init
 
-    [$p|"" tail|] =: throwError (ErrorMsg "tail: empty string")
+    [$p|"" tail|] =: raise' "empty-string"
     [$p|(s: String) tail|] =:
         getText [$e|s|] >>= return . String . T.tail
 

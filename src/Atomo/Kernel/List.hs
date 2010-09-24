@@ -106,6 +106,7 @@ load = do
 
         list' nvs
 
+    [$p|[] reduce: b|] =::: [$e|raise: @empty-list|]
     [$p|(l: List) reduce: b|] =: do
         vs <- getVector [$e|l|]
         b <- here "b"
@@ -123,13 +124,10 @@ load = do
             as <- list [x, acc]
             dispatch (keyword ["call"] [b, as])) v vs
 
+    [$p|[] reduce-right: b|] =::: [$e|raise: @empty-list|]
     [$p|(l: List) reduce-right: b|] =: do
         vs <- getVector [$e|l|]
         b <- here "b"
-
-        if V.null vs
-            then throwError (ErrorMsg "@reduce-right: empty list")
-            else do
 
         foldr1MV (\x acc -> do
             as <- list [x, acc]

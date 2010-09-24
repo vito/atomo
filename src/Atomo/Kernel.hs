@@ -184,12 +184,8 @@ prelude = mapM_ eval [$es|
 
 joinWith :: Value -> Value -> [Value] -> VM Value
 joinWith t (Block s ps bes) as
-    | length ps > length as = throwError . ErrorMsg . unwords $
-        [ "block expects"
-        , show (length ps)
-        , "arguments, given"
-        , show (length as)
-        ]
+    | length ps > length as =
+        throwError (BlockArity (length ps) (length as))
     | null as || null ps = do
         case t of
             Reference r -> do

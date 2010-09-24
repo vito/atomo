@@ -87,7 +87,7 @@ load = do
             isPrimitive _ = False
 
         case parsed of
-            [] -> throwError . ErrorMsg $ "impossible: no expressions parsed from input"
+            [] -> raise' "no-expressions-parsed"
             is | all isPrimitive is -> evalAll is
             (i:_) -> return (Expression i)
 
