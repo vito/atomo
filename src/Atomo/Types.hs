@@ -3,9 +3,9 @@ module Atomo.Types where
 
 import Control.Concurrent (ThreadId)
 import Control.Concurrent.Chan
-import Control.Monad (liftM)
 import "monads-fd" Control.Monad.Trans
 import "monads-fd" Control.Monad.Cont
+import "monads-fd" Control.Monad.Error
 import "monads-fd" Control.Monad.State
 import Data.Dynamic
 import Data.Hashable (hash)
@@ -17,7 +17,7 @@ import qualified Data.Text as T
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
 
-type VM = StateT Env (ContT (Either AtomoError Value) IO)
+type VM = ErrorT AtomoError (StateT Env (ContT (Either AtomoError Value) IO))
 
 data Value
     = Block !Value [Pattern] [Expr]
@@ -192,7 +192,6 @@ data Env =
         , stack :: [Expr]
         , call :: Call
         , parserState :: Operators
-        , throw :: (Either AtomoError Value) -> VM Value
         }
 
 -- simple mapping from operator name -> associativity and predence
@@ -241,6 +240,11 @@ instance Eq Value where
     Reference a == Reference b = a == b
     String a == String b = a == b
     _ == _ = False
+
+
+instance Error AtomoError where
+    strMsg = Error . string
+
 
 -- helper synonyms
 type Delegates = [Value]
@@ -295,32 +299,7 @@ startEnv = Env
     , stack = []
     , call = error "call not set"
     , parserState = []
-    , throw = error "no current continuation"
     }
-
-
------------------------------------------------------------------------------
--- Errors -------------------------------------------------------------------
------------------------------------------------------------------------------
-
-throwError :: AtomoError -> VM a
-throwError e = gets throw >>= ($ Left e) >> error "this should not be seen"
-
-catchError :: VM Value -> (AtomoError -> VM Value) -> VM Value
-catchError x f = do
-    p <- gets throw
-
-    r <- callCC $ \here -> do
-        modify (\e -> e { throw = handle here p })
-        x
-
-    modify (\e -> e { throw = p })
-    return r
-  where
-    handle h p (Left e) =
-        modify (\e -> e { throw = p }) >>
-            f e >>= h
-    handle h p (Right v) = h v
 
 
 -----------------------------------------------------------------------------

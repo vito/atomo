@@ -1,7 +1,7 @@
 module Main where
 
-import "monads-fd" Control.Monad.Trans
 import "monads-fd" Control.Monad.Cont
+import "monads-fd" Control.Monad.Error
 import Data.Char (isSpace)
 import Prelude hiding (catch)
 import System.Console.Haskeline
@@ -71,8 +71,8 @@ repl quiet = do
                 repl' (input ++ part) r
             Just expr -> do
                 catchError
-                    (evaluate expr >>= prettyVM >>= liftIO . print >> return (particle "ok"))
-                    (\e -> printError e >> return (particle "ok"))
+                    (evaluate expr >>= prettyVM >>= liftIO . print)
+                    printError
 
                 repl' "" r
 

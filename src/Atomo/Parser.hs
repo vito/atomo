@@ -1,8 +1,6 @@
 module Atomo.Parser where
 
-import Control.Monad (forM_)
-import "monads-fd" Control.Monad.Trans
-import "monads-fd" Control.Monad.Cont
+import "monads-fd" Control.Monad.Error
 import "monads-fd" Control.Monad.State
 import Data.Maybe (fromJust)
 import Text.Parsec

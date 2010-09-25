@@ -1,9 +1,8 @@
 {-# LANGUAGE BangPatterns #-}
 module Atomo.Environment where
 
-import Control.Monad (filterM, forM, forM_)
-import "monads-fd" Control.Monad.Trans
 import "monads-fd" Control.Monad.Cont
+import "monads-fd" Control.Monad.Error
 import "monads-fd" Control.Monad.State
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan
@@ -59,11 +58,7 @@ run x = runWith (initEnv >> x) startEnv
 
 -- | evaluate x with e as the environment
 runWith :: VM Value -> Env -> IO (Either AtomoError Value)
-runWith x e = runContT (evalStateT start e) return
-  where
-    start = callCC $ \c -> do
-        modify (\e -> e { throw = c })
-        fmap Right x
+runWith x e = runContT (evalStateT (runErrorT x) e) return
 
 -- | print an error, including the previous 10 expressions evaluated
 -- with the most recent on the bottom

@@ -2,9 +2,10 @@
 module Atomo.Haskell
     ( module Control.Concurrent
     , module Control.Monad
-    , module Control.Monad.Trans
     , module Control.Monad.Cont
+    , module Control.Monad.Error
     , module Control.Monad.State
+    , module Control.Monad.Trans
     , module Atomo.Types
     , p
     , e
@@ -13,9 +14,10 @@ module Atomo.Haskell
 
 import Control.Concurrent
 import Control.Monad
+import "monads-fd" Control.Monad.Cont (MonadCont(..), ContT(..))
+import "monads-fd" Control.Monad.Error (MonadError(..), ErrorT(..))
+import "monads-fd" Control.Monad.State (MonadState(..), gets, modify)
 import "monads-fd" Control.Monad.Trans
-import "monads-fd" Control.Monad.Cont
-import "monads-fd" Control.Monad.State
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
 import Text.Parsec
