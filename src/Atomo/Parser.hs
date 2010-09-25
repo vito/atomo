@@ -1,9 +1,9 @@
 module Atomo.Parser where
 
 import Control.Monad (forM_)
-import Control.Monad.Trans.Class
-import Control.Monad.Trans.Error
-import Control.Monad.Trans.State
+import "monads-fd" Control.Monad.Trans
+import "monads-fd" Control.Monad.Cont
+import "monads-fd" Control.Monad.State
 import Data.Maybe (fromJust)
 import Text.Parsec
 
@@ -297,9 +297,9 @@ parse p = runParser p [] "<parse>"
 -- | parse input i from source s, maintaining parser state between parses
 continuedParse :: String -> String -> VM [Expr]
 continuedParse i s = do
-    ps <- lift (gets parserState)
+    ps <- gets parserState
     case runParser cparser ps s i of
         Left e -> throwError (ParseError e)
         Right (ps', es) -> do
-            lift . modify $ \e -> e { parserState = ps' }
+            modify $ \e -> e { parserState = ps' }
             return es

@@ -30,6 +30,7 @@ import qualified Atomo.Kernel.Parameter as Parameter
 import qualified Atomo.Kernel.Exception as Exception
 import qualified Atomo.Kernel.Environment as Environment
 import qualified Atomo.Kernel.Eco as Eco
+import qualified Atomo.Kernel.Continuation as Continuation
 
 load :: VM ()
 load = do
@@ -100,7 +101,7 @@ load = do
         t <- here "t"
         fn <- getString [$e|fn|]
 
-        lift . modify $ \s -> s { top = t }
+        modify $ \s -> s { top = t }
 
         loadFile fn
 
@@ -110,7 +111,7 @@ load = do
         t <- here "t"
         fn <- getString [$e|fn|]
 
-        lift . modify $ \s -> s { top = t }
+        modify $ \s -> s { top = t }
 
         requireFile fn
 
@@ -157,6 +158,7 @@ load = do
     Exception.load
     Environment.load
     Eco.load
+    Continuation.load
 
     prelude
 

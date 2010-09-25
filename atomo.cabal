@@ -15,6 +15,8 @@ cabal-version:       >= 1.2
 library
   hs-source-dirs:    src
 
+  extensions:        PackageImports
+
   build-depends:
     base >= 4,
     containers,
@@ -22,13 +24,13 @@ library
     filepath,
     hashable,
     hint,
+    monads-fd,
     parsec >= 3.0.0,
     pretty,
     split,
     template-haskell,
     text,
     time,
-    transformers,
     vector
 
   exposed-modules:
@@ -54,6 +56,7 @@ library
     Atomo.Kernel.Exception,
     Atomo.Kernel.Environment,
     Atomo.Kernel.Eco,
+    Atomo.Kernel.Continuation,
     Atomo.Method,
     Atomo.Parser,
     Atomo.Parser.Base,
@@ -71,6 +74,8 @@ executable atomo
   ghc-options:       -O2 -Wall -threaded -fno-warn-unused-do-bind
                      -funfolding-use-threshold=9999
 
+  extensions:        PackageImports
+
   c-sources:         src/rts.c
 
   build-depends:
@@ -81,6 +86,7 @@ executable atomo
     hashable,
     haskeline,
     hint,
+    monads-fd,
     mtl,
     parsec >= 3.0.0,
     pretty,
@@ -89,5 +95,4 @@ executable atomo
     template-haskell,
     text,
     time,
-    transformers,
     vector

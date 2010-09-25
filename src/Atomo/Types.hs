@@ -4,9 +4,9 @@ module Atomo.Types where
 import Control.Concurrent (ThreadId)
 import Control.Concurrent.Chan
 import Control.Monad (liftM)
-import Control.Monad.IO.Class
-import Control.Monad.Trans.Error
-import Control.Monad.Trans.State
+import "monads-fd" Control.Monad.Trans
+import "monads-fd" Control.Monad.Cont
+import "monads-fd" Control.Monad.State
 import Data.Dynamic
 import Data.Hashable (hash)
 import Data.IORef
@@ -17,11 +17,12 @@ import qualified Data.Text as T
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
 
-type VM = ErrorT AtomoError (StateT Env IO)
+type VM = StateT Env (ContT (Either AtomoError Value) IO)
 
 data Value
     = Block !Value [Pattern] [Expr]
     | Char {-# UNPACK #-} !Char
+    | Continuation Continuation
     | Double {-# UNPACK #-} !Double
     | Expression Expr
     | Haskell Dynamic
@@ -191,6 +192,7 @@ data Env =
         , stack :: [Expr]
         , call :: Call
         , parserState :: Operators
+        , throw :: (Either AtomoError Value) -> VM Value
         }
 
 -- simple mapping from operator name -> associativity and predence
@@ -215,6 +217,7 @@ data IDs =
         , idObject :: ORef -- root object
         , idBlock :: ORef
         , idChar :: ORef
+        , idContinuation :: ORef
         , idDouble :: ORef
         , idExpression :: ORef
         , idInteger :: ORef
@@ -226,10 +229,6 @@ data IDs =
         , idString :: ORef
         }
 
-
-instance Error AtomoError where
-    noMsg = Error (string "")
-    strMsg = Error . string
 
 
 -- a basic Eq instance
@@ -249,6 +248,7 @@ type Channel = Chan Value
 type MethodMap = M.IntMap [Method]
 type ORef = IORef Object
 type VVector = IORef (V.Vector Value)
+type Continuation = Value -> VM Value
 
 instance Show Channel where
     show _ = "Channel"
@@ -258,6 +258,9 @@ instance Show ORef where
 
 instance Show VVector where
     show _ = "VVector"
+
+instance Show Continuation where
+    show _ = "Continuation"
 
 instance Show (VM a) where
     show _ = "VM"
@@ -274,6 +277,7 @@ startEnv = Env
             , idObject = error "idObject not set"
             , idBlock = error "idBlock not set"
             , idChar = error "idChar not set"
+            , idContinuation = error "idContinuation not set"
             , idDouble = error "idDouble not set"
             , idExpression = error "idExpression not set"
             , idInteger = error "idInteger not set"
@@ -291,7 +295,33 @@ startEnv = Env
     , stack = []
     , call = error "call not set"
     , parserState = []
+    , throw = error "no current continuation"
     }
+
+
+-----------------------------------------------------------------------------
+-- Errors -------------------------------------------------------------------
+-----------------------------------------------------------------------------
+
+throwError :: AtomoError -> VM a
+throwError e = gets throw >>= ($ Left e) >> error "this should not be seen"
+
+catchError :: VM Value -> (AtomoError -> VM Value) -> VM Value
+catchError x f = do
+    p <- gets throw
+
+    r <- callCC $ \here -> do
+        modify (\e -> e { throw = handle here p })
+        x
+
+    modify (\e -> e { throw = p })
+    return r
+  where
+    handle h p (Left e) =
+        modify (\e -> e { throw = p }) >>
+            f e >>= h
+    handle h p (Right v) = h v
+
 
 -----------------------------------------------------------------------------
 -- Helpers ------------------------------------------------------------------
@@ -374,6 +404,11 @@ isBlock _ = False
 isChar :: Value -> Bool
 isChar (Char _) = True
 isChar _ = False
+
+-- | Is a value a Continuation?
+isContinuation :: Value -> Bool
+isContinuation (Continuation _) = True
+isContinuation _ = False
 
 -- | Is a value a Double?
 isDouble :: Value -> Bool

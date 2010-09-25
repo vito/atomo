@@ -36,6 +36,7 @@ instance Pretty Value where
       where
         exprs = sep . punctuate (text ";") $ map pretty es
     prettyFrom _ (Char c) = text $ show c
+    prettyFrom _ (Continuation _) = internal "continuation" empty
     prettyFrom _ (Double d) = double d
     prettyFrom _ (Expression e) = internal "expression" $ pretty e
     prettyFrom _ (Haskell v) = internal "haskell" $ text (show v)

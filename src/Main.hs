@@ -1,7 +1,7 @@
 module Main where
 
-import Control.Monad.IO.Class
-import Control.Monad.Trans.Error
+import "monads-fd" Control.Monad.Trans
+import "monads-fd" Control.Monad.Cont
 import Data.Char (isSpace)
 import Prelude hiding (catch)
 import System.Console.Haskeline
@@ -27,6 +27,7 @@ main = do
             r <- evalAll ast
             p <- prettyVM r
             liftIO (print p)
+            return (particle "ok")
 
         ("-s":expr:_) -> exec $ do
             ast <- continuedParse expr "<input>"
@@ -50,7 +51,7 @@ main = do
             , "\tatomo FILE\texecute FILE"
             ]
 
-repl :: Bool -> VM ()
+repl :: Bool -> VM Value
 repl quiet = do
     home <- liftIO getHomeDirectory
     repl' "" $ runInput home . withInterrupt
@@ -70,8 +71,8 @@ repl quiet = do
                 repl' (input ++ part) r
             Just expr -> do
                 catchError
-                    (evaluate expr >>= prettyVM >>= liftIO . print)
-                    printError
+                    (evaluate expr >>= prettyVM >>= liftIO . print >> return (particle "ok"))
+                    (\e -> printError e >> return (particle "ok"))
 
                 repl' "" r
 
@@ -91,7 +92,7 @@ repl quiet = do
             getInputChar "really quit? (y/n) "
 
         case r of
-            Just 'y' -> return ()
+            Just 'y' -> return (particle "ok")
             Just 'n' -> continue
             _ -> askQuit continue
 

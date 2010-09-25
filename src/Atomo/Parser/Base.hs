@@ -2,7 +2,7 @@
 {-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.Parser.Base where
 
-import Control.Monad.Identity
+import "mtl" Control.Monad.Identity
 import Data.Char
 import Data.List (nub, sort, (\\))
 import Text.Parsec

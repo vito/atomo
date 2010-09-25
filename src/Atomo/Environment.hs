@@ -2,10 +2,9 @@
 module Atomo.Environment where
 
 import Control.Monad (filterM, forM, forM_)
-import Control.Monad.IO.Class
-import Control.Monad.Trans.Class
-import Control.Monad.Trans.Error
-import Control.Monad.Trans.State
+import "monads-fd" Control.Monad.Trans
+import "monads-fd" Control.Monad.Cont
+import "monads-fd" Control.Monad.State
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan
 import Data.IORef
@@ -33,16 +32,16 @@ import {-# SOURCE #-} qualified Atomo.Kernel as Kernel
 
 -- | execute an action in a new thread, initializing the environment and
 -- printing a traceback on error
-exec :: VM () -> IO ()
+exec :: VM Value -> IO ()
 exec x = execWith (initEnv >> x) startEnv
 
 -- | execute an action in a new thread, printing a traceback on error
-execWith :: VM () -> Env -> IO ()
+execWith :: VM Value -> Env -> IO ()
 execWith x e = do
     haltChan <- newChan
 
     forkIO $ do
-        runWith (go x >> lift (gets halt) >>= liftIO) e
+        runWith (go x >> gets halt >>= liftIO >> return (particle "ok")) e
             { halt = writeChan haltChan ()
             }
 
@@ -51,20 +50,20 @@ execWith x e = do
     readChan haltChan
 
 -- | execute x, printing an error if there is one
-go :: VM () -> VM ()
-go x = do
-    res <- (fmap Right x) `catchError` (return . Left)
-    case res of
-        Left err -> printError err
-        Right _ -> return ()
+go :: VM Value -> VM Value
+go x = catchError x (\e -> printError e >> return (particle "ok"))
 
 -- | execute x, initializing the environment with initEnv
-run :: VM a -> IO (Either AtomoError a)
+run :: VM Value -> IO (Either AtomoError Value)
 run x = runWith (initEnv >> x) startEnv
 
 -- | evaluate x with e as the environment
-runWith :: VM a -> Env -> IO (Either AtomoError a)
-runWith x e = evalStateT (runErrorT x) e
+runWith :: VM Value -> Env -> IO (Either AtomoError Value)
+runWith x e = runContT (evalStateT start e) return
+  where
+    start = callCC $ \c -> do
+        modify (\e -> e { throw = c })
+        fmap Right x
 
 -- | print an error, including the previous 10 expressions evaluated
 -- with the most recent on the bottom
@@ -83,17 +82,17 @@ printError err = do
     liftIO (putStrLn "")
     liftIO . print . pretty $ err
 
-    lift . modify $ \s -> s { stack = [] }
+    modify $ \s -> s { stack = [] }
   where
-    traceback = fmap (reverse . take 10 . reverse) (lift $ gets stack)
+    traceback = fmap (reverse . take 10 . reverse) (gets stack)
 
 -- | spawn a process to execute x. returns the Process.
-spawn :: VM a -> VM Value
+spawn :: VM Value -> VM Value
 spawn x = do
-    e <- lift get
+    e <- get
     chan <- liftIO newChan
     tid <- liftIO . forkIO $ do
-        runWith (go (x >> return ())) (e { channel = chan })
+        runWith (go x >> return (particle "ok")) (e { channel = chan })
         return ()
 
     return (Process chan tid)
@@ -111,29 +110,30 @@ initEnv = do
 
     -- top scope is a proto delegating to the root object
     topObj <- newObject $ \o -> o { oDelegates = [object] }
-    lift . modify $ \e -> e { top = topObj }
+    modify $ \e -> e { top = topObj }
 
     -- define Object as the root object
     define (psingle "Object" PSelf) (Primitive Nothing object)
-    lift . modify $ \e -> e
+    modify $ \e -> e
         { primitives = (primitives e) { idObject = rORef object }
         }
 
     -- this thread's channel
     chan <- liftIO newChan
-    lift . modify $ \e -> e { channel = chan }
+    modify $ \e -> e { channel = chan }
 
     -- define primitive objects
     forM_ primObjs $ \(n, f) -> do
         o <- newObject $ \o -> o { oDelegates = [object] }
         define (psingle n PSelf) (Primitive Nothing o)
-        lift . modify $ \e -> e { primitives = f (primitives e) (rORef o) }
+        modify $ \e -> e { primitives = f (primitives e) (rORef o) }
 
     Kernel.load
   where
     primObjs =
         [ ("Block", \is r -> is { idBlock = r })
         , ("Char", \is r -> is { idChar = r })
+        , ("Continuation", \is r -> is { idContinuation = r })
         , ("Double", \is r -> is { idDouble = r })
         , ("Expression", \is r -> is { idExpression = r })
         , ("Integer", \is r -> is { idInteger = r })
@@ -156,7 +156,7 @@ eval :: Expr -> VM Value
 eval e = eval' e `catchError` pushStack
   where
     pushStack err = do
-        lift . modify $ \s -> s { stack = e : stack s }
+        modify $ \s -> s { stack = e : stack s }
         throwError err
 
     eval' (Define { ePattern = p, eExpr = ev }) = do
@@ -173,7 +173,7 @@ eval e = eval' e `catchError` pushStack
     eval' (Set { ePattern = p, eExpr = ev }) = do
         v <- eval ev
 
-        is <- lift $ gets primitives
+        is <- gets primitives
         if match is p v
             then do
                 forM_ (bindings' p v) $ \(p', v') -> do
@@ -200,16 +200,16 @@ eval e = eval' e `catchError` pushStack
         vs <- mapM eval ts
         dispatch (Keyword i ns vs)
     eval' (Operator { eNames = ns, eAssoc = a, ePrec = p }) = do
-        forM_ ns $ \n -> lift . modify $ \s ->
+        forM_ ns $ \n -> modify $ \s ->
             s { parserState = (n, (a, p)) : parserState s }
 
         return (particle "ok")
     eval' (Primitive { eValue = v }) = return v
     eval' (EBlock { eArguments = as, eContents = es }) = do
-        t <- lift (gets top)
+        t <- gets top
         return (Block t as es)
     eval' (EDispatchObject {}) = do
-        c <- lift $ gets call
+        c <- gets call
         newObject $ \o -> o
             { oMethods =
                 ( toMethods
@@ -229,7 +229,7 @@ eval e = eval' e `catchError` pushStack
         mvs <- forM mes $
             maybe (return Nothing) (fmap Just . eval)
         return (Particle $ PMKeyword ns mvs)
-    eval' (ETop {}) = lift (gets top)
+    eval' (ETop {}) = gets top
     eval' (EVM { eAction = x }) = x
 
 -- | evaluating multiple expressions, returning the last result
@@ -247,16 +247,16 @@ newObject f = fmap Reference . liftIO $
         }
 
 -- | run x with t as its toplevel object
-withTop :: Value -> VM a -> VM a
+withTop :: Value -> VM Value -> VM Value
 withTop t x = do
-    o <- lift (gets top)
-    lift $ modify (\e -> e { top = t })
+    o <- gets top
+    modify (\e -> e { top = t })
 
     res <- catchError x $ \err -> do
-        lift $ modify (\e -> e { top = o })
+        modify (\e -> e { top = o })
         throwError err
 
-    lift $ modify (\e -> e { top = o })
+    modify (\e -> e { top = o })
 
     return res
 
@@ -268,7 +268,7 @@ withTop t x = do
 -- | define a pattern to evaluate an expression
 define :: Pattern -> Expr -> VM ()
 define !p !e = do
-    is <- lift $ gets primitives
+    is <- gets primitives
     newp <- methodPattern p
     os <- targets is newp
     m <- method newp e
@@ -284,7 +284,7 @@ define !p !e = do
             obj { oMethods = ms newp }
   where
     method p' (Primitive _ v) = return (\o -> Slot (setSelf o p') v)
-    method p' e' = lift (gets top) >>= \t ->
+    method p' e' = gets top >>= \t ->
         return (\o -> Method (setSelf o p') t e')
 
     methodPattern p'@(PSingle { ppTarget = t }) = do
@@ -322,7 +322,7 @@ targets is (PKeyword _ _ ps) = do
     ts <- mapM (targets is) ps
     return (nub (concat ts))
 targets is (PNamed _ p) = targets is p
-targets _ PSelf = lift (gets top) >>= orefFor >>= return . (: [])
+targets _ PSelf = gets top >>= orefFor >>= return . (: [])
 targets is PAny = return [idObject is]
 targets is (PList _) = return [idList is]
 targets is (PHeadTail h t) = do
@@ -381,7 +381,7 @@ dispatch !m = do
 -- delegates if necessary
 findMethod :: Value -> Message -> VM (Maybe Method)
 findMethod v m = do
-    is <- lift $ gets primitives
+    is <- gets primitives
     r <- orefFor v
     o <- liftIO (readIORef r)
     case relevant (is { idMatch = r }) o m of
@@ -480,7 +480,7 @@ runMethod (Method { mPattern = p, mTop = t, mExpr = e }) m = do
         , oMethods = (bindings p m, M.empty)
         }
 
-    lift . modify $ \e' -> e'
+    modify $ \e' -> e'
         { call = Call
             { callSender = top e'
             , callMessage = m
@@ -491,9 +491,9 @@ runMethod (Method { mPattern = p, mTop = t, mExpr = e }) m = do
     withTop nt $ eval e
 
 -- | evaluate an action in a new scope
-newScope :: VM a -> VM a
+newScope :: VM Value -> VM Value
 newScope x = do
-    t <- lift $ gets top
+    t <- gets top
     nt <- newObject $ \o -> o
         { oDelegates = [t]
         }
@@ -579,6 +579,10 @@ findChar :: Value -> VM Value
 {-# INLINE findChar #-}
 findChar = findValue "Char" isChar
 
+findContinuation :: Value -> VM Value
+{-# INLINE findContinuation #-}
+findContinuation = findValue "Continuation" isContinuation
+
 findDouble :: Value -> VM Value
 {-# INLINE findDouble #-}
 findDouble = findValue "Double" isDouble
@@ -639,7 +643,7 @@ getVector e = eval e
 
 here :: String -> VM Value
 here n =
-    lift (gets top)
+    gets top
         >>= dispatch . (single n)
 
 bool :: Bool -> VM Value
@@ -667,13 +671,14 @@ objectFor v = orefFor v >>= liftIO . readIORef
 
 orefFor :: Value -> VM ORef
 {-# INLINE orefFor #-}
-orefFor v = lift (gets primitives) >>= \is -> return $ orefFrom is v
+orefFor v = gets primitives >>= \is -> return $ orefFrom is v
 
 orefFrom :: IDs -> Value -> ORef
 {-# INLINE orefFrom #-}
 orefFrom _ (Reference r) = r
 orefFrom ids (Block _ _ _) = idBlock ids
 orefFrom ids (Char _) = idChar ids
+orefFrom ids (Continuation _) = idContinuation ids
 orefFrom ids (Double _) = idDouble ids
 orefFrom ids (Expression _) = idExpression ids
 orefFrom ids (Integer _) = idInteger ids
@@ -687,29 +692,29 @@ orefFrom _ v = error $ "no orefFrom for: " ++ show v
 
 -- load a file, remembering it to prevent repeated loading
 -- searches with cwd as lowest priority
-requireFile :: FilePath -> VM ()
+requireFile :: FilePath -> VM Value
 requireFile fn = do
-    initialPath <- lift $ gets loadPath
+    initialPath <- gets loadPath
     file <- findFile (initialPath ++ [""]) fn
 
-    alreadyLoaded <- lift $ gets ((file `elem`) . loaded)
+    alreadyLoaded <- gets ((file `elem`) . loaded)
     if alreadyLoaded
-        then return ()
+        then return (particle "already-loaded")
         else do
 
-    lift . modify $ \s -> s { loaded = file : loaded s }
+    modify $ \s -> s { loaded = file : loaded s }
 
     doLoad file
 
 -- load a file
 -- searches with cwd as highest priority
-loadFile :: FilePath -> VM ()
+loadFile :: FilePath -> VM Value
 loadFile fn = do
-    initialPath <- lift $ gets loadPath
+    initialPath <- gets loadPath
     findFile ("":initialPath) fn >>= doLoad
 
 -- execute a file
-doLoad :: FilePath -> VM ()
+doLoad :: FilePath -> VM Value
 doLoad file =
     case takeExtension file of
         ".hs" -> do
@@ -722,21 +727,25 @@ doLoad file =
 
             load
 
+            return (particle "ok")
+
         _ -> do
-            initialPath <- lift $ gets loadPath
+            initialPath <- gets loadPath
 
             source <- liftIO (readFile file)
             ast <- continuedParse source file
 
-            lift . modify $ \s -> s
+            modify $ \s -> s
                 { loadPath = [takeDirectory file]
                 }
 
-            mapM_ eval ast
+            r <- evalAll ast
 
-            lift . modify $ \s -> s
+            modify $ \s -> s
                 { loadPath = initialPath
                 }
+
+            return r
 
 -- | given a list of paths to search, find the file to load
 -- attempts to find the filename with .atomo and .hs extensions

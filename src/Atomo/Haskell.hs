@@ -2,10 +2,9 @@
 module Atomo.Haskell
     ( module Control.Concurrent
     , module Control.Monad
-    , module Control.Monad.IO.Class
-    , module Control.Monad.Trans.Class
-    , module Control.Monad.Trans.Error
-    , module Control.Monad.Trans.State
+    , module Control.Monad.Trans
+    , module Control.Monad.Cont
+    , module Control.Monad.State
     , module Atomo.Types
     , p
     , e
@@ -14,10 +13,9 @@ module Atomo.Haskell
 
 import Control.Concurrent
 import Control.Monad
-import Control.Monad.IO.Class
-import Control.Monad.Trans.Class
-import Control.Monad.Trans.Error hiding (liftCallCC, liftListen, liftPass)
-import Control.Monad.Trans.State hiding (liftCallCC, liftListen, liftPass)
+import "monads-fd" Control.Monad.Trans
+import "monads-fd" Control.Monad.Cont
+import "monads-fd" Control.Monad.State
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
 import Text.Parsec

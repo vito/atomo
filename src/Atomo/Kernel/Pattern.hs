@@ -17,7 +17,7 @@ load = do
     [$p|(p: Pattern) matches?: v|] =: do
         Pattern p <- here "p" >>= findPattern
         v <- here "v"
-        ids <- lift (gets primitives)
+        ids <- gets primitives
 
         if match ids p v
             then do

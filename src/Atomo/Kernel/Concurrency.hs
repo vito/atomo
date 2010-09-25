@@ -11,16 +11,16 @@ import Atomo.Method
 load :: VM ()
 load = do
     [$p|self|] =: do
-        chan <- lift (gets channel)
+        chan <- gets channel
         tid <- liftIO myThreadId
         return (Process chan tid)
 
     [$p|receive|] =: do
-        chan <- lift (gets channel)
+        chan <- gets channel
         v <- liftIO (readChan chan)
         return v
 
-    [$p|halt|] =: lift (gets halt) >>= liftIO >> return (particle "ok")
+    [$p|halt|] =: gets halt >>= liftIO >> return (particle "ok")
 
     [$p|(p: Process) ! v|] =: do
         Process chan _ <- here "p" >>= findProcess

@@ -256,6 +256,14 @@ load = do
 
         return (List l)
 
+    [$p|(l: List) pop!|] =: do
+        List l <- here "l" >>= findList
+        vs <- getVector [$e|l|]
+
+        liftIO . writeIORef l $ V.tail vs
+
+        return (List l)
+
     [$p|(l: List) split: (d: List)|] =: do
         l <- getList [$e|l|]
         d <- getList [$e|d|]
