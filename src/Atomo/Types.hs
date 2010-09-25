@@ -17,7 +17,7 @@ import qualified Data.Text as T
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
 
-type VM = ErrorT AtomoError (StateT Env (ContT (Either AtomoError Value) IO))
+type VM = ErrorT AtomoError (ContT (Either AtomoError Value) (StateT Env IO))
 
 data Value
     = Block !Value [Pattern] [Expr]

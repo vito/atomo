@@ -58,7 +58,7 @@ run x = runWith (initEnv >> x) startEnv
 
 -- | evaluate x with e as the environment
 runWith :: VM Value -> Env -> IO (Either AtomoError Value)
-runWith x e = runContT (evalStateT (runErrorT x) e) return
+runWith x e = evalStateT (runContT (runErrorT x) return) e
 
 -- | print an error, including the previous 10 expressions evaluated
 -- with the most recent on the bottom
