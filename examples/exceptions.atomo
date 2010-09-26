@@ -1,0 +1,29 @@
+handler = Parameter new: 0
+
+try: action catch: rescue := {
+    res = { cc |
+        with: handler as: cc do: action
+    } call/cc
+
+    res match: {
+        @(exception: x) -> rescue call: [x]
+        ok -> ok
+    }
+} call
+
+throw: v :=
+    handler _? yield: @(exception: v)
+
+try: {
+    try: {
+        "before" print
+        throw: @foo
+        "after" print
+    } catch: { exn |
+        @(got-inner: exn) print
+        throw: @bar
+        "after again" print
+    }
+} catch: { exn |
+    @(got-outer: exn) print
+}

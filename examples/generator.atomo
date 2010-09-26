@@ -1,0 +1,26 @@
+fib-generator := {
+    main = this
+
+    control-state = { return |
+        n0 = 1
+        n1 = 1
+
+        {
+            return = { resume-here |
+                main control-state = resume-here
+                return yield: n0
+            } call/cc
+
+            [n0, n1] = [n1, n0 + n1]
+        } in-context repeat
+    }
+
+    { control-state call/cc }
+} call
+
+fibs = fib-generator
+next-fib := fibs call
+
+10 times: {
+    next-fib print
+}
