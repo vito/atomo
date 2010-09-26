@@ -14,7 +14,7 @@ load = do
 
     callccObj <- newScope $ do
         ([$p|o|] =::) =<< eval [$e|Object clone|]
-        [$p|o call: b|] =: callCC $ \c -> do
+        [$p|(o) pass-to: b|] =: callCC $ \c -> do
             b <- here "b"
             cr <- liftIO (newIORef c)
             as <- list [Continuation cr]
@@ -37,24 +37,20 @@ dynamicWind callccObj = do
     [$p|internal-call/cc|] =:: callccObj
     ([$p|dynamic-winds|] =::) =<< eval [$e|Parameter new: []|]
 
-    [$p|(o: Object) call/cc|] =::: [$e|{
+    [$p|(o: Object) call/cc|] =::: [$e|internal-call/cc pass-to: { cont |
         winds = dynamic-winds _? copy
 
-        internal-call/cc call: { cont |
-            new = Object clone do: {
-                delegates-to: cont
+        new = cont clone do: {
+            yield: v := {
+                dynamic-unwind call: [winds, dynamic-winds _? length - winds length]
+                cont yield: v
+            } call
 
-                yield: v := {
-                    dynamic-unwind call: [winds, dynamic-winds _? length - winds length]
-                    cont yield: v
-                } call
-
-                show = "<continuation>"
-            }
-
-            o call: [new]
+            show = "<continuation>"
         }
-    } call|]
+
+        o call: [new]
+    }|]
 
     [$p|dynamic-wind: action before: before after: after|] =::: [$e|{
         before call
