@@ -1,4 +1,6 @@
-handler = Parameter new: 0
+handler = Parameter new: (Object clone do: {
+    yield: v := raise: v
+})
 
 try: action catch: rescue := {
     res = { cc |
