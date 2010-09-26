@@ -30,7 +30,11 @@ load = do
         vs <- getVector [$e|l|]
 
         if fromIntegral n >= V.length vs
-            then raise ["out-of-bounds"] [Integer n]
+            then here "l" >>= \l -> raise
+                ["out-of-bounds", "for-list"]
+                [ Integer n
+                , l
+                ]
             else return (vs `V.unsafeIndex` fromIntegral n)
 
     [$p|[] head|] =: raise' "empty-list"
@@ -48,10 +52,10 @@ load = do
         Integer end <- here "e" >>= findInteger
 
         if start < 0 || end < 0 || (start + end) > fromIntegral (V.length vs)
-            then raise
-                ["invalid-range", "for-list-of-length"]
+            then here "l" >>= \l -> raise
+                ["invalid-range", "for-list"]
                 [ keyParticleN ["from", "to"] [Integer start, Integer end]
-                , Integer (fromIntegral (V.length vs))
+                , l
                 ]
             else list' (V.unsafeSlice
                 (fromIntegral start)
@@ -130,7 +134,7 @@ load = do
 
         list' nvs
 
-    [$p|[] reduce: b|] =::: [$e|raise: @empty-list|]
+    [$p|[] reduce: b|] =: raise' "empty-list"
     [$p|(l: List) reduce: b|] =: do
         vs <- getVector [$e|l|]
         b <- here "b"
@@ -148,7 +152,7 @@ load = do
             as <- list [x, acc]
             dispatch (keyword ["call"] [b, as])) v vs
 
-    [$p|[] reduce-right: b|] =::: [$e|raise: @empty-list|]
+    [$p|[] reduce-right: b|] =: raise' "empty-list"
     [$p|(l: List) reduce-right: b|] =: do
         vs <- getVector [$e|l|]
         b <- here "b"
@@ -208,8 +212,8 @@ load = do
 
     -- TODO: take-while, drop-while
 
-    [$p|(l: List) contains?: v|] =::: [$e|l any?: @(== v)|]
     [$p|v in?: (l: List)|] =::: [$e|l contains?: v|]
+    [$p|(l: List) contains?: v|] =::: [$e|l any?: @(== v)|]
 
     -- TODO: find
 
@@ -248,6 +252,14 @@ load = do
 
         Integer n <- here "n" >>= findInteger
         v <- here "v"
+
+        if fromIntegral n >= V.length vs
+            then here "l" >>= \l' -> raise
+                ["out-of-bounds", "for-list"]
+                [ Integer n
+                , l'
+                ]
+            else do
 
         liftIO . writeIORef l $ vs V.// [(fromIntegral n, v)]
 
