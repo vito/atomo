@@ -233,6 +233,7 @@ data IDs =
 -- a basic Eq instance
 instance Eq Value where
     Char a == Char b = a == b
+    Continuation a == Continuation b = a == b
     Double a == Double b = a == b
     Integer a == Integer b = a == b
     List a == List b = a == b
@@ -252,7 +253,7 @@ type Channel = Chan Value
 type MethodMap = M.IntMap [Method]
 type ORef = IORef Object
 type VVector = IORef (V.Vector Value)
-type Continuation = Value -> VM Value
+type Continuation = IORef (Value -> VM Value)
 
 instance Show Channel where
     show _ = "Channel"
