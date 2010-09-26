@@ -71,7 +71,7 @@ dynamicWind callccObj = do
         dynamic-winds =! ((b -> a) . dynamic-winds _?)
 
         { v call } ensuring: {
-            dynamic-winds _? pop!
+            dynamic-winds =! dynamic-winds _? tail
             a call
         }
     } call|]
@@ -89,7 +89,7 @@ dynamicWind callccObj = do
 
             otherwise -> {
                 post = dynamic-winds _? head to
-                dynamic-winds _? pop!
+                dynamic-winds =! dynamic-winds _? tail
                 post call
                 dynamic-unwind call: [to, d - 1]
             } call
