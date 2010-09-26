@@ -167,7 +167,7 @@ prelude :: VM ()
 prelude = mapM_ eval [$es|
     v match: (b: Block) :=
         if: b contents empty?
-            then: { raise: ("no matches for value " .. v show) }
+            then: { raise: @(no-matches-for: v) }
             else: {
                 es = b contents
                 [p, e] = es head targets

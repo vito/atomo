@@ -72,14 +72,23 @@ printError err = do
 
             forM_ t $ \e -> liftIO $
                 print (prettyStack e)
+
+            liftIO (putStrLn "")
         else return ()
 
-    liftIO (putStrLn "")
-    liftIO . print . pretty $ err
+    prettyError err >>= liftIO . print
 
     modify $ \s -> s { stack = [] }
   where
     traceback = fmap (reverse . take 10 . reverse) (gets stack)
+
+prettyError :: AtomoError -> VM P.Doc
+prettyError (Error v) = fmap (P.text "error:" P.<+>) (prettyVM v)
+prettyError e = return (pretty e)
+
+-- | pretty-print by sending @show to the object
+prettyVM :: Value -> VM P.Doc
+prettyVM = fmap (P.text . fromString) . dispatch . (single "show")
 
 -- | spawn a process to execute x. returns the Process.
 spawn :: VM Value -> VM Value
@@ -91,10 +100,6 @@ spawn x = do
         return ()
 
     return (Process chan tid)
-
--- | pretty-print by sending @show to the object
-prettyVM :: Value -> VM P.Doc
-prettyVM = fmap (P.text . fromString) . dispatch . (single "show")
 
 -- | set up the primitive objects, etc.
 initEnv :: VM ()
