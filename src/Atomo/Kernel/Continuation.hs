@@ -12,6 +12,20 @@ load = do
     [$p|current-continuation|] =:::
         [$e|{ cc | cc } call/cc|]
 
+    -- call/cc actually makes an object delegating to Continuation
+    -- so just add the show definiton here
+    [$p|Continuation show|] =:: string "<continuation>"
+
+    [$p|(c: Continuation) yield: v|] =: do
+        Continuation c <- here "c" >>= findContinuation
+        v <- here "v"
+        liftIO (readIORef c) >>= ($ v)
+
+    -- this enables call/cc as well
+    [$p|(c: Continuation) call: [v]|] =::: [$e|c yield: v|]
+
+    -- an object providing lower-level call/cc functionality
+    -- only used in call/cc's definition
     callccObj <- newScope $ do
         ([$p|o|] =::) =<< eval [$e|Object clone|]
         [$p|(o) pass-to: b|] =: callCC $ \c -> do
@@ -21,13 +35,8 @@ load = do
             dispatch (keyword ["call"] [b, as])
         eval [$e|o|]
 
-    [$p|(c: Continuation) yield: v|] =: do
-        Continuation c <- here "c" >>= findContinuation
-        v <- here "v"
-        liftIO (readIORef c) >>= ($ v)
-
-    [$p|(c: Continuation) call: [v]|] =::: [$e|c yield: v|]
-
+    -- define call/cc and dynamic-wind in a new scope for hiding
+    -- helper methods (internal-call/cc, dynamic-winds, dynamic-unwind)
     newScope (dynamicWind callccObj >> return (particle "ok"))
 
     return ()
@@ -46,19 +55,16 @@ dynamicWind callccObj = do
                     winds
                     dynamic-winds _? length - winds length
                 ]
+
                 cont yield: v
             } call
-
-            show = "<continuation>"
         }
 
         o call: [new]
     }|]
 
     [$p|(v: Block) before: (b: Block)|] =::: [$e|v before: b after: { @ok }|]
-
     [$p|(v: Block) after: (a: Block)|] =::: [$e|v before: { @ok } after: a|]
-
     [$p|(v: Block) before: (b: Block) after: (a: Block)|] =::: [$e|{
         b call
 
