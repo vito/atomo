@@ -13,6 +13,12 @@ load :: VM ()
 load = do
     eval [$e|operator right .|]
 
+    [$p|(l: List) show|] =:::
+        [$e|"[" .. l (map: @show) (join: ", ") .. "]"|]
+
+    [$p|(l: List) copy|] =:
+        getVector [$e|l|] >>= list'
+
     [$p|(l: List) length|] =:
         getVector [$e|l|] >>= return . Integer . fromIntegral . V.length
 
