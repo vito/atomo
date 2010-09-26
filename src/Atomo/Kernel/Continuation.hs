@@ -42,7 +42,10 @@ dynamicWind callccObj = do
 
         new = cont clone do: {
             yield: v := {
-                dynamic-unwind call: [winds, dynamic-winds _? length - winds length]
+                dynamic-unwind call: [
+                    winds
+                    dynamic-winds _? length - winds length
+                ]
                 cont yield: v
             } call
 
@@ -52,14 +55,18 @@ dynamicWind callccObj = do
         o call: [new]
     }|]
 
-    [$p|dynamic-wind: action before: before after: after|] =::: [$e|{
-        before call
+    [$p|(v: Block) before: (b: Block)|] =::: [$e|v before: b after: { @ok }|]
 
-        dynamic-winds =! ((before -> after) . dynamic-winds _?)
+    [$p|(v: Block) after: (a: Block)|] =::: [$e|v before: { @ok } after: a|]
 
-        { action call } ensuring: {
+    [$p|(v: Block) before: (b: Block) after: (a: Block)|] =::: [$e|{
+        b call
+
+        dynamic-winds =! ((b -> a) . dynamic-winds _?)
+
+        { v call } ensuring: {
             dynamic-winds _? pop!
-            after call
+            a call
         }
     } call|]
 
