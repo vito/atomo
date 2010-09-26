@@ -55,7 +55,7 @@ ppSingle = do
             return (PObject p, v)
         , do
             v <- identifier
-            return (PSelf, v)
+            return (PObject (ETop Nothing), v)
         ]
 
     dump ("single", t, v)
@@ -83,7 +83,7 @@ ppSingle = do
 
 
 ppKeywords :: Parser Pattern
-ppKeywords = keywords pkeyword PSelf pObjectPattern
+ppKeywords = keywords pkeyword (PObject (ETop Nothing)) pObjectPattern
 
 ppNamed :: Parser Pattern
 ppNamed = parens $ do
