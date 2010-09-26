@@ -28,25 +28,43 @@ load = do
     [$p|(l: List) at: (n: Integer)|] =: do
         Integer n <- here "n" >>= findInteger
         vs <- getVector [$e|l|]
-        return (vs V.! fromIntegral n)
 
+        if fromIntegral n >= V.length vs
+            then raise ["out-of-bounds"] [Integer n]
+            else return (vs `V.unsafeIndex` fromIntegral n)
+
+    [$p|[] head|] =: raise' "empty-list"
     [$p|(l: List) head|] =:
-        getVector [$e|l|] >>= return . V.head
+        getVector [$e|l|] >>= return . V.unsafeHead
 
+    [$p|[] last|] =: raise' "empty-list"
     [$p|(l: List) last|] =:
-        getVector [$e|l|] >>= return . V.last
+        getVector [$e|l|] >>= return . V.unsafeLast
 
+    -- TODO: handle negative ranges
     [$p|(l: List) from: (s: Integer) to: (e: Integer)|] =: do
         vs <- getVector [$e|l|]
         Integer start <- here "s" >>= findInteger
         Integer end <- here "e" >>= findInteger
-        list' (V.slice (fromIntegral start) (fromIntegral end) vs)
 
+        if start < 0 || end < 0 || (start + end) > fromIntegral (V.length vs)
+            then raise
+                ["invalid-range", "for-list-of-length"]
+                [ keyParticleN ["from", "to"] [Integer start, Integer end]
+                , Integer (fromIntegral (V.length vs))
+                ]
+            else list' (V.unsafeSlice
+                (fromIntegral start)
+                (fromIntegral end)
+                vs)
+
+    [$p|[] init|] =: raise' "empty-list"
     [$p|(l: List) init|] =:
-        getVector [$e|l|] >>= list' . V.init
+        getVector [$e|l|] >>= list' . V.unsafeInit
 
+    [$p|[] tail|] =: raise' "empty-list"
     [$p|(l: List) tail|] =:
-        getVector [$e|l|] >>= list' . V.tail
+        getVector [$e|l|] >>= list' . V.unsafeTail
 
     [$p|(l: List) take: (n: Integer)|] =: do
         vs <- getVector [$e|l|]
@@ -262,6 +280,7 @@ load = do
 
         return (List l)
 
+    [$p|[] pop!|] =: raise' "empty-list"
     [$p|(l: List) pop!|] =: do
         List l <- here "l" >>= findList
         vs <- getVector [$e|l|]
