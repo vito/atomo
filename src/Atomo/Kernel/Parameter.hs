@@ -24,14 +24,12 @@ load = mapM_ eval [$es|
 
     with: (p: Parameter) as: new do: (action: Block) := {
         old = p _?
-        p =! new
-        action after: { p =! old }
+        action before: { p =! new } after: { p =! old }
     } call
 
     with-default: (p: Parameter) as: new do: (action: Block) := {
         old = p _?
-        p set-default: new
-        action after: { p set-default: old }
+        action before: { p set-default: new } after: { p set-default: old }
     } call
 
     with: [] do: (action: Block) := action call
