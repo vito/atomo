@@ -1,26 +1,40 @@
-fib-generator := {
-    main = this
+Generator = Object clone
 
-    control-state = { return |
-        n0 = 1
-        n1 = 1
+(g: Generator) yield: v := g yielder = { cc |
+    g control-state =! cc
+    g yielder yield: v
+} call/cc
 
-        {
-            return = { resume-here |
-                main control-state = resume-here
-                return yield: n0
-            } call/cc
+(b: Block) generator :=
+    Generator clone do: {
+        next := control-state _? call/cc
 
-            [n0, n1] = [n1, n0 + n1]
-        } in-context repeat
+        control-state = Parameter new: { return |
+            yielder = return
+            join: b
+        } in-context
     }
 
-    { control-state call/cc }
-} call
+-- generator for the fibonacci sequence
+fib = {
+    [i, j] = [0, 1]
 
-fibs = fib-generator
-next-fib := fibs call
+    {
+        yield: i
+        [i, j] = [j, i + j]
+    } repeat
+} generator
+
+-- generator for 0, 1, 2, 3, ...
+foob = {
+    i = 0
+
+    {
+        yield: i
+        i = i + 1
+    } repeat
+} generator
 
 10 times: {
-    next-fib print
+    (foob next show .. ": " .. fib next show) print
 }
