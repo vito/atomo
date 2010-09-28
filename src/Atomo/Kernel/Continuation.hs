@@ -24,6 +24,10 @@ load = do
     -- this enables call/cc as well
     [$p|(c: Continuation) call: [v]|] =::: [$e|c yield: v|]
 
+    -- effectively just "jumping" to a continuation
+    [$p|(c: Continuation) yield|] =::: [$e|c yield: @ok|]
+    [$p|(c: Continuation) call|] =::: [$e|c yield: @ok|]
+
     -- an object providing lower-level call/cc functionality
     -- only used in call/cc's definition
     callccObj <- newScope $ do
