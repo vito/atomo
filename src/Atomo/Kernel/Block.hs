@@ -55,7 +55,7 @@ load = do
 
 prelude :: VM ()
 prelude = mapM_ eval [$es|
-    (b: Block) repeat := { b call; b repeat } call
+    (b: Block) repeat := { b in-context call; b repeat } call
 
     (b: Block) in-context :=
         Object clone do: {
