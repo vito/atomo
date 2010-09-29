@@ -13,6 +13,13 @@ Generator = Object clone
             yielder = return
             join: b
         } in-context
+
+        join: { start |
+            reset := {
+                control-state =! start
+                @ok
+            } call
+        } with: [control-state _?]
     }
 
 -- generator for the fibonacci sequence
@@ -35,6 +42,8 @@ foob = {
     } repeat
 } generator
 
-10 times: {
+go := 10 times: {
     (foob next show .. ": " .. fib next show) print
 }
+
+go

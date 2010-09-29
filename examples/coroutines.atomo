@@ -1,0 +1,44 @@
+-- A port of http://en.wikipedia.org/wiki/Continuation#Coroutines,
+-- using a Parameter instead of a global variable
+
+queue* = Parameter new: []
+
+empty-queue? := queue* _? empty?
+
+enqueue: x :=
+    queue* =! (queue* _? .. [x])
+
+dequeue := {
+    x = queue* _? head
+    queue* =! queue* _? tail
+    x
+} call
+
+fork: proc := { k |
+    enqueue: k
+    proc call
+} call/cc
+
+yield := { k |
+    enqueue: k
+    dequeue call
+} call/cc
+
+thread-exit :=
+    if: empty-queue?
+        then: { halt }
+        else: { dequeue call }
+
+do-stuff-n-print: str := {
+    n = 0
+
+    {
+        (str .. " " .. n show) print
+        yield
+        n = n + 1
+    } repeat
+}
+
+fork: (do-stuff-n-print: "This is AAA")
+fork: (do-stuff-n-print: "Hello from BBB")
+thread-exit
