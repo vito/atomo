@@ -1,15 +1,26 @@
 name:                atomo
 version:             0.1
-synopsis:            Atomo programming language.
+synopsis:            A highly dynamic, extremely simple, very fun programming
+                     language.
+description:
+    A super simple, object-oriented language centered around prototyping and
+    multiple dispatch. Supports usage of Haskell code/libraries via a thin
+    layer, using hint and Data.Dynamic. Experimental, but quickly evolving and
+    very fun. See examples directory for some code.
+
+    Influences: Scheme, Slate, Io, Erlang, Haskell, Ruby.
+
+    Neat stuff: first-class continuations, very metaprogramming and DSL
+    -friendly, message-passing concurrency, pattern-matching.
 homepage:            http://darcsden.com/alex/atomo
 license:             BSD3
 license-file:        LICENSE
 author:              Alex Suraci
 maintainer:          i.am@toogeneric.com
-category:            Development
+category:            Language
 build-type:          Simple
 
-cabal-version:       >= 1.2
+cabal-version:       >= 1.4
 
 
 library
@@ -18,7 +29,7 @@ library
   extensions:        PackageImports
 
   build-depends:
-    base >= 4,
+    base >= 4 && < 5,
     containers,
     directory,
     filepath,
@@ -69,9 +80,9 @@ library
 executable atomo
   hs-source-dirs:    src
   main-is:           Main.hs
-  
+
   ghc-prof-options:  -prof -auto-all -caf-all
-  ghc-options:       -O2 -Wall -threaded -fno-warn-unused-do-bind
+  ghc-options:       -Wall -threaded -fno-warn-unused-do-bind
                      -funfolding-use-threshold=9999
 
   extensions:        PackageImports
@@ -79,7 +90,7 @@ executable atomo
   c-sources:         src/rts.c
 
   build-depends:
-    base >= 4,
+    base >= 4 && < 5,
     containers,
     directory,
     filepath,
