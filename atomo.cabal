@@ -26,8 +26,16 @@ maintainer:          i.am@toogeneric.com
 category:            Language
 build-type:          Simple
 
-cabal-version:       >= 1.4
+cabal-version:       >= 1.6
 
+source-repository   head
+    type:           darcs
+    location:       http://darcsden.com/alex/atomo
+
+source-repository   this
+    type:           darcs
+    location:       http://darcsden.com/alex/atomo
+    tag:            0.1
 
 library
   hs-source-dirs:    src
