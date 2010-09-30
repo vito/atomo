@@ -6,12 +6,18 @@ description:
     A super simple, object-oriented language centered around prototyping and
     multiple dispatch. Supports usage of Haskell code/libraries via a thin
     layer, using hint and Data.Dynamic. Experimental, but quickly evolving and
-    very fun. See examples directory for some code.
-
+    very fun.
+    .
     Influences: Scheme, Slate, Io, Erlang, Haskell, Ruby.
-
+    .
     Neat stuff: first-class continuations, very metaprogramming and DSL
     -friendly, message-passing concurrency, pattern-matching.
+    .
+    Documentation (WIP): <http://atomo-lang.org/docs/>
+    .
+    Examples: <http://darcsden.com/alex/atomo/browse/examples>
+    .
+    IRC Channel: <irc://irc.freenode.net/atomo>
 homepage:            http://darcsden.com/alex/atomo
 license:             BSD3
 license-file:        LICENSE
