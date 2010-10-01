@@ -1,0 +1,140 @@
+#title:{Boolean}tag:"bool"
+
+#define:{
+    True
+    > is-a?: Bool
+}body:{
+    Truthiness.
+}
+
+#define:{
+    False
+    > is-a?: Bool
+}body:{
+    Falsiness.
+}
+
+#define:{
+    a && b
+    | a is-a?: Bool
+    | b is-a?: Bool
+    > in?: [True, False]
+}body:{
+    Test whether #atomo:a and #atomo:b are both #atomo:True.
+
+    #example:({
+        True && False
+        (1 == 1) && ('a' /= 'b')
+    })
+}
+
+#define:{
+    a || b
+    | a is-a?: Bool
+    | b is-a?: Bool
+    > in?: [True, False]
+}body:{
+    Test if either #atomo:a or #atomo:b are #atomo:True.
+}
+
+#define:{
+    a and: b
+    | a is-a?: Bool
+    | b is-a?: Block
+    > in?: [True, False]
+}body:{
+    A short-circuiting form of #atomo:(&&), only #atomo:(call)ing the right-hand side if #atomo:a is #atomo:True.
+}
+
+#define:{
+    a or: b
+    | a is-a?: Bool
+    | b is-a?: Block
+    > in?: [True, False]
+}body:{
+    A short-circuiting form of #atomo:(||), only #atomo:(call)ing the right-hand side if #atomo:a is #atomo:False.
+}
+
+#define:{
+    a not
+    | a is-a?: Bool
+    > in?: [True, False]
+}body:{
+    Negate #atomo:a.
+
+    #example:({
+        True not
+        False not
+        True not not
+    })
+}
+
+#section:{Control Flow}
+
+#define:{
+    if: test then: yes else: no
+    | test is-a?: Bool
+    | yes is-a?: Block
+    | no is-a?: Block
+    > any
+}body:{
+    Basic if-then-else control flow. If #atomo:test is #atomo:True, #atomo:yes is #atomo:(call)ed, otherwise #atomo:no is. The result is the result of whichever block is called.
+
+    #example:({
+        if: (1 == 0) then: { "Uh-oh." } else: { "We're good!" }
+    })
+}
+
+#define:{
+    when: test do: action
+    | test is-a?: Bool
+    | action is-a?: Block
+    > @ok
+}body:{
+    Sends #atomo:call to #atomo:(action in-context) if #atomo:test is #atomo:True, always returning #atomo:@ok.
+
+    #example:({
+        a = 0
+        b := when: (a == 1) do: { "a is 1!" print }
+        b
+        a = 1
+        b
+    })
+}
+
+#define:{
+    while: test do: action
+    | test is-a?: Block
+    | action is-a?: Block
+    > @ok
+}body:{
+    Continually sends #atomo:call to #atomo:(action in-context) until #atomo:test yields #atomo:False.
+
+    #example:({
+        a = 1
+        while: { a < 10 } do: { a = a + 1 }
+        a
+    })
+}
+
+#define:{
+    condition: branches
+    | branches is-a?: Block
+    > any
+}body:{
+    Similar to Scheme's #code:{cond}, this construct takes a block pairing tests with their branch, and goes through each pairing until a test yields #atomo:True, in which case it evaluates the expression that test was associated with.
+
+    If no branches yield #atomo:True, #atomo:@no-true-branches is raised.
+
+    #example:({
+        condition: { False -> "Hello!" print; True -> "Goodbye!" print }
+        condition: { 1 == 1 -> 0; otherwise -> 1 }
+    })
+}
+
+#define:{
+    otherwise
+    > True
+}body:{
+    Alias for #atomo:True for use in #atomo:(condition:), or anywhere else where it would look nicer.
+}

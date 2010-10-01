@@ -8,6 +8,7 @@
 #include-section:"blocks.atomo"
 #include-section:"concurrency.atomo"
 #include-section:"numbers.atomo"
+#include-section:"bool.atomo"
 #include-section:"comparable.atomo"
 #include-section:"io.atomo"
 #include-section:"timer.atomo"
