@@ -99,6 +99,8 @@ instance Pretty Pattern where
     prettyFrom _ PAny = text "_"
     prettyFrom _ (PHeadTail h t) =
         parens $ pretty h <+> text "." <+> pretty t
+    prettyFrom _ (PKeyword _ ns (PObject ETop {}:vs)) =
+        headlessKeywords ns vs
     prettyFrom _ (PKeyword _ ns (PThis:vs)) =
         headlessKeywords ns vs
     prettyFrom _ (PKeyword _ ns vs) = keywords ns vs
