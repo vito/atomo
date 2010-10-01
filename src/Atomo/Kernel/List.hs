@@ -271,10 +271,7 @@ load = do
         l <- liftIO . newIORef $ V.cons v vs
         return (List l)
 
-    [$p|(l: List) << v|] =::: [$e|l push: v|]
-    [$p|v >> (l: List)|] =::: [$e|l left-push: v|]
-
-    [$p|(l: List) push: v|] =: do
+    [$p|(l: List) << v|] =: do
         List l <- here "l" >>= findList
         vs <- getVector [$e|l|]
         v <- here "v"
@@ -283,7 +280,7 @@ load = do
 
         return (List l)
 
-    [$p|(l: List) left-push: v|] =: do
+    [$p|v >> (l: List)|] =: do
         List l <- here "l" >>= findList
         vs <- getVector [$e|l|]
         v <- here "v"
