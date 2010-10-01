@@ -17,7 +17,7 @@ comparePrecision (PNamed _ a) (PNamed _ b) =
 comparePrecision (PNamed _ a) b = comparePrecision a b
 comparePrecision a (PNamed _ b) = comparePrecision a b
 comparePrecision PAny PAny = EQ
-comparePrecision PSelf PSelf = EQ
+comparePrecision PThis PThis = EQ
 comparePrecision (PMatch (Reference a)) (PMatch (Reference b))
     | unsafeDelegatesTo (Reference a) (Reference b) = LT
     | unsafeDelegatesTo (Reference a) (Reference b) = GT
@@ -37,8 +37,8 @@ comparePrecision (PKeyword { ppTargets = as }) (PKeyword { ppTargets = bs }) =
 comparePrecision (PObject _) (PObject _) = EQ
 comparePrecision PAny _ = GT
 comparePrecision _ PAny = LT
-comparePrecision PSelf (PMatch (Reference _)) = LT
-comparePrecision (PMatch (Reference _)) PSelf = GT
+comparePrecision PThis (PMatch (Reference _)) = LT
+comparePrecision (PMatch (Reference _)) PThis = GT
 comparePrecision (PMatch _) _ = LT
 comparePrecision _ (PMatch _) = GT
 comparePrecision (PList _) _ = LT
@@ -49,8 +49,8 @@ comparePrecision (PPMKeyword _ _) _ = LT
 comparePrecision _ (PPMKeyword _ _) = GT
 comparePrecision (PHeadTail _ _) _ = LT
 comparePrecision _ (PHeadTail _ _) = GT
-comparePrecision PSelf _ = LT
-comparePrecision _ PSelf = GT
+comparePrecision PThis _ = LT
+comparePrecision _ PThis = GT
 comparePrecision (PObject _) _ = LT
 comparePrecision _ (PObject _) = GT
 comparePrecision _ _ = GT
@@ -119,7 +119,7 @@ equivalent a (PNamed _ b) = equivalent a b
 equivalent (PPMSingle a) (PPMSingle b) = a == b
 equivalent (PPMKeyword ans aps) (PPMKeyword bns bps) =
     ans == bns && and (zipWith equivalent aps bps)
-equivalent PSelf PSelf = True
 equivalent (PSingle ai _ at) (PSingle bi _ bt) =
     ai == bi && equivalent at bt
+equivalent PThis PThis = True
 equivalent _ _ = False

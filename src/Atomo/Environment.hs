@@ -113,7 +113,7 @@ initEnv = do
     modify $ \e -> e { top = topObj }
 
     -- define Object as the root object
-    define (psingle "Object" PSelf) (Primitive Nothing object)
+    define (psingle "Object" PThis) (Primitive Nothing object)
     modify $ \e -> e
         { primitives = (primitives e) { idObject = rORef object }
         }
@@ -125,7 +125,7 @@ initEnv = do
     -- define primitive objects
     forM_ primObjs $ \(n, f) -> do
         o <- newObject $ \o -> o { oDelegates = [object] }
-        define (psingle n PSelf) (Primitive Nothing o)
+        define (psingle n PThis) (Primitive Nothing o)
         modify $ \e -> e { primitives = f (primitives e) (rORef o) }
 
     Kernel.load
@@ -213,9 +213,9 @@ eval e = eval' e `catchError` pushStack
         newObject $ \o -> o
             { oMethods =
                 ( toMethods
-                    [ (psingle "sender" PSelf, callSender c)
-                    , (psingle "message" PSelf, Message (callMessage c))
-                    , (psingle "context" PSelf, callContext c)
+                    [ (psingle "sender" PThis, callSender c)
+                    , (psingle "message" PThis, Message (callMessage c))
+                    , (psingle "context" PThis, callContext c)
                     ]
                 , M.empty
                 )
@@ -301,12 +301,12 @@ define !p !e = do
         return (PNamed n p'')
     methodPattern p' = return p'
 
-    -- | Swap out a reference match with PSelf, for inserting on the object
+    -- | Swap out a reference match with PThis, for inserting on the object
     setSelf :: ORef -> Pattern -> Pattern
     setSelf o (PKeyword i ns ps) =
         PKeyword i ns (map (setSelf o) ps)
     setSelf o (PMatch (Reference x))
-        | o == x = PSelf
+        | o == x = PThis
     setSelf o (PNamed n p') =
         PNamed n (setSelf o p')
     setSelf o (PSingle i n t) =
@@ -322,7 +322,7 @@ targets is (PKeyword _ _ ps) = do
     ts <- mapM (targets is) ps
     return (nub (concat ts))
 targets is (PNamed _ p) = targets is p
-targets _ PSelf = gets top >>= orefFor >>= return . (: [])
+targets _ PThis = gets top >>= orefFor >>= return . (: [])
 targets is PAny = return [idObject is]
 targets is (PList _) = return [idList is]
 targets is (PHeadTail h t) = do
@@ -413,9 +413,9 @@ relevant ids o m =
 -- to check things like delegation matches.
 match :: IDs -> Pattern -> Value -> Bool
 {-# NOINLINE match #-}
-match ids PSelf (Reference y) =
+match ids PThis (Reference y) =
     refMatch ids (idMatch ids) y
-match ids PSelf y =
+match ids PThis y =
     match ids (PMatch (Reference (idMatch ids))) (Reference (orefFrom ids y))
 match ids (PMatch (Reference x)) (Reference y) =
     refMatch ids x y
@@ -510,7 +510,7 @@ bindings p m = error $ "impossible: bindings on " ++ show (p, m)
 
 -- | given a pattern and avalue, return the bindings as a list of pairs
 bindings' :: Pattern -> Value -> [(Pattern, Value)]
-bindings' (PNamed n p) v = (psingle n PSelf, v) : bindings' p v
+bindings' (PNamed n p) v = (psingle n PThis, v) : bindings' p v
 bindings' (PPMKeyword _ ps) (Particle (PMKeyword _ mvs)) = concat
     $ map (\(p, Just v) -> bindings' p v)
     $ filter (isJust . snd)

@@ -171,6 +171,6 @@ patternToExp (PPMSingle n) =
     AppE (ConE (mkName "PPMSingle")) (LitE (StringL n))
 patternToExp (PPMKeyword ns ts) =
     AppE (AppE (ConE (mkName "PPMKeyword")) (ListE (map (LitE . StringL) ns))) (ListE (map patternToExp ts))
-patternToExp PSelf = ConE (mkName "PSelf")
 patternToExp (PSingle i n t) =
     AppE (AppE (AppE (ConE (mkName "PSingle")) (LitE (IntegerL (fromIntegral i)))) (LitE (StringL n))) (patternToExp t)
+patternToExp PThis = ConE (mkName "PThis")

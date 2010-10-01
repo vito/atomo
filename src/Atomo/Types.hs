@@ -103,12 +103,12 @@ data Pattern
     | PObject Expr
     | PPMSingle String
     | PPMKeyword [String] [Pattern]
-    | PSelf
     | PSingle
         { ppID :: !Int
         , ppName :: String
         , ppTarget :: Pattern
         }
+    | PThis
     deriving Show
 
 -- expressions

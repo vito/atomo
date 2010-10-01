@@ -99,7 +99,7 @@ instance Pretty Pattern where
     prettyFrom _ PAny = text "_"
     prettyFrom _ (PHeadTail h t) =
         parens $ pretty h <+> text "." <+> pretty t
-    prettyFrom _ (PKeyword _ ns (PSelf:vs)) =
+    prettyFrom _ (PKeyword _ ns (PThis:vs)) =
         headlessKeywords ns vs
     prettyFrom _ (PKeyword _ ns vs) = keywords ns vs
     prettyFrom _ (PList ps) =
@@ -117,10 +117,10 @@ instance Pretty Pattern where
       where
         isAny PAny = True
         isAny _ = False
-    prettyFrom _ PSelf = text "<self>"
     prettyFrom _ (PSingle _ n (PObject ETop {})) = text n
-    prettyFrom _ (PSingle _ n PSelf) = text n
+    prettyFrom _ (PSingle _ n PThis) = text n
     prettyFrom _ (PSingle _ n p) = pretty p <+> text n
+    prettyFrom _ PThis = text "<this>"
 
 
 instance Pretty Expr where
