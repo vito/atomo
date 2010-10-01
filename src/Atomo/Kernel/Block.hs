@@ -65,7 +65,7 @@ prelude = mapM_ eval [$es|
         }
 
     (a: Block) .. (b: Block) :=
-        Block new: (a contents .. b contents)
+        Block new: (a contents .. b contents) in: dispatch sender
 
     (start: Integer) to: (end: Integer) by: (diff: Integer) do: b :=
         (start to: end by: diff) each: b
