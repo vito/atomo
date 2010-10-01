@@ -7,6 +7,7 @@
 #include-section:"lists.atomo"
 #include-section:"blocks.atomo"
 #include-section:"concurrency.atomo"
+#include-section:"exceptions.atomo"
 #include-section:"numbers.atomo"
 #include-section:"bool.atomo"
 #include-section:"comparable.atomo"

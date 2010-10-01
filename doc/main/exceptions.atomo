@@ -1,0 +1,76 @@
+#title:{Exception Handling}tag:"exceptions"
+
+#define:{
+    raise: v
+    > undefined
+}body:{
+    Raises #atomo:v as an error. The return value is undefined, as it immediately aborts.
+
+    #example:({
+        { "x" print; raise: 1; "y" print } call
+    })
+}
+
+#define:{
+    action catch: recover
+    | action is-a?: Block
+    | recover is-a?: Block
+    > any
+}body:{
+    Execute #atomo:(action call), catching any errors and passing them to #atomo:recover for handling.
+
+    Yields the result of #atomo:action or #atomo:recover.
+
+    #example:({
+        { raise: @error } catch: { e | @(got: e) }
+        { @ok } catch: { @caught }
+    })
+}
+
+#define:{
+    action catch: recover ensuring: cleanup
+    | [action, recover, cleanup] all?: @(is-a?: Block)
+    > any
+}body:{
+    Execute #atomo:(action call), catching any errors and passing them to #atomo:recover for handling, and ensuring that #atomo:cleanup is called after the action is executed.
+
+    Yields the result of #atomo:action or #atomo:recover.
+
+    #example:({
+        { @ok } catch: { @caught } ensuring: { "cleaning up" print }
+        { raise: @not-ok } catch: { @caught } ensuring: { "cleaning up" print }
+    })
+}
+
+#define:{
+    action ensuring: cleanup
+    | action is-a?: Block
+    | cleanup is-a?: Block
+    > any
+}body:{
+    Execute #atomo:(action call), ensuring that #atomo:cleanup is called after the action is executed.
+
+    Yields the result of #atomo:action.
+
+    #example:({
+        { @ok } ensuring: { "cleaning up" print }
+        { raise: @not-ok } ensuring: { "cleaning up" print }
+    })
+}
+
+#define:{
+    value ensuring: cleanup do: action
+    | cleanup is-a?: Block
+    | action is-a?: Block
+    > any
+}body:{
+    Similar to #atomo:(ensuring:), but #atomo:value is passed to both blocks. This makes things like file opening and closing very natural.
+
+    Yields the result of #atomo:action.
+
+    #example:({
+        File (new: "example-file") ensuring: @close do: @(display: "Hello!")
+    })
+
+    #(@ok = File delete: "example-file")
+}
