@@ -25,6 +25,7 @@ author:              Alex Suraci
 maintainer:          i.am@toogeneric.com
 category:            Language
 build-type:          Simple
+stability:           Experimental
 
 cabal-version:       >= 1.6
 
