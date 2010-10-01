@@ -209,6 +209,8 @@ instance Pretty AtomoError where
     prettyFrom _ NoExpressions = text "no expressions to evaluate"
     prettyFrom _ (ValueNotFound d v) =
         text ("could not find a " ++ d ++ " in") <+> pretty v
+    prettyFrom _ (DynamicNeeded t) =
+        text "dynamic value not of type" <+> text t
 
 
 instance Pretty Delegates where

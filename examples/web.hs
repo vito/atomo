@@ -1,5 +1,4 @@
 {-# LANGUAGE QuasiQuotes #-}
-import Data.Dynamic
 import Data.List.Split (wordsBy)
 import Snap.Http.Server
 import Snap.Types
@@ -38,13 +37,13 @@ handle e w = do
     routes <- liftIO . flip runWith e $ do
         rs <- dispatch (single "routes" w) >>= toList
 
-        fmap (Haskell . toDyn) . forM rs $ \a -> do
+        fmap haskell . forM rs $ \a -> do
             path <- fmap fromString $ dispatch (single "from" a)
             handler <- dispatch (single "to" a)
             return (toBS path, callHandler path e w handler)
 
     case routes of
-        Right (Haskell rs) -> route (fromDyn rs (error "routes returned invalid type"))
+        Right rs -> route (fromHaskell' "[(ByteString, Snap a)]" rs)
         Left e -> writeBS (toBS ("500: Internal Server Error\n\n" ++ show (pretty e)))
 
 

@@ -64,3 +64,5 @@ asValue (BlockArity e' g) =
 asValue NoExpressions = particle "no-expressions"
 asValue (ValueNotFound d v) =
     keyParticleN ["could-not-found", "in"] [string d, v]
+asValue (DynamicNeeded t) =
+    keyParticleN ["dynamic-needed"] [string t]

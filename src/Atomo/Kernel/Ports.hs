@@ -2,7 +2,6 @@
 module Atomo.Kernel.Ports (load) where
 
 import Data.Char (isSpace)
-import Data.Dynamic
 import Data.Maybe (catMaybes)
 import System.Directory
 import System.FilePath ((</>), (<.>))
@@ -330,12 +329,10 @@ load = do
     portObj hdl = newScope $ do
         port <- eval [$e|Port clone|]
         [$p|p|] =:: port
-        [$p|p handle|] =:: Haskell (toDyn hdl)
+        [$p|p handle|] =:: haskell hdl
         here "p"
 
-    getHandle ex = do
-        Haskell hdl <- eval ex
-        return (fromDyn hdl (error "handle invalid"))
+    getHandle ex = eval ex >>= fromHaskell "Handle"
 
     hGetSegment :: Handle -> IO String
     hGetSegment h = dropSpaces >> hGetSegment'

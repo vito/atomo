@@ -86,6 +86,7 @@ data AtomoError
     | BlockArity Int Int
     | NoExpressions
     | ValueNotFound String Value
+    | DynamicNeeded String
     deriving Show
 
 -- pattern-matches
@@ -330,6 +331,24 @@ raise' = throwError . Error . particle
 string :: String -> Value
 {-# INLINE string #-}
 string = String . T.pack
+
+haskell :: Typeable a => a -> Value
+{-# INLINE haskell #-}
+haskell = Haskell . toDyn
+
+fromHaskell :: Typeable a => String -> Value -> VM a
+fromHaskell t (Haskell d) =
+    case fromDynamic d of
+        Just a -> return a
+        Nothing -> throwError (DynamicNeeded t)
+fromHaskell t _ = throwError (DynamicNeeded t)
+
+fromHaskell' :: Typeable a => String -> Value -> a
+fromHaskell' t (Haskell d) =
+    case fromDynamic d of
+        Just a -> a
+        Nothing -> error ("needed Haskell value of type " ++ t)
+fromHaskell' t _ = error ("needed haskell value of type " ++ t)
 
 list :: MonadIO m => [Value] -> m Value
 list = list' . V.fromList
