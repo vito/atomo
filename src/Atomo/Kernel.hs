@@ -199,10 +199,14 @@ joinWith t (Block s ps bes) as
 
                 res <- withTop blockScope (evalAll bes)
                 new <- objectFor blockScope
+
+                -- replace the old object with the new one
                 liftIO $ writeIORef r new
                     { oDelegates = oDelegates new \\ [s]
                     , oMethods = oMethods new
                     }
+
+                finalize (rORef blockScope) new
 
                 return res
             _ -> do
@@ -235,10 +239,13 @@ joinWith t (Block s ps bes) as
 
                 res <- withTop blockScope (evalAll bes)
                 new <- objectFor blockScope
+
                 liftIO (writeIORef r new
                     { oDelegates = oDelegates new \\ [pseudoScope, doppelganger, s]
                     , oMethods = merge ms (oMethods new)
                     })
+
+                finalize (rORef blockScope) new
 
                 return res
             _ -> do
@@ -255,4 +262,17 @@ joinWith t (Block s ps bes) as
         ( foldl (flip addMethod) os (concat $ M.elems ns)
         , foldl (flip addMethod) ok (concat $ M.elems nk)
         )
+
+    -- clear the toplevel object's methods and have it delegate to the updated
+    -- object
+    --
+    -- this is important because method definitions have this as their context,
+    -- so methods changed in the new object wouldn't otherwise be available to
+    -- them
+    finalize :: ORef -> Object -> VM ()
+    finalize r c = liftIO $ writeIORef r c
+        { oDelegates = t : oDelegates c
+        , oMethods = (M.empty, M.empty)
+        }
+
 joinWith _ v _ = error $ "impossible: joinWith on " ++ show v

@@ -86,7 +86,7 @@ prettyError :: AtomoError -> VM P.Doc
 prettyError (Error v) = fmap (P.text "error:" P.<+>) (prettyVM v)
 prettyError e = return (pretty e)
 
--- | pretty-print by sending @show to the object
+-- | pretty-print by sending \@show to the object
 prettyVM :: Value -> VM P.Doc
 prettyVM = fmap (P.text . fromString) . dispatch . (single "show")
 
