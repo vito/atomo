@@ -2,8 +2,6 @@
 {-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.Kernel.Block (load) where
 
-import qualified Data.IntMap as M
-
 import Atomo.Environment
 import Atomo.Haskell
 import Atomo.Method
@@ -28,7 +26,7 @@ load = do
 
         if length as > 0
             then throwError (BlockArity (length as) 0)
-            else doBlock M.empty s es
+            else doBlock emptyMap s es
 
     [$p|(b: Block) call: (l: List)|] =: do
         Block s ps es <- here "b" >>= findBlock

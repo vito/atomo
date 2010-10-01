@@ -5,10 +5,10 @@ import Data.IORef
 import Data.Maybe (isJust)
 import Text.PrettyPrint hiding (braces)
 import System.IO.Unsafe
-import qualified Data.IntMap as M
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
 
+import Atomo.Method
 import Atomo.Types hiding (keyword)
 import Atomo.Parser.Base (opLetters)
 
@@ -57,16 +57,16 @@ instance Pretty Object where
     prettyFrom _ (Object ds (ss, ks)) = vcat
         [ internal "object" $ parens (text "delegates to" <+> pretty ds)
 
-        , if not (M.null ss)
-              then nest 2 $ vcat (flip map (M.elems ss) $ (\ms ->
+        , if not (nullMap ss)
+              then nest 2 $ vcat (flip map (elemsMap ss) $ (\ms ->
                   vcat (map prettyMethod ms))) <>
-                      if not (M.null ks)
+                      if not (nullMap ks)
                           then char '\n'
                           else empty
               else empty
 
-        , if not (M.null ks)
-              then nest 2 . vcat $ flip map (M.elems ks) $ \ms ->
+        , if not (nullMap ks)
+              then nest 2 . vcat $ flip map (elemsMap ks) $ \ms ->
                   vcat (map prettyMethod ms) <> char '\n'
               else empty
         ]

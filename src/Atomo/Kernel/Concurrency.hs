@@ -1,8 +1,6 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Atomo.Kernel.Concurrency (load) where
 
-import qualified Data.IntMap as M
-
 import Atomo.Environment
 import Atomo.Haskell
 import Atomo.Method
@@ -33,7 +31,7 @@ load = do
 
         if length as > 0
             then throwError (BlockArity (length as) 0)
-            else spawn (doBlock M.empty s bes)
+            else spawn (doBlock emptyMap s bes)
 
     [$p|(b: Block) spawn: (l: List)|] =: do
         Block s as bes <- here "b" >>= findBlock

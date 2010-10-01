@@ -12,7 +12,6 @@ import Data.Maybe (isJust)
 import System.Directory
 import System.FilePath
 import System.IO.Unsafe
-import qualified Data.IntMap as M
 import qualified Data.Text as T
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
@@ -217,7 +216,7 @@ eval e = eval' e `catchError` pushStack
                     , (psingle "message" PThis, Message (callMessage c))
                     , (psingle "context" PThis, callContext c)
                     ]
-                , M.empty
+                , emptyMap
                 )
             }
     eval' (EList { eContents = es }) = do
@@ -243,7 +242,7 @@ newObject :: (Object -> Object) -> VM Value
 newObject f = fmap Reference . liftIO $
     newIORef . f $ Object
         { oDelegates = []
-        , oMethods = (M.empty, M.empty)
+        , oMethods = noMethods
         }
 
 -- | run x with t as its toplevel object
@@ -398,7 +397,7 @@ findFirstMethod m (v:vs) = do
 -- | find a relevant method for message `m' on object `o'
 relevant :: IDs -> Object -> Message -> Maybe Method
 relevant ids o m =
-    M.lookup (mID m) (methods m) >>= firstMatch ids m
+    lookupMap (mID m) (methods m) >>= firstMatch ids m
   where
     methods (Single {}) = fst (oMethods o)
     methods (Keyword {}) = snd (oMethods o)
@@ -477,7 +476,7 @@ runMethod (Slot { mValue = v }) _ = return v
 runMethod (Method { mPattern = p, mTop = t, mExpr = e }) m = do
     nt <- newObject $ \o -> o
         { oDelegates = [t]
-        , oMethods = (bindings p m, M.empty)
+        , oMethods = (bindings p m, emptyMap)
         }
 
     modify $ \e' -> e'
@@ -660,7 +659,7 @@ doBlock :: MethodMap -> Value -> [Expr] -> VM Value
 doBlock bms s es = do
     blockScope <- newObject $ \o -> o
         { oDelegates = [s]
-        , oMethods = (bms, M.empty)
+        , oMethods = (bms, emptyMap)
         }
 
     withTop blockScope (evalAll es)

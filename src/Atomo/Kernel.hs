@@ -4,7 +4,6 @@ module Atomo.Kernel (load) where
 import Data.IORef
 import Data.List ((\\))
 import Data.Maybe (isJust)
-import qualified Data.IntMap as M
 
 import Atomo.Debug
 import Atomo.Environment
@@ -218,7 +217,7 @@ joinWith t (Block s ps bes) as
     | otherwise = do
         -- a toplevel scope with transient definitions
         pseudoScope <- newObject $ \o -> o
-            { oMethods = (bs, M.empty)
+            { oMethods = (bs, emptyMap)
             }
 
         case t of
@@ -259,8 +258,8 @@ joinWith t (Block s ps bes) as
             toMethods . concat $ zipWith bindings' ps as
 
     merge (os, ok) (ns, nk) =
-        ( foldl (flip addMethod) os (concat $ M.elems ns)
-        , foldl (flip addMethod) ok (concat $ M.elems nk)
+        ( foldl (flip addMethod) os (concat $ elemsMap ns)
+        , foldl (flip addMethod) ok (concat $ elemsMap nk)
         )
 
     -- clear the toplevel object's methods and have it delegate to the updated
@@ -272,7 +271,7 @@ joinWith t (Block s ps bes) as
     finalize :: ORef -> Object -> VM ()
     finalize r c = liftIO $ writeIORef r c
         { oDelegates = t : oDelegates c
-        , oMethods = (M.empty, M.empty)
+        , oMethods = noMethods
         }
 
 joinWith _ v _ = error $ "impossible: joinWith on " ++ show v

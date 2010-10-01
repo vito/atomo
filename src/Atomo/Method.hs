@@ -1,4 +1,13 @@
-module Atomo.Method (addMethod, insertMethod, toMethods) where
+module Atomo.Method
+    ( addMethod
+    , elemsMap
+    , emptyMap
+    , insertMethod
+    , lookupMap
+    , noMethods
+    , nullMap
+    , toMethods
+    ) where
 
 import Data.IORef
 import Data.List (elemIndices)
@@ -100,7 +109,7 @@ insertMethod x ys@(y:ys') =
         _ -> y : insertMethod x ys'
 
 toMethods :: [(Pattern, Value)] -> MethodMap
-toMethods bs = foldl (\ss (p, v) -> addMethod (Slot p v) ss) M.empty bs
+toMethods bs = foldl (\ss (p, v) -> addMethod (Slot p v) ss) emptyMap bs
 
 -- check if two patterns are "equivalent", ignoring names for patterns
 -- and other things that mean the same thing
@@ -123,3 +132,18 @@ equivalent (PSingle ai _ at) (PSingle bi _ bt) =
     ai == bi && equivalent at bt
 equivalent PThis PThis = True
 equivalent _ _ = False
+
+noMethods :: (MethodMap, MethodMap)
+noMethods = (M.empty, M.empty)
+
+emptyMap :: MethodMap
+emptyMap = M.empty
+
+lookupMap :: Int -> MethodMap -> Maybe [Method]
+lookupMap = M.lookup
+
+nullMap :: MethodMap -> Bool
+nullMap = M.null
+
+elemsMap :: MethodMap -> [[Method]]
+elemsMap = M.elems
