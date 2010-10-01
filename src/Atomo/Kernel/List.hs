@@ -296,7 +296,7 @@ load = do
 
         liftIO . writeIORef l $ V.tail vs
 
-        return (List l)
+        return (V.head vs)
 
     [$p|(l: List) split: (d: List)|] =: do
         l <- getList [$e|l|]
