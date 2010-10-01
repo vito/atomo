@@ -36,12 +36,12 @@ load = mapM_ eval [$es|
         b call
 
     when: (b: Bool) do: (action: Block) :=
-        if: b then: action in-context else: { @ok }
+        if: b then: { action in-context call; @ok } else: { @ok }
 
     while: (test: Block) do: (action: Block) :=
         when: test call
             do: {
-                action context do: action
+                action in-context call
                 while: test do: action
             }
 
@@ -52,7 +52,7 @@ load = mapM_ eval [$es|
 
     condition: (b: Block) :=
         if: b contents empty?
-            then: { raise: "condition: no branches are true" }
+            then: { raise: @no-true-branches }
             else: {
                 es = b contents
                 [c, e] = es head targets
