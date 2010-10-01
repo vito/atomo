@@ -26,12 +26,19 @@
 }
 
 #define:{
+    l copy
+    > List
+}body:{
+    Returns a new #atomo:List with the same contents as #atomo:l.
+}
+
+#define:{
     l at: index
     | l is-a?: List
     | index is-a?: Integer
     > any
 }body:{
-    Returns the list's value at #atomo:index.
+    Returns the list's value at #atomo:index. If the index is out of bounds, #atomo:@(out-of-bounds: index for-list: l) is raised.
 
     #example:({
         [1, 2, 3] at: 1
@@ -44,7 +51,7 @@
     | index is-a?: Integer
     > List
 }body:{
-    Replace the value at #atomo:index with #atomo:v.
+    Replace the value at #atomo:index with #atomo:v. If the index is out of bounds, #atomo:@(out-of-bounds: index for-list: l) is raised.
 
     #example:({
         numbers = [1, 2, 3]
@@ -58,7 +65,7 @@
     | l is-a?: List
     > any
 }body:{
-    Returns the first value of the list.
+    Returns the first value of the list. If the list is empty, #atomo:(@empty-list) is raised.
 
     #example:({
         [1, 2, 3] head
@@ -70,7 +77,7 @@
     | l is-a?: List
     > any
 }body:{
-    Returns the last value of the list.
+    Returns the last value of the list. If the list is empty, #atomo:(@empty-list) is raised.
 
     #example:({
         [1, 2, 3] last
@@ -82,7 +89,7 @@
     | l is-a?: List
     > List
 }body:{
-    Returns all but the last value of the list.
+    Returns all but the last value of the list. If the list is empty, #atomo:(@empty-list) is raised.
 
     #example:({
         [1, 2, 3] init
@@ -94,7 +101,7 @@
     | l is-a?: List
     > List
 }body:{
-    Returns all but the first value of the list.
+    Returns all but the first value of the list. If the list is empty, #atomo:(@empty-list) is raised.
 
     #example:({
         [1, 2, 3] tail
@@ -108,7 +115,7 @@
     | end is-a?: Integer
     > List
 }body:{
-    Returns the slice of elements from #atomo:start to #atomo:end of #atomo:l.
+    Returns the slice of elements from #atomo:start to #atomo:end of #atomo:l. If the range is invalid, #atomo:@(invalid-range: @(from: start to: end) for-list: l) is raised. A range is invalid if either #atomo:start or #atomo:end are negative, or if either are out of the list's boundaries.
 
     #example:({
         [1, 2, 3, 4, 5] from: 1 to: 3
@@ -121,10 +128,11 @@
     | n is-a?: Integer
     > List
 }body:{
-    Returns a list of the first #atomo:n values of the list.
+    Returns a list of the first #atomo:n values of the list. If #atomo:n is greater than the list's length, it returns as many as it can (i.e., the entire list); the length of the returned list will not always be #atomo:n.
 
     #example:({
         [1, 2, 3, 4, 5] take: 2
+        [1, 2] take: 4
     })
 }
 
@@ -134,10 +142,11 @@
     | n is-a?: Integer
     > List
 }body:{
-    Returns a list of the values after #atomo:n values have been dropped from the start of the list.
+    Returns a list of the values after #atomo:n values have been dropped from the start of the list. If #atomo:n is greater than the list's length, it returns an empty list.
 
     #example:({
         [1, 2, 3, 4, 5] drop: 2
+        [5, 6, 7] drop: 5
     })
 }
 
@@ -146,7 +155,7 @@
     | n is-a?: Integer
     > List
 }body:{
-    Returns a list of #atomo:v replicated #atomo:n times.
+    Returns a list containing #atomo:v replicated #atomo:n times.
 
     #example:({
         "Odelay!" replicate: 5
@@ -176,11 +185,11 @@
     | b is-a?: List
     > List
 }body:{
-    Appends the two lists #atomo:a and #atomo:b.
+    Appends the two lists #atomo:a and #atomo:b, returning a new list.
 
     #example:({
         [1, 2, 3] .. [4, 5, 6]
-        "foo" .. "bar"
+        [] .. [1, 2] .. []
     })
 }
 
@@ -189,11 +198,10 @@
     | l is-a?: List
     > List
 }body:{
-    Returns a new list, a reversal of #atomo:l.
+    Returns a new list, with all values of #atomo:l, in reversed order.
 
     #example:({
         [1, 2, 3] reverse
-        "redrum" reverse
     })
 }
 
@@ -203,12 +211,21 @@
     | a responds-to?: @call:
     > List
 }body:{
-    Returns a new list, with #atomo:call: sent to #atomo:a with each value in #atomo:l.
+    Returns a new list, with #atomo:(call:) sent to #atomo:a with each value in #atomo:l.
 
     #example:({
         [1, 2, 3] map: { n | n + 1 }
         [1, 2, 3] map: @(* 2)
     })
+}
+
+#define:{
+    x zip: y
+    | x is-a?: List
+    | y is-a?: List
+    > List
+}body:{
+    Yields #atomo:(x zip: y with: @->), i.e. an association list.
 }
 
 #define:{
@@ -248,7 +265,7 @@
     | b responds-to?: @call:
     > any
 }body:{
-    Alias for #atomo:(l tail reduce: b with: l head). The list must have at least one value.
+    Alias for #atomo:(l tail reduce: b with: l head). If the list is empty, #atomo:(@empty-list) is raised.
 
     #example:({
         [1, 2, 3, 4, 5] reduce: @*
@@ -267,6 +284,24 @@
         [1, 2, 3, 4, 5] reduce: @*
         [] reduce: @* with: 1
     })
+}
+
+#define:{
+    l reduce-right: b
+    | l is-a?: List
+    | b responds-to?: @call:
+    > any
+}body:{
+    Similar to #atomo:(reduce:), but right-associative. If the list is empty, #atomo:(@empty-list) is raised.
+}
+
+#define:{
+    l reduce-right: b with: v
+    | l is-a?: List
+    | b responds-to?: @call:
+    > any
+}body:{
+    Similar to #atomo:(reduce:with:), but right-associative.
 }
 
 #define:{
@@ -405,6 +440,14 @@
 }
 
 #define:{
+    v in?: l
+    | l is-a?: List
+    > Bool
+}body:{
+    Alias for #atomo:(l contains?: v).
+}
+
+#define:{
     start to: end by: diff
     | start is-a?: Integer
     | end is-a?: Integer
@@ -465,31 +508,99 @@
 }
 
 #define:{
-    l push: v
-    | l is-a?: List
-    > List
-}body:{
-    Pushes #atomo:v onto the end of the list.
-
-    #example:({
-        a = [1, 2, 3]
-        a push: 4
-        a
-        [5, 6, 7] push: 8
-    })
-}
-
-#define:{
     l << v
     | l is-a?: List
     > List
 }body:{
-    Alias for #atomo:(l push: v).
+    Pushes a value onto the end of a list, updating it in-place.
 
     #example:({
         a = [1, 2, 3]
         a << 4
         a
-        [5, 6, 7] << 8
+    })
+}
+
+#define:{
+    v >> l
+    | l is-a?: List
+    > List
+}body:{
+    Pushes a value onto the front of a list, updating it in-place.
+
+    #example:({
+        a = [1, 2, 3]
+        4 >> a
+        a
+    })
+}
+
+#define:{
+    l pop!
+    | l is-a?: List
+    > List
+}body:{
+    Removes the first value of a list, updating it in-place and returning the popped value. If the list is empty, #atomo:(@empty-list) is raised.
+
+    #example:({
+        a = [1, 2, 3]
+        a pop!
+        a
+    })
+}
+
+#define:{
+    l split: delimiter
+    | l is-a?: List
+    | delimiter is-a?: List
+    > List
+}body:{
+    Split a list into sublists, separated by #atomo:delimiter. Note that strict equality is used for matching the delimiter; it is not an #atomo:(==) dispatch.
+
+    #example:({
+        [0, 1, 1, 2, 1, 1, 3] split: [1, 1]
+        [0, 1, 1] split: [1, 1]
+        [] split: [1, 1]
+    })
+}
+
+#define:{
+    l split-on: o
+    | l is-a?: List
+    > List
+}body:{
+    Split #atomo:l into sublists, breaking on every occurrence of #atomo:o. Also uses strict equality.
+
+    #example:({
+        [0, 1, 2, 1, 3] split-on: 1
+        [0, 1] split-on: 1
+        [] split-on: 1
+    })
+}
+
+#define:{
+    l sort
+    | l is-a?: List
+    > List
+}body:{
+    Returns a sorted list of #atomo:l's values, using the mergesort algorithm. It does this by sending #atomo:(>) to determine the larger between two values.
+
+    #example:({
+        [1, 6, 3, 0, 10] sort
+        ['z', 'f', 'x'] sort
+    })
+}
+
+#define:{
+    l sort-by: compare
+    | l is-a?: List
+    | compare responds-to?: @call:
+    > List
+}body:{
+    Returns a sorted list of #atomo:l's values, using the mergesort algorithm. #atomo:compare, when #atomo:(call:)ed with two values in #atomo:l, should return #atomo:True if the first is greater than the second, and #atomo:False otherwise.
+
+    #example:({
+        [1, 6, 3, 0, 10] sort-by: @>
+        [1, 6, 3, 0, 10] sort-by: @<
     })
 }

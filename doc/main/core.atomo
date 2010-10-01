@@ -159,13 +159,19 @@
 }
 
 #define:{
-    load: filename
+    top load: filename
     | filename is-a?: String
     > @ok
 }body:{
-    Executes the file #atomo:filename in the current scope.
+    Executes the file #atomo:filename with #atomo:top as its top scope.
+}
 
-    Loaded files are remembered (by their canonicalized, absolute path), so subsequent attempts to load them will be a no-op, returning #atomo:(@ok).
+#define:{
+    top require: filename
+    | filename is-a?: String
+    > @ok
+}body:{
+    Like #atomo:(load:), but loaded files are remembered (by their canonicalized, absolute path), so subsequent attempts to require them will be a no-op, returning #atomo:(@ok).
 }
 
 #define:{

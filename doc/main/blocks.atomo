@@ -5,15 +5,28 @@ Blocks are the bread and butter of Atomo. They represent chunks of unevaluated c
 #define:{
     Block new: expressions
     | expressions is-a?: List
-    > Expression
+    > Block
 }body:{
-    Returns a new #atomo:Block expression with #atomo:l as its contents. The list may contain a mix of #atomo:Expressions and regular values; the values will be converted to #atomo:Expressions.
-
-    Note that this returns an #atomo:Expression, not a #atomo:Block. This basically just means it isn't bound to a scope yet. You must send #atomo:evaluate to it to turn it into a #atomo:Block.
+    Calls #atomo:(new:in:) with its sender as the context.
 
     #example:({
         orig = { a = 1; a + 1 }
-        Block new: orig contents
+        (Block new: orig contents) call
+    })
+}
+
+#define:{
+    Block new: expressions in: context
+    | expressions is-a?: List
+    > Block
+}body:{
+    Returns a new #atomo:Block with #atomo:expressions as its contents and #atomo:context as its context.
+
+    #example:({
+        orig = { a = 1; a + 1 }
+        Block new: orig contents in: this
+        adder = { * 7 }
+        (Block new: adder contents in: 6) call
     })
 }
 
@@ -22,14 +35,15 @@ Blocks are the bread and butter of Atomo. They represent chunks of unevaluated c
     | b is-a?: Block
     > any
 }body:{
-    Returns the result of evaluating each expression in #atomo:b, in order, in a new lexical scope delegating to the block's outer scope. #atomo:(call)ing a block does not affect its outer scope.
+    Returns the result of evaluating each expression in #atomo:b, in order, in a new lexical scope delegating to the block's outer scope. #atomo:(call)ing a block does not affect its outer scope (unless it is a block returned by #atomo:in-context).
 
-    NOTE: Sending #atomo:call to an empty block is currently undefined behaviour. Right now it throws an error. I haven't decided what I want to happen there, but if I go soft I may just have it yield #atomo:(@ok).
+    Sending #atomo:call to an empty block raises an #atomo:(@no-expressions) error.
 
     #example:({
         a = 42
         { a = 1; a + 1 } call
         a
+        { {} call } catch: { e | e }
     })
 }
 
@@ -64,7 +78,7 @@ Blocks are the bread and butter of Atomo. They represent chunks of unevaluated c
     Returns a list of the expressions contained in #atomo:b.
 
     #example:({
-        {a = 1; a + 1} contents
+        { a = 1; a + 1 } contents
     })
 }
 
@@ -98,7 +112,7 @@ Blocks are the bread and butter of Atomo. They represent chunks of unevaluated c
     | b is-a?: Block
     > is-a?: Block
 }body:{
-    Returns a faux object that delegates to the original block, #atomo:b, but has its own #atomo:call and #atomo:(call:) methods defined. These overrides evaluate the block in its original scope, as opposed to lexically, via #atomo:(join:) and #atomo:(join:with:).
+    Returns an object that delegates to the original block, #atomo:b, but has its own #atomo:call and #atomo:(call:) methods defined. These overrides evaluate the block in its original scope, as opposed to lexically, via #atomo:(join:) and #atomo:(join:with:).
 
     #example:({
         a = 42
@@ -163,5 +177,5 @@ Blocks are the bread and butter of Atomo. They represent chunks of unevaluated c
     | b is-a?: Block
     > none
 }body:{
-    Repeatedly sends #atomo:call to #atomo:b. Never returns.
+    Repeatedly sends #atomo:call to #atomo:(b in-context). Never returns.
 }
