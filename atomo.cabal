@@ -60,9 +60,18 @@ library
     vector
 
   exposed-modules:
-    Atomo.Debug,
     Atomo.Environment,
     Atomo.Haskell,
+    Atomo.Method,
+    Atomo.Parser,
+    Atomo.Parser.Base,
+    Atomo.Parser.Pattern,
+    Atomo.Parser.Primitive,
+    Atomo.Pretty,
+    Atomo.Types
+
+  other-modules:
+    Atomo.Debug,
     Atomo.Kernel,
     Atomo.Kernel.Numeric,
     Atomo.Kernel.List,
@@ -82,14 +91,7 @@ library
     Atomo.Kernel.Exception,
     Atomo.Kernel.Environment,
     Atomo.Kernel.Eco,
-    Atomo.Kernel.Continuation,
-    Atomo.Method,
-    Atomo.Parser,
-    Atomo.Parser.Base,
-    Atomo.Parser.Pattern,
-    Atomo.Parser.Primitive,
-    Atomo.Pretty,
-    Atomo.Types
+    Atomo.Kernel.Continuation
 
 
 executable atomo
