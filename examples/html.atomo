@@ -56,15 +56,11 @@ HTML new :=
     h cdata: "<!DOCTYPE html>"
 
 (h: HTML) as: String := {
-    c = h content (map: { c |
-        if: (c is-a?: String)
-            then: { c }
-            else: { c as: String }
-    }) concat
+    c = h content (map: @(as: String)) join
 
     attrs = h attributes (map: { a |
         " " .. a from .. "=\"" .. a to .. "\""
-    }) concat
+    }) join
 
     if: (h tag empty?)
         then: { c }

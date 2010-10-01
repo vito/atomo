@@ -1,4 +1,5 @@
 {-# LANGUAGE QuasiQuotes #-}
+import Data.Dynamic
 import Data.List.Split (wordsBy)
 import Snap.Http.Server
 import Snap.Types
@@ -19,7 +20,7 @@ load = do
 
     [$p|(w: Website) start-on: (port: Integer)|] =: do
         w <- here "w"
-        Integer p <- here "port" >>= findValue isInteger
+        Integer p <- here "port" >>= findInteger
 
         liftIO $
             httpServe
@@ -37,13 +38,13 @@ handle e w = do
     routes <- liftIO . flip runWith e $ do
         rs <- dispatch (single "routes" w) >>= toList
 
-        forM rs $ \a -> do
-            path <- dispatch (single "from" a) >>= toString
+        fmap (Haskell . toDyn) . forM rs $ \a -> do
+            path <- fmap fromString $ dispatch (single "from" a)
             handler <- dispatch (single "to" a)
             return (toBS path, callHandler path e w handler)
 
     case routes of
-        Right rs -> route rs
+        Right (Haskell rs) -> route (fromDyn rs (error "routes returned invalid type"))
         Left e -> writeBS (toBS ("500: Internal Server Error\n\n" ++ show (pretty e)))
 
 
@@ -53,12 +54,11 @@ callHandler p e w h = do
     let params = ordered (map tail . filter ((== ':') . head) $ wordsBy (== '/') p) ps
 
     r <- liftIO $ flip runWith e $ do
-        as <- mapM string params
-        args <- list (w : as)
+        args <- list (w : map string params)
         dispatch (keyword ["call"] [h, args])
 
     case r of
-        Right bodyv -> toString bodyv >>= writeBS . toBS
+        Right (String b) -> writeText b
         Left e -> writeBS (toBS ("500: Internal Server Error\n\n" ++ show (pretty e)))
   where
     ordered [] _ = []
