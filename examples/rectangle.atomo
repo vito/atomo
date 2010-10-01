@@ -10,13 +10,13 @@ Rectangle new :=
 (r: Rectangle) as: String :=
     if: r filled?
         then: {
-            '#' (replicate: r cols)
+            '#' (repeat: r cols)
                 (replicate: r rows)
                 (join: "\n")
         }
         else: {
-            filled := '#' (replicate: r cols)
-            empty := '#' . (' ' replicate: (r cols - 2)) .. "#"
+            filled := '#' (repeat: r cols)
+            empty := '#' . (' ' repeat: (r cols - 2)) .. "#"
 
             ([filled] .. (empty replicate: (r rows - 2)) .. [filled])
                 join: "\n"
