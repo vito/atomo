@@ -13,4 +13,5 @@
 #include-section:"io.atomo"
 #include-section:"timer.atomo"
 #include-section:"parameters.atomo"
+#include-section:"association.atomo"
 
