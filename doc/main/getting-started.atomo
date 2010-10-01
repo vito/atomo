@@ -2,7 +2,7 @@
 
 #section:{A quick introduction to Atomo}
 
-Atomo is a unique combination of many programming ideas - prototyping, message-passing, pattern matching, multiple dispatch, and message-passing concurrency being the primary ones. It eagerly evaluated, and does not have a #italic:{null} type. It supports multiple inheritance via delegation. And it's mind-bogglingly dynamic.
+Atomo is a unique combination of many programming ideas - prototyping, message-passing, pattern matching, multiple dispatch, and message-passing concurrency being the primary ones. It is eagerly evaluated, and does not have a #italic:{null} type. It supports multiple inheritance via delegation. And it's mind-bogglingly dynamic.
 
 This guide will get you up and running with the very basics of the Atomo programming language. It assumes you have some prior programming experience, though not necessarily with a language like Atomo.
 
