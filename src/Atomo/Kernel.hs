@@ -177,8 +177,8 @@ prelude = mapM_ eval [$es|
                         v match: (Block new: es tail in: b context)
                     }
                     else: {
-                        @(yes: obj) = match
-                        obj join: (Block new: [e] in: b context)
+                        @(yes: bindings) = match
+                        bindings join: (Block new: [e] in: b context)
                     }
             }
 |]

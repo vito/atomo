@@ -1,9 +1,13 @@
 Generator = Object clone
 
-(g: Generator) yield: v := g yielder = { cc |
-    g control-state =! cc
-    g yielder yield: v
-} call/cc
+(g: Generator) yield: v := {
+    g yielder = { cc |
+        g control-state =! cc
+        g yielder yield: v
+    } call/cc
+
+    v
+} call
 
 (b: Block) generator :=
     Generator clone do: {

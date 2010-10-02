@@ -7,3 +7,5 @@
 * Message docs
 * Pattern docs
 * String docs
+* File/Directory docs
+* block patterns that don't match arguments should error
