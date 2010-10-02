@@ -1,0 +1,158 @@
+#title:{Continuations}tag:"continuations"
+
+Continuations in Atomo are very simple, and probably more powerful than they should be.
+
+But this is not a language for the faint of heart.
+
+Just keep in mind that when you use continuations, you'd better be careful how you use them - and be sure that you're not using a cannon to hammer a nail. With great power comes great responsibility.
+
+NOTE: #italic:{A few of these examples need to use blocks to get around limitations of Anatomy's interactive examples, so they may be a bit long.}
+
+#define:{
+    Continuation
+    > Object
+}body:{
+    A #atomo:Continuation is a value that represents the context of an expression that was evaluated; what was being done with it, and whatever was going to happen next.
+}
+
+#define:{
+    o call/cc
+    | o responds-to?: @call:
+    > any
+}body:{
+    Sends the current #atomo:Continuation to #atomo:o.
+
+    #example:({
+        { return | "before" print; return yield: 100; "after" print } call/cc
+    })
+    
+    When the continuation is yielded to, the appropriate before/after thunks (provided by #atomo:(before:after:), et al.) are unwound.
+}
+
+#define:{
+    c yield: v
+    | c is-a?: Continuation
+    > any
+}body:{
+    Immediately go back to #atomo:c's context and yield #atomo:v in its place.
+
+    #example:({
+        { cc | "before" print; cc yield: 1; "after" print } call/cc
+    })
+}
+
+#define:{
+    action before: pre-thunk after: post-thunk
+    | [action, pre-thunk, post-think] all?: @(is-a?: Block)
+    > any
+}body:{
+    Calls the three blocks in order, returning #atomo:(action)'s result.
+
+    In addition; #atomo:post-thunk is always called, even if an exception is raised.
+
+    #example:({
+        { "in" print } before: { "pre" print } after: { "post" print }
+    })
+
+    #atomo:pre-thunk is called whenever #atomo:action is re-entered (e.g. by jumping back into it by yielding to a continuation).
+    
+    #atomo:post-thunk is called whenever control leaves the block (e.g. by yielding to another continuation) or when #atomo:action completes.
+
+    #example:({
+        yield!: c := when: (c is-a?: Continuation) do: { c yield }
+
+        x := { "in" print; current-continuation } before: { "pre" print } after: { "post" print }
+
+
+        {
+            cont = x
+            cont print
+            yield!: cont
+        } call
+    })
+}
+
+#define:{
+    action after: post-thunk
+    | action is-a?: Block
+    | post-thunk is-a?: Block
+    > any
+}body:{
+    Shortcut for #atomo:(action before: { @ok } after: post-thunk).
+}
+
+#define:{
+    action before: pre-thunk
+    | action is-a?: Block
+    | pre-thunk is-a?: Block
+    > any
+}body:{
+    Shortcut for #atomo:(action before: pre-thunk after: { @ok }).
+}
+
+#define:{
+    init wrap: cleanup do: action
+    | init is-a?: Block
+    | cleanup responds-to?: @call:
+    | action responds-to?: @call:
+    > any
+}body:{
+    Calls #atomo:action with the #atomo:(init)'s result, ensuring that #atomo:cleanup is performed when control leaves #atomo:action and that #atomo:init is re-#atomo:(called)ed and passed to #atomo:action when control enters #atomo:action.
+
+    See also #atomo:(before:after:).
+
+    #example:({
+        { "init" print } wrap: { c | c uppercase print } do: { c | @(action: c) print }
+    })
+}
+
+#define:{
+    current-continuation
+    > Continuation
+}body:{
+    Returns the current continuation.
+
+    Be careful, though: by current, it really means #italic:{current}. You usually want to use #atomo:call/cc.
+
+    For example, if you assign this to a value, the continuation will be that assignment:
+
+    #interaction:({
+        {
+            a = current-continuation
+
+            a print
+
+            when: (a is-a?: Continuation)
+                do: { a yield: 42 }
+
+            @done
+        } call
+    })
+
+    We had to check if #atomo:a was a #atomo:Continuation there, because after the #atomo:(yield:) it becomes #atomo:42, and you'd end up with #atomo:(42 yield: 42). That is, execution continues from just after the assignment, with #atomo:a as its new value, which it happily attempts to #atomo:(yield:) to all over again.
+}
+
+#define:{
+    c call: l
+    | c is-a?: Continuation
+    | l is-a?: List && l length == 1
+    > any
+}body:{
+    A helper that just calls #atomo:(c yield: l head).
+}
+
+#define:{
+    c yield
+    | c is-a?: Continuation
+    > any
+}body:{
+    #atomo:(c yield: @ok).
+}
+
+#define:{
+    c call
+    | c is-a?: Continuation
+    > any
+}body:{
+    #atomo:(c yield: @ok).
+}

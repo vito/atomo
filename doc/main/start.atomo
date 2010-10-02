@@ -9,6 +9,7 @@
 #include-section:"blocks.atomo"
 #include-section:"concurrency.atomo"
 #include-section:"exceptions.atomo"
+#include-section:"continuations.atomo"
 #include-section:"particles.atomo"
 #include-section:"numbers.atomo"
 #include-section:"bool.atomo"
