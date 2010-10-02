@@ -136,6 +136,14 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
 }
 
 #define:{
+    o display
+    | o responds-to?: @(as: String)
+    > o
+}body:{
+    Outputs #atomo:(o as: String) to #atomo:current-output-port.
+}
+
+#define:{
     read
     > o
 }body:{

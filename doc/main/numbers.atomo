@@ -1,6 +1,31 @@
 #title:{Numbers}tag:"numbers"
 
 #define:{
+    Number
+    > Object
+}body:{
+    Any numeric value. #atomo:Integer and #atomo:Double are both #atomo:(Number)s, though presumeably quotients and complex numbers would also be valid.
+}
+
+#define:{
+    Integer
+    > Object
+}body:{
+    Integral numbers with no decimal segment.
+
+    #example-segment:({1})
+}
+
+#define:{
+    Double
+    > Object
+}body:{
+    Double-precision floating-point numbers.
+
+    #example-segment:({1.0})
+}
+
+#define:{
     a + b
     | a is-a?: Integer
     | b is-a?: Integer

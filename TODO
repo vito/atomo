@@ -3,3 +3,7 @@
 * more environment tests
 * rationals: 1/2 * 6/5 = 3/5
 * make Bool a primitive, add and/or short-circuiting operators?
+* Continuations docs
+* Message docs
+* Pattern docs
+* String docs

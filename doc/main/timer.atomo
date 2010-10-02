@@ -3,6 +3,15 @@
 #section:{The Timer Object}
 
 #define:{
+    Timer
+    > Object
+}body:{
+    An object containing various methods related to timing of events and processes.
+
+    Not to be confused for a more robust date and time system - everything in this object is to be used "relatively."
+}
+
+#define:{
     Timer now
     > Double
 }body:{
@@ -53,6 +62,17 @@
     })
 }
 
+#define:{
+    action time
+    | action is-a?: Block
+    > Double
+}body:{
+    Times how long it takes for #atomo:(action call) to complete, returning the duration in seconds.
+
+    #example:({
+        { Timer sleep: 1 second } time
+    })
+}
 
 #section:{Unit Helpers}
 

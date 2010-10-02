@@ -1,5 +1,23 @@
 #title:{Comparable}tag:"comparable"
 
+Various comparison operators and methods. All operators have a precedence level of 4.
+
+#define:{
+    a == b
+    > Bool
+}body:{
+    Is #atomo:a equivalent to #atomo:b?
+
+    For your definitions, this should be a deep equality check, as opposed to #atomo:(equals:).
+}
+
+#define:{
+    a /= b
+    > Bool
+}body:{
+    Inverse of #atomo:(==), i.e. #atomo:((a == b) not).
+}
+
 #define:{
     a equals: b
     > Bool
@@ -33,15 +51,6 @@
     > Bool
 }body:{
     Is #atomo:a greater than or equal to #atomo:b?
-}
-
-#define:{
-    a == b
-    > Bool
-}body:{
-    Is #atomo:a equivalent to #atomo:b?
-
-    For your definitions, this should be a deep equality check, as opposed to #atomo:(equals:).
 }
 
 #define:{

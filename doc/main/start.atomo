@@ -3,11 +3,13 @@
 #table-of-contents
 
 #include-section:"getting-started.atomo"
+#include-section:"ecosystem.atomo"
 #include-section:"core.atomo"
 #include-section:"lists.atomo"
 #include-section:"blocks.atomo"
 #include-section:"concurrency.atomo"
 #include-section:"exceptions.atomo"
+#include-section:"particles.atomo"
 #include-section:"numbers.atomo"
 #include-section:"bool.atomo"
 #include-section:"comparable.atomo"
