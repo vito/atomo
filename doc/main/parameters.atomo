@@ -66,7 +66,11 @@ Atomo's #atomo:Parameter system provides thread-safe overriding and defining of 
     | action is-a?: Block
     > any
 }body:{
-    Temporarily sets the value for #atomo:p in the current process to #atomo:new-value, ensuring it is restored to its old value after #atomo:action finishes executing, even if an exception is thrown. Returns the result of #atomo:action.
+    Temporarily sets the value for #atomo:p in the current process to #atomo:new-value.
+    
+    The parameter is guaranteed by #atomo:(before:after:) to be set to the new value when entering the #atomo:action continuation, and restored to the old value when leaving (or in the even of an error).
+
+    Returns the result of #atomo:action.
 
     #example:({
         x = Parameter new: 0
