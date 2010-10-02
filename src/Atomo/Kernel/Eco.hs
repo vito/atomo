@@ -126,7 +126,7 @@ loadEco = mapM_ eval [$es|
     } call
 
     Eco Package load-from: (file: String) :=
-        Eco Package clone load: file
+        Eco Package clone do: { load: file }
 
     (p: Eco Package) name: (n: String) :=
         p name = n
