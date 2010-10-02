@@ -80,6 +80,10 @@ dynamicWind callccObj = do
         }
     } call|]
 
+    [$p|(init: Block) wrap: cleanup do: action|] =::: [$e|
+        { action call: [x] } before: { x = init call } in-context after: { cleanup call: [x] }
+    |]
+
     ([$p|dynamic-unwind|] =::) =<< eval [$e|{ to d |
         condition: {
             (dynamic-winds _? == to) -> @ok

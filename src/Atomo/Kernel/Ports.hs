@@ -377,7 +377,7 @@ load = do
 prelude :: VM ()
 prelude = mapM_ eval [$es|
     with-output-to: (fn: String) do: b :=
-        Port (new: fn) ensuring: @close do: { file |
+        { Port (new: fn) } wrap: @close do: { file |
             with-output-to: file do: b
         }
 
@@ -385,7 +385,7 @@ prelude = mapM_ eval [$es|
         with: current-output-port as: p do: b
 
     with-input-from: (fn: String) do: (b: Block) :=
-        Port (new: fn) ensuring: @close do: { file |
+        { Port (new: fn) } wrap: @close do: { file |
             with-input-from: file do: b
         }
 
@@ -394,7 +394,7 @@ prelude = mapM_ eval [$es|
 
 
     with-all-output-to: (fn: String) do: b :=
-        Port (new: fn) ensuring: @close do: { file |
+        { Port (new: fn) } wrap: @close do: { file |
             with-all-output-to: file do: b
         }
 
@@ -402,7 +402,7 @@ prelude = mapM_ eval [$es|
         with-default: current-output-port as: p do: b
 
     with-all-input-from: (fn: String) do: (b: Block) :=
-        Port (new: fn) ensuring: @close do: { file |
+        { Port (new: fn) } wrap: @close do: { file |
             with-all-input-from: file do: b
         }
 
