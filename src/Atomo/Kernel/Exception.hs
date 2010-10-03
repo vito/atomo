@@ -19,7 +19,10 @@ load = do
             dispatch (keyword ["call"] [recover, args])
 
     [$p|(action: Block) catch: (recover: Block) ensuring: (cleanup: Block)|] =:
-        catchError (eval [$e|action call|]) $ \err -> do
+        catchError
+            (do r <- eval [$e|action call|]
+                eval [$e|cleanup call|]
+                return r) $ \err -> do
             recover <- here "recover"
             args <- list [asValue err]
 
