@@ -269,7 +269,13 @@ define :: Pattern -> Expr -> VM ()
 define !p !e = do
     is <- gets primitives
     newp <- methodPattern p
-    os <- targets is newp
+
+    os <-
+        case p of
+            PKeyword { ppTargets = (t:_) } | isTop t ->
+                targets is (head (ppTargets newp))
+            _ -> targets is newp
+
     m <- method newp e
     forM_ os $ \o -> do
         obj <- liftIO (readIORef o)
@@ -282,6 +288,10 @@ define !p !e = do
         liftIO . writeIORef o $
             obj { oMethods = ms newp }
   where
+    isTop PThis = True
+    isTop (PObject ETop {}) = True
+    isTop _ = False
+
     method p' (Primitive _ v) = return (\o -> Slot (setSelf o p') v)
     method p' e' = gets top >>= \t ->
         return (\o -> Method (setSelf o p') t e')
@@ -292,12 +302,9 @@ define !p !e = do
     methodPattern p'@(PKeyword { ppTargets = ts }) = do
         ts' <- mapM methodPattern ts
         return p' { ppTargets = ts' }
-    methodPattern (PObject oe) = do
-        v <- eval oe
-        return (PMatch v)
-    methodPattern (PNamed n p') = do
-        p'' <- methodPattern p'
-        return (PNamed n p'')
+    methodPattern PThis = fmap PMatch (gets top)
+    methodPattern (PObject oe) = fmap PMatch (eval oe)
+    methodPattern (PNamed n p') = fmap (PNamed n) (methodPattern p')
     methodPattern p' = return p'
 
     -- | Swap out a reference match with PThis, for inserting on the object
@@ -321,7 +328,6 @@ targets is (PKeyword _ _ ps) = do
     ts <- mapM (targets is) ps
     return (nub (concat ts))
 targets is (PNamed _ p) = targets is p
-targets _ PThis = gets top >>= orefFor >>= return . (: [])
 targets is PAny = return [idObject is]
 targets is (PList _) = return [idList is]
 targets is (PHeadTail h t) = do
