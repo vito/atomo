@@ -1,8 +1,8 @@
 Generator = Object clone
 
 (g: Generator) yield: v := {
-    g yielder = { cc |
-        g control-state =! cc
+    g yielder = { resume |
+        g control-state =! resume
         g yielder yield: v
     } call/cc
 
@@ -13,10 +13,11 @@ Generator = Object clone
     Generator clone do: {
         next := control-state _? call/cc
 
-        control-state = Parameter new: { return |
-            yielder = return
-            join: b
-        } in-context
+        control-state =
+            Parameter new: { return |
+                yielder = return
+                join: b
+            } in-context
 
         join: { start |
             reset := {

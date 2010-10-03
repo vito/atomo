@@ -178,7 +178,8 @@ prelude = mapM_ eval [$es|
                     }
                     else: {
                         @(yes: bindings) = match
-                        bindings join: (Block new: [e] in: b context)
+                        bindings delegates-to: b context
+                        e evaluate-in: bindings
                     }
             }
 |]
