@@ -43,6 +43,36 @@
 }
 
 #define:{
+    action handle: branches
+    | action is-a?: Block
+    | branches is-a?: Block
+    > any
+}body:{
+    Similar to #atomo:(catch:), but #atomo:branches is a block containing exception patterns bound to the action to take if they're thrown. If none of the exceptions match any of the patterns, the exception is re-thrown.
+
+    #example:({
+        { raise: @foo } handle: { @foo -> 1; @bar -> 2 }
+        { raise: @bar } handle: { @foo -> 1; @bar -> 2 }
+        { raise: @baz } handle: { @foo -> 1; @bar -> 2 }
+        { @ok } handle: { @foo -> 1; @bar -> 2 }
+    })
+}
+
+#define:{
+    action handle: branches ensuring: cleanup
+    | [action, branches, cleanup] all?: @(is-a?: Block)
+    > any
+}body:{
+    Similar to #atomo:(handle:), but with an #atomo:(ensuring:) block.
+
+    #example:({
+        { raise: @foo } handle: { @foo -> 1 } ensuring: { "hi" print }
+        { raise: @baz } handle: { @foo -> 1 } ensuring: { "hi" print }
+        { @ok } handle: { @foo -> 1 } ensuring: { "hi" print }
+    })
+}
+
+#define:{
     action ensuring: cleanup
     | action is-a?: Block
     | cleanup is-a?: Block

@@ -30,6 +30,21 @@ load = do
             eval [$e|cleanup call|]
             return res
 
+    [$p|(action: Block) handle: (branches: Block)|] =::: [$e|
+        action catch: { e |
+            { e match: branches } catch: { e* |
+                e* match: {
+                    @(no-matches-for: _) -> raise: e
+                    _ -> raise: e*
+                }
+            }
+        }
+    |]
+
+    [$p|(a: Block) handle: (b: Block) ensuring: (c: Block)|] =::: [$e|
+        { a handle: b } ensuring: c
+    |]
+
     [$p|(action: Block) ensuring: (cleanup: Block)|] =:
         catchError
             (do r <- eval [$e|action call|]
