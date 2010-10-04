@@ -35,7 +35,7 @@ Blocks are the bread and butter of Atomo. They represent chunks of unevaluated c
     | b is-a?: Block
     > any
 }body:{
-    Returns the result of evaluating each expression in #atomo:b, in order, in a new lexical scope delegating to the block's outer scope. #atomo:(call)ing a block does not affect its outer scope (unless it is a block returned by #atomo:in-context).
+    Returns the result of evaluating each expression in #atomo:b, in order, with a new toplevel object that delegates to the block's context. #atomo:(call)ing a block does not affect its context (unless it is a block returned by #atomo:in-context).
 
     Sending #atomo:call to an empty block raises an #atomo:(@no-expressions) error.
 
