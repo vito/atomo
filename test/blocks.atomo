@@ -1,0 +1,97 @@
+describe: "Block" as: {
+    describe: @new: as: {
+        it: "creates a new block in its sender's context" so: {
+            a = 1
+            x = { a | { a } } call: [2]
+            x call should-be: 2
+            Block (new: x contents) call should-be: 1
+        }
+    }
+
+    describe: @new:in: as: {
+        it: "creates a new block in a given context" so: {
+            a = 1
+            x = { a | { a } } call: [2]
+
+            Block (new: x contents in: x context) call
+                should-be: 2
+
+            Block (new: x contents in: this) call
+                should-be: 1
+        }
+    }
+
+    describe: @call as: {
+        it: "evaluates with the block's context available" so: {
+            a = 1
+            { a + 1 } call should-be: 2
+        }
+
+        it: "introduces a new toplevel object" so: {
+            a = 1
+            { a = 2; a } call should-be: 2
+            a should-be: 1
+        }
+
+        it: "does not leak new bindings into the block's context" so: {
+            { a = 1 } call
+            { a } should-raise: @did-not-understand:
+        }
+
+        it: "is lexically scoped" so: {
+            a = 1
+            foo: b with: a := b call
+            (foo: { a } with: 2) should-be: 1
+        }
+    }
+
+    describe: @call: as: {
+        it: "evaluates with the block's context available" so: {
+            a = 1
+            { x | a + x } (call: [1]) should-be: 2
+        }
+
+        it: "introduces a new toplevel object" so: {
+            a = 1
+            { x | a = 2; x } (call: [3]) should-be: 3
+            a should-be: 1
+        }
+
+        it: "does not leak new bindings into the block's context" so: {
+            { x | a = x } call: [0]
+            { a } should-raise: @did-not-understand:
+        }
+
+        it: "does not leak argument bindings into the block's context" so: {
+            a = 1
+            { a | a + 1 } (call: [2]) (should-be: 3)
+            a should-be: 1
+        }
+
+        it: "is lexically scoped" so: {
+            a = 1
+            foo: b with: a := b call: [a]
+            (foo: { x | a + x } with: 2) should-be: 3
+        }
+    }
+
+    describe: @in-context as: {
+        it: "evaluates directly onto its context object" so: {
+            a = 1
+            { a = 2 } in-context call
+            a should-be: 2
+        }
+
+        it: "accepts arguments" so: {
+            { x | a = x } in-context call: [1]
+            a should-be: 1
+            { x } should-raise: @did-not-understand:
+        }
+
+        it: "does not leak argument bindings" so: {
+            a = 1
+            { a | a + 1 } in-context (call: [2]) (should-be: 3)
+            a should-be: 1
+        }
+    }
+}
