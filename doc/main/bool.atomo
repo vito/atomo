@@ -3,15 +3,22 @@
 #section:{Logic}
 
 #define:{
+    Bool
+    > Object
+}body:{
+    Boolean values.
+}
+
+#define:{
     True
-    > is-a?: Bool
+    > Bool
 }body:{
     Truthiness.
 }
 
 #define:{
     False
-    > is-a?: Bool
+    > Bool
 }body:{
     Falsiness.
 }

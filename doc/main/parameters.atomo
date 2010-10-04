@@ -1,6 +1,11 @@
 #title:{Parameterization}tag:"parameters"
 
-Atomo's #atomo:Parameter system provides thread-safe overriding and defining of global values. They are usually used when it may be ideal for users to override a certain value now and then, but would not be very nice as arguments passed throughout your entire system, or as toplevel values that can be modified willy-nilly.
+#define:{
+    Parameter
+    > Object
+}body:{
+    Atomo's #atomo:Parameter system provides thread-safe overriding and defining of global values. They are usually used when it may be ideal for users to override a certain value now and then, but would not be very nice as arguments passed throughout your entire system, or as toplevel values that can be modified willy-nilly.
+}
 
 #define:{
     Parameter new: v

@@ -3,6 +3,13 @@
 Atomo uses message-passing concurrency akin to Erlang. Processes are very cheap to spawn and kill, and you can send messages to them or wait to receive values.
 
 #define:{
+    Process
+    > Object
+}body:{
+    A green thread, bound to a communications channel and a process ID.
+}
+
+#define:{
     self
     > Process
 }body:{

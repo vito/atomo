@@ -1,43 +1,46 @@
 #title:{Particles}tag:"particles"
 
-Ah, particles - an Atomo programmer's best friend. Although their primary purpose is to represent "partial messages" like #atomo:@sqrt or #atomo:@(foo: 2 bar: _), their use gracefully extends far beyond that. The fact that they can be pattern-matched makes their use as error values and success indicators very handy.
+#define:{
+    Particle
+    > Object
+}body:{
+    Ah, particles - an Atomo programmer's best friend. Although their primary purpose is to represent "partial messages" like #atomo:@sqrt or #atomo:@(foo: 2 bar: _), their use gracefully extends far beyond that. The fact that they can be pattern-matched makes their use as error values and success indicators very handy.
 
-For example, #atomo:(lookup:) uses them to indicate whether it was able to find a given key in a list of #atomo:(Association)s. If it finds the association, it returns the associated value wrapped in #atomo:@ok:. If it doesn't find it, it returns #atomo:@none. It is the dispatcher's job to decide what they want to do from there.
+    For example, #atomo:(lookup:) uses them to indicate whether it was able to find a given key in a list of #atomo:(Association)s. If it finds the association, it returns the associated value wrapped in #atomo:@ok:. If it doesn't find it, it returns #atomo:@none. It is the dispatcher's job to decide what they want to do from there.
 
-#example:({
-    [1 -> 'a', 2 -> 'b'] lookup: 1
-    [1 -> 'a', 2 -> 'b'] lookup: 3
-})
+    #example:({
+        [1 -> 'a', 2 -> 'b'] lookup: 1
+        [1 -> 'a', 2 -> 'b'] lookup: 3
+    })
 
-Many errors are also encoded as simple "structured error messages" using particles. For example, when indexing a list out of bounds:
+    Many errors are also encoded as simple "structured error messages" using particles. For example, when indexing a list out of bounds:
 
-#interaction:({
-    [1, 2, 3] at: 1
-    [1, 2, 3] at: 3
-})
+    #interaction:({
+        [1, 2, 3] at: 1
+        [1, 2, 3] at: 3
+    })
 
-This value can be caught and pattern-matched, with the keywords in the particle clearly explaining the importance and meaning of every value involved:
+    This value can be caught and pattern-matched, with the keywords in the particle clearly explaining the importance and meaning of every value involved:
 
-#atomo-block:({ [1, 2, 3] at: 3 } catch: { error |
-    error match: {
+    #atomo-block:({ [1, 2, 3] at: 3 } handle: {
         @(out-of-bounds: idx for-list: _) ->
             "out of bounds: " (.. idx show) print
-    }
-})
+    })
 
-And, since they respond to #atomo:(call:), they can be used most places where you would otherwise have a block that takes certain arguments:
+    And, since they respond to #atomo:(call:), they can be used most places where you would otherwise have a block that takes certain arguments:
 
-#interaction:({
-    [1, 2, 3] map: { n | n + 2 }
-    [1, 2, 3] map: @(+ 2)
-    [1, 4, 9] map: @sqrt
-})
+    #interaction:({
+        [1, 2, 3] map: { n | n + 2 }
+        [1, 2, 3] map: @(+ 2)
+        [1, 4, 9] map: @sqrt
+    })
 
-In this case, the values fill up the empty slots in the particle (in order), and the "completed" message is dispatched, yielding its result.
+    In this case, the values fill up the empty slots in the particle (in order), and the "completed" message is dispatched, yielding its result.
 
-There are two kinds of particles: single particles and keyword particles. Single particles are simple names, like #atomo:@sqrt. Keyword particles may contain more "filled-in" values, such as #atomo:@(+ 2) or #atomo:@foo:. Single particles only have one unfilled value; keyword particles can have any number of them, but they are keyword-delimited.
+    There are two kinds of particles: single particles and keyword particles. Single particles are simple names, like #atomo:@sqrt. Keyword particles may contain more "filled-in" values, such as #atomo:@(+ 2) or #atomo:@foo:. Single particles only have one unfilled value; keyword particles can have any number of them, but they are keyword-delimited.
 
-Keyword particles have varying forms of syntax. #code:{@+} is equivalent to #code:{@(+ _)}. #code:{@foo:bar:} is equivalent to #code:{@(foo: _ bar: _)}.
+    Keyword particles have varying forms of syntax. #code:{@+} is equivalent to #code:{@(+ _)}. #code:{@foo:bar:} is equivalent to #code:{@(foo: _ bar: _)}.
+}
 
 #define:{
     p call: l

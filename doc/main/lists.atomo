@@ -1,6 +1,42 @@
 #title:{Lists}tag:"lists"
 
 #define:{
+    List
+    > Object
+}body:{
+    Lists are mutable, growable vectors of arbitrary values.
+
+    #example-segment:({
+        [1, '2', "three", 4]
+        []
+    })
+    
+    Like objects, they are reference values:
+
+    #example:({
+        a = [1, 2]
+        b = a
+        b << 3
+        a
+    })
+}
+
+#define:{
+    l copy
+    | l is-a?: List
+    > List
+}body:{
+    Copy a list, yielding a new #atomo:List containing the same values as #atomo:l.
+
+    #example:({
+        a = [1, 2]
+        b = a copy
+        b << 3
+        a
+    })
+}
+
+#define:{
     l length
     | l is-a?: List
     > Integer

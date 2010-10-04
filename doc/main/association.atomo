@@ -1,6 +1,11 @@
 #title:{Associations}tag:"association"
 
-#atomo:Association objects are a simple mapping from one value to another.
+#define:{
+    Association
+    > Object
+}body:{
+    A simple mapping from one value to another.
+}
 
 #define:{
     a -> b

@@ -4,7 +4,7 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
 
 #define:{
     Port
-    > Port
+    > Object
 }body:{
     An object to read/write to. Typically has one slot, #atomo:handle, which points to the file descriptor (a Haskell #code:{Handle}).
 }

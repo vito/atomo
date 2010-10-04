@@ -1,6 +1,19 @@
 #title:{Blocks}tag:"blocks"
 
-Blocks are the bread and butter of Atomo. They represent chunks of unevaluated code - sort of like lists of expressions. They are first-class values and can be passed around, called, torn apart, created programmatically, sent between processes, etc.
+#define:{
+    Block
+    > Object
+}body:{
+    Blocks are the bread and butter of Atomo. They represent chunks of unevaluated code - sort of like lists of expressions, but with a reference to the context in which they were evaluated.
+    
+    They are first-class values and can be passed around, evaluated, torn apart, created programmatically, sent between processes, etc.
+
+    #example-segment:({
+        { "hi" print; @ok }
+        { a | a + 2 }
+        {}
+    })
+}
 
 #define:{
     Block new: expressions
@@ -37,13 +50,13 @@ Blocks are the bread and butter of Atomo. They represent chunks of unevaluated c
 }body:{
     Returns the result of evaluating each expression in #atomo:b, in order, with a new toplevel object that delegates to the block's context. #atomo:(call)ing a block does not affect its context (unless it is a block returned by #atomo:in-context).
 
-    Sending #atomo:call to an empty block raises an #atomo:(@no-expressions) error.
+    Sending #atomo:call to an empty block raises a #atomo:(@no-expressions) error.
 
     #example:({
         a = 42
         { a = 1; a + 1 } call
         a
-        { {} call } catch: { e | e }
+        {} call
     })
 }
 
@@ -55,10 +68,13 @@ Blocks are the bread and butter of Atomo. They represent chunks of unevaluated c
 }body:{
     Like #atomo:call, but passes some extra arguments along to #atomo:b. Any number of arguments may be passed to the block; it can use however many it wants.
 
+    Sending #atomo:(call:) to an empty block raises a #atomo:(@no-expressions) error.
+
     #example:({
         { a b | a + b } call: [1, 4]
         { a | a + 1 } call: [1]
         { 1 + 1 } call: [42]
+        {} call: [42]
     })
 
     Note that the arguments also do not affect the outer scope:
