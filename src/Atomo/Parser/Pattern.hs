@@ -182,7 +182,7 @@ ppParticle = do
             spacing
             return $ PPMKeyword [o] [PAny, PAny]
         , do
-            names <- many1 (anyIdentifier >>= \n -> char ':' >> return n)
+            names <- many1 (anyIdent >>= \n -> char ':' >> return n)
             spacing
             return $ PPMKeyword names (replicate (length names + 1) PAny) 
         ]

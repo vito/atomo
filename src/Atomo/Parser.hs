@@ -68,7 +68,7 @@ pParticle = tagged (do
         return $ EPMKeyword [op] [Nothing, Nothing]
 
     symbols = do
-        names <- many1 (anyIdentifier >>= \n -> char ':' >> return n)
+        names <- many1 (anyIdent >>= \n -> char ':' >> return n)
         spacing
         return $ EPMKeyword names (replicate (length names + 1) Nothing)
 

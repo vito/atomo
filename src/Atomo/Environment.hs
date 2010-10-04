@@ -336,6 +336,8 @@ targets is (PHeadTail h t) = do
     if idChar is `elem` ht || idString is `elem` tt
         then return [idList is, idString is]
         else return [idList is]
+targets is (PPMKeyword {}) = return [idParticle is]
+targets is (PPMSingle {}) = return [idParticle is]
 targets _ p = error $ "no targets for " ++ show p
 
 
