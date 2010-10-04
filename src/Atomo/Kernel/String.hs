@@ -33,7 +33,10 @@ load = do
     [$p|(s: String) at: (n: Integer)|] =: do
         Integer n <- here "n" >>= findInteger
         t <- getText [$e|s|]
-        return . Char $ t `T.index` fromIntegral n
+
+        if fromIntegral n >= T.length t
+            then raise ["out-of-bounds", "for-string"] [Integer n, String t]
+            else return . Char $ t `T.index` fromIntegral n
 
     [$p|"" head|] =: raise' "empty-string"
     [$p|(s: String) head|] =:
