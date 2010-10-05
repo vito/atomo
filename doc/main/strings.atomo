@@ -1,0 +1,117 @@
+#title:{Strings}tag:"strings"
+
+Strings are immutable, efficient, Unicode sequences of characters.
+
+#define:{
+    c singleton
+    | c is-a?: Char
+    > String
+}body:{
+    Creates a #atomo:String containing a single character.
+
+    #example:({
+        'a' singleton
+    })
+}
+
+#define:{
+    s as: List
+    | s is-a?: String
+    > List
+}body:{
+    Convert string #atomo:s to a #atomo:List of #atomo:(Char)s.
+
+    #example:({
+        "foo" as: List
+    })
+}
+
+#define:{
+    s length
+    | s is-a?: String
+    > Integer
+}body:{
+    Yields the length of the string.
+
+    #example:({
+        "abc" length
+        "Hello, 世界!" print length
+    })
+}
+
+#define:{
+    s empty?
+    | s is-a?: String
+    > Bool
+}body:{
+    Is the string #atomo:s empty?
+
+    #example:({
+        "" empty?
+        "no" empty?
+    })
+}
+
+#define:{
+    s at: index
+    | s is-a?: String
+    | index is-a?: Integer
+    > Char
+}body:{
+    Returns the string's character at #atomo:index. If the index is out of bounds, #atomo:@(out-of-bounds: index for-string: s) is raised.
+
+    #example:({
+        "abc" at: 1
+        "abc" at: 3
+    })
+}
+
+#define:{
+    s head
+    | s is-a?: String
+    > any
+}body:{
+    Returns the first character of the string. If the string is empty, #atomo:(@empty-string) is raised.
+
+    #example:({
+        "abc" head
+    })
+}
+
+#define:{
+    s last
+    | s is-a?: String
+    > any
+}body:{
+    Returns the last character of the string. If the string is empty, #atomo:(@empty-string) is raised.
+
+    #example:({
+        "abc" last
+    })
+}
+
+#define:{
+    s init
+    | s is-a?: String
+    > String
+}body:{
+    Returns all but the last character of the string. If the string is empty, #atomo:(@empty-string) is raised.
+
+    #example:({
+        "abc" init
+    })
+}
+
+#define:{
+    s tail
+    | s is-a?: String
+    > String
+}body:{
+    Returns all but the first character of the string. If the string is empty, #atomo:(@empty-string) is raised.
+
+    #example:({
+        "abc" tail
+    })
+}
+
+

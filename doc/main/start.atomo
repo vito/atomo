@@ -6,6 +6,7 @@
 #include-section:"ecosystem.atomo"
 #include-section:"core.atomo"
 #include-section:"lists.atomo"
+#include-section:"strings.atomo"
 #include-section:"blocks.atomo"
 #include-section:"concurrency.atomo"
 #include-section:"exceptions.atomo"
