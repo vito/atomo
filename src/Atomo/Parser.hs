@@ -301,3 +301,6 @@ continuedParse i s = do
         Right (ps', es) -> do
             modify $ \e -> e { parserState = ps' }
             return es
+
+continuedParseFile :: FilePath -> VM [Expr]
+continuedParseFile fn = liftIO (readFile fn) >>= flip continuedParse fn

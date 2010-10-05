@@ -739,8 +739,7 @@ doLoad file =
         _ -> do
             initialPath <- gets loadPath
 
-            source <- liftIO (readFile file)
-            ast <- continuedParse source file
+            ast <- continuedParseFile file
 
             modify $ \s -> s
                 { loadPath = [takeDirectory file]
