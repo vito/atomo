@@ -62,7 +62,7 @@
 #define:{
     list find: from
     | list is-a?: List
-    > in?: [@(ok: any), @none]
+    > in?: [@(ok: Association), @none]
 }body:{
     Similar to #atomo:(lookup:), except it returns the #atomo:Association object rather than its #atomo:to value.
 

@@ -9,7 +9,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 
 #define:{
     Eco
-    > is-a?: Object
+    > Object
 }body:{
     A global object that manages available and loaded packages. Your application should #atomo:initialize it at startup.
 }
@@ -133,7 +133,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 
 #define:{
     Eco Package
-    > is-a?: Object
+    > Object
 }body:{
     Represents a package, of a particular version, in the ecosystem.
 }
@@ -141,7 +141,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 #define:{
     Eco Package load-from: filename
     | file is-a?: String
-    > is-a?: Eco Package
+    > Eco Package
 }body:{
     Loads a package from #atomo:filename, typically named #code:{package.eco}.
 
@@ -226,9 +226,9 @@ Proper comparable version numbers. All of the usual suspects for anything that's
 #example:({
     (0 . 1) < (0 . 2)
     2 > (1 . 9)
-    (0 . 1) <= (0 . (1 . 1))
+    (0 . 1) <= (0 . 1 . 1)
     (0 . 1) == (0 . 1)
-    (0 . 1) == (0 . (1 . 0))
+    (0 . 1) == (0 . 1 . 0)
     2 == (2 . 0)
 })
 
@@ -236,7 +236,7 @@ Note that the parentheses used in version constructors below are not necessary; 
 
 #define:{
     Version
-    > is-a?: Object
+    > Object
 }body:{
     A version number.
 }
@@ -251,7 +251,7 @@ Note that the parentheses used in version constructors below are not necessary; 
 
     #example:({
         0 . 1
-        1 . (2 . (0 . 3))
+        1 . 2 . 0 . 3
     })
 }
 
@@ -263,7 +263,7 @@ Note that the parentheses used in version constructors below are not necessary; 
     Converts a #atomo:Version to the typical textual representation of version numbers.
 
     #example:({
-        (0 . (1 . 2)) as: String
+        (0 . 1 . 2) as: String
     })
 }
 
@@ -276,7 +276,7 @@ Note that the parentheses used in version constructors below are not necessary; 
 
     #example:({
         "0.1.2" as: Version
-        (0 . (1 . 2)) (as: String) (as: Version)
+        (0 . 1 . 2) (as: String) (as: Version)
     })
 
     Conversion from #atomo:Integer simply uses it as #atomo:major and #atomo:0 as #atomo:minor.
