@@ -19,7 +19,7 @@
 
     This defines three #atomo:fib methods on #atomo:Integer. The order of the definitions doesn't matter; they are inserted in order of precision, so the methods that pattern-match on #atomo:0 and #atomo:1 are always chosen over the more general #atomo:Integer match.
 
-    The method's expression #e is evaluated with a new toplevel object containing the bindings from the pattern-match as methods, and delegating to the context of the method definition.
+    The method's expression #atomo:e is evaluated with a new toplevel object containing the bindings from the pattern-match as methods, and delegating to the context of the method definition.
 
     #example:({
         x foo: [y, z] bar: _ := this
