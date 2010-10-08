@@ -273,7 +273,8 @@ toBinaryOps ops (EKeyword h (n:ns) (v:vs))
 toBinaryOps _ u = error $ "cannot toBinaryOps: " ++ show u
 
 isOperator :: String -> Bool
-isOperator = all (`elem` opLetters)
+isOperator "" = error "isOperator: empty string"
+isOperator (c:_) = c `elem` opLetters
 
 parser :: Parser [Expr]
 parser = do
