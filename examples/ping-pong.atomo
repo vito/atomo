@@ -1,43 +1,44 @@
 -- starts a match of n volleys
-volley: (n: Integer) := {
-    -- start up the ponger
-    proc = { notify |
+volley: (n: Integer) :=
+  { -- start up the ponger
+    proc =
+      { notify |
         pong: notify
-    } spawn: [self]
+      } spawn: [self]
 
     -- start up the pinger
     { ping: n ponger: proc } spawn
-} call
+  } call
 
 pong: notify :=
-    receive match: {
-        -- volley is done finish
-        @finished -> {
-            "         | ." print
-            "volley finished" print
-            notify ! @done
-        } call
+  receive match: {
+    -- volley is done; finish
+    @finished ->
+      { "         | ." print
+        "volley finished" print
+        notify ! @done
+      } call
 
-        -- got a ping, send a pong
-        @(ping: pid) -> {
-            "       . |" print
-            pid ! @pong
-            pong: notify -- loop
-        } call
-    }
+    -- got a ping, send a pong
+    @(ping: pid) ->
+      { "       . |" print
+        pid ! @pong
+        pong: notify -- loop
+      } call
+  }
 
 ping: 0 ponger: pid := pid ! @finished
-ping: n ponger: pid := {
-    pid ! @(ping: self)
+ping: n ponger: pid :=
+  { pid ! @(ping: self)
 
     -- got a pong send a ping
     receive match: {
-        @pong -> {
-            "|  .      " print
-            ping: (n - 1) ponger: pid
+      @pong ->
+        { "|  .      " print
+          ping: (n - 1) ponger: pid
         } call
     }
-} call
+  } call
 
 -- start up the match, doing 5 volleys
 volley: 5

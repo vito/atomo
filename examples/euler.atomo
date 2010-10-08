@@ -1,11 +1,10 @@
-problem-1: max := {
+problem-1: max :=
     (0 ... max)
         (filter: { n | 3 divides?: n || 5 divides?: n })
         sum
-} call
 
-problem-2: max := {
-    sum = 0
+problem-2: max :=
+  { sum = 0
 
     n0 = 0
     n1 = 1
@@ -19,7 +18,7 @@ problem-2: max := {
     }
 
     sum
-} call
+  } call
     
 (problem-1: 1000) print
 (problem-2: 4000000) print

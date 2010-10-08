@@ -1,31 +1,34 @@
-handler = Parameter new: (Object clone do: {
-    yield: v := raise: v
-})
+Panicker = Object clone do:
+  { yield: v := raise: v
+  }
 
-try: action catch: rescue := {
-    res = { cc |
+handler = Parameter new: Panicker
+
+try: action catch: rescue :=
+  { res =
+      { cc |
         with: handler as: cc do: action
-    } call/cc
+      } call/cc
 
-    res match: {
-        @(exception: x) -> rescue call: [x]
+    res match:
+      { @(exception: x) -> rescue call: [x]
         ok -> ok
-    }
-} call
+      }
+  } call
 
 throw: v :=
-    handler _? yield: @(exception: v)
+  handler _? yield: @(exception: v)
 
 try: {
-    try: {
-        "before" print
-        throw: @foo
-        "after" print
-    } catch: { exn |
-        @(got-inner: exn) print
-        throw: @bar
-        "after again" print
-    }
+  try: {
+    "before" print
+    throw: @foo
+    "after" print
+  } catch: { exn |
+    @(got-inner: exn) print
+    throw: @bar
+    "after again" print
+  }
 } catch: { exn |
-    @(got-outer: exn) print
+  @(got-outer: exn) print
 }

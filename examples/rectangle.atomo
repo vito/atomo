@@ -1,26 +1,26 @@
 Rectangle = Object clone
 
 Rectangle new :=
-    Rectangle clone do: {
-        rows = 0
-        cols = 0
-        filled? = False
+  Rectangle clone do:
+    { rows = 0
+      cols = 0
+      filled? = False
     }
 
 (r: Rectangle) as: String :=
-    if: r filled?
-        then: {
-            '#' (repeat: r cols)
-                (replicate: r rows)
-                (join: "\n")
-        }
-        else: {
-            filled := '#' (repeat: r cols)
-            empty := '#' . (' ' repeat: (r cols - 2)) .. "#"
+  if: r filled?
+    then: {
+      '#' (repeat: r cols)
+          (replicate: r rows)
+          (join: "\n")
+    }
+    else: {
+      filled := '#' (repeat: r cols)
+      empty := '#' . (' ' repeat: (r cols - 2)) .. "#"
 
-            ([filled] .. (empty replicate: (r rows - 2)) .. [filled])
-                join: "\n"
-        }
+      ([filled] .. (empty replicate: (r rows - 2)) .. [filled])
+          join: "\n"
+    }
 
 "42 x 4, empty" print
 Rectangle new (do: { rows = 4; cols = 42 }) print
