@@ -21,7 +21,14 @@ defaultPrec :: Integer
 defaultPrec = 5
 
 pExpr :: Parser Expr
-pExpr = try pOperator <|> try pDefine <|> try pSet <|> try pDispatch <|> pLiteral <|> parens pExpr
+pExpr = choice
+    [ try pOperator
+    , try pDefine
+    , try pSet
+    , try pDispatch
+    , pLiteral
+    , parens pExpr
+    ]
     <?> "expression"
 
 pLiteral :: Parser Expr
