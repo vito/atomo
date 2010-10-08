@@ -77,23 +77,23 @@ HTML new :=
 
 
 HTML new (do: {
-    doctype
-    html: {
-        head: {
-            meta do: {
-                http-equiv: "content-type"
-                content: "text/html; charset=utf-8"
-            }
+  doctype
+  html: {
+    head: {
+      meta do: {
+        http-equiv: "content-type"
+        content: "text/html; charset=utf-8"
+      }
 
-            title: "Getting Started"
-            link rel: "stylesheet" type: "text/css" href: "a.css"
-        }
-        body: {
-            p: "foo"
-
-            div: {
-                span: "blah!"
-            }
-        } class: "some-class" id: "hello"
+      title: "Getting Started"
+      link rel: "stylesheet" type: "text/css" href: "a.css"
     }
+    body: {
+      p: "foo"
+
+      div: {
+        span: "blah!"
+      }
+    } class: "some-class" id: "hello"
+  }
 }) print

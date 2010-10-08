@@ -6,7 +6,7 @@ queue* = Parameter new: []
 empty-queue? := queue* _? empty?
 
 enqueue: x :=
-    queue* =! (queue* _? .. [x])
+  queue* =! (queue* _? .. [x])
 
 dequeue :=
   { x = queue* _? head

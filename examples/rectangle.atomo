@@ -19,7 +19,7 @@ Rectangle new :=
       empty := '#' . (' ' repeat: (r cols - 2)) .. "#"
 
       ([filled] .. (empty replicate: (r rows - 2)) .. [filled])
-          join: "\n"
+        join: "\n"
     }
 
 "42 x 4, empty" print
