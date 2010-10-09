@@ -1,5 +1,0 @@
-use: "therie"
-
-theorize: {
-    load: "blocks.atomo"
-}

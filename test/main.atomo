@@ -1,0 +1,5 @@
+use: "therie"
+
+theorize: {
+    load: "suite/blocks.atomo"
+}
