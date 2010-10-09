@@ -60,15 +60,19 @@ loadEco = mapM_ eval [$es|
     (e: Eco) load := {
         eco = Directory home </> ".eco" </> "lib"
 
-        e packages = Directory (contents: eco) map: { c |
-            versions = Directory (contents: (eco </> c))
-            pkgs = versions map: { v |
-                Eco Package load-from:
-                    (eco </> c </> v </> "package.eco")
-            }
+        when: Directory (exists?: eco) do: {
+            e packages = Directory (contents: eco) map: { c |
+                versions = Directory (contents: (eco </> c))
+                pkgs = versions map: { v |
+                    Eco Package load-from:
+                        (eco </> c </> v </> "package.eco")
+                }
 
-            c -> pkgs (sort-by: { a b | a version < b version })
+                c -> pkgs (sort-by: { a b | a version < b version })
+            }
         }
+
+        @ok
     } call
 
     Eco path-to: (c: Eco Package) :=
