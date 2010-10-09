@@ -85,7 +85,7 @@ library
     Atomo.Kernel.Pattern,
     Atomo.Kernel.Ports,
     Atomo.Kernel.Time,
-    Atomo.Kernel.Bool,
+    Atomo.Kernel.Boolean,
     Atomo.Kernel.Association,
     Atomo.Kernel.Parameter,
     Atomo.Kernel.Exception,

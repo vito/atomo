@@ -1,9 +1,9 @@
-#title:{Boolean}tag:"bool"
+#title:{Boolean}tag:"boolean"
 
 #section:{Logic}
 
 #define:{
-    Bool
+    Boolean
     > Object
 }body:{
     Boolean values.
@@ -11,22 +11,22 @@
 
 #define:{
     True
-    > Bool
+    > Boolean
 }body:{
     Truthiness.
 }
 
 #define:{
     False
-    > Bool
+    > Boolean
 }body:{
     Falsiness.
 }
 
 #define:{
     a && b
-    | a is-a?: Bool
-    | b is-a?: Bool
+    | a is-a?: Boolean
+    | b is-a?: Boolean
     > in?: [True, False]
 }body:{
     Test whether #atomo:a and #atomo:b are both #atomo:True.
@@ -39,8 +39,8 @@
 
 #define:{
     a || b
-    | a is-a?: Bool
-    | b is-a?: Bool
+    | a is-a?: Boolean
+    | b is-a?: Boolean
     > in?: [True, False]
 }body:{
     Test if either #atomo:a or #atomo:b are #atomo:True.
@@ -48,7 +48,7 @@
 
 #define:{
     a and: b
-    | a is-a?: Bool
+    | a is-a?: Boolean
     | b is-a?: Block
     > in?: [True, False]
 }body:{
@@ -57,7 +57,7 @@
 
 #define:{
     a or: b
-    | a is-a?: Bool
+    | a is-a?: Boolean
     | b is-a?: Block
     > in?: [True, False]
 }body:{
@@ -66,7 +66,7 @@
 
 #define:{
     a not
-    | a is-a?: Bool
+    | a is-a?: Boolean
     > in?: [True, False]
 }body:{
     Negate #atomo:a.
@@ -82,7 +82,7 @@
 
 #define:{
     if: test then: yes else: no
-    | test is-a?: Bool
+    | test is-a?: Boolean
     | yes is-a?: Block
     | no is-a?: Block
     > any
@@ -96,7 +96,7 @@
 
 #define:{
     when: test do: action
-    | test is-a?: Bool
+    | test is-a?: Boolean
     | action is-a?: Block
     > @ok
 }body:{

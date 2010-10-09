@@ -23,7 +23,7 @@ import qualified Atomo.Kernel.Particle as Particle
 import qualified Atomo.Kernel.Pattern as Pattern
 import qualified Atomo.Kernel.Ports as Ports
 import qualified Atomo.Kernel.Time as Time
-import qualified Atomo.Kernel.Bool as Bool
+import qualified Atomo.Kernel.Boolean as Boolean
 import qualified Atomo.Kernel.Association as Association
 import qualified Atomo.Kernel.Parameter as Parameter
 import qualified Atomo.Kernel.Exception as Exception
@@ -140,7 +140,7 @@ load = do
 
 
     Association.load
-    Bool.load
+    Boolean.load
     Parameter.load
     Numeric.load
     List.load

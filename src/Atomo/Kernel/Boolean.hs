@@ -1,5 +1,5 @@
 {-# LANGUAGE QuasiQuotes #-}
-module Atomo.Kernel.Bool (load) where
+module Atomo.Kernel.Boolean (load) where
 
 import Atomo.Environment
 import Atomo.Haskell
@@ -7,21 +7,21 @@ import Atomo.Haskell
 
 load :: VM ()
 load = mapM_ eval [$es|
-    Bool = Object clone
+    Boolean = Object clone
     True = Object clone
     False = Object clone
 
-    True delegates-to: Bool
-    False delegates-to: Bool
+    True delegates-to: Boolean
+    False delegates-to: Boolean
 
     True && True = True
-    Bool && Bool = False
+    Boolean && Boolean = False
 
     False and: _ = False
     True and: (b: Block) := b call
 
-    True || Bool = True
-    False || (b: Bool) := b
+    True || Boolean = True
+    False || (b: Boolean) := b
 
     True or: _ = True
     False or: (b: Block) := b call
@@ -35,7 +35,7 @@ load = mapM_ eval [$es|
     if: False then: Block else: (b: Block) :=
         b call
 
-    when: (b: Bool) do: (action: Block) :=
+    when: (b: Boolean) do: (action: Block) :=
         if: b then: { action in-context call; @ok } else: { @ok }
 
     while: (test: Block) do: (action: Block) :=

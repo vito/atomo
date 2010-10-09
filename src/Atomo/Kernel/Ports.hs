@@ -203,7 +203,7 @@ load = do
             >>= fmap searchable . liftIO . getPermissions
             >>= bool
 
-    [$p|File set-readable: (fn: String) to: (b: Bool)|] =: do
+    [$p|File set-readable: (fn: String) to: (b: Boolean)|] =: do
         t <- bool True
         b <- here "b"
         fn <- getString [$e|fn|]
@@ -211,7 +211,7 @@ load = do
         liftIO (setPermissions fn (ps { readable = b == t }))
         return (particle "ok")
 
-    [$p|File set-writable: (fn: String) to: (b: Bool)|] =: do
+    [$p|File set-writable: (fn: String) to: (b: Boolean)|] =: do
         t <- bool True
         b <- here "b"
         fn <- getString [$e|fn|]
@@ -219,7 +219,7 @@ load = do
         liftIO (setPermissions fn (ps { writable = b == t }))
         return (particle "ok")
 
-    [$p|File set-executable: (fn: String) to: (b: Bool)|] =: do
+    [$p|File set-executable: (fn: String) to: (b: Boolean)|] =: do
         t <- bool True
         b <- here "b"
         fn <- getString [$e|fn|]
@@ -227,7 +227,7 @@ load = do
         liftIO (setPermissions fn (ps { executable = b == t }))
         return (particle "ok")
 
-    [$p|File set-searchable: (fn: String) to: (b: Bool)|] =: do
+    [$p|File set-searchable: (fn: String) to: (b: Boolean)|] =: do
         t <- bool True
         b <- here "b"
         fn <- getString [$e|fn|]
