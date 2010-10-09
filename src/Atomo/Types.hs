@@ -3,10 +3,10 @@ module Atomo.Types where
 
 import Control.Concurrent (ThreadId)
 import Control.Concurrent.Chan
-import "monads-fd" Control.Monad.Trans
-import "monads-fd" Control.Monad.Cont
-import "monads-fd" Control.Monad.Error
-import "monads-fd" Control.Monad.State
+import Control.Monad.Trans
+import Control.Monad.Cont
+import Control.Monad.Error
+import Control.Monad.State
 import Data.Dynamic
 import Data.Hashable (hash)
 import Data.IORef

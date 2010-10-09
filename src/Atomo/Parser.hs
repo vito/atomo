@@ -1,7 +1,8 @@
 module Atomo.Parser where
 
-import "monads-fd" Control.Monad.Error
-import "monads-fd" Control.Monad.State
+import Control.Monad.Error
+import Control.Monad.Identity
+import Control.Monad.State
 import Data.Maybe (fromJust)
 import Text.Parsec
 
@@ -292,19 +293,19 @@ cparser = do
     return (s, r)
 
 parseFile :: String -> IO (Either ParseError [Expr])
-parseFile fn = fmap (runParser parser [] fn) (readFile fn)
+parseFile fn = fmap (runIdentity . runParserT parser [] fn) (readFile fn)
 
 parseInput :: String -> Either ParseError [Expr]
-parseInput = runParser parser [] "<input>"
+parseInput = runIdentity . runParserT parser [] "<input>"
 
 parse :: Parser a -> String -> Either ParseError a
-parse p = runParser p [] "<parse>"
+parse p = runIdentity . runParserT p [] "<parse>"
 
 -- | parse input i from source s, maintaining parser state between parses
 continuedParse :: String -> String -> VM [Expr]
 continuedParse i s = do
     ps <- gets parserState
-    case runParser cparser ps s i of
+    case runIdentity (runParserT cparser ps s i) of
         Left e -> throwError (ParseError e)
         Right (ps', es) -> do
             modify $ \e -> e { parserState = ps' }

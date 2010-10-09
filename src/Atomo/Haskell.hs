@@ -14,10 +14,11 @@ module Atomo.Haskell
 
 import Control.Concurrent
 import Control.Monad
-import "monads-fd" Control.Monad.Cont (MonadCont(..), ContT(..))
-import "monads-fd" Control.Monad.Error (MonadError(..), ErrorT(..))
-import "monads-fd" Control.Monad.State (MonadState(..), gets, modify)
-import "monads-fd" Control.Monad.Trans
+import Control.Monad.Cont (MonadCont(..), ContT(..))
+import Control.Monad.Error (MonadError(..), ErrorT(..))
+import Control.Monad.Identity (runIdentity)
+import Control.Monad.State (MonadState(..), gets, modify)
+import Control.Monad.Trans
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
 import Text.Parsec
@@ -51,7 +52,7 @@ withLocation p c s = do
 
 parsing :: Monad m => Parser a -> String -> (String, Int, Int) -> m a
 parsing p s (file, line, col) =
-    case runParser pp [] "<qq>" s of
+    case runIdentity (runParserT pp [] "<qq>" s) of
         Left e -> fail (show e)
         Right e -> return e
   where

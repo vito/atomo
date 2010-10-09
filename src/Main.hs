@@ -1,7 +1,7 @@
 module Main where
 
-import "monads-fd" Control.Monad.Cont
-import "monads-fd" Control.Monad.Error
+import Control.Monad.Cont
+import Control.Monad.Error
 import Data.Char (isSpace)
 import Prelude hiding (catch)
 import System.Console.Haskeline

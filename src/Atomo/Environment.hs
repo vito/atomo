@@ -1,9 +1,9 @@
 {-# LANGUAGE BangPatterns #-}
 module Atomo.Environment where
 
-import "monads-fd" Control.Monad.Cont
-import "monads-fd" Control.Monad.Error
-import "monads-fd" Control.Monad.State
+import Control.Monad.Cont
+import Control.Monad.Error
+import Control.Monad.State
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan
 import Data.IORef
