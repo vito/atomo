@@ -1,6 +1,26 @@
 #title:{Core}tag:"core"
 
 #define:{
+    Object
+    > Object
+}body:{
+    The "root" of everything. Everything delegates to #atomo:Object, including toplevel objects.
+
+    #example:({
+        True is-a?: Object
+        is-a?: Object
+    })
+
+    Generally, to create new objects you send #atomo:clone to this if there's nothing more specific.
+
+    #example-segment:({
+        Boolean = Object clone
+        True = Boolean clone
+        False = Boolean clone
+    })
+}
+
+#define:{
     p := e
     | p is-a?: Pattern
     | e is-a?: Expression
