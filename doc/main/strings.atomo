@@ -42,7 +42,7 @@ Strings are immutable, efficient, Unicode sequences of characters.
 #define:{
     s empty?
     | s is-a?: String
-    > Bool
+    > Boolean
 }body:{
     Is the string #atomo:s empty?
 

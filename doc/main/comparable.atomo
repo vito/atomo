@@ -4,7 +4,7 @@ Various comparison operators and methods. All operators have a precedence level 
 
 #define:{
     a == b
-    > Bool
+    > Boolean
 }body:{
     Is #atomo:a equivalent to #atomo:b?
 
@@ -13,42 +13,42 @@ Various comparison operators and methods. All operators have a precedence level 
 
 #define:{
     a /= b
-    > Bool
+    > Boolean
 }body:{
     Inverse of #atomo:(==), i.e. #atomo:((a == b) not).
 }
 
 #define:{
     a equals: b
-    > Bool
+    > Boolean
 }body:{
     Performs a strict equality check on #atomo:a and #atomo:b using internal comparison. Usually you'll want #atomo:(==), but this may be used for checking identity, etc.
 }
 
 #define:{
     a < b
-    > Bool
+    > Boolean
 }body:{
     Is #atomo:a less than #atomo:b?
 }
 
 #define:{
     a > b
-    > Bool
+    > Boolean
 }body:{
     Is #atomo:a greater than #atomo:b?
 }
 
 #define:{
     a <= b
-    > Bool
+    > Boolean
 }body:{
     Is #atomo:a less than or equal to #atomo:b?
 }
 
 #define:{
     a >= b
-    > Bool
+    > Boolean
 }body:{
     Is #atomo:a greater than or equal to #atomo:b?
 }

@@ -108,7 +108,7 @@
 
 #define:{
     x delegates-to?: y
-    > Bool
+    > Boolean
 }body:{
     Returns #atomo:True if #atomo:x delegates to #atomo:y.
 
@@ -123,7 +123,7 @@
 
 #define:{
     x is-a?: y
-    > Bool
+    > Boolean
 }body:{
     Returns #atomo:True if #atomo:x is equal to #atomo:y or delegates to it, directly or indirectly.
 
@@ -141,7 +141,7 @@
 #define:{
     x responds-to?: p
     | p is-a?: Particle
-    > Bool
+    > Boolean
 }body:{
     Check if object #atomo:x would respond to the partial message #atomo:p (completed with #atomo:x to form a #atomo:Message).
 

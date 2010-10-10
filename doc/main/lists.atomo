@@ -51,7 +51,7 @@
 #define:{
     l empty?
     | l is-a?: List
-    > Bool
+    > Boolean
 }body:{
     Is the list #atomo:l empty?
 
@@ -408,7 +408,7 @@
     l all?: p
     | l is-a?: List
     | p responds-to?: @call:
-    > Bool
+    > Boolean
 }body:{
     Checks if all values in #atomo:l satisfy the predicate #atomo:p.
 
@@ -423,7 +423,7 @@
     l any?: p
     | l is-a?: List
     | p responds-to?: @call:
-    > Bool
+    > Boolean
 }body:{
     Checks if any values in #atomo:l satisfy the predicate #atomo:p.
 
@@ -437,7 +437,7 @@
 #define:{
     l and
     | l is-a?: List
-    > Bool
+    > Boolean
 }body:{
     Check if all values in the list are #atomo:True.
 
@@ -451,7 +451,7 @@
 #define:{
     l or
     | l is-a?: List
-    > Bool
+    > Boolean
 }body:{
     Check if any values in the list are #atomo:True.
 
@@ -466,7 +466,7 @@
 #define:{
     l contains?: v
     | l is-a?: List
-    > Bool
+    > Boolean
 }body:{
     Check if #atomo:v is a member of the list #atomo:l.
 
@@ -479,7 +479,7 @@
 #define:{
     v in?: l
     | l is-a?: List
-    > Bool
+    > Boolean
 }body:{
     Alias for #atomo:(l contains?: v).
 }
