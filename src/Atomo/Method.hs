@@ -100,34 +100,13 @@ insertMethod x ys@(y:ys') =
         LT -> x : ys
 
         -- replace equivalent patterns
-        _ | equivalent (mPattern x) (mPattern y) -> insertMethod x ys'
+        _ | mPattern x == mPattern y -> insertMethod x ys'
 
         -- keep looking if we're EQ or GT
         _ -> y : insertMethod x ys'
 
 toMethods :: [(Pattern, Value)] -> MethodMap
 toMethods bs = foldl (\ss (p, v) -> addMethod (Slot p v) ss) emptyMap bs
-
--- check if two patterns are "equivalent", ignoring names for patterns
--- and other things that mean the same thing
-equivalent :: Pattern -> Pattern -> Bool
-equivalent PAny PAny = True
-equivalent (PHeadTail ah at) (PHeadTail bh bt) =
-    equivalent ah bh && equivalent at bt
-equivalent (PKeyword _ ans aps) (PKeyword _ bns bps) =
-    ans == bns && and (zipWith equivalent aps bps)
-equivalent (PList aps) (PList bps) =
-    length aps == length bps && and (zipWith equivalent aps bps)
-equivalent (PMatch a) (PMatch b) = a == b
-equivalent (PNamed _ a) (PNamed _ b) = equivalent a b
-equivalent (PNamed _ a) b = equivalent a b
-equivalent a (PNamed _ b) = equivalent a b
-equivalent (PPMKeyword ans aps) (PPMKeyword bns bps) =
-    ans == bns && and (zipWith equivalent aps bps)
-equivalent (PSingle ai _ at) (PSingle bi _ bt) =
-    ai == bi && equivalent at bt
-equivalent PThis PThis = True
-equivalent _ _ = False
 
 noMethods :: (MethodMap, MethodMap)
 noMethods = (M.empty, M.empty)

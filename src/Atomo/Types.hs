@@ -73,7 +73,7 @@ data Message
 data Particle
     = PMSingle String
     | PMKeyword [String] [Maybe Value]
-    deriving Show
+    deriving (Eq, Show)
 
 data AtomoError
     = Error Value
@@ -173,12 +173,12 @@ data EMessage
         , emName :: String
         , emTarget :: Expr
         }
-    deriving Show
+    deriving (Eq, Show)
 
 data EParticle
     = EPMSingle String
     | EPMKeyword [String] [Maybe Expr]
-    deriving Show
+    deriving (Eq, Show)
 
 -- the evaluation environment
 data Env =
@@ -232,15 +232,59 @@ data IDs =
 
 -- a basic Eq instance
 instance Eq Value where
-    Char a == Char b = a == b
-    Continuation a == Continuation b = a == b
-    Double a == Double b = a == b
-    Integer a == Integer b = a == b
-    List a == List b = a == b
-    Process _ a == Process _ b = a == b
-    Reference a == Reference b = a == b
-    String a == String b = a == b
-    _ == _ = False
+    (==) (Block at aps aes) (Block bt bps bes) =
+        at == bt && aps == bps && aes == bes
+    (==) (Char a) (Char b) = a == b
+    (==) (Continuation a) (Continuation b) = a == b
+    (==) (Double a) (Double b) = a == b
+    (==) (Expression a) (Expression b) = a == b
+    (==) (Haskell _) (Haskell _) = False
+    (==) (Integer a) (Integer b) = a == b
+    (==) (List a) (List b) = a == b
+    (==) (Particle a) (Particle b) = a == b
+    (==) (Process _ a) (Process _ b) = a == b
+    (==) (Reference a) (Reference b) = a == b
+    (==) (String a) (String b) = a == b
+    (==) _ _ = False
+
+
+instance Eq Pattern where
+    -- check if two patterns are "equivalent", ignoring names for patterns
+    -- and other things that mean the same thing
+    (==) PAny PAny = True
+    (==) (PHeadTail ah at) (PHeadTail bh bt) =
+        (==) ah bh && (==) at bt
+    (==) (PKeyword _ ans aps) (PKeyword _ bns bps) =
+        ans == bns && and (zipWith (==) aps bps)
+    (==) (PList aps) (PList bps) =
+        length aps == length bps && and (zipWith (==) aps bps)
+    (==) (PMatch a) (PMatch b) = a == b
+    (==) (PNamed _ a) (PNamed _ b) = (==) a b
+    (==) (PNamed _ a) b = (==) a b
+    (==) a (PNamed _ b) = (==) a b
+    (==) (PPMKeyword ans aps) (PPMKeyword bns bps) =
+        ans == bns && and (zipWith (==) aps bps)
+    (==) (PSingle ai _ at) (PSingle bi _ bt) =
+        ai == bi && (==) at bt
+    (==) PThis PThis = True
+    (==) _ _ = False
+
+
+instance Eq Expr where
+    (==) (Define _ ap ae) (Define _ bp be) = ap == bp && ae == be
+    (==) (Set _ ap ae) (Set _ bp be) = ap == bp && ae == be
+    (==) (Dispatch _ am) (Dispatch _ bm) = am == bm
+    (==) (Operator _ ans aa ap) (Operator _ bns ba bp) =
+        ans == bns && aa == ba && ap == bp
+    (==) (Primitive _ a) (Primitive _ b) = a == b
+    (==) (EBlock _ aps aes) (EBlock _ bps bes) =
+        aps == bps && aes == bes
+    (==) (EDispatchObject _) (EDispatchObject _) = True
+    (==) (EList _ aes) (EList _ bes) = aes == bes
+    (==) (EParticle _ ap) (EParticle _ bp) = ap == bp
+    (==) (ETop _) (ETop _) = True
+    (==) (EVM _ _) (EVM _ _) = False
+    (==) _ _ = False
 
 
 instance Error AtomoError where
