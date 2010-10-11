@@ -168,8 +168,6 @@ patternToExp (PNamed n p) =
     AppE (AppE (ConE (mkName "PNamed")) (LitE (StringL n))) (patternToExp p)
 patternToExp (PObject e) =
     AppE (ConE (mkName "PObject")) (exprToExp e)
-patternToExp (PPMSingle n) =
-    AppE (ConE (mkName "PPMSingle")) (LitE (StringL n))
 patternToExp (PPMKeyword ns ts) =
     AppE (AppE (ConE (mkName "PPMKeyword")) (ListE (map (LitE . StringL) ns))) (ListE (map patternToExp ts))
 patternToExp (PSingle i n t) =

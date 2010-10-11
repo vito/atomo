@@ -337,7 +337,6 @@ targets is (PHeadTail h t) = do
         then return [idList is, idString is]
         else return [idList is]
 targets is (PPMKeyword {}) = return [idParticle is]
-targets is (PPMSingle {}) = return [idParticle is]
 targets _ p = error $ "no targets for " ++ show p
 
 
@@ -451,7 +450,6 @@ match ids (PHeadTail hp tp) (List v) =
     t = List (unsafePerformIO (newIORef (V.tail vs)))
 match ids (PHeadTail hp tp) (String t) | not (T.null t) =
     match ids hp (Char (T.head t)) && match ids tp (String (T.tail t))
-match _ (PPMSingle a) (Particle (PMSingle b)) = a == b
 match ids (PPMKeyword ans aps) (Particle (PMKeyword bns mvs)) =
     ans == bns && matchParticle ids aps mvs
 match _ _ _ = False

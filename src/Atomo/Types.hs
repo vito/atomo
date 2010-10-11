@@ -102,7 +102,6 @@ data Pattern
     | PMatch Value
     | PNamed String Pattern
     | PObject Expr
-    | PPMSingle String
     | PPMKeyword [String] [Pattern]
     | PSingle
         { ppID :: !Int

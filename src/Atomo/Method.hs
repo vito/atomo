@@ -34,7 +34,6 @@ comparePrecision (PMatch (Reference a)) (PMatch (Reference b))
 comparePrecision (PMatch _) (PMatch _) = EQ
 comparePrecision (PList as) (PList bs) =
     comparePrecisions as bs
-comparePrecision (PPMSingle _) (PPMSingle _) = EQ
 comparePrecision (PPMKeyword _ as) (PPMKeyword _ bs) =
     comparePrecisions as bs
 comparePrecision (PHeadTail ah at) (PHeadTail bh bt) =
@@ -52,8 +51,6 @@ comparePrecision (PMatch _) _ = LT
 comparePrecision _ (PMatch _) = GT
 comparePrecision (PList _) _ = LT
 comparePrecision _ (PList _) = GT
-comparePrecision (PPMSingle _) _ = LT
-comparePrecision _ (PPMSingle _) = GT
 comparePrecision (PPMKeyword _ _) _ = LT
 comparePrecision _ (PPMKeyword _ _) = GT
 comparePrecision (PHeadTail _ _) _ = LT
@@ -125,7 +122,6 @@ equivalent (PMatch a) (PMatch b) = a == b
 equivalent (PNamed _ a) (PNamed _ b) = equivalent a b
 equivalent (PNamed _ a) b = equivalent a b
 equivalent a (PNamed _ b) = equivalent a b
-equivalent (PPMSingle a) (PPMSingle b) = a == b
 equivalent (PPMKeyword ans aps) (PPMKeyword bns bps) =
     ans == bns && and (zipWith equivalent aps bps)
 equivalent (PSingle ai _ at) (PSingle bi _ bt) =

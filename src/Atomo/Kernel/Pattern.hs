@@ -46,7 +46,7 @@ load = do
         ps <- mapM toPattern es
         return (PList ps)
     toPattern (EParticle { eParticle = EPMSingle n }) =
-        return (PPMSingle n)
+        return (PMatch (Particle (PMSingle n)))
     toPattern (EParticle { eParticle = EPMKeyword ns mes }) = do
         ps <- forM mes $ \me ->
             case me of

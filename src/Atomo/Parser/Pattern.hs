@@ -170,7 +170,7 @@ ppParticle = do
     char '@'
     try keywordParticle <|> singleParticle
   where
-    singleParticle = fmap PPMSingle anyIdentifier
+    singleParticle = fmap (PMatch . Particle . PMSingle) anyIdentifier
 
     keywordParticle = choice
         [ parens $ do

@@ -110,7 +110,6 @@ instance Pretty Pattern where
     prettyFrom _ (PNamed n PAny) = text n
     prettyFrom _ (PNamed n p) = parens $ text n <> colon <+> pretty p
     prettyFrom _ (PObject e) = pretty e
-    prettyFrom _ (PPMSingle n) = char '@' <> text n
     prettyFrom _ (PPMKeyword ns ps)
         | all isAny ps = char '@' <> text (concat $ map keyword ns)
         | isAny (head ps) =
