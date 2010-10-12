@@ -43,12 +43,27 @@
 }
 
 #define:{
+    p complete: l
+    | p is-a?: Particle
+    | l is-a?: List
+    > Message
+}body:{
+    Complete the particle #atomo:p by taking values from #atomo:l, in order. If there are not enough values in the list to complete the particle, #atomo:(@particle-needed:given:) is thrown.
+
+    #example:({
+        @sqrt complete: [10]
+        @+ complete: [1, 2]
+        @+ complete: [1]
+    })
+}
+
+#define:{
     p call: l
     | p is-a?: Particle
     | l is-a?: List
     > any
 }body:{
-    Complete the particle #atomo:p by taking values from #atomo:l, in order. If there are not enough values in the list to complete the particle, an error is thrown.
+    Complete the particle #atomo:p by taking values from #atomo:l, in order, and #atomo:(send)s the completed message.
 
     #example:({
         @sqrt call: [10]
