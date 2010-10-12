@@ -46,21 +46,24 @@ load = do
         getVector [$e|l|] >>= return . V.unsafeLast
 
     -- TODO: handle negative ranges
-    [$p|(l: List) from: (s: Integer) to: (e: Integer)|] =: do
+    [$p|(l: List) from: (s: Integer) to: (e: Integer)|] =:::
+        [$e|l from: s take: (e - s)|]
+
+    [$p|(l: List) from: (s: Integer) take: (n: Integer)|] =: do
         vs <- getVector [$e|l|]
         Integer start <- here "s" >>= findInteger
-        Integer end <- here "e" >>= findInteger
+        Integer num <- here "n" >>= findInteger
 
-        if start < 0 || end < 0 || (start + end) > fromIntegral (V.length vs)
+        if start < 0 || num < 0 || (start + num) > fromIntegral (V.length vs)
             then here "l" >>= \l -> raise
-                ["invalid-range", "for-list"]
-                [ keyParticleN ["from", "to"] [Integer start, Integer end]
+                ["invalid-slice", "for-list"]
+                [ keyParticleN ["from", "take"] [Integer start, Integer num]
                 , l
                 ]
-            else list' (V.unsafeSlice
+            else list' $ V.unsafeSlice
                 (fromIntegral start)
-                (fromIntegral end)
-                vs)
+                (fromIntegral num)
+                vs
 
     [$p|[] init|] =: raise' "empty-list"
     [$p|(l: List) init|] =:
