@@ -38,21 +38,21 @@ load = do
             then raise ["out-of-bounds", "for-string"] [Integer n, String t]
             else return . Char $ t `T.index` fromIntegral n
 
-    [$p|"" head|] =: raise' "empty-string"
+    [$p|"" head|] =::: [$e|raise: @empty-string|]
     [$p|(s: String) head|] =:
         getText [$e|s|] >>= return . Char . T.head
 
-    [$p|"" last|] =: raise' "empty-string"
+    [$p|"" last|] =::: [$e|raise: @empty-string|]
     [$p|(s: String) last|] =:
         getText [$e|s|] >>= return . Char . T.last
 
     -- TODO: @from:to:
 
-    [$p|"" init|] =: raise' "empty-string"
+    [$p|"" init|] =::: [$e|raise: @empty-string|]
     [$p|(s: String) init|] =:
         getText [$e|s|] >>= return . String . T.init
 
-    [$p|"" tail|] =: raise' "empty-string"
+    [$p|"" tail|] =::: [$e|raise: @empty-string|]
     [$p|(s: String) tail|] =:
         getText [$e|s|] >>= return . String . T.tail
 
