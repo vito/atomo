@@ -58,14 +58,14 @@ describe: "dispatch" as: {
       Y fizz := @y
       Z buzz := @z
 
-      [
-        X -> [1, 'a', "one"]
+      [ X -> [1, 'a', "one"]
         Y -> [1, 'b', "two"]
         Z -> [1, 'b', "three"]
-      ] map: { a |
-        [a from foo, a from bar, a from baz]
-          should-be: a to
-      }
+      ] map:
+        { a |
+          [a from foo, a from bar, a from baz]
+            should-be: a to
+        }
 
       { X fizz } should-raise: @did-not-understand:
       Y fizz should-be: @y
