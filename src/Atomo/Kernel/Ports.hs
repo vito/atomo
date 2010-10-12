@@ -92,8 +92,28 @@ load = do
 
     [$p|read-line|] =::: [$e|current-input-port _? read-line|]
     [$p|(p: Port) read-line|] =: do
-        getHandle [$e|p handle|] >>= liftIO . TIO.hGetLine
-            >>= return . String
+        h <- getHandle [$e|p handle|]
+        done <- liftIO (hIsEOF h)
+
+        if done
+            then raise' "end-of-input"
+            else fmap String $ liftIO (TIO.hGetLine h)
+
+    [$p|read-char|] =::: [$e|current-input-port _? read-char|]
+    [$p|(p: Port) read-char|] =: do
+        h <- getHandle [$e|p handle|]
+        done <- liftIO (hIsEOF h)
+
+        if done
+            then raise' "end-of-input"
+            else do
+
+        b <- liftIO (hGetBuffering h)
+        liftIO (hSetBuffering h NoBuffering)
+        c <- liftIO (hGetChar h)
+        liftIO (hSetBuffering h b)
+
+        return (Char c)
 
     [$p|contents|] =::: [$e|current-input-port _? contents|]
     [$p|(p: Port) contents|] =:
