@@ -656,6 +656,18 @@ bool :: Bool -> VM Value
 bool True = here "True"
 bool False = here "False"
 
+ifVM :: VM Value -> VM a -> VM a -> VM a
+ifVM c a b = do
+    true <- bool True
+    r <- c
+
+    if r == true
+        then a
+        else b
+
+ifE :: Expr -> VM a -> VM a -> VM a
+ifE = ifVM . eval
+
 referenceTo :: Value -> VM Value
 {-# INLINE referenceTo #-}
 referenceTo = fmap Reference . orefFor
