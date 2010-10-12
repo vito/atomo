@@ -1,4 +1,4 @@
-describe: "Block" as: {
+describe: "blocks" as: {
     describe: @new: as: {
         it: "creates a new block in its sender's context" so: {
             a = 1

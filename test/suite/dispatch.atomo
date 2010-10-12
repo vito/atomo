@@ -1,0 +1,101 @@
+describe: "dispatch" as: {
+  describe: "single dispatch" as: {
+    it: "finds trivial methods" so: {
+      X = Object clone
+      X foo := 1
+      X foo should-be: 1
+    }
+
+    describe: "pattern-matching" as: {
+      on: default match: targets :=
+        { targets init (zip: [1, 2]) each:
+            { t |
+              (t from) foo = t to
+            }
+
+          (default) foo = 3
+
+
+          targets (zip: [1, 2, 3]) each:
+            { p |
+              p from foo should-be: p to
+            }
+        } call
+
+      it: "matches on Integers" so: {
+        on: Integer match: [0, 1, 2]
+      }
+
+      it: "matches on Chars" so: {
+        on: Char match: ['a', 'b', 'c']
+      }
+
+      it: "matches on Doubles" so: {
+        on: Double match: [1.0, 2.0, 3.0]
+      }
+
+      it: "matches on single Particles" so: {
+        on: Particle match: [@foo, @bar, @baz]
+      }
+
+      it: "matches on keyword Particles" so: {
+        on: Particle match: [@foo:, @bar:, @baz:]
+      }
+    }
+
+    it: "follows direct delegation" so: {
+      X = Object clone
+      Y = X clone
+      Z = Y clone
+
+      X foo := 1
+      X bar := 'a'
+      Y bar := 'b'
+      X baz := "one"
+      Y baz := "two"
+      Z baz := "three"
+
+      Y fizz := @y
+      Z buzz := @z
+
+      [
+        X -> [1, 'a', "one"]
+        Y -> [1, 'b', "two"]
+        Z -> [1, 'b', "three"]
+      ] map: { a |
+        [a from foo, a from bar, a from baz]
+          should-be: a to
+      }
+
+      { X fizz } should-raise: @did-not-understand:
+      Y fizz should-be: @y
+      Z fizz should-be: @y
+
+      { X buzz } should-raise: @did-not-understand:
+      { Y buzz } should-raise: @did-not-understand:
+      Z buzz should-be: @z
+    }
+
+    it: "goes through delegates in order" so: {
+      A = Object clone
+      B = Object clone
+
+      A foo := @a
+      B foo := @b
+
+      { AB = Object clone
+        AB delegates-to: A
+        AB delegates-to: B
+
+        AB foo should-be: @a
+      } call
+
+      { BA = Object clone
+        BA delegates-to: B
+        BA delegates-to: A
+
+        BA foo should-be: @b
+      } call
+    }
+  }
+}
