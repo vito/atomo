@@ -367,8 +367,8 @@ load = do
             c <- hGetChar h
 
             case c of
-                '"' -> hGetUntil h '"' >>= return . (c:)
-                '\'' -> hGetUntil h '\'' >>= return . (c:)
+                '"' -> wrapped '"'
+                '\'' -> wrapped '\''
                 '(' -> nested '(' ')'
                 '{' -> nested '{' '}'
                 '[' -> nested '[' ']'
@@ -378,6 +378,11 @@ load = do
                     cs <- hGetSegment' stop
                     return (c:cs)
           where
+            wrapped d = do
+                w <- fmap (d:) $ hGetUntil h d
+                rest <- hGetSegment' stop
+                return (w ++ rest)
+
             nested c end = do
                 sub <- fmap (c:) $ hGetSegment' (Just end)
                 rest <- hGetSegment' stop
