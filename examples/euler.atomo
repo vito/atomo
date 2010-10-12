@@ -10,7 +10,6 @@ problem-2: max :=
 
     [i, j] = [0, 1]
     while: { j < max } do: {
-
       when: j even?
         do: { sum = sum + j }
 
