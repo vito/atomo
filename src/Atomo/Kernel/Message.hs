@@ -13,6 +13,10 @@ load = do
             Single {} -> return (particle "single")
             Keyword {} -> return (particle "keyword")
 
+    [$p|(m: Message) send|] =: do
+        Message m <- here "m" >>= findMessage
+        dispatch m
+
     [$p|(m: Message) particle|] =: do
         Message m <- here "m" >>= findMessage
         case m of
