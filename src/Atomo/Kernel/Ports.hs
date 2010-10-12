@@ -349,7 +349,7 @@ load = do
     getHandle ex = eval ex >>= fromHaskell "Handle"
 
     hGetSegment :: Handle -> IO String
-    hGetSegment h = dropSpaces >> hGetSegment'
+    hGetSegment h = dropSpaces >> hGetSegment' Nothing
       where
         dropSpaces = do
             c <- hLookAhead h
@@ -357,7 +357,7 @@ load = do
                 then hGetChar h >> dropSpaces
                 else return ()
 
-        hGetSegment' = do
+        hGetSegment' stop = do
             end <- hIsEOF h
 
             if end
@@ -369,13 +369,19 @@ load = do
             case c of
                 '"' -> hGetUntil h '"' >>= return . (c:)
                 '\'' -> hGetUntil h '\'' >>= return . (c:)
-                '(' -> hGetUntil h ')' >>= return . (c:)
-                '{' -> hGetUntil h '}' >>= return . (c:)
-                '[' -> hGetUntil h ']' >>= return . (c:)
-                s | isSpace s -> return [c]
+                '(' -> nested '(' ')'
+                '{' -> nested '{' '}'
+                '[' -> nested '[' ']'
+                s | (stop == Nothing && isSpace s) || (Just s == stop) ->
+                    return [c]
                 _ -> do
-                    cs <- hGetSegment'
+                    cs <- hGetSegment' stop
                     return (c:cs)
+          where
+            nested c end = do
+                sub <- fmap (c:) $ hGetSegment' (Just end)
+                rest <- hGetSegment' stop
+                return (sub ++ rest)
 
     hGetUntil :: Handle -> Char -> IO String
     hGetUntil h x = do
