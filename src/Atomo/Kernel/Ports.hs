@@ -102,12 +102,6 @@ load = do
     [$p|read-char|] =::: [$e|current-input-port _? read-char|]
     [$p|(p: Port) read-char|] =: do
         h <- getHandle [$e|p handle|]
-        done <- liftIO (hIsEOF h)
-
-        if done
-            then raise' "end-of-input"
-            else do
-
         b <- liftIO (hGetBuffering h)
         liftIO (hSetBuffering h NoBuffering)
         c <- liftIO (hGetChar h)
