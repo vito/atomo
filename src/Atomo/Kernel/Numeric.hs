@@ -18,13 +18,27 @@ load = do
     eval [$e|Integer delegates-to: Number|]
     eval [$e|Double delegates-to: Number|]
 
-    [$p|(a: Integer) sqrt|] =: do
-        Integer a <- here "a" >>= findInteger
-        return (Double (sqrt (fromIntegral a)))
+    [$p|(i: Integer) sqrt|] =: do
+        Integer i <- here "i" >>= findInteger
+        return (Double (sqrt (fromIntegral i)))
 
-    [$p|(a: Double) sqrt|] =: do
-        Double a <- here "a" >>= findDouble
-        return (Double (sqrt a))
+    [$p|(d: Double) sqrt|] =: do
+        Double d <- here "d" >>= findDouble
+        return (Double (sqrt d))
+
+    [$p|(d: Double) ceiling|] =: do
+        Double d <- here "d" >>= findDouble
+        return (Integer (ceiling d))
+
+    [$p|(d: Double) round|] =: do
+        Double d <- here "d" >>= findDouble
+        return (Integer (round d))
+
+    [$p|(d: Double) floor|] =: do
+        Double d <- here "d" >>= findDouble
+        return (Integer (floor d))
+
+    [$p|(d: Double) as: Integer|] =::: [$e|d floor|]
 
     [$p|(a: Integer) + (b: Integer)|] =: primII (+)
     [$p|(a: Integer) + (b: Double)|] =: primID (+)
