@@ -8,3 +8,4 @@
 * String docs
 * File/Directory docs
 * block patterns that don't match arguments should error
+* correct hint error doubling
