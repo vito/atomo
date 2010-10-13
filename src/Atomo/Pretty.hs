@@ -2,6 +2,7 @@
 module Atomo.Pretty (Pretty(..), prettyStack) where
 
 import Data.IORef
+import Data.List (nub)
 import Data.Maybe (isJust)
 import Text.PrettyPrint hiding (braces)
 import System.IO.Unsafe
@@ -182,7 +183,7 @@ instance Pretty AtomoError where
     prettyFrom _ (ImportError (H.UnknownError s)) =
         text "import error:" <+> text s
     prettyFrom _ (ImportError (H.WontCompile ges)) =
-        text "import error:" <+> sep (map text (map H.errMsg ges))
+        text "import error:" $$ nest 2 (vcat (map (\e -> text e <> char '\n') (nub (map H.errMsg ges))))
     prettyFrom _ (ImportError (H.NotAllowed s)) =
         text "import error:" <+> text s
     prettyFrom _ (ImportError (H.GhcException s)) =
