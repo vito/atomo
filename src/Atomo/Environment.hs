@@ -57,7 +57,13 @@ run x = runWith (initEnv >> x) startEnv
 
 -- | evaluate x with e as the environment
 runWith :: VM Value -> Env -> IO (Either AtomoError Value)
-runWith x e = evalStateT (runContT (runErrorT x) return) e
+runWith x e = interpret (evalStateT (runContT (runErrorT x) return) e)
+  where
+    interpret y = do
+        x <- H.runInterpreter y
+        case x of
+            Left e -> return (Left $ ImportError e)
+            Right x -> return x
 
 -- | print an error, including the previous 10 expressions evaluated
 -- with the most recent on the bottom
@@ -735,12 +741,12 @@ doLoad :: FilePath -> VM Value
 doLoad file =
     case takeExtension file of
         ".hs" -> do
-            int <- liftIO . H.runInterpreter $ do
-                H.loadModules [file]
-                H.setTopLevelModules ["Main"]
-                H.interpret "load" (H.as :: VM ())
+            lift . lift . lift $ H.loadModules [file]
+            lift . lift . lift $ H.setTopLevelModules ["Main"]
 
-            load <- either (throwError . ImportError) return int
+            load <- lift . lift . lift $ H.interpret "load" (H.as :: VM ())
+
+            lift . lift . lift $ H.reset
 
             load
 
