@@ -14,6 +14,35 @@ load = do
         p <- toPattern e
         return (Pattern p)
 
+    [$p|(p: Pattern) name|] =: do
+        Pattern p <- here "p" >>= findPattern
+
+        case p of
+            PNamed n _ -> return (string n)
+            PSingle { ppName = n } -> return (string n)
+            _ -> raise ["no-name-for"] [Pattern p]
+
+    [$p|(p: Pattern) names|] =: do
+        Pattern p <- here "p" >>= findPattern
+
+        case p of
+            PKeyword { ppNames = ns } -> list (map string ns)
+            _ -> raise ["no-names-for"] [Pattern p]
+
+    [$p|(p: Pattern) target|] =: do
+        Pattern p <- here "p" >>= findPattern
+
+        case p of
+            PSingle { ppTarget = t } -> return (Pattern t)
+            _ -> raise ["no-target-for"] [Pattern p]
+
+    [$p|(p: Pattern) targets|] =: do
+        Pattern p <- here "p" >>= findPattern
+
+        case p of
+            PKeyword { ppTargets = ts } -> list (map Pattern ts)
+            _ -> raise ["no-targets-for"] [Pattern p]
+
     [$p|(p: Pattern) matches?: v|] =: do
         Pattern p <- here "p" >>= findPattern
         v <- here "v"
