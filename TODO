@@ -9,3 +9,4 @@
 * File/Directory docs
 * block patterns that don't match arguments should error
 * correct hint error doubling
+* correct @(foo: 2 + 2) to be @(foo: (2 + 2)) (also affects keyword cascades)
