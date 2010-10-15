@@ -141,6 +141,7 @@ initEnv = do
         , ("Continuation", \is r -> is { idContinuation = r })
         , ("Double", \is r -> is { idDouble = r })
         , ("Expression", \is r -> is { idExpression = r })
+        , ("Haskell", \is r -> is { idHaskell = r })
         , ("Integer", \is r -> is { idInteger = r })
         , ("List", \is r -> is { idList = r })
         , ("Message", \is r -> is { idMessage = r })
@@ -704,6 +705,7 @@ orefFrom ids (Char _) = idChar ids
 orefFrom ids (Continuation _) = idContinuation ids
 orefFrom ids (Double _) = idDouble ids
 orefFrom ids (Expression _) = idExpression ids
+orefFrom ids (Haskell _) = idHaskell ids
 orefFrom ids (Integer _) = idInteger ids
 orefFrom ids (List _) = idList ids
 orefFrom ids (Message _) = idMessage ids
@@ -711,7 +713,6 @@ orefFrom ids (Particle _) = idParticle ids
 orefFrom ids (Process _ _) = idProcess ids
 orefFrom ids (Pattern _) = idPattern ids
 orefFrom ids (String _) = idString ids
-orefFrom _ v = error $ "no orefFrom for: " ++ show v
 
 -- load a file, remembering it to prevent repeated loading
 -- searches with cwd as lowest priority

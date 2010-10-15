@@ -194,9 +194,6 @@ data Env =
         , parserState :: Operators
         }
 
--- simple mapping from operator name -> associativity and predence
-type Operators = [(String, (Assoc, Integer))]
-
 -- operator associativity
 data Assoc = ALeft | ARight
     deriving (Eq, Show)
@@ -219,6 +216,7 @@ data IDs =
         , idContinuation :: ORef
         , idDouble :: ORef
         , idExpression :: ORef
+        , idHaskell :: ORef
         , idInteger :: ORef
         , idList :: ORef
         , idMessage :: ORef
@@ -228,6 +226,15 @@ data IDs =
         , idString :: ORef
         }
 
+
+-- helper synonyms
+type Operators = [(String, (Assoc, Integer))] -- name -> assoc, precedence
+type Delegates = [Value]
+type Channel = Chan Value
+type MethodMap = M.IntMap [Method]
+type ORef = IORef Object
+type VVector = IORef (V.Vector Value)
+type Continuation = IORef (Value -> VM Value)
 
 
 -- a basic Eq instance
@@ -277,8 +284,8 @@ instance Eq Expr where
     (==) (Operator _ ans aa ap) (Operator _ bns ba bp) =
         ans == bns && aa == ba && ap == bp
     (==) (Primitive _ a) (Primitive _ b) = a == b
-    (==) (EBlock _ aps aes) (EBlock _ bps bes) =
-        aps == bps && aes == bes
+    (==) (EBlock _ aas aes) (EBlock _ bas bes) =
+        aas == bas && aes == bes
     (==) (EDispatchObject _) (EDispatchObject _) = True
     (==) (EList _ aes) (EList _ bes) = aes == bes
     (==) (EParticle _ ap) (EParticle _ bp) = ap == bp
@@ -290,14 +297,6 @@ instance Eq Expr where
 instance Error AtomoError where
     strMsg = Error . string
 
-
--- helper synonyms
-type Delegates = [Value]
-type Channel = Chan Value
-type MethodMap = M.IntMap [Method]
-type ORef = IORef Object
-type VVector = IORef (V.Vector Value)
-type Continuation = IORef (Value -> VM Value)
 
 instance Show Channel where
     show _ = "Channel"
@@ -317,6 +316,7 @@ instance Show (VM a) where
 instance Typeable (VM a) where
     typeOf _ = mkTyConApp (mkTyCon "VM") [typeOf ()]
 
+
 startEnv :: Env
 startEnv = Env
     { top = error "top object not set"
@@ -329,6 +329,7 @@ startEnv = Env
             , idContinuation = error "idContinuation not set"
             , idDouble = error "idDouble not set"
             , idExpression = error "idExpression not set"
+            , idHaskell = error "idHaskell not set"
             , idInteger = error "idInteger not set"
             , idList = error "idList not set"
             , idMessage = error "idMessage not set"
@@ -431,6 +432,8 @@ ekeyword :: [String] -> [Expr] -> EMessage
 {-# INLINE ekeyword #-}
 ekeyword ns = EKeyword (hash ns) ns
 
+-- | Fill in the empty values of a particle. The number of values missing
+-- is expected to be equal to the number of values provided.
 completeKP :: [Maybe Value] -> [Value] -> [Value]
 completeKP [] [] = []
 completeKP (Nothing:mvs') (v:vs') = v : completeKP mvs' vs'
