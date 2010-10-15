@@ -78,6 +78,7 @@ library
     Atomo.Kernel.Expression,
     Atomo.Kernel.Concurrency,
     Atomo.Kernel.Message,
+    Atomo.Kernel.Method,
     Atomo.Kernel.Comparable,
     Atomo.Kernel.Particle,
     Atomo.Kernel.Pattern,

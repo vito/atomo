@@ -46,6 +46,8 @@ instance Pretty Value where
         brackets . hsep . punctuate comma $ map (prettyFrom CList) vs
       where vs = V.toList (unsafePerformIO (readIORef l))
     prettyFrom _ (Message m) = internal "message" $ pretty m
+    prettyFrom _ (Method (Slot p _)) = internal "slot" $ parens (pretty p)
+    prettyFrom _ (Method (Responder p _ _)) = internal "responder" $ parens (pretty p)
     prettyFrom _ (Particle p) = char '@' <> pretty p
     prettyFrom _ (Pattern p) = internal "pattern" $ pretty p
     prettyFrom _ (Process _ tid) =
@@ -74,7 +76,7 @@ instance Pretty Object where
       where
         prettyMethod (Slot { mPattern = p, mValue = v }) =
             prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v
-        prettyMethod (Method { mPattern = p, mExpr = e }) =
+        prettyMethod (Responder { mPattern = p, mExpr = e }) =
             prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine e
 
 instance Pretty Message where

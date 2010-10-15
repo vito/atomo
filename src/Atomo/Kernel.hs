@@ -18,6 +18,7 @@ import qualified Atomo.Kernel.Block as Block
 import qualified Atomo.Kernel.Expression as Expression
 import qualified Atomo.Kernel.Concurrency as Concurrency
 import qualified Atomo.Kernel.Message as Message
+import qualified Atomo.Kernel.Method as Method
 import qualified Atomo.Kernel.Comparable as Comparable
 import qualified Atomo.Kernel.Particle as Particle
 import qualified Atomo.Kernel.Pattern as Pattern
@@ -71,6 +72,17 @@ load = do
 
         findMethod x completed
             >>= bool . isJust
+
+    [$p|(o: Object) methods|] =: do
+        o <- here "o" >>= objectFor
+        let (ss, ks) = oMethods o
+        singles <- mapM (list . map Method) (elemsMap ss) >>= list
+        keywords <- mapM (list . map Method) (elemsMap ks) >>= list
+
+        ([$p|ms|] =::) =<< eval [$e|Object clone|]
+        [$p|ms singles|] =:: singles
+        [$p|ms keywords|] =:: keywords
+        here "ms"
 
     [$p|(s: String) as: String|] =::: [$e|s|]
 
@@ -149,6 +161,7 @@ load = do
     Expression.load
     Concurrency.load
     Message.load
+    Method.load
     Comparable.load
     Particle.load
     Pattern.load

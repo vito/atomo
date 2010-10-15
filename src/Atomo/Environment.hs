@@ -145,6 +145,7 @@ initEnv = do
         , ("Integer", \is r -> is { idInteger = r })
         , ("List", \is r -> is { idList = r })
         , ("Message", \is r -> is { idMessage = r })
+        , ("Method", \is r -> is { idMethod = r })
         , ("Particle", \is r -> is { idParticle = r })
         , ("Process", \is r -> is { idProcess = r })
         , ("Pattern", \is r -> is { idPattern = r })
@@ -301,7 +302,7 @@ define !p !e = do
 
     method p' (Primitive _ v) = return (\o -> Slot (setSelf o p') v)
     method p' e' = gets top >>= \t ->
-        return (\o -> Method (setSelf o p') t e')
+        return (\o -> Responder (setSelf o p') t e')
 
     methodPattern p'@(PSingle { ppTarget = t }) = do
         t' <- methodPattern t
@@ -486,9 +487,9 @@ matchParticle _ _ _ = False
 -- the method's context and setting the "dispatch" object
 runMethod :: Method -> Message -> VM Value
 runMethod (Slot { mValue = v }) _ = return v
-runMethod (Method { mPattern = p, mTop = t, mExpr = e }) m = do
+runMethod (Responder { mPattern = p, mContext = c, mExpr = e }) m = do
     nt <- newObject $ \o -> o
-        { oDelegates = [t]
+        { oDelegates = [c]
         , oMethods = (bindings p m, emptyMap)
         }
 
@@ -496,7 +497,7 @@ runMethod (Method { mPattern = p, mTop = t, mExpr = e }) m = do
         { call = Call
             { callSender = top e'
             , callMessage = m
-            , callContext = t
+            , callContext = c
             }
         }
 
@@ -619,6 +620,10 @@ findMessage :: Value -> VM Value
 {-# INLINE findMessage #-}
 findMessage = findValue "Message" isMessage
 
+findMethod' :: Value -> VM Value
+{-# INLINE findMethod' #-}
+findMethod' = findValue "Method" isMethod
+
 findParticle :: Value -> VM Value
 {-# INLINE findParticle #-}
 findParticle = findValue "Particle" isParticle
@@ -709,6 +714,7 @@ orefFrom ids (Haskell _) = idHaskell ids
 orefFrom ids (Integer _) = idInteger ids
 orefFrom ids (List _) = idList ids
 orefFrom ids (Message _) = idMessage ids
+orefFrom ids (Method _) = idMethod ids
 orefFrom ids (Particle _) = idParticle ids
 orefFrom ids (Process _ _) = idProcess ids
 orefFrom ids (Pattern _) = idPattern ids

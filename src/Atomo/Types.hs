@@ -29,6 +29,7 @@ data Value
     | Integer !Integer
     | List VVector
     | Message Message
+    | Method Method
     | Particle Particle
     | Process Channel ThreadId
     | Pattern Pattern
@@ -46,16 +47,16 @@ data Object =
     deriving Show
 
 data Method
-    = Method
+    = Responder
         { mPattern :: !Pattern
-        , mTop :: !Value
+        , mContext :: !Value
         , mExpr :: !Expr
         }
     | Slot
         { mPattern :: !Pattern
         , mValue :: !Value
         }
-    deriving Show
+    deriving (Eq, Show)
 
 data Message
     = Keyword
@@ -68,7 +69,7 @@ data Message
         , mName :: String
         , mTarget :: Value
         }
-    deriving Show
+    deriving (Eq, Show)
 
 data Particle
     = PMSingle String
@@ -220,6 +221,7 @@ data IDs =
         , idInteger :: ORef
         , idList :: ORef
         , idMessage :: ORef
+        , idMethod :: ORef
         , idParticle :: ORef
         , idProcess :: ORef
         , idPattern :: ORef
@@ -248,6 +250,8 @@ instance Eq Value where
     (==) (Haskell _) (Haskell _) = False
     (==) (Integer a) (Integer b) = a == b
     (==) (List a) (List b) = a == b
+    (==) (Message a) (Message b) = a == b
+    (==) (Method a) (Method b) = a == b
     (==) (Particle a) (Particle b) = a == b
     (==) (Process _ a) (Process _ b) = a == b
     (==) (Reference a) (Reference b) = a == b
@@ -333,6 +337,7 @@ startEnv = Env
             , idInteger = error "idInteger not set"
             , idList = error "idList not set"
             , idMessage = error "idMessage not set"
+            , idMethod = error "idMethod not set"
             , idParticle = error "idParticle not set"
             , idProcess = error "idProcess not set"
             , idPattern = error "idPattern not set"
@@ -484,6 +489,11 @@ isList _ = False
 isMessage :: Value -> Bool
 isMessage (Message _) = True
 isMessage _ = False
+
+-- | Is a value a Method?
+isMethod :: Value -> Bool
+isMethod (Method _) = True
+isMethod _ = False
 
 -- | Is a value a Particle?
 isParticle :: Value -> Bool
