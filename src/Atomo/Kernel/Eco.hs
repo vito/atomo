@@ -10,199 +10,206 @@ load = loadVersions >> loadEco
 
 loadEco :: VM ()
 loadEco = mapM_ eval [$es|
-    Eco = Object clone do: {
-        -- all packages OK for loading
-        -- name -> [package]
-        packages = []
+    Eco =
+      Object clone do:
+        { -- all packages OK for loading
+          -- name -> [package]
+          packages = []
 
-        -- versions loaded by @use:
-        -- name -> package
-        loaded = []
-    }
+          -- versions loaded by @use:
+          -- name -> package
+          loaded = []
+        }
 
-    Eco Package = Object clone do: {
-        version = 0 . 1
-        dependencies = []
-        include = []
-        executables = []
-    }
+    Eco Package =
+      Object clone do:
+        { version = 0 . 1
+          dependencies = []
+          include = []
+          executables = []
+        }
 
     (e: Eco) initialize :=
-        e initialize: (Eco Package load-from: "package.eco")
+      e initialize: (Eco Package load-from: "package.eco")
 
-    (e: Eco) initialize: pkg := {
-        pkg dependencies each: { c |
-            e packages (find: c from) match: {
-                @none -> raise: @(package-unavailable: c from needed: c to)
+    (e: Eco) initialize: pkg :=
+      { pkg dependencies each: { c |
+          e packages (find: c from) match: {
+            @none -> raise: @(package-unavailable: c from needed: c to)
 
-                -- filter out versions not satisfying our dependency
-                @(ok: d) -> {
-                    safe = d to (filter: { p | p version join: c to })
+            -- filter out versions not satisfying our dependency
+            @(ok: d) ->
+              { safe = d to (filter: { p | p version join: c to })
 
-                    safe match: {
-                        [] ->
-                            raise: @(no-versions-of: d satisfy: c to for: pkg name)
+                safe match: {
+                  [] ->
+                    raise: @(no-versions-of: d satisfy: c to for: pkg name)
 
-                        -- initialize the first safe version of the package
-                        (p . _) -> {
-                            -- remove unsafe versions from the ecosystem
-                            d to = safe
-                            e initialize: p
-                        } call
-                    }
-                } call
-            }
+                  -- initialize the first safe version of the package
+                  (p . _) ->
+                    { -- remove unsafe versions from the ecosystem
+                      d to = safe
+                      e initialize: p
+                    } call
+                }
+              } call
+          }
         }
 
         @ok
-    } call
+      } call
 
-    (e: Eco) load := {
-        eco = Directory home </> ".eco" </> "lib"
+    (e: Eco) load :=
+      { eco = Directory home </> ".eco" </> "lib"
 
         when: Directory (exists?: eco) do: {
-            e packages = Directory (contents: eco) map: { c |
+          e packages =
+            Directory (contents: eco) map:
+              { c |
                 versions = Directory (contents: (eco </> c))
-                pkgs = versions map: { v |
+                pkgs = versions map:
+                  { v |
                     Eco Package load-from:
                         (eco </> c </> v </> "package.eco")
-                }
+                  }
 
                 c -> pkgs (sort-by: { a b | a version < b version })
-            }
+              }
         }
 
         @ok
-    } call
+      } call
 
     Eco path-to: (c: Eco Package) :=
-        Eco path-to: c name version: c version
+      Eco path-to: c name version: c version
 
     Eco path-to: (name: String) :=
-        Directory home </> ".eco" </> "lib" </> name
+      Directory home </> ".eco" </> "lib" </> name
 
     Eco path-to: pkg version: (v: Version) :=
-        (Eco path-to: pkg) </> (v as: String)
+      (Eco path-to: pkg) </> (v as: String)
 
     Eco executable: (name: String) :=
-        Directory home </> ".eco" </> "bin" </> name
+      Directory home </> ".eco" </> "bin" </> name
 
     Eco which-main: (path: String) :=
-        if: File (exists?: (path </> "main.hs"))
-            then: { "main.hs" }
-            else: { "main.atomo" }
+      if: File (exists?: (path </> "main.hs"))
+        then: { "main.hs" }
+        else: { "main.atomo" }
 
-    Eco install: (path: String) := {
-        pkg = Eco Package load-from: (path </> "package.eco")
+    Eco install: (path: String) :=
+      { pkg = Eco Package load-from: (path </> "package.eco")
         target = Eco path-to: pkg
 
         contents = (Eco which-main: path) . ("package.eco" . pkg include)
 
         Directory create-tree-if-missing: target
 
-        contents each: { c |
+        contents each:
+          { c |
             if: Directory (exists?: (path </> c))
-                then: { Directory copy: (path </> c) to: (target </> c) }
-                else: { File copy: (path </> c) to: (target </> c) }
-        }
+              then: { Directory copy: (path </> c) to: (target </> c) }
+              else: { File copy: (path </> c) to: (target </> c) }
+          }
 
-        pkg executables each: { e |
-            exe = [
-                "#!/usr/bin/env atomo"
+        pkg executables each:
+          { e |
+            exe =
+              [ "#!/usr/bin/env atomo"
                 "load: " .. (path </> e to) show
-            ] unlines
+              ] unlines
 
             with-output-to: (Eco executable: e from) do: { exe print }
 
             File set-executable: (Eco executable: e from) to: True
-        }
+          }
 
         @ok
-    } call
+      } call
 
-    Eco uninstall: (name: String) version: (version: Version) := {
-        path = Eco path-to: name version: version
+    Eco uninstall: (name: String) version: (version: Version) :=
+      { path = Eco path-to: name version: version
         pkg = Eco Package load-from: (path </> "package.eco")
 
         Directory remove-recursive: path
-        pkg executables each: { e |
+        pkg executables each:
+          { e |
             File remove: (Eco executable: e from)
-        }
+          }
         
         @ok
-    } call
+      } call
 
-    Eco uninstall: (name: String) := {
-        Directory (contents: (Eco path-to: name)) each: { v |
+    Eco uninstall: (name: String) :=
+      { Directory (contents: (Eco path-to: name)) each:
+          { v |
             Eco uninstall: name version: (v as: Version)
-        }
+          }
 
         @ok
-    } call
+      } call
 
     Eco Package load-from: (file: String) :=
-        Eco Package clone do: { load: file }
+      Eco Package clone do: { load: file }
 
     (p: Eco Package) name: (n: String) :=
-        p name = n
+      p name = n
 
     (p: Eco Package) description: (d: String) :=
-        p description = d
+      p description = d
 
     (p: Eco Package) version: (v: Version) :=
-        p version = v
+      p version = v
 
     (p: Eco Package) author: (a: String) :=
-        p author = a
+      p author = a
 
     (p: Eco Package) include: (l: List) :=
-        p include = l
+      p include = l
 
     (p: Eco Package) depends-on: (ds: List) :=
-        p dependencies = ds map: { d |
-            if: (d is-a?: Association)
-                then: { d }
-                else: { d -> { True } }
+      p dependencies = ds map:
+        { d |
+          if: (d is-a?: Association)
+            then: { d }
+            else: { d -> { True } }
         }
 
     (p: Eco Package) executables: (es: List) :=
-        p executables = es
+      p executables = es
 
     context use: (name: String) :=
-        context use: name version: { True }
+      context use: name version: { True }
 
     context use: (name: String) version: (v: Version) :=
-        context use: name version: { == v }
+      context use: name version: { == v }
 
-    context use: (name: String) version: (check: Block) := {
-        Eco loaded (lookup: name) match: {
-            @none -> {
-                Eco packages (lookup: name) match: {
-                    @none -> raise: @(package-unavailable: name)
-                    @(ok: []) -> raise: @(no-package-versions: name)
-                    @(ok: pkgs) -> {
-                        satisfactory = pkgs filter: { p | p version join: check }
+    context use: (name: String) version: (check: Block) :=
+      Eco loaded (lookup: name) match: {
+        @none ->
+          Eco packages (lookup: name) match: {
+            @none -> raise: @(package-unavailable: name)
+            @(ok: []) -> raise: @(no-package-versions: name)
+            @(ok: pkgs) ->
+              { satisfactory = pkgs filter: { p | p version join: check }
 
-                        when: satisfactory empty?
-                            do: {
-                                raise: @(no-versions-of: (name -> versions) satisfy: check)
-                            }
-
-                        Eco loaded << (name -> satisfactory head)
-
-                        path = Eco path-to: satisfactory head
-                        context load: (path </> (Eco which-main: path))
-                    } call
+                when: satisfactory empty? do: {
+                  raise: @(no-versions-of: (name -> versions) satisfy: check)
                 }
-            } call
 
-            @(ok: p) ->
-                when: (p version join: check) not
-                    do: { raise: @(incompatible-version-loaded: name needed: check) }
-        }
+                Eco loaded << (name -> satisfactory head)
 
-        @ok
-    } call
+                path = Eco path-to: satisfactory head
+                context load: (path </> (Eco which-main: path))
+
+                @ok
+              } call
+          }
+
+        @(ok: p) ->
+          when: (p version join: check) not
+            do: { raise: @(incompatible-version-loaded: name needed: check) }
+      }
 
     Eco load
 |]
@@ -212,70 +219,70 @@ loadVersions = mapM_ eval [$es|
     Version = Object clone
 
     (major: Integer) . (minor: Integer) :=
-        Version clone do: {
-            major = major
-            minor = minor
+      Version clone do:
+        { major = major
+          minor = minor
         }
 
     (major: Integer) . (rest: Version) :=
-        Version clone do: {
-            major = major
-            minor = rest
+      Version clone do:
+        { major = major
+          minor = rest
         }
 
     (v: Version) show :=
-        v major show .. " . " .. v minor show
+      v major show .. " . " .. v minor show
 
     (v: Version) as: String :=
-        v major show .. "." .. v minor (as: String)
+      v major show .. "." .. v minor (as: String)
 
     (s: String) as: Version :=
-        s (split-on: '.') (map: @(as: Integer)) reduce-right: @.
+      s (split-on: '.') (map: @(as: Integer)) reduce-right: @.
 
     (n: Integer) as: Version := n . 0
 
     (a: Version) == (b: Version) :=
-        (a major == b major) and: { a minor == b minor }
+      (a major == b major) and: { a minor == b minor }
 
     (n: Integer) == (v: Version) :=
-        (n == v major) && (v minor == 0)
+      (n == v major) && (v minor == 0)
 
     (v: Version) == (n: Integer) :=
-        (n == v major) && (v minor == 0)
+      (n == v major) && (v minor == 0)
 
     (a: Version) > (b: Version) :=
-        (a major > b major) or: { a minor > b minor }
+      (a major > b major) or: { a minor > b minor }
 
     (n: Integer) > (v: Version) :=
-        (n > v major) or: { v major == n && (v minor /= 0) }
+      (n > v major) or: { v major == n && (v minor /= 0) }
 
     (v: Version) > (n: Integer) :=
-        (v major > n) or: { v major == n && (v minor /= 0) }
+      (v major > n) or: { v major == n && (v minor /= 0) }
 
     (a: Version) < (b: Version) :=
-        (a major < b major) or: { a minor < b minor }
+      (a major < b major) or: { a minor < b minor }
 
     (n: Integer) < (v: Version) :=
-        (n < v major) or: { v major == n && (v minor /= 0) }
+      (n < v major) or: { v major == n && (v minor /= 0) }
 
     (v: Version) < (n: Integer) :=
-        (v major < n) or: { v major == n && (v minor /= 0) }
+      (v major < n) or: { v major == n && (v minor /= 0) }
 
     (a: Version) >= (b: Version) :=
-        (a major >= b major) or: { a minor >= b minor }
+      (a major >= b major) or: { a minor >= b minor }
 
     (n: Integer) >= (v: Version) :=
-        n >= v major
+      n >= v major
 
     (v: Version) >= (n: Integer) :=
-        v major >= n
+      v major >= n
 
     (a: Version) <= (b: Version) :=
-        (a major <= b major) or: { a minor <= b minor }
+      (a major <= b major) or: { a minor <= b minor }
 
     (n: Integer) <= (v: Version) :=
-        n <= v major
+      n <= v major
 
     (v: Version) <= (n: Integer) :=
-        v major <= n
+      v major <= n
 |]
