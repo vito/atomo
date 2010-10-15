@@ -87,11 +87,16 @@ loadEco = mapM_ eval [$es|
     Eco executable: (name: String) :=
         Directory home </> ".eco" </> "bin" </> name
 
+    Eco which-main: (path: String) :=
+        if: File (exists?: (path </> "main.hs"))
+            then: { "main.hs" }
+            else: { "main.atomo" }
+
     Eco install: (path: String) := {
         pkg = Eco Package load-from: (path </> "package.eco")
         target = Eco path-to: pkg
 
-        contents = "main.atomo" . ("package.eco" . pkg include)
+        contents = (Eco which-main: path) . ("package.eco" . pkg include)
 
         Directory create-tree-if-missing: target
 
@@ -107,8 +112,7 @@ loadEco = mapM_ eval [$es|
                 "load: " .. (path </> e to) show
             ] unlines
 
-            with-output-to: (Eco executable: e from) do:
-                { exe print }
+            with-output-to: (Eco executable: e from) do: { exe print }
 
             File set-executable: (Eco executable: e from) to: True
         }
@@ -186,7 +190,8 @@ loadEco = mapM_ eval [$es|
 
                         Eco loaded << (name -> satisfactory head)
 
-                        context load: ((Eco path-to: satisfactory head) </> "main.atomo")
+                        path = Eco path-to: satisfactory head
+                        context load: (path </> (Eco which-main: path))
                     } call
                 }
             } call
