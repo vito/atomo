@@ -102,7 +102,14 @@ loadEco = mapM_ eval [$es|
         }
 
         pkg executables each: { e |
-            File copy: (path </> e to) to: (Eco executable: e from)
+            exe = [
+                "#!/usr/bin/env atomo"
+                "load: " .. (path </> e to) show
+            ] unlines
+
+            with-output-to: (Eco executable: e from) do:
+                { exe print }
+
             File set-executable: (Eco executable: e from) to: True
         }
 
