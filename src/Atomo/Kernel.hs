@@ -178,23 +178,23 @@ load = do
 prelude :: VM ()
 prelude = mapM_ eval [$es|
     v match: (b: Block) :=
-        if: b contents empty?
-            then: { raise: @(no-matches-for: v) }
-            else: {
-                es = b contents
-                [p, e] = es head targets
+      if: b contents empty?
+          then: { raise: @(no-matches-for: v) }
+          else: {
+            es = b contents
+            [p, e] = es head targets
 
-                match = (p as: Pattern) matches?: v
-                if: (match == @no)
-                    then: {
-                        v match: (Block new: es tail in: b context)
-                    }
-                    else: {
-                        @(yes: bindings) = match
-                        bindings delegates-to: b context
-                        e evaluate-in: bindings
-                    }
-            }
+            match = (p as: Pattern) matches?: v
+            if: (match == @no)
+              then: {
+                v match: (Block new: es tail in: b context)
+              }
+              else: {
+                @(yes: bindings) = match
+                bindings delegates-to: b context
+                e evaluate-in: bindings
+              }
+          }
 |]
 
 joinWith :: Value -> Value -> [Value] -> VM Value

@@ -53,27 +53,30 @@ load = do
 
 prelude :: VM ()
 prelude = mapM_ eval [$es|
-    (b: Block) repeat := { b in-context call; b repeat } call
+    (b: Block) repeat :=
+      { b in-context call
+        b repeat
+      } call
 
     (b: Block) in-context :=
-        Object clone do: {
-            delegates-to: b
-            call := b context join: b
-            call: vs := b context join: b with: vs
+      Object clone do:
+        { delegates-to: b
+          call := b context join: b
+          call: vs := b context join: b with: vs
         }
 
     (a: Block) .. (b: Block) :=
-        Block new: (a contents .. b contents) in: dispatch sender
+      Block new: (a contents .. b contents) in: dispatch sender
 
     (start: Integer) to: (end: Integer) by: (diff: Integer) do: b :=
-        (start to: end by: diff) each: b
+      (start to: end by: diff) each: b
 
     (start: Integer) up-to: (end: Integer) do: b :=
-        start to: end by: 1 do: b
+      start to: end by: 1 do: b
 
     (start: Integer) down-to: (end: Integer) do: b :=
-        start to: end by: -1 do: b
+      start to: end by: -1 do: b
 
     (n: Integer) times: (b: Block) :=
-        1 up-to: n do: b in-context
+      1 up-to: n do: b in-context
 |]

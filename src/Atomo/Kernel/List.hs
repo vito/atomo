@@ -331,21 +331,21 @@ load = do
 
 prelude :: VM ()
 prelude = mapM_ eval [$es|
-    (l: List) each: (b: Block) := {
-        l map: b in-context
+    (l: List) each: (b: Block) :=
+      { l map: b in-context
         l
-    } call
+      } call
 
     [] includes?: List := False
     (x: List) includes?: (y: List) :=
-        if: (x (take: y length) == y)
-            then: { True }
-            else: { x tail includes?: y }
+      if: (x (take: y length) == y)
+        then: { True }
+        else: { x tail includes?: y }
 
     [] join: List := []
     [x] join: List := x
     (x . xs) join: (d: List) :=
-        x .. d .. (xs join: d)
+      x .. d .. (xs join: d)
 |]
 
 foldr1MV :: (Value -> Value -> VM Value) -> V.Vector Value -> VM Value

@@ -204,8 +204,8 @@ load = do
 prelude :: VM ()
 prelude = mapM_ eval [$es|
     x max: y :=
-        if: (x > y) then: { x } else: { y }
+      if: (x > y) then: { x } else: { y }
 
     x min: y :=
-        if: (x < y) then: { x } else: { y }
+      if: (x < y) then: { x } else: { y }
 |]

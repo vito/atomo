@@ -94,8 +94,8 @@ prelude = mapM_ eval [$es|
     (n: Integer) odd? := n even? not
 
     (x: Integer) divides?: (y: Integer) :=
-        (y % x) == 0
+      (y % x) == 0
 
     (x: Integer) divisible-by?: (y: Integer) :=
-        y divides?: x
+      y divides?: x
 |]

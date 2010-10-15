@@ -187,7 +187,7 @@ loadEco = mapM_ eval [$es|
     context use: (name: String) version: (check: Block) :=
       Eco loaded (lookup: name) match: {
         @none ->
-          Eco packages (lookup: name) match: {
+          (Eco packages (lookup: name) match: {
             @none -> raise: @(package-unavailable: name)
             @(ok: []) -> raise: @(no-package-versions: name)
             @(ok: pkgs) ->
@@ -204,7 +204,7 @@ loadEco = mapM_ eval [$es|
 
                 @ok
               } call
-          }
+          })
 
         @(ok: p) ->
           when: (p version join: check) not

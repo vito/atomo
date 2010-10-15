@@ -10,33 +10,33 @@ load = mapM_ eval [$es|
     operator right 0 =!
 
     Parameter = Object clone
-    Parameter new: v := Parameter clone do: {
-        set-default: v
-    }
+    Parameter new: v := Parameter clone do:
+      { set-default: v
+      }
 
     (p: Parameter) _? := p value: self
 
     (p: Parameter) =! v :=
-        (p) value: (self) = v
+      (p) value: (self) = v
 
     (p: Parameter) set-default: v :=
-        (p) value: _ = v
+      (p) value: _ = v
 
-    with: (p: Parameter) as: new do: (action: Block) := {
-        old = p _?
+    with: (p: Parameter) as: new do: (action: Block) :=
+      { old = p _?
         action before: { p =! new } after: { p =! old }
-    } call
+      } call
 
-    with-default: (p: Parameter) as: new do: (action: Block) := {
-        old = p _?
+    with-default: (p: Parameter) as: new do: (action: Block) :=
+      { old = p _?
         action before: { p set-default: new } after: { p set-default: old }
-    } call
+      } call
 
     with: [] do: (action: Block) := action call
     with: (b . bs) do: (action: Block) :=
-        with: b from as: b to do: { with: bs do: action }
+      with: b from as: b to do: { with: bs do: action }
 
     with-defaults: [] do: (action: Block) := action call
     with-defaults: (b . bs) do: (action: Block) :=
-        with-default: b from as: b to do: { with: bs do: action }
+      with-default: b from as: b to do: { with: bs do: action }
 |]

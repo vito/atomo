@@ -30,20 +30,22 @@ load = mapM_ eval [$es|
     False not := True
 
     if: True then: (a: Block) else: Block :=
-        a call
+      a call
 
     if: False then: Block else: (b: Block) :=
-        b call
+      b call
 
-    when: (b: Boolean) do: (action: Block) :=
-        if: b then: { action in-context call; @ok } else: { @ok }
+    when: False do: Block = @ok
+    when: True do: (action: Block) :=
+      { action in-context call
+        @ok
+      } call
 
     while: (test: Block) do: (action: Block) :=
-        when: test call
-            do: {
-                action in-context call
-                while: test do: action
-            }
+      when: test call do:
+        { action in-context call
+          while: test do: action
+        }
 
     True show := "True"
     False show := "False"
@@ -51,14 +53,14 @@ load = mapM_ eval [$es|
     otherwise := True
 
     condition: (b: Block) :=
-        if: b contents empty?
-            then: { raise: @no-true-branches }
-            else: {
-                es = b contents
-                [c, e] = es head targets
+      if: b contents empty?
+        then: { raise: @no-true-branches }
+        else: {
+          es = b contents
+          [c, e] = es head targets
 
-                if: (c evaluate-in: b context)
-                    then: { e evaluate-in: b context }
-                    else: { condition: (Block new: es tail in: b context) }
-            }
+          if: (c evaluate-in: b context)
+            then: { e evaluate-in: b context }
+            else: { condition: (Block new: es tail in: b context) }
+        }
 |]

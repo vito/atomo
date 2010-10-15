@@ -37,17 +37,17 @@ sleepFor n
 prelude :: VM ()
 prelude = mapM_ eval [$es|
     Timer do: (b: Block) every: (n: Number) :=
-        { { Timer sleep: n; b spawn } repeat } spawn
+      { { Timer sleep: n; b spawn } repeat } spawn
 
     Timer do: (b: Block) after: (n: Number) :=
-        { Timer sleep: n; b call } spawn
+      { Timer sleep: n; b call } spawn
 
-    (b: Block) time := {
-        before = Timer now
+    (b: Block) time :=
+      { before = Timer now
         b call
         after = Timer now
         after - before
-    } call
+      } call
 
     -- units!
     (n: Number) us := n

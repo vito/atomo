@@ -402,16 +402,18 @@ load = do
 prelude :: VM ()
 prelude = mapM_ eval [$es|
     with-output-to: (fn: String) do: b :=
-        { Port (new: fn mode: @write) } wrap: @close do: { file |
-            with-output-to: file do: b
+      { Port (new: fn mode: @write) } wrap: @close do:
+        { file |
+          with-output-to: file do: b
         }
 
     with-output-to: (p: Port) do: b :=
-        with: current-output-port as: p do: b
+      with: current-output-port as: p do: b
 
     with-input-from: (fn: String) do: (b: Block) :=
-        { Port (new: fn mode: @read) } wrap: @close do: { file |
-            with-input-from: file do: b
+      { Port (new: fn mode: @read) } wrap: @close do:
+        { file |
+          with-input-from: file do: b
         }
 
     with-input-from: (p: Port) do: (b: Block) :=
@@ -419,18 +421,20 @@ prelude = mapM_ eval [$es|
 
 
     with-all-output-to: (fn: String) do: b :=
-        { Port (new: fn mode: @write) } wrap: @close do: { file |
-            with-all-output-to: file do: b
+      { Port (new: fn mode: @write) } wrap: @close do:
+        { file |
+          with-all-output-to: file do: b
         }
 
     with-all-output-to: (p: Port) do: b :=
         with-default: current-output-port as: p do: b
 
     with-all-input-from: (fn: String) do: (b: Block) :=
-        { Port (new: fn mode: @read) } wrap: @close do: { file |
-            with-all-input-from: file do: b
+      { Port (new: fn mode: @read) } wrap: @close do:
+        { file |
+          with-all-input-from: file do: b
         }
 
     with-all-input-from: (p: Port) do: (b: Block) :=
-        with-default: current-input-port as: p do: b
+      with-default: current-input-port as: p do: b
 |]
