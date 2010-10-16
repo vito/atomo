@@ -19,7 +19,7 @@ Various comparison operators and methods. All operators have a precedence level 
 }
 
 #define:{
-    a equals: b
+    a equals?: b
     > Boolean
 }body:{
     Performs a strict equality check on #atomo:a and #atomo:b using internal comparison. Usually you'll want #atomo:(==), but this may be used for checking identity, etc.

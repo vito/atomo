@@ -15,12 +15,12 @@ load = do
         , [$e|operator right 2 |||]
         ]
 
-    [$p|a equals: b|] =: do
+    [$p|a equals?: b|] =: do
         a <- here "a"
         b <- here "b"
         bool (a == b)
 
-    [$p|(a: Object) == (b: Object)|] =::: [$e|a equals: b|]
+    [$p|(a: Object) == (b: Object)|] =::: [$e|a equals?: b|]
     [$p|(a: Object) /= (b: Object)|] =::: [$e|(a == b) not|]
 
     [$p|(a: Char) < (b: Char)|] =: do
