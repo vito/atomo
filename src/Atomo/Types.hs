@@ -11,13 +11,13 @@ import Data.Dynamic
 import Data.Hashable (hash)
 import Data.IORef
 import Data.Typeable
-import Language.Haskell.Interpreter (InterpreterT, InterpreterError)
 import Text.Parsec (ParseError, SourcePos)
 import qualified Data.IntMap as M
 import qualified Data.Text as T
 import qualified Data.Vector as V
+import qualified Language.Haskell.Interpreter as H
 
-type VM = ErrorT AtomoError (ContT (Either AtomoError Value) (StateT Env (InterpreterT IO)))
+type VM = ErrorT AtomoError (ContT (Either AtomoError Value) (StateT Env IO))
 
 data Value
     = Block !Value [Pattern] [Expr]
@@ -81,7 +81,7 @@ data AtomoError
     | ParseError ParseError
     | DidNotUnderstand Message
     | Mismatch Pattern Value
-    | ImportError InterpreterError
+    | ImportError H.InterpreterError
     | FileNotFound String
     | ParticleArity Int Int
     | BlockArity Int Int
@@ -356,12 +356,6 @@ startEnv = Env
 -----------------------------------------------------------------------------
 -- Helpers ------------------------------------------------------------------
 -----------------------------------------------------------------------------
-
--- | run an interpreter, catching errors and rethrowing them as AtomoErrors
-hint :: InterpreterT IO a -> VM a
-hint x = either (throwError . ImportError) return =<<
-    (lift . lift . lift) ((fmap Right x) `catchError` (return . Left))
-
 
 particle :: String -> Value
 {-# INLINE particle #-}
