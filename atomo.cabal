@@ -1,5 +1,5 @@
 name:                atomo
-version:             0.1
+version:             0.1.1
 synopsis:            A highly dynamic, extremely simple, very fun programming
                      language.
 description:
@@ -36,7 +36,7 @@ source-repository   head
 source-repository   this
     type:           darcs
     location:       http://darcsden.com/alex/atomo
-    tag:            0.1
+    tag:            0.1.1
 
 library
   hs-source-dirs:    src
