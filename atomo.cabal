@@ -18,7 +18,7 @@ description:
     Examples: <http://darcsden.com/alex/atomo/browse/examples>
     .
     IRC Channel: <irc://irc.freenode.net/atomo>
-homepage:            http://darcsden.com/alex/atomo
+homepage:            http://atomo-lang.org/
 license:             BSD3
 license-file:        LICENSE
 author:              Alex Suraci
@@ -113,7 +113,6 @@ executable atomo
     monads-fd,
     parsec >= 3.0.0,
     pretty,
-    pretty-show,
     split,
     template-haskell,
     text,

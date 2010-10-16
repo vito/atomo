@@ -1,7 +1,6 @@
 module Atomo.Debug where
 
 import Debug.Trace
-import Text.Show.Pretty
 
 
 debugging :: Bool
@@ -24,4 +23,4 @@ dout :: (Show a, Show b) => b -> a -> a
 dout s v = trace (prettyShow s ++ ": " ++ prettyShow v) v
 
 prettyShow :: Show a => a -> String
-prettyShow = ppShow
+prettyShow = show
