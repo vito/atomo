@@ -748,12 +748,12 @@ doLoad :: FilePath -> VM Value
 doLoad file =
     case takeExtension file of
         ".hs" -> do
-            lift . lift . lift $ H.loadModules [file]
-            lift . lift . lift $ H.setTopLevelModules ["Main"]
-
-            load <- lift . lift . lift $ H.interpret "load" (H.as :: VM ())
-
-            lift . lift . lift $ H.reset
+            load <- hint $ do
+                H.loadModules [file]
+                H.setTopLevelModules ["Main"]
+                l <- H.interpret "load" (H.as :: VM ())
+                H.reset
+                return l
 
             load
 

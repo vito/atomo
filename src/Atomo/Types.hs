@@ -357,6 +357,12 @@ startEnv = Env
 -- Helpers ------------------------------------------------------------------
 -----------------------------------------------------------------------------
 
+-- | run an interpreter, catching errors and rethrowing them as AtomoErrors
+hint :: InterpreterT IO a -> VM a
+hint x = either (throwError . ImportError) return =<<
+    (lift . lift . lift) ((fmap Right x) `catchError` (return . Left))
+
+
 particle :: String -> Value
 {-# INLINE particle #-}
 particle = Particle . PMSingle
