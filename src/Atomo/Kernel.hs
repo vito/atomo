@@ -42,6 +42,10 @@ load = do
             { oDelegates = [x]
             }
 
+    [$p|(x: Object) copy|] =: do
+        x <- here "x" >>= objectFor
+        fmap Reference (liftIO $ newIORef x)
+
     [$p|(x: Object) delegates-to: (y: Object)|] =: do
         f <- here "x" >>= orefFor
         t <- here "y"

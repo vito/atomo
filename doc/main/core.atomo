@@ -102,6 +102,13 @@
 }
 
 #define:{
+    o copy
+    > any
+}body:{
+    Copies object #atomo:o, creating a new object with the same methods and delegates.
+}
+
+#define:{
     o new
     > is-a?: o
 }body:{
