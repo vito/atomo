@@ -130,7 +130,7 @@ ppAnySensitive = ppWildcard
         return (PNamed name PAny)
 
 ppWildcard :: Parser Pattern
-ppWildcard = symbol "_" >> return PAny
+ppWildcard = char '_' >> notFollowedBy identifier >> spacing >> return PAny
 
 ppMatch :: Parser Pattern
 ppMatch = do

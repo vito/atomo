@@ -25,7 +25,7 @@ def = P.LanguageDef
     , P.nestedComments = True
     , P.identStart = letter <|> oneOf "_"
     , P.identLetter = alphaNum <|> P.opLetter def
-    , P.opStart = oneOf (opLetters \\ "@")
+    , P.opStart = oneOf (opLetters \\ "@_")
     , P.opLetter = letter <|> oneOf opLetters
     , P.reservedOpNames = ["=", ":=", ",", "|", "_"]
     , P.reservedNames = ["dispatch", "operator"]
