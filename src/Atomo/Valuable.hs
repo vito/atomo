@@ -9,8 +9,8 @@ import Atomo.Types
 
 
 class Valuable a where
-    toValue :: a -> VM Value
-    fromValue :: MonadIO m => Value -> VMT r m a
+    toValue :: a -> VMT r IO Value
+    fromValue :: Value -> VMT r IO a
 
 instance Valuable Value where
     toValue = return
