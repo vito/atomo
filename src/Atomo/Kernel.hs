@@ -5,9 +5,7 @@ import Data.IORef
 import Data.List ((\\))
 import Data.Maybe (isJust)
 
-import Atomo.Debug
-import Atomo.Environment
-import Atomo.Haskell
+import Atomo
 import Atomo.Method
 import Atomo.Pretty
 
@@ -106,11 +104,6 @@ load = do
 
     [$p|(x: Object) show|] =:
         liftM (string . show . pretty) (here "x")
-
-    [$p|(x: Object) dump|] =: do
-        x <- here "x"
-        liftIO (putStrLn (prettyShow x))
-        return x
 
     [$p|(t: Object) load: (fn: String)|] =: do
         t <- here "t"

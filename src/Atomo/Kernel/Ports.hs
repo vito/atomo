@@ -8,8 +8,7 @@ import System.FilePath ((</>), (<.>))
 import System.IO
 import qualified Data.Text.IO as TIO
 
-import Atomo.Environment
-import Atomo.Haskell
+import Atomo
 import Atomo.Parser
 import Atomo.Pretty
 

@@ -3,8 +3,7 @@ module Atomo.Kernel.Environment where
 
 import System.Environment
 
-import Atomo.Environment
-import Atomo.Haskell
+import Atomo
 
 
 load :: VM ()

@@ -4,8 +4,7 @@ module Atomo.Kernel.String where
 import Data.List (sort)
 import qualified Data.Text as T
 
-import Atomo.Environment
-import Atomo.Haskell
+import Atomo
 
 
 load :: VM ()

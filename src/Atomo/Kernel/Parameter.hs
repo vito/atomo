@@ -1,8 +1,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Atomo.Kernel.Parameter (load) where
 
-import Atomo.Environment
-import Atomo.Haskell
+import Atomo
 
 
 load :: VM ()

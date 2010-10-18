@@ -1,25 +1,16 @@
 {-# OPTIONS -fno-warn-name-shadowing #-}
-module Atomo.Haskell
-    ( module Control.Concurrent
-    , module Control.Monad
-    , module Control.Monad.Cont
-    , module Control.Monad.Trans
-    , module Atomo.Types
-    , p
+module Atomo.QuasiQuotes
+    ( p
     , e
     , es
     ) where
 
-import Control.Concurrent
-import Control.Monad
-import Control.Monad.Cont (MonadCont(..), ContT(..))
 import Control.Monad.Identity (runIdentity)
-import Control.Monad.Trans
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
 import Text.Parsec
-import qualified Language.Haskell.TH as TH
 import qualified Data.Text as T
+import qualified Language.Haskell.TH as TH
 
 import Atomo.Parser
 import Atomo.Parser.Pattern

@@ -3,8 +3,7 @@ module Atomo.Kernel.Comparable (load) where
 
 import qualified Data.Vector as V
 
-import Atomo.Environment
-import Atomo.Haskell
+import Atomo
 
 
 load :: VM ()

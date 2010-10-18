@@ -1,8 +1,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Atomo.Kernel.Eco where
 
-import Atomo.Environment
-import Atomo.Haskell
+import Atomo
 
 
 load :: VM ()

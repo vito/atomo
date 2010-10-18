@@ -1,8 +1,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Atomo.Kernel.Concurrency (load) where
 
-import Atomo.Environment
-import Atomo.Haskell
+import Atomo
 import Atomo.Method
 
 

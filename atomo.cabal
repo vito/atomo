@@ -60,14 +60,15 @@ library
   extensions:        Rank2Types
 
   exposed-modules:
+    Atomo,
     Atomo.Environment,
-    Atomo.Haskell,
     Atomo.Method,
     Atomo.Parser,
     Atomo.Parser.Base,
     Atomo.Parser.Pattern,
     Atomo.Parser.Primitive,
     Atomo.Pretty,
+    Atomo.QuasiQuotes,
     Atomo.Types,
     Atomo.Valuable
 

@@ -4,8 +4,7 @@ module Atomo.Kernel.Continuation where
 import Data.IORef
 import Unsafe.Coerce
 
-import Atomo.Environment
-import Atomo.Haskell
+import Atomo
 
 
 load :: VM ()

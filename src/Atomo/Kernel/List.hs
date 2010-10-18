@@ -5,8 +5,7 @@ import Data.IORef
 import Data.List.Split
 import qualified Data.Vector as V
 
-import Atomo.Environment
-import Atomo.Haskell
+import Atomo
 
 
 load :: VM ()

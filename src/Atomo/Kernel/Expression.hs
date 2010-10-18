@@ -2,8 +2,7 @@
 {-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.Kernel.Expression (load) where
 
-import Atomo.Environment
-import Atomo.Haskell
+import Atomo
 
 
 load :: VM ()

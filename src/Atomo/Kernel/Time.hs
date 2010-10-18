@@ -3,8 +3,7 @@ module Atomo.Kernel.Time (load) where
 
 import Data.Time.Clock.POSIX (getPOSIXTime)
 
-import Atomo.Environment
-import Atomo.Haskell
+import Atomo
 
 
 load :: VM ()
