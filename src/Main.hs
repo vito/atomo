@@ -1,6 +1,7 @@
 module Main where
 
 import Control.Monad.Cont
+import Control.Monad.Error
 import Data.Char (isSpace)
 import Prelude hiding (catch)
 import System.Console.Haskeline

@@ -1,9 +1,8 @@
 module Atomo.Parser where
 
-{-import Control.Monad.Error-}
+import Control.Monad.Error
 import Control.Monad.Identity
-{-import Control.Monad.State-}
-import Control.Monad.Trans
+import Control.Monad.State
 import Data.Maybe (fromJust)
 import Text.Parsec
 

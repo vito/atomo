@@ -56,23 +56,14 @@ parsing p s (file, line, col) =
         eof
         return e
 
-parsePattern :: Monad m => String -> (String, Int, Int) -> m Pattern
-parsePattern = parsing ppDefine
-
 quotePatternExp :: String -> TH.ExpQ
-quotePatternExp = withLocation parsePattern patternToExp
-
-parseExpr :: Monad m => String -> (String, Int, Int) -> m Expr
-parseExpr = parsing pExpr
+quotePatternExp = withLocation (parsing ppDefine) patternToExp
 
 quoteExprExp :: String -> TH.ExpQ
-quoteExprExp = withLocation parseExpr exprToExp
-
-parseExprs :: Monad m => String -> (String, Int, Int) -> m [Expr]
-parseExprs = parsing (wsBlock pExpr)
+quoteExprExp = withLocation (parsing pExpr) exprToExp
 
 quoteExprsExp :: String -> TH.ExpQ
-quoteExprsExp = withLocation parseExprs (ListE . map exprToExp)
+quoteExprsExp = withLocation (parsing (wsBlock pExpr)) (ListE . map exprToExp)
 
 exprToExp :: Expr -> Exp
 exprToExp (Define l p e) = AppE (AppE (expr "Define" l) (patternToExp p)) (exprToExp e)

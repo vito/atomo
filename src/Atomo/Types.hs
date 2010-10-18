@@ -3,9 +3,9 @@ module Atomo.Types where
 
 import Control.Concurrent (ThreadId)
 import Control.Concurrent.Chan
-import Control.Monad.Trans
 import Control.Monad.Cont
-import Control.Monad.Identity
+import Control.Monad.Error
+import Control.Monad.State
 import Data.Dynamic
 import Data.Hashable (hash)
 import Data.IORef
@@ -17,36 +17,8 @@ import qualified Data.Text as T
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
 
-newtype VMT r m a =
-    VM
-        { runVM :: Env -> ContT (Either AtomoError r, Env) m (Either AtomoError a, Env)
-        }
-
+type VMT r m = ErrorT AtomoError (ContT (Either AtomoError r) (StateT Env m))
 type VM = VMT Value IO
-
-instance Monad m => Monad (VMT r m) where
-    x >>= f = VM $ \e -> do
-        (ev, e') <- runVM x e
-        case ev of
-            Right v -> runVM (f v) e'
-            Left err -> return (Left err, e')
-
-    return x = VM $ \e -> return (Right x, e)
-
-instance MonadTrans (VMT r) where
-    lift m = VM $ \e -> do
-        a <- lift m
-        return (Right a, e)
-
-instance MonadIO m => MonadIO (VMT r m) where
-    liftIO f = VM $ \e -> do
-        x <- liftIO f
-        return (Right x, e)
-
-instance Monad m => MonadCont (VMT r m) where
-    callCC f = VM $ \e ->
-        callCC $ \c -> runVM (f (\a -> VM (\e' -> c (Right a, e')))) e
-
 
 data Value
     = Block !Value [Pattern] [Expr]
@@ -353,6 +325,9 @@ instance Show (VMT r m a) where
 instance Typeable (VMT r m a) where
     typeOf _ = mkTyConApp (mkTyCon "VM") [typeOf ()]
 
+instance Error AtomoError where
+    strMsg = Error . string
+
 
 startEnv :: Env
 startEnv = Env
@@ -386,35 +361,17 @@ startEnv = Env
     }
 
 
+-- | evaluate x with e as the environment
+runWith :: Monad m => VMT r m r -> Env -> m (Either AtomoError r)
+runWith x e = evalStateT (runContT (runErrorT x) return) e
 
-throwError :: Monad m => AtomoError -> VMT r m b
-throwError err = VM $ \e -> return (Left err, e)
-
-catchError :: Monad m => VMT r m a -> (AtomoError -> VMT r m a) -> VMT r m a
-catchError x h = VM $ \e -> do
-    (r, e') <- runVM x e
-    case r of
-        Left err -> runVM (h err) e
-        Right ok -> return (Right ok, e')
-
-get :: Monad m => VMT r m Env
-get = VM $ \e -> return (Right e, e)
-
-gets :: Monad m => (Env -> a) -> VMT r m a
-gets f = VM $ \e -> return (Right (f e), e)
-
-put :: Monad m => Env -> VMT r m ()
-put e = VM $ \_ -> return (Right (), e)
-
-modify :: Monad m => (Env -> Env) -> VMT r m ()
-modify f = get >>= put . f
 
 -----------------------------------------------------------------------------
 -- Helpers ------------------------------------------------------------------
 -----------------------------------------------------------------------------
 
 vmIO :: MonadIO m => VMT a IO a -> VMT r m a
-vmIO x = VM $ \e -> liftIO (runContT (runVM x e) return)
+vmIO x = get >>= liftIO . runWith x >>= either throwError return
 
 particle :: String -> Value
 {-# INLINE particle #-}

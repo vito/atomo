@@ -2,6 +2,8 @@
 module Atomo.Environment where
 
 import Control.Monad.Cont
+import Control.Monad.Error
+import Control.Monad.State
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan
 import Data.IORef
@@ -53,10 +55,6 @@ go x = catchError x (\e -> printError e >> return (particle "ok"))
 -- | execute x, initializing the environment with initEnv
 run :: VM Value -> IO (Either AtomoError Value)
 run x = runWith (initEnv >> x) startEnv
-
--- | evaluate x with e as the environment
-runWith :: Monad m => VMT r m r -> Env -> m (Either AtomoError r)
-runWith x e = liftM fst (runContT (runVM x e) return)
 
 -- | print an error, including the previous 10 expressions evaluated
 -- with the most recent on the bottom
