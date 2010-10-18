@@ -90,7 +90,7 @@ load = do
 
     [$p|(l: List) join: (d: String)|] =: do
         ts <- getList [$e|l|]
-            >>= mapM (fmap (\(String t) -> t) . findString)
+            >>= mapM (liftM (\(String t) -> t) . findString)
 
         d <- getText [$e|d|]
 

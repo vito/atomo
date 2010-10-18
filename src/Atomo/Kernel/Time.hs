@@ -12,7 +12,7 @@ load = do
     ([$p|Timer|] =::) =<< eval [$e|Object clone|]
 
     [$p|Timer now|] =:
-        fmap (Double . fromRational . toRational) (liftIO getPOSIXTime)
+        liftM (Double . fromRational . toRational) (liftIO getPOSIXTime)
 
     [$p|Timer sleep: (n: Integer)|] =: do
         Integer n <- here "n" >>= findInteger

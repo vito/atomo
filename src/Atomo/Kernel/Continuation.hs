@@ -2,6 +2,7 @@
 module Atomo.Kernel.Continuation where
 
 import Data.IORef
+import Unsafe.Coerce
 
 import Atomo.Environment
 import Atomo.Haskell
@@ -17,9 +18,9 @@ load = do
     [$p|Continuation show|] =:: string "<continuation>"
 
     [$p|(c: Continuation) yield: v|] =: do
-        Continuation c <- here "c" >>= findContinuation
+        Continuation (ContinuationValue c) <- here "c" >>= findContinuation
         v <- here "v"
-        liftIO (readIORef c) >>= ($ v)
+        liftIO (readIORef c) >>= unsafeCoerce . ($ v)
 
     -- this enables call/cc as well
     [$p|(c: Continuation) call: [v]|] =::: [$e|c yield: v|]
@@ -35,7 +36,7 @@ load = do
         [$p|(o) pass-to: b|] =: callCC $ \c -> do
             b <- here "b"
             cr <- liftIO (newIORef c)
-            as <- list [Continuation cr]
+            as <- list [Continuation $ ContinuationValue cr]
             dispatch (keyword ["call"] [b, as])
         eval [$e|o|]
 

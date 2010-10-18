@@ -44,7 +44,7 @@ load = do
 
     [$p|(x: Object) copy|] =: do
         x <- here "x" >>= objectFor
-        fmap Reference (liftIO $ newIORef x)
+        liftM Reference (liftIO $ newIORef x)
 
     [$p|(x: Object) delegates-to: (y: Object)|] =: do
         f <- here "x" >>= orefFor
@@ -105,7 +105,7 @@ load = do
         return (Char (read s))
 
     [$p|(x: Object) show|] =:
-        fmap (string . show . pretty) (here "x")
+        liftM (string . show . pretty) (here "x")
 
     [$p|(x: Object) dump|] =: do
         x <- here "x"

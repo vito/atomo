@@ -15,11 +15,11 @@ load = do
         liftIO getArgs >>= list . map string
 
     [$p|Environment program-name|] =:
-        fmap string $ liftIO getProgName
+        liftM string $ liftIO getProgName
 
     [$p|Environment get: (name: String)|] =:
         getString [$e|name|]
-            >>= fmap string . (liftIO . getEnv)
+            >>= liftM string . (liftIO . getEnv)
 
     [$p|Environment all|] =: do
         env <- liftIO getEnvironment

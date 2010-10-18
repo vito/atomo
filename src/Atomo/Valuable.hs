@@ -1,6 +1,6 @@
 module Atomo.Valuable where
 
-import Control.Monad.Trans (liftIO)
+import Control.Monad.Trans (MonadIO(..), liftIO)
 import Data.IORef
 import qualified Data.Text as T
 import qualified Data.Vector as V
@@ -10,7 +10,7 @@ import Atomo.Types
 
 class Valuable a where
     toValue :: a -> VM Value
-    fromValue :: Value -> VM a
+    fromValue :: MonadIO m => Value -> VMT r m a
 
 instance Valuable Value where
     toValue = return

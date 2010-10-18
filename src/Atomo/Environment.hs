@@ -2,8 +2,6 @@
 module Atomo.Environment where
 
 import Control.Monad.Cont
-import Control.Monad.Error
-import Control.Monad.State
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan
 import Data.IORef
@@ -12,6 +10,7 @@ import Data.Maybe (isJust)
 import System.Directory
 import System.FilePath
 import System.IO.Unsafe
+import Unsafe.Coerce
 import qualified Data.Text as T
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
@@ -48,7 +47,7 @@ execWith x e = do
     readChan haltChan
 
 -- | execute x, printing an error if there is one
-go :: VM Value -> VM Value
+go :: VMT r IO Value -> VMT r IO Value
 go x = catchError x (\e -> printError e >> return (particle "ok"))
 
 -- | execute x, initializing the environment with initEnv
@@ -56,12 +55,12 @@ run :: VM Value -> IO (Either AtomoError Value)
 run x = runWith (initEnv >> x) startEnv
 
 -- | evaluate x with e as the environment
-runWith :: VM Value -> Env -> IO (Either AtomoError Value)
-runWith x e = evalStateT (runContT (runErrorT x) return) e
+runWith :: Monad m => VMT r m r -> Env -> m (Either AtomoError r)
+runWith x e = liftM fst (runContT (runVM x e) return)
 
 -- | print an error, including the previous 10 expressions evaluated
 -- with the most recent on the bottom
-printError :: AtomoError -> VM ()
+printError :: AtomoError -> VMT r IO ()
 printError err = do
     t <- traceback
 
@@ -79,23 +78,23 @@ printError err = do
 
     modify $ \s -> s { stack = [] }
   where
-    traceback = fmap (reverse . take 10 . reverse) (gets stack)
+    traceback = liftM (reverse . take 10 . reverse) (gets stack)
 
-prettyError :: AtomoError -> VM P.Doc
-prettyError (Error v) = fmap (P.text "error:" P.<+>) (prettyVM v)
+prettyError :: AtomoError -> VMT r IO P.Doc
+prettyError (Error v) = liftM (P.text "error:" P.<+>) (prettyVM v)
 prettyError e = return (pretty e)
 
 -- | pretty-print by sending \@show to the object
-prettyVM :: Value -> VM P.Doc
-prettyVM = fmap (P.text . fromString) . dispatch . (single "show")
+prettyVM :: Value -> VMT r IO P.Doc
+prettyVM v = liftM (P.text . fromString) $ dispatch (single "show" v)
 
 -- | spawn a process to execute x. returns the Process.
-spawn :: VM Value -> VM Value
+spawn :: VMT Value IO Value -> VMT Value IO Value
 spawn x = do
     e <- get
     chan <- liftIO newChan
     tid <- liftIO . forkIO $ do
-        runWith (go x >> return (particle "ok")) (e { channel = chan })
+        runWith (go x) (e { channel = chan })
         return ()
 
     return (Process chan tid)
@@ -153,13 +152,14 @@ initEnv = do
 -----------------------------------------------------------------------------
 
 -- | evaluation
-eval :: Expr -> VM Value
+eval :: Expr -> VMT r IO Value
 eval e = eval' e `catchError` pushStack
   where
     pushStack err = do
         modify $ \s -> s { stack = e : stack s }
         throwError err
 
+    eval' :: Expr -> VMT r IO Value
     eval' (Define { ePattern = p, eExpr = ev }) = do
         define p ev
         return (particle "ok")
@@ -228,27 +228,27 @@ eval e = eval' e `catchError` pushStack
         return (Particle $ PMSingle n)
     eval' (EParticle { eParticle = EPMKeyword ns mes }) = do
         mvs <- forM mes $
-            maybe (return Nothing) (fmap Just . eval)
+            maybe (return Nothing) (liftM Just . eval)
         return (Particle $ PMKeyword ns mvs)
     eval' (ETop {}) = gets top
-    eval' (EVM { eAction = x }) = x
+    eval' (EVM { eAction = x }) = unsafeCoerce x -- oh noes!
 
 -- | evaluating multiple expressions, returning the last result
-evalAll :: [Expr] -> VM Value
+evalAll :: [Expr] -> VMT r IO Value
 evalAll [] = throwError NoExpressions
 evalAll [e] = eval e
 evalAll (e:es) = eval e >> evalAll es
 
 -- | object creation
-newObject :: (Object -> Object) -> VM Value
-newObject f = fmap Reference . liftIO $
+newObject :: MonadIO m => (Object -> Object) -> VMT r m Value
+newObject f = liftM Reference . liftIO $
     newIORef . f $ Object
         { oDelegates = []
         , oMethods = noMethods
         }
 
 -- | run x with t as its toplevel object
-withTop :: Value -> VM Value -> VM Value
+withTop :: Monad m => Value -> VMT r m Value -> VMT r m Value
 withTop t x = do
     o <- gets top
     modify (\e -> e { top = t })
@@ -267,7 +267,7 @@ withTop t x = do
 -----------------------------------------------------------------------------
 
 -- | define a pattern to evaluate an expression
-define :: Pattern -> Expr -> VM ()
+define :: Pattern -> Expr -> VMT r IO ()
 define !p !e = do
     is <- gets primitives
     newp <- methodPattern p
@@ -304,9 +304,9 @@ define !p !e = do
     methodPattern p'@(PKeyword { ppTargets = ts }) = do
         ts' <- mapM methodPattern ts
         return p' { ppTargets = ts' }
-    methodPattern PThis = fmap PMatch (gets top)
-    methodPattern (PObject oe) = fmap PMatch (eval oe)
-    methodPattern (PNamed n p') = fmap (PNamed n) (methodPattern p')
+    methodPattern PThis = liftM PMatch (gets top)
+    methodPattern (PObject oe) = liftM PMatch (eval oe)
+    methodPattern (PNamed n p') = liftM (PNamed n) (methodPattern p')
     methodPattern p' = return p'
 
     -- | Swap out a reference match with PThis, for inserting on the object
@@ -323,7 +323,7 @@ define !p !e = do
 
 
 -- | find the target objects for a pattern
-targets :: IDs -> Pattern -> VM [ORef]
+targets :: IDs -> Pattern -> VMT r IO [ORef]
 targets _ (PMatch v) = orefFor v >>= return . (: [])
 targets is (PSingle _ _ p) = targets is p
 targets is (PKeyword _ _ ps) = do
@@ -348,7 +348,7 @@ targets _ p = error $ "no targets for " ++ show p
 -----------------------------------------------------------------------------
 
 -- | dispatch a message and return a value
-dispatch :: Message -> VM Value
+dispatch :: Message -> VMT r IO Value
 dispatch !m = do
     find <- findFirstMethod m vs
     case find of
@@ -387,7 +387,7 @@ dispatch !m = do
 
 -- | find a method on object `o' that responds to `m', searching its
 -- delegates if necessary
-findMethod :: Value -> Message -> VM (Maybe Method)
+findMethod :: Value -> Message -> VMT r IO (Maybe Method)
 findMethod v m = do
     is <- gets primitives
     r <- orefFor v
@@ -397,7 +397,7 @@ findMethod v m = do
         Just mt -> return (Just mt)
 
 -- | find the first value that has a method defiend for `m'
-findFirstMethod :: Message -> [Value] -> VM (Maybe Method)
+findFirstMethod :: Message -> [Value] -> VMT r IO (Maybe Method)
 findFirstMethod _ [] = return Nothing
 findFirstMethod m (v:vs) = do
     findMethod v m
@@ -479,7 +479,7 @@ matchParticle _ _ _ = False
 
 -- | evaluate a method in a scope with the pattern's bindings, delegating to
 -- the method's context and setting the "dispatch" object
-runMethod :: Method -> Message -> VM Value
+runMethod :: Method -> Message -> VMT r IO Value
 runMethod (Slot { mValue = v }) _ = return v
 runMethod (Responder { mPattern = p, mContext = c, mExpr = e }) m = do
     nt <- newObject $ \o -> o
@@ -498,7 +498,7 @@ runMethod (Responder { mPattern = p, mContext = c, mExpr = e }) m = do
     withTop nt $ eval e
 
 -- | evaluate an action in a new scope
-newScope :: VM Value -> VM Value
+newScope :: VMT r IO Value -> VMT r IO Value
 newScope x = do
     t <- gets top
     nt <- newObject $ \o -> o
@@ -544,27 +544,27 @@ bindings' _ _ = []
 infixr 0 =:, =::
 
 -- | define a method as an action returning a value
-(=:) :: Pattern -> VM Value -> VM ()
+(=:) :: Pattern -> VMT Value IO Value -> VMT r IO ()
 pat =: vm = define pat (EVM Nothing vm)
 
 -- | define a slot to a given value
-(=::) :: Pattern -> Value -> VM ()
+(=::) :: Pattern -> Value -> VMT r IO ()
 pat =:: v = define pat (Primitive Nothing v)
 
 -- | define a method that evaluates e
-(=:::) :: Pattern -> Expr -> VM ()
+(=:::) :: Pattern -> Expr -> VMT r IO ()
 pat =::: e = define pat e
 
 -- | find a value from an object, searching its delegates, throwing
 -- a descriptive error if it is not found
-findValue :: String -> (Value -> Bool) -> Value -> VM Value
+findValue :: MonadIO m => String -> (Value -> Bool) -> Value -> VMT r m Value
 findValue _ t v | t v = return v
 findValue d t v = findValue' t v >>= maybe die return
   where
     die = throwError (ValueNotFound d v)
 
 -- | findValue, but returning Nothing instead of failing
-findValue' :: (Value -> Bool) -> Value -> VM (Maybe Value)
+findValue' :: MonadIO m => (Value -> Bool) -> Value -> VMT r m (Maybe Value)
 findValue' t v | t v = return (Just v)
 findValue' t (Reference r) = do
     o <- liftIO (readIORef r)
@@ -578,91 +578,91 @@ findValue' t (Reference r) = do
             Just v -> return (Just v)
 findValue' _ _ = return Nothing
 
-findBlock :: Value -> VM Value
+findBlock :: MonadIO m => Value -> VMT r m Value
 {-# INLINE findBlock #-}
 findBlock = findValue "Block" isBlock
 
-findChar :: Value -> VM Value
+findChar :: MonadIO m => Value -> VMT r m Value
 {-# INLINE findChar #-}
 findChar = findValue "Char" isChar
 
-findContinuation :: Value -> VM Value
+findContinuation :: MonadIO m => Value -> VMT r m Value
 {-# INLINE findContinuation #-}
 findContinuation = findValue "Continuation" isContinuation
 
-findDouble :: Value -> VM Value
+findDouble :: MonadIO m => Value -> VMT r m Value
 {-# INLINE findDouble #-}
 findDouble = findValue "Double" isDouble
 
-findExpression :: Value -> VM Value
+findExpression :: MonadIO m => Value -> VMT r m Value
 {-# INLINE findExpression #-}
 findExpression = findValue "Expression" isExpression
 
-findHaskell :: Value -> VM Value
+findHaskell :: MonadIO m => Value -> VMT r m Value
 {-# INLINE findHaskell #-}
 findHaskell = findValue "Haskell" isHaskell
 
-findInteger :: Value -> VM Value
+findInteger :: MonadIO m => Value -> VMT r m Value
 {-# INLINE findInteger #-}
 findInteger = findValue "Integer" isInteger
 
-findList :: Value -> VM Value
+findList :: MonadIO m => Value -> VMT r m Value
 {-# INLINE findList #-}
 findList = findValue "List" isList
 
-findMessage :: Value -> VM Value
+findMessage :: MonadIO m => Value -> VMT r m Value
 {-# INLINE findMessage #-}
 findMessage = findValue "Message" isMessage
 
-findMethod' :: Value -> VM Value
+findMethod' :: MonadIO m => Value -> VMT r m Value
 {-# INLINE findMethod' #-}
 findMethod' = findValue "Method" isMethod
 
-findParticle :: Value -> VM Value
+findParticle :: MonadIO m => Value -> VMT r m Value
 {-# INLINE findParticle #-}
 findParticle = findValue "Particle" isParticle
 
-findProcess :: Value -> VM Value
+findProcess :: MonadIO m => Value -> VMT r m Value
 {-# INLINE findProcess #-}
 findProcess = findValue "Process" isProcess
 
-findPattern :: Value -> VM Value
+findPattern :: MonadIO m => Value -> VMT r m Value
 {-# INLINE findPattern #-}
 findPattern = findValue "Pattern" isPattern
 
-findReference :: Value -> VM Value
+findReference :: MonadIO m => Value -> VMT r m Value
 {-# INLINE findReference #-}
 findReference = findValue "Reference" isReference
 
-findString :: Value -> VM Value
+findString :: MonadIO m => Value -> VMT r m Value
 {-# INLINE findString #-}
 findString = findValue "String" isString
 
-getString :: Expr -> VM String
-getString e = eval e >>= fmap fromString . findString
+getString :: MonadIO m => Expr -> VMT r m String
+getString e = vmIO (eval e) >>= liftM fromString . findString
 
-getText :: Expr -> VM T.Text
-getText e = eval e >>= findString >>= \(String t) -> return t
+getText :: MonadIO m => Expr -> VMT r m T.Text
+getText e = vmIO (eval e) >>= findString >>= \(String t) -> return t
 
-getList :: Expr -> VM [Value]
-getList = fmap V.toList . getVector
+getList :: MonadIO m => Expr -> VMT r m [Value]
+getList e = liftM V.toList $ getVector e
 
-getVector :: Expr -> VM (V.Vector Value)
-getVector e = eval e
+getVector :: MonadIO m => Expr -> VMT r m (V.Vector Value)
+getVector e = vmIO (eval e)
     >>= findList
     >>= \(List v) -> liftIO . readIORef $ v
 
-here :: String -> VM Value
+here :: String -> VMT r IO Value
 here n =
     gets top
         >>= dispatch . (single n)
 
-bool :: Bool -> VM Value
+bool :: Bool -> VMT r IO Value
 {-# INLINE bool #-}
 bool True = here "True"
 bool False = here "False"
 
-ifVM :: VM Value -> VM a -> VM a -> VM a
+ifVM :: VMT r IO Value -> VMT r IO a -> VMT r IO a -> VMT r IO a
 ifVM c a b = do
     true <- bool True
     r <- c
@@ -671,14 +671,14 @@ ifVM c a b = do
         then a
         else b
 
-ifE :: Expr -> VM a -> VM a -> VM a
-ifE = ifVM . eval
+ifE :: Expr -> VMT r IO a -> VMT r IO a -> VMT r IO a
+ifE e a b = ifVM (eval e) a b
 
-referenceTo :: Value -> VM Value
+referenceTo :: Monad m => Value -> VMT r m Value
 {-# INLINE referenceTo #-}
-referenceTo = fmap Reference . orefFor
+referenceTo v = liftM Reference (orefFor v)
 
-doBlock :: MethodMap -> Value -> [Expr] -> VM Value
+doBlock :: MethodMap -> Value -> [Expr] -> VMT r IO Value
 {-# INLINE doBlock #-}
 doBlock bms s es = do
     blockScope <- newObject $ \o -> o
@@ -688,11 +688,11 @@ doBlock bms s es = do
 
     withTop blockScope (evalAll es)
 
-objectFor :: Value -> VM Object
+objectFor :: MonadIO m => Value -> VMT r m Object
 {-# INLINE objectFor #-}
 objectFor v = orefFor v >>= liftIO . readIORef
 
-orefFor :: Value -> VM ORef
+orefFor :: Monad m => Value -> VMT r m ORef
 {-# INLINE orefFor #-}
 orefFor v = gets primitives >>= \is -> return $ orefFrom is v
 
@@ -716,7 +716,7 @@ orefFrom ids (String _) = idString ids
 
 -- load a file, remembering it to prevent repeated loading
 -- searches with cwd as lowest priority
-requireFile :: FilePath -> VM Value
+requireFile :: FilePath -> VMT r IO Value
 requireFile fn = do
     initialPath <- gets loadPath
     file <- findFile (initialPath ++ [""]) fn
@@ -732,20 +732,20 @@ requireFile fn = do
 
 -- load a file
 -- searches with cwd as highest priority
-loadFile :: FilePath -> VM Value
+loadFile :: FilePath -> VMT r IO Value
 loadFile fn = do
     initialPath <- gets loadPath
     findFile ("":initialPath) fn >>= doLoad
 
 -- execute a file
-doLoad :: FilePath -> VM Value
+doLoad :: FilePath -> VMT r IO Value
 doLoad file =
     case takeExtension file of
         ".hs" -> do
             int <- liftIO . H.runInterpreter $ do
                 H.loadModules [file]
                 H.setTopLevelModules ["Main"]
-                H.interpret "load" (H.as :: VM ())
+                H.interpret "load" (H.as :: VMT r IO ())
 
             load <- either (throwError . ImportError) return int
 
@@ -772,7 +772,7 @@ doLoad file =
 
 -- | given a list of paths to search, find the file to load
 -- attempts to find the filename with .atomo and .hs extensions
-findFile :: [FilePath] -> FilePath -> VM FilePath
+findFile :: MonadIO m => [FilePath] -> FilePath -> VMT r m FilePath
 findFile [] fn = throwError (FileNotFound fn)
 findFile (p:ps) fn = do
     check <- filterM (liftIO . doesFileExist . ((p </> fn) <.>)) exts
@@ -784,7 +784,7 @@ findFile (p:ps) fn = do
     exts = ["", "atomo", "hs"]
 
 -- | does one value delegate to another?
-delegatesTo :: Value -> Value -> VM Bool
+delegatesTo :: MonadIO m => Value -> Value -> VMT r m Bool
 delegatesTo f t = do
     o <- objectFor f
     delegatesTo' (oDelegates o)
@@ -798,7 +798,7 @@ delegatesTo f t = do
 
 -- | is one value an instance of, equal to, or a delegation to another?
 -- for example, 1 is-a?: Integer, but 1 does not delegates-to?: Integer
-isA :: Value -> Value -> VM Bool
+isA :: MonadIO m => Value -> Value -> VMT r m Bool
 isA x y = do
     xr <- orefFor x
     yr <- orefFor y
@@ -806,7 +806,7 @@ isA x y = do
     if xr == yr
         then return True
         else do
-            ds <- fmap oDelegates (objectFor x)
+            ds <- liftM oDelegates (objectFor x)
             isA' ds
   where
     isA' [] = return False

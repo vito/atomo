@@ -1,8 +1,9 @@
 module Atomo.Parser where
 
-import Control.Monad.Error
+{-import Control.Monad.Error-}
 import Control.Monad.Identity
-import Control.Monad.State
+{-import Control.Monad.State-}
+import Control.Monad.Trans
 import Data.Maybe (fromJust)
 import Text.Parsec
 
@@ -308,7 +309,7 @@ parse :: Parser a -> String -> Either ParseError a
 parse p = runIdentity . runParserT p [] "<parse>"
 
 -- | parse input i from source s, maintaining parser state between parses
-continuedParse :: String -> String -> VM [Expr]
+continuedParse :: Monad m => String -> String -> VMT r m [Expr]
 continuedParse i s = do
     ps <- gets parserState
     case runIdentity (runParserT cparser ps s i) of
@@ -317,5 +318,5 @@ continuedParse i s = do
             modify $ \e -> e { parserState = ps' }
             return es
 
-continuedParseFile :: FilePath -> VM [Expr]
+continuedParseFile :: MonadIO m => FilePath -> VMT r m [Expr]
 continuedParseFile fn = liftIO (readFile fn) >>= flip continuedParse fn

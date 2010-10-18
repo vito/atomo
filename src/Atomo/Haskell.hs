@@ -3,8 +3,6 @@ module Atomo.Haskell
     ( module Control.Concurrent
     , module Control.Monad
     , module Control.Monad.Cont
-    , module Control.Monad.Error
-    , module Control.Monad.State
     , module Control.Monad.Trans
     , module Atomo.Types
     , p
@@ -15,9 +13,7 @@ module Atomo.Haskell
 import Control.Concurrent
 import Control.Monad
 import Control.Monad.Cont (MonadCont(..), ContT(..))
-import Control.Monad.Error (MonadError(..), ErrorT(..))
 import Control.Monad.Identity (runIdentity)
-import Control.Monad.State (MonadState(..), gets, modify)
 import Control.Monad.Trans
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax

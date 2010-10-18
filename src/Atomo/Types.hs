@@ -1,23 +1,52 @@
-{-# LANGUAGE BangPatterns, TypeSynonymInstances #-}
+{-# LANGUAGE BangPatterns, ExistentialQuantification, TypeSynonymInstances #-}
 module Atomo.Types where
 
 import Control.Concurrent (ThreadId)
 import Control.Concurrent.Chan
 import Control.Monad.Trans
 import Control.Monad.Cont
-import Control.Monad.Error
-import Control.Monad.State
+import Control.Monad.Identity
 import Data.Dynamic
 import Data.Hashable (hash)
 import Data.IORef
 import Data.Typeable
 import Text.Parsec (ParseError, SourcePos)
+import Unsafe.Coerce
 import qualified Data.IntMap as M
 import qualified Data.Text as T
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
 
-type VM = ErrorT AtomoError (ContT (Either AtomoError Value) (StateT Env IO))
+newtype VMT r m a =
+    VM
+        { runVM :: Env -> ContT (Either AtomoError r, Env) m (Either AtomoError a, Env)
+        }
+
+type VM = VMT Value IO
+
+instance Monad m => Monad (VMT r m) where
+    x >>= f = VM $ \e -> do
+        (ev, e') <- runVM x e
+        case ev of
+            Right v -> runVM (f v) e'
+            Left err -> return (Left err, e')
+
+    return x = VM $ \e -> return (Right x, e)
+
+instance MonadTrans (VMT r) where
+    lift m = VM $ \e -> do
+        a <- lift m
+        return (Right a, e)
+
+instance MonadIO m => MonadIO (VMT r m) where
+    liftIO f = VM $ \e -> do
+        x <- liftIO f
+        return (Right x, e)
+
+instance Monad m => MonadCont (VMT r m) where
+    callCC f = VM $ \e ->
+        callCC $ \c -> runVM (f (\a -> VM (\e' -> c (Right a, e')))) e
+
 
 data Value
     = Block !Value [Pattern] [Expr]
@@ -157,11 +186,10 @@ data Expr
     | ETop
         { eLocation :: Maybe SourcePos
         }
-    | EVM
+    | forall r. EVM
         { eLocation :: Maybe SourcePos
-        , eAction :: VM Value
+        , eAction :: VMT r IO Value
         }
-    deriving Show
 
 data EMessage
     = EKeyword
@@ -236,7 +264,15 @@ type Channel = Chan Value
 type MethodMap = M.IntMap [Method]
 type ORef = IORef Object
 type VVector = IORef (V.Vector Value)
-type Continuation = IORef (Value -> VM Value)
+
+data Continuation = forall m r. ContinuationValue (IORef (Value -> VMT r m Value))
+
+instance Eq Continuation where
+    ContinuationValue a == ContinuationValue b = a == unsafeCoerce b
+
+
+instance Show Expr where
+    show = const "TODO"
 
 
 -- a basic Eq instance
@@ -282,24 +318,21 @@ instance Eq Pattern where
 
 
 instance Eq Expr where
-    (==) (Define _ ap ae) (Define _ bp be) = ap == bp && ae == be
-    (==) (Set _ ap ae) (Set _ bp be) = ap == bp && ae == be
+    (==) (Define _ ap' ae) (Define _ bp be) = ap' == bp && ae == be
+    (==) (Set _ ap' ae) (Set _ bp be) = ap' == bp && ae == be
     (==) (Dispatch _ am) (Dispatch _ bm) = am == bm
-    (==) (Operator _ ans aa ap) (Operator _ bns ba bp) =
-        ans == bns && aa == ba && ap == bp
+    (==) (Operator _ ans aa ap') (Operator _ bns ba bp) =
+        ans == bns && aa == ba && ap' == bp
     (==) (Primitive _ a) (Primitive _ b) = a == b
     (==) (EBlock _ aas aes) (EBlock _ bas bes) =
         aas == bas && aes == bes
     (==) (EDispatchObject _) (EDispatchObject _) = True
     (==) (EList _ aes) (EList _ bes) = aes == bes
-    (==) (EParticle _ ap) (EParticle _ bp) = ap == bp
+    (==) (EParticle _ ap') (EParticle _ bp) = ap' == bp
     (==) (ETop _) (ETop _) = True
     (==) (EVM _ _) (EVM _ _) = False
     (==) _ _ = False
 
-
-instance Error AtomoError where
-    strMsg = Error . string
 
 
 instance Show Channel where
@@ -314,10 +347,10 @@ instance Show VVector where
 instance Show Continuation where
     show _ = "Continuation"
 
-instance Show (VM a) where
+instance Show (VMT r m a) where
     show _ = "VM"
 
-instance Typeable (VM a) where
+instance Typeable (VMT r m a) where
     typeOf _ = mkTyConApp (mkTyCon "VM") [typeOf ()]
 
 
@@ -353,9 +386,35 @@ startEnv = Env
     }
 
 
+
+throwError :: Monad m => AtomoError -> VMT r m b
+throwError err = VM $ \e -> return (Left err, e)
+
+catchError :: Monad m => VMT r m a -> (AtomoError -> VMT r m a) -> VMT r m a
+catchError x h = VM $ \e -> do
+    (r, e') <- runVM x e
+    case r of
+        Left err -> runVM (h err) e
+        Right ok -> return (Right ok, e')
+
+get :: Monad m => VMT r m Env
+get = VM $ \e -> return (Right e, e)
+
+gets :: Monad m => (Env -> a) -> VMT r m a
+gets f = VM $ \e -> return (Right (f e), e)
+
+put :: Monad m => Env -> VMT r m ()
+put e = VM $ \_ -> return (Right (), e)
+
+modify :: Monad m => (Env -> Env) -> VMT r m ()
+modify f = get >>= put . f
+
 -----------------------------------------------------------------------------
 -- Helpers ------------------------------------------------------------------
 -----------------------------------------------------------------------------
+
+vmIO :: MonadIO m => VMT a IO a -> VMT r m a
+vmIO x = VM $ \e -> liftIO (runContT (runVM x e) return)
 
 particle :: String -> Value
 {-# INLINE particle #-}
@@ -369,13 +428,13 @@ keyParticleN :: [String] -> [Value] -> Value
 {-# INLINE keyParticleN #-}
 keyParticleN ns vs = keyParticle ns (Nothing:map Just vs)
 
-raise :: [String] -> [Value] -> VM a
+raise :: Monad m => [String] -> [Value] -> VMT r m a
 {-# INLINE raise #-}
 raise ns vs = throwError . Error $ keyParticleN ns vs
 
-raise' :: String -> VM a
+raise' :: Monad m => String -> VMT r m a
 {-# INLINE raise' #-}
-raise' = throwError . Error . particle
+raise' n = throwError . Error $ particle n
 
 string :: String -> Value
 {-# INLINE string #-}
@@ -385,7 +444,7 @@ haskell :: Typeable a => a -> Value
 {-# INLINE haskell #-}
 haskell = Haskell . toDyn
 
-fromHaskell :: Typeable a => String -> Value -> VM a
+fromHaskell :: (Monad m, Typeable a) => String -> Value -> VMT r m a
 fromHaskell t (Haskell d) =
     case fromDynamic d of
         Just a -> return a

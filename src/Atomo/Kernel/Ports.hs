@@ -97,7 +97,7 @@ load = do
 
         if done
             then raise' "end-of-input"
-            else fmap String $ liftIO (TIO.hGetLine h)
+            else liftM String $ liftIO (TIO.hGetLine h)
 
     [$p|read-char|] =::: [$e|current-input-port _? read-char|]
     [$p|(p: Port) read-char|] =: do
@@ -180,11 +180,11 @@ load = do
 
     [$p|File canonicalize-path: (fn: String)|] =: do
         fn <- getString [$e|fn|]
-        fmap string $ liftIO (canonicalizePath fn)
+        liftM string $ liftIO (canonicalizePath fn)
 
     [$p|File make-relative: (fn: String)|] =: do
         fn <- getString [$e|fn|]
-        fmap string $ liftIO (makeRelativeToCurrentDirectory fn)
+        liftM string $ liftIO (makeRelativeToCurrentDirectory fn)
 
     [$p|File exists?: (fn: String)|] =: do
         fn <- getString [$e|fn|]
@@ -199,22 +199,22 @@ load = do
 
     [$p|File readable?: (fn: String)|] =:
         getString [$e|fn|]
-            >>= fmap readable . liftIO . getPermissions
+            >>= liftM readable . liftIO . getPermissions
             >>= bool
 
     [$p|File writable?: (fn: String)|] =:
         getString [$e|fn|]
-            >>= fmap writable . liftIO . getPermissions
+            >>= liftM writable . liftIO . getPermissions
             >>= bool
 
     [$p|File executable?: (fn: String)|] =:
         getString [$e|fn|]
-            >>= fmap executable . liftIO . getPermissions
+            >>= liftM executable . liftIO . getPermissions
             >>= bool
 
     [$p|File searchable?: (fn: String)|] =:
         getString [$e|fn|]
-            >>= fmap searchable . liftIO . getPermissions
+            >>= liftM searchable . liftIO . getPermissions
             >>= bool
 
     [$p|File set-readable: (fn: String) to: (b: Boolean)|] =: do
@@ -304,7 +304,7 @@ load = do
             >>= list . map string
 
     [$p|Directory current|] =:
-        fmap string $ liftIO getCurrentDirectory
+        liftM string $ liftIO getCurrentDirectory
 
     [$p|Directory current: (path: String)|] =: do
         path <- getString [$e|path|]
@@ -312,17 +312,17 @@ load = do
         return (particle "ok")
 
     [$p|Directory home|] =:
-        fmap string $ liftIO getHomeDirectory
+        liftM string $ liftIO getHomeDirectory
 
     [$p|Directory user-data-for: (app: String)|] =: do
         app <- getString [$e|app|]
-        fmap string $ liftIO (getAppUserDataDirectory app)
+        liftM string $ liftIO (getAppUserDataDirectory app)
 
     [$p|Directory user-documents|] =:
-        fmap string $ liftIO getUserDocumentsDirectory
+        liftM string $ liftIO getUserDocumentsDirectory
 
     [$p|Directory temporary|] =:
-        fmap string $ liftIO getTemporaryDirectory
+        liftM string $ liftIO getTemporaryDirectory
 
     [$p|Directory exists?: (path: String)|] =: do
         path <- getString [$e|path|]
@@ -379,12 +379,12 @@ load = do
                     return (c:cs)
           where
             wrapped d = do
-                w <- fmap (d:) $ hGetUntil h d
+                w <- liftM (d:) $ hGetUntil h d
                 rest <- hGetSegment' stop
                 return (w ++ rest)
 
             nested c end = do
-                sub <- fmap (c:) $ hGetSegment' (Just end)
+                sub <- liftM (c:) $ hGetSegment' (Just end)
                 rest <- hGetSegment' stop
                 return (sub ++ rest)
 

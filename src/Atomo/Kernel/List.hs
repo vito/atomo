@@ -358,18 +358,19 @@ foldrMV f acc vs = do
     f (V.head vs) rest
 
 sortVM :: [Value] -> VM [Value]
-sortVM = sortByVM gt
+sortVM vs = sortByVM gt vs
   where
+    gt :: Value -> Value -> VM Bool
     gt a b = do
         t <- bool True
         r <- dispatch (keyword [">"] [a, b])
         return (r == t)
 
 sortByVM :: (Value -> Value -> VM Bool) -> [Value] -> VM [Value]
-sortByVM = mergesort
+sortByVM f vs = mergesort f vs
 
 mergesort :: (Value -> Value -> VM Bool) -> [Value] -> VM [Value]
-mergesort cmp = mergesort' cmp . map (\x -> [x])
+mergesort cmp vs = mergesort' cmp . map (\x -> [x]) $ vs
 
 mergesort' :: (Value -> Value -> VM Bool) -> [[Value]] -> VM [Value]
 mergesort' _ [] = return []
