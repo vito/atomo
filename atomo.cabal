@@ -29,6 +29,8 @@ stability:           Experimental
 
 cabal-version:       >= 1.6
 
+extra-source-files: bin/eco
+
 source-repository   head
     type:           darcs
     location:       http://darcsden.com/alex/atomo
