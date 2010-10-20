@@ -308,7 +308,7 @@ parse :: Parser a -> String -> Either ParseError a
 parse p = runIdentity . runParserT p [] "<parse>"
 
 -- | parse input i from source s, maintaining parser state between parses
-continuedParse :: Monad m => String -> String -> VMT r m [Expr]
+continuedParse :: String -> String -> VM [Expr]
 continuedParse i s = do
     ps <- gets parserState
     case runIdentity (runParserT cparser ps s i) of
@@ -317,5 +317,5 @@ continuedParse i s = do
             modify $ \e -> e { parserState = ps' }
             return es
 
-continuedParseFile :: MonadIO m => FilePath -> VMT r m [Expr]
+continuedParseFile :: FilePath -> VM [Expr]
 continuedParseFile fn = liftIO (readFile fn) >>= flip continuedParse fn

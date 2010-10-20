@@ -1,8 +1,9 @@
-{-# LANGUAGE BangPatterns, ExistentialQuantification, TypeSynonymInstances #-}
+{-# LANGUAGE BangPatterns, TypeSynonymInstances #-}
 module Atomo.Types where
 
 import Control.Concurrent (ThreadId)
 import Control.Concurrent.Chan
+import Control.Monad.Trans
 import Control.Monad.Cont
 import Control.Monad.Error
 import Control.Monad.State
@@ -11,14 +12,12 @@ import Data.Hashable (hash)
 import Data.IORef
 import Data.Typeable
 import Text.Parsec (ParseError, SourcePos)
-import Unsafe.Coerce
 import qualified Data.IntMap as M
 import qualified Data.Text as T
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
 
-type VMT r m = ErrorT AtomoError (ContT (Either AtomoError r) (StateT Env m))
-type VM = VMT Value IO
+type VM = ErrorT AtomoError (ContT (Either AtomoError Value) (StateT Env IO))
 
 data Value
     = Block !Value [Pattern] [Expr]
@@ -158,10 +157,11 @@ data Expr
     | ETop
         { eLocation :: Maybe SourcePos
         }
-    | forall r. EVM
+    | EVM
         { eLocation :: Maybe SourcePos
-        , eAction :: VMT r IO Value
+        , eAction :: VM Value
         }
+    deriving Show
 
 data EMessage
     = EKeyword
@@ -236,15 +236,7 @@ type Channel = Chan Value
 type MethodMap = M.IntMap [Method]
 type ORef = IORef Object
 type VVector = IORef (V.Vector Value)
-
-data Continuation = forall m r. ContinuationValue (IORef (Value -> VMT r m Value))
-
-instance Eq Continuation where
-    ContinuationValue a == ContinuationValue b = a == unsafeCoerce b
-
-
-instance Show Expr where
-    show = const "TODO"
+type Continuation = IORef (Value -> VM Value)
 
 
 -- a basic Eq instance
@@ -306,6 +298,9 @@ instance Eq Expr where
     (==) _ _ = False
 
 
+instance Error AtomoError where
+    strMsg = Error . string
+
 
 instance Show Channel where
     show _ = "Channel"
@@ -319,10 +314,10 @@ instance Show VVector where
 instance Show Continuation where
     show _ = "Continuation"
 
-instance Show (VMT r m a) where
+instance Show (VM a) where
     show _ = "VM"
 
-instance Typeable (VMT r m a) where
+instance Typeable (VM a) where
     typeOf _ = mkTyConApp (mkTyCon "VM") [typeOf ()]
 
 instance Error AtomoError where
@@ -361,17 +356,9 @@ startEnv = Env
     }
 
 
--- | evaluate x with e as the environment
-runWith :: Monad m => VMT r m r -> Env -> m (Either AtomoError r)
-runWith x e = evalStateT (runContT (runErrorT x) return) e
-
-
 -----------------------------------------------------------------------------
 -- Helpers ------------------------------------------------------------------
 -----------------------------------------------------------------------------
-
-vmIO :: MonadIO m => VMT a IO a -> VMT r m a
-vmIO x = get >>= liftIO . runWith x >>= either throwError return
 
 particle :: String -> Value
 {-# INLINE particle #-}
@@ -385,13 +372,13 @@ keyParticleN :: [String] -> [Value] -> Value
 {-# INLINE keyParticleN #-}
 keyParticleN ns vs = keyParticle ns (Nothing:map Just vs)
 
-raise :: Monad m => [String] -> [Value] -> VMT r m a
+raise :: [String] -> [Value] -> VM a
 {-# INLINE raise #-}
 raise ns vs = throwError . Error $ keyParticleN ns vs
 
-raise' :: Monad m => String -> VMT r m a
+raise' :: String -> VM a
 {-# INLINE raise' #-}
-raise' n = throwError . Error $ particle n
+raise' = throwError . Error . particle
 
 string :: String -> Value
 {-# INLINE string #-}
@@ -401,7 +388,7 @@ haskell :: Typeable a => a -> Value
 {-# INLINE haskell #-}
 haskell = Haskell . toDyn
 
-fromHaskell :: (Monad m, Typeable a) => String -> Value -> VMT r m a
+fromHaskell :: Typeable a => String -> Value -> VM a
 fromHaskell t (Haskell d) =
     case fromDynamic d of
         Just a -> return a

@@ -59,8 +59,6 @@ library
     time,
     vector
 
-  extensions:        Rank2Types
-
   exposed-modules:
     Atomo,
     Atomo.Environment,
@@ -104,10 +102,8 @@ executable atomo
   main-is:           Main.hs
 
   ghc-prof-options:  -prof -auto-all -caf-all
-  ghc-options:       -Wall -O2 -threaded -fno-warn-unused-do-bind
+  ghc-options:       -Wall -threaded -fno-warn-unused-do-bind
                      -funfolding-use-threshold=9999
-
-  extensions:        Rank2Types
 
   build-depends:
     base >= 4 && < 5,
