@@ -15,7 +15,7 @@ import Control.Concurrent
 import Control.Monad
 import Control.Monad.Cont (MonadCont(..), ContT(..))
 import Control.Monad.Error (MonadError(..), ErrorT(..))
-import Control.Monad.State (MonadState(..), gets, modify)
+import Control.Monad.State (MonadState(..), StateT(..), evalStateT, gets, modify)
 import Control.Monad.Trans
 
 import Atomo.Environment

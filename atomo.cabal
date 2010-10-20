@@ -70,7 +70,8 @@ library
     Atomo.Pretty,
     Atomo.QuasiQuotes,
     Atomo.Types,
-    Atomo.Valuable
+    Atomo.Valuable,
+    Atomo.VMT
 
   other-modules:
     Atomo.Debug,
