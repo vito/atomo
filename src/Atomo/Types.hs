@@ -320,9 +320,6 @@ instance Show (VM a) where
 instance Typeable (VM a) where
     typeOf _ = mkTyConApp (mkTyCon "VM") [typeOf ()]
 
-instance Error AtomoError where
-    strMsg = Error . string
-
 
 startEnv :: Env
 startEnv = Env
