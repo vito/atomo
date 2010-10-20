@@ -36,8 +36,7 @@ instance MonadCont m => MonadCont (VMT m) where
         callCC $ \c -> runVMT (f (\a -> VMT (\e' -> c (Right a, e')))) e
 
 vm :: MonadIO m => VM Value -> VMT m Value
-vm x = VMT $ \e ->
-    liftIO $ runStateT (runContT (runErrorT x) return) e
+vm x = VMT (liftIO . runStateT (runContT (runErrorT x) return))
 
 getEnv :: Monad m => VMT m Env
 getEnv = VMT $ \e -> return (Right e, e)
