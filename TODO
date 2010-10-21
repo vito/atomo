@@ -1,6 +1,4 @@
 * keyword particles that start with a value
-* finish up the QuickCheck parser test
-* more environment tests
 * rationals: 1/2 * 6/5 = 3/5
 * make Bool a primitive?
 * Message docs
