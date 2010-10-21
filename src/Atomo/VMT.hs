@@ -38,6 +38,9 @@ instance MonadCont m => MonadCont (VMT m) where
 vm :: MonadIO m => VM Value -> VMT m Value
 vm x = VMT (liftIO . runStateT (runContT (runErrorT x) return))
 
+vm_ :: MonadIO m => VM a -> VMT m ()
+vm_ x = vm (x >> return (particle "ok")) >> return ()
+
 getEnv :: Monad m => VMT m Env
 getEnv = VMT $ \e -> return (Right e, e)
 
