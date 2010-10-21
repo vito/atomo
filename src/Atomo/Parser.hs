@@ -1,9 +1,10 @@
 module Atomo.Parser where
 
+import Control.Arrow (first, second)
 import Control.Monad.Error
 import Control.Monad.Identity
 import Control.Monad.State
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, isJust)
 import Text.Parsec
 
 import Atomo.Debug
@@ -194,8 +195,10 @@ cSingle p = do
 cKeyword :: Bool -> Parser EParticle
 cKeyword wc = do
     ks <- parens $ many1 keyword'
-    let (ns, vs) = unzip ks
-    return $ EPMKeyword ns (Nothing:vs)
+    let (ns, mvs) = second (Nothing:) $ unzip ks
+    if any isOperator (tail ns)
+        then toDispatch ns mvs
+        else return $ EPMKeyword ns mvs
     <?> "keyword segment"
   where
     keywordVal
@@ -222,6 +225,19 @@ cKeyword wc = do
         return (name, target)
 
     wildcard = symbol "_" >> return Nothing
+
+    toDispatch [] mvs = error $ "impossible: toDispatch on [] and " ++ show mvs
+    toDispatch (n:ns) mvs
+        | all isJust opVals = do
+            os <- getState
+            pos <- getPosition
+            let msg = toBinaryOps os $ ekeyword opers (map fromJust opVals)
+            return . EPMKeyword nonOpers $
+                partVals ++ [Just $ Dispatch (Just pos) msg]
+        | otherwise = fail "invalid particle; toplevel operator with wildcards as values"
+      where
+        (nonOpers, opers) = first (n:) $ span (not . isOperator) ns
+        (partVals, opVals) = splitAt (length nonOpers) mvs
 
 -- work out precadence, associativity, etc. from a stream of operators
 -- the input is a keyword EMessage with a mix of operators and identifiers
