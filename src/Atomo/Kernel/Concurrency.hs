@@ -33,13 +33,12 @@ load = do
             else spawn (doBlock emptyMap s bes)
 
     [$p|(b: Block) spawn: (l: List)|] =: do
-        Block s as bes <- here "b" >>= findBlock
+        b@(Block _ as _) <- here "b" >>= findBlock
         vs <- getList [$e|l|]
 
         if length as > length vs
             then throwError (BlockArity (length as) (length vs))
-            else spawn $
-                doBlock (toMethods . concat $ zipWith bindings' as vs) s bes
+            else spawn (callBlock b vs)
 
     [$p|(p: Process) stop|] =: do
         Process _ tid <- here "p" >>= findProcess

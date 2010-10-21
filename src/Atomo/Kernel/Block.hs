@@ -3,7 +3,6 @@
 module Atomo.Kernel.Block (load) where
 
 import Atomo
-import Atomo.Method
 
 
 load :: VM ()
@@ -21,19 +20,13 @@ load = do
         return (Block t [] (map toExpr es))
 
     [$p|(b: Block) call|] =: do
-        Block s as es <- here "b" >>= findBlock
-
-        if length as > 0
-            then throwError (BlockArity (length as) 0)
-            else doBlock emptyMap s es
+        b <- here "b" >>= findBlock
+        callBlock b []
 
     [$p|(b: Block) call: (l: List)|] =: do
-        Block s ps es <- here "b" >>= findBlock
+        b <- here "b" >>= findBlock
         vs <- getList [$e|l|]
-
-        if length ps > length vs
-            then throwError (BlockArity (length ps) (length vs))
-            else doBlock (toMethods . concat $ zipWith bindings' ps vs) s es
+        callBlock b vs
 
     [$p|(b: Block) context|] =: do
         Block s _ _ <- here "b" >>= findBlock
@@ -58,9 +51,8 @@ prelude = mapM_ eval [$es|
       } call
 
     (b: Block) in-context :=
-      Object clone do:
-        { delegates-to: b
-          call := b context join: b
+      b clone do:
+        { call := b context join: b
           call: vs := b context join: b with: vs
         }
 

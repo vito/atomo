@@ -678,6 +678,20 @@ referenceTo :: Value -> VM Value
 {-# INLINE referenceTo #-}
 referenceTo = fmap Reference . orefFor
 
+callBlock :: Value -> [Value] -> VM Value
+callBlock (Block s ps es) vs
+    | length ps > length vs = throwError (BlockArity (length ps) (length vs))
+    | otherwise = do
+        checkArgs ps vs
+        doBlock (toMethods . concat $ zipWith bindings' ps vs) s es
+  where
+    checkArgs [] _ = return ()
+    checkArgs (p:ps) (v:vs) = do
+        is <- gets primitives
+        if match is p v
+            then checkArgs ps vs
+            else throwError (Mismatch p v)
+
 doBlock :: MethodMap -> Value -> [Expr] -> VM Value
 {-# INLINE doBlock #-}
 doBlock bms s es = do
