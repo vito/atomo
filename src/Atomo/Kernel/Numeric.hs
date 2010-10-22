@@ -1,6 +1,8 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Atomo.Kernel.Numeric (load) where
 
+import Data.Ratio
+
 import Atomo
 
 
@@ -39,26 +41,68 @@ load = do
 
     [$p|(d: Double) as: Integer|] =::: [$e|d floor|]
 
+    [$p|(r: Rational) numerator|] =: do
+        Rational r <- here "r" >>= findRational
+        return (Integer (numerator r))
+
+    [$p|(r: Rational) denominator|] =: do
+        Rational r <- here "r" >>= findRational
+        return (Integer (denominator r))
+
+    [$p|(d: Double) as: Rational|] =::: [$e|d as: Rational epsilon: 0.0|]
+    [$p|(d: Double) as: Rational epsilon: (e: Double)|] =: do
+        Double d <- here "d" >>= findDouble
+        Double e' <- here "e" >>= findDouble
+        return (Rational (approxRational d e'))
+
     [$p|(a: Integer) + (b: Integer)|] =: primII (+)
-    [$p|(a: Integer) + (b: Double)|] =: primID (+)
-    [$p|(a: Double) + (b: Integer)|] =: primDI (+)
+    [$p|(a: Rational) + (b: Rational)|] =: primRR (+)
     [$p|(a: Double) + (b: Double)|] =: primDD (+)
+    [$p|(a: Integer) + (b: Double)|] =: primID (+)
+    [$p|(a: Integer) + (b: Rational)|] =: primIR (+)
+    [$p|(a: Double) + (b: Integer)|] =: primDI (+)
+    [$p|(a: Double) + (b: Rational)|] =: primDR (+)
+    [$p|(a: Rational) + (b: Integer)|] =: primRI (+)
+    [$p|(a: Rational) + (b: Double)|] =: primRD (+)
+
     [$p|(a: Integer) - (b: Integer)|] =: primII (-)
-    [$p|(a: Integer) - (b: Double)|] =: primID (-)
-    [$p|(a: Double) - (b: Integer)|] =: primDI (-)
+    [$p|(a: Rational) - (b: Rational)|] =: primRR (-)
     [$p|(a: Double) - (b: Double)|] =: primDD (-)
+    [$p|(a: Integer) - (b: Double)|] =: primID (-)
+    [$p|(a: Integer) - (b: Rational)|] =: primIR (-)
+    [$p|(a: Double) - (b: Integer)|] =: primDI (-)
+    [$p|(a: Double) - (b: Rational)|] =: primDR (-)
+    [$p|(a: Rational) - (b: Integer)|] =: primRI (-)
+    [$p|(a: Rational) - (b: Double)|] =: primRD (-)
+
     [$p|(a: Integer) * (b: Integer)|] =: primII (*)
-    [$p|(a: Integer) * (b: Double)|] =: primID (*)
-    [$p|(a: Double) * (b: Integer)|] =: primDI (*)
+    [$p|(a: Rational) * (b: Rational)|] =: primRR (*)
     [$p|(a: Double) * (b: Double)|] =: primDD (*)
+    [$p|(a: Integer) * (b: Double)|] =: primID (*)
+    [$p|(a: Integer) * (b: Rational)|] =: primIR (*)
+    [$p|(a: Double) * (b: Integer)|] =: primDI (*)
+    [$p|(a: Double) * (b: Rational)|] =: primDR (*)
+    [$p|(a: Rational) * (b: Integer)|] =: primRI (*)
+    [$p|(a: Rational) * (b: Double)|] =: primRD (*)
+
     [$p|(a: Integer) / (b: Integer)|] =: primII div
-    [$p|(a: Integer) / (b: Double)|] =: primID (/)
-    [$p|(a: Double) / (b: Integer)|] =: primDI (/)
+    [$p|(a: Rational) / (b: Rational)|] =: primRR (/)
     [$p|(a: Double) / (b: Double)|] =: primDD (/)
+    [$p|(a: Integer) / (b: Double)|] =: primID (/)
+    [$p|(a: Integer) / (b: Rational)|] =: primIR (/)
+    [$p|(a: Double) / (b: Integer)|] =: primDI (/)
+    [$p|(a: Double) / (b: Rational)|] =: primDR (/)
+    [$p|(a: Rational) / (b: Integer)|] =: primRI (/)
+    [$p|(a: Rational) / (b: Double)|] =: primRD (/)
+
     [$p|(a: Integer) ^ (b: Integer)|] =: primII (^)
+    [$p|(a: Double) ^ (b: Double)|] =: primDD (**)
     [$p|(a: Integer) ^ (b: Double)|] =: primID (**)
     [$p|(a: Double) ^ (b: Integer)|] =: primDI (**)
-    [$p|(a: Double) ^ (b: Double)|] =: primDD (**)
+    [$p|(a: Rational) ^ (b: Integer)|] =: do
+        Rational a <- here "a" >>= findRational
+        Integer b <- here "b" >>= findInteger
+        return (Rational (a ^ b))
 
     [$p|(a: Integer) % (b: Integer)|] =: primII mod
     [$p|(a: Integer) quotient: (b: Integer)|] =: primII quot
@@ -71,20 +115,45 @@ load = do
         Integer b <- here "b" >>= findInteger
         return (Integer (f a b))
 
+    primDD f = do
+        Double a <- here "a" >>= findDouble
+        Double b <- here "b" >>= findDouble
+        return (Double (f a b))
+
+    primRR f = do
+        Rational a <- here "a" >>= findRational
+        Rational b <- here "b" >>= findRational
+        return (Rational (f a b))
+
     primID f = do
         Integer a <- here "a" >>= findInteger
         Double b <- here "b" >>= findDouble
         return (Double (f (fromIntegral a) b))
+
+    primIR f = do
+        Integer a <- here "a" >>= findInteger
+        Rational b <- here "b" >>= findRational
+        return (Rational (f (toRational a) b))
 
     primDI f = do
         Double a <- here "a" >>= findDouble
         Integer b <- here "b" >>= findInteger
         return (Double (f a (fromIntegral b)))
 
-    primDD f = do
+    primDR f = do
         Double a <- here "a" >>= findDouble
+        Rational b <- here "b" >>= findRational
+        return (Rational (f (toRational a) b))
+
+    primRD f = do
+        Rational a <- here "a" >>= findRational
         Double b <- here "b" >>= findDouble
-        return (Double (f a b))
+        return (Rational (f a (toRational b)))
+
+    primRI f = do
+        Rational a <- here "a" >>= findRational
+        Integer b <- here "b" >>= findInteger
+        return (Rational (f a (toRational b)))
 
 
 prelude :: VM ()

@@ -27,49 +27,9 @@ load = do
         Char b <- here "b" >>= findChar
         return $ Boolean (a < b)
 
-    [$p|(a: Integer) < (b: Integer)|] =: do
-        Integer a <- here "a" >>= findInteger
-        Integer b <- here "b" >>= findInteger
-        return $ Boolean (a < b)
-
-    [$p|(a: Integer) < (b: Double)|] =: do
-        Integer a <- here "a" >>= findInteger
-        Double b <- here "b" >>= findDouble
-        return $ Boolean (fromIntegral a < b)
-
-    [$p|(a: Double) < (b: Integer)|] =: do
-        Double a <- here "a" >>= findDouble
-        Integer b <- here "b" >>= findInteger
-        return $ Boolean (a < fromIntegral b)
-
-    [$p|(a: Double) < (b: Double)|] =: do
-        Double a <- here "a" >>= findDouble
-        Double b <- here "b" >>= findDouble
-        return $ Boolean (a < b)
-
     [$p|(a: Char) > (b: Char)|] =: do
         Char a <- here "a" >>= findChar
         Char b <- here "b" >>= findChar
-        return $ Boolean (a > b)
-
-    [$p|(a: Integer) > (b: Integer)|] =: do
-        Integer a <- here "a" >>= findInteger
-        Integer b <- here "b" >>= findInteger
-        return $ Boolean (a > b)
-
-    [$p|(a: Integer) > (b: Double)|] =: do
-        Integer a <- here "a" >>= findInteger
-        Double b <- here "b" >>= findDouble
-        return $ Boolean (fromIntegral a > b)
-
-    [$p|(a: Double) > (b: Integer)|] =: do
-        Double a <- here "a" >>= findDouble
-        Integer b <- here "b" >>= findInteger
-        return $ Boolean (a > fromIntegral b)
-
-    [$p|(a: Double) > (b: Double)|] =: do
-        Double a <- here "a" >>= findDouble
-        Double b <- here "b" >>= findDouble
         return $ Boolean (a > b)
 
     [$p|(a: Char) <= (b: Char)|] =: do
@@ -77,49 +37,9 @@ load = do
         Char b <- here "b" >>= findChar
         return $ Boolean (a <= b)
 
-    [$p|(a: Integer) <= (b: Integer)|] =: do
-        Integer a <- here "a" >>= findInteger
-        Integer b <- here "b" >>= findInteger
-        return $ Boolean (a <= b)
-
-    [$p|(a: Integer) <= (b: Double)|] =: do
-        Integer a <- here "a" >>= findInteger
-        Double b <- here "b" >>= findDouble
-        return $ Boolean (fromIntegral a <= b)
-
-    [$p|(a: Double) <= (b: Integer)|] =: do
-        Double a <- here "a" >>= findDouble
-        Integer b <- here "b" >>= findInteger
-        return $ Boolean (a <= fromIntegral b)
-
-    [$p|(a: Double) <= (b: Double)|] =: do
-        Double a <- here "a" >>= findDouble
-        Double b <- here "b" >>= findDouble
-        return $ Boolean (a <= b)
-
     [$p|(a: Char) >= (b: Char)|] =: do
         Char a <- here "a" >>= findChar
         Char b <- here "b" >>= findChar
-        return $ Boolean (a >= b)
-
-    [$p|(a: Integer) >= (b: Integer)|] =: do
-        Integer a <- here "a" >>= findInteger
-        Integer b <- here "b" >>= findInteger
-        return $ Boolean (a >= b)
-
-    [$p|(a: Integer) >= (b: Double)|] =: do
-        Integer a <- here "a" >>= findInteger
-        Double b <- here "b" >>= findDouble
-        return $ Boolean (fromIntegral a >= b)
-
-    [$p|(a: Double) >= (b: Integer)|] =: do
-        Double a <- here "a" >>= findDouble
-        Integer b <- here "b" >>= findInteger
-        return $ Boolean (a >= fromIntegral b)
-
-    [$p|(a: Double) >= (b: Double)|] =: do
-        Double a <- here "a" >>= findDouble
-        Double b <- here "b" >>= findDouble
         return $ Boolean (a >= b)
 
     [$p|(a: Char) == (b: Char)|] =: do
@@ -127,25 +47,55 @@ load = do
         Char b <- here "b" >>= findChar
         return $ Boolean (a == b)
 
-    [$p|(a: Integer) == (b: Integer)|] =: do
-        Integer a <- here "a" >>= findInteger
-        Integer b <- here "b" >>= findInteger
-        return $ Boolean (a == b)
+    [$p|(a: Integer) < (b: Integer)|] =: primII (<)
+    [$p|(a: Double) < (b: Double)|] =: primDD (<)
+    [$p|(a: Rational) < (b: Rational)|] =: primRR (<)
+    [$p|(a: Integer) < (b: Double)|] =: primID (<)
+    [$p|(a: Integer) < (b: Rational)|] =: primIR (<)
+    [$p|(a: Double) < (b: Integer)|] =: primDI (<)
+    [$p|(a: Double) < (b: Rational)|] =: primDR (<)
+    [$p|(a: Rational) < (b: Integer)|] =: primRI (<)
+    [$p|(a: Rational) < (b: Double)|] =: primRD (<)
 
-    [$p|(a: Integer) == (b: Double)|] =: do
-        Integer a <- here "a" >>= findInteger
-        Double b <- here "b" >>= findDouble
-        return $ Boolean (fromIntegral a == b)
+    [$p|(a: Integer) > (b: Integer)|] =: primII (>)
+    [$p|(a: Double) > (b: Double)|] =: primDD (>)
+    [$p|(a: Rational) > (b: Rational)|] =: primRR (>)
+    [$p|(a: Integer) > (b: Double)|] =: primID (>)
+    [$p|(a: Integer) > (b: Rational)|] =: primIR (>)
+    [$p|(a: Double) > (b: Integer)|] =: primDI (>)
+    [$p|(a: Double) > (b: Rational)|] =: primDR (>)
+    [$p|(a: Rational) > (b: Integer)|] =: primRI (>)
+    [$p|(a: Rational) > (b: Double)|] =: primRD (>)
 
-    [$p|(a: Double) == (b: Integer)|] =: do
-        Double a <- here "a" >>= findDouble
-        Integer b <- here "b" >>= findInteger
-        return $ Boolean (a == fromIntegral b)
+    [$p|(a: Integer) <= (b: Integer)|] =: primII (<=)
+    [$p|(a: Double) <= (b: Double)|] =: primDD (<=)
+    [$p|(a: Rational) <= (b: Rational)|] =: primRR (<=)
+    [$p|(a: Integer) <= (b: Double)|] =: primID (<=)
+    [$p|(a: Integer) <= (b: Rational)|] =: primIR (<=)
+    [$p|(a: Double) <= (b: Integer)|] =: primDI (<=)
+    [$p|(a: Double) <= (b: Rational)|] =: primDR (<=)
+    [$p|(a: Rational) <= (b: Integer)|] =: primRI (<=)
+    [$p|(a: Rational) <= (b: Double)|] =: primRD (<=)
 
-    [$p|(a: Double) == (b: Double)|] =: do
-        Double a <- here "a" >>= findDouble
-        Double b <- here "b" >>= findDouble
-        return $ Boolean (a == b)
+    [$p|(a: Integer) >= (b: Integer)|] =: primII (>=)
+    [$p|(a: Double) >= (b: Double)|] =: primDD (>=)
+    [$p|(a: Rational) >= (b: Rational)|] =: primRR (>=)
+    [$p|(a: Integer) >= (b: Double)|] =: primID (>=)
+    [$p|(a: Integer) >= (b: Rational)|] =: primIR (>=)
+    [$p|(a: Double) >= (b: Integer)|] =: primDI (>=)
+    [$p|(a: Double) >= (b: Rational)|] =: primDR (>=)
+    [$p|(a: Rational) >= (b: Integer)|] =: primRI (>=)
+    [$p|(a: Rational) >= (b: Double)|] =: primRD (>=)
+
+    [$p|(a: Integer) == (b: Integer)|] =: primII (==)
+    [$p|(a: Double) == (b: Double)|] =: primDD (==)
+    [$p|(a: Rational) == (b: Rational)|] =: primRR (==)
+    [$p|(a: Integer) == (b: Double)|] =: primID (==)
+    [$p|(a: Integer) == (b: Rational)|] =: primIR (==)
+    [$p|(a: Double) == (b: Integer)|] =: primDI (==)
+    [$p|(a: Double) == (b: Rational)|] =: primDR (==)
+    [$p|(a: Rational) == (b: Integer)|] =: primRI (==)
+    [$p|(a: Rational) == (b: Double)|] =: primRD (==)
 
     [$p|(a: List) == (b: List)|] =: do
         as <- getVector [$e|a|]
@@ -195,6 +145,52 @@ load = do
             _ -> return $ Boolean False
 
     prelude
+  where
+    primII f = do
+        Integer a <- here "a" >>= findInteger
+        Integer b <- here "b" >>= findInteger
+        return (Boolean $ f a b)
+
+    primDD f = do
+        Double a <- here "a" >>= findDouble
+        Double b <- here "b" >>= findDouble
+        return (Boolean $ f a b)
+
+    primRR f = do
+        Rational a <- here "a" >>= findRational
+        Rational b <- here "b" >>= findRational
+        return (Boolean $ f a b)
+
+    primID f = do
+        Integer a <- here "a" >>= findInteger
+        Double b <- here "b" >>= findDouble
+        return (Boolean $ f (fromIntegral a) b)
+
+    primIR f = do
+        Integer a <- here "a" >>= findInteger
+        Rational b <- here "b" >>= findRational
+        return (Boolean $ f (toRational a) b)
+
+    primDI f = do
+        Double a <- here "a" >>= findDouble
+        Integer b <- here "b" >>= findInteger
+        return (Boolean $ f a (fromIntegral b))
+
+    primDR f = do
+        Double a <- here "a" >>= findDouble
+        Rational b <- here "b" >>= findRational
+        return (Boolean $ f (toRational a) b)
+
+    primRD f = do
+        Rational a <- here "a" >>= findRational
+        Double b <- here "b" >>= findDouble
+        return (Boolean $ f a (toRational b))
+
+    primRI f = do
+        Rational a <- here "a" >>= findRational
+        Integer b <- here "b" >>= findInteger
+        return (Boolean $ f a (toRational b))
+
 
 
 prelude :: VM ()

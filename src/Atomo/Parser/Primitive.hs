@@ -1,5 +1,6 @@
 module Atomo.Parser.Primitive where
 
+import Data.Ratio
 import Text.Parsec
 
 import Atomo.Parser.Base
@@ -13,9 +14,10 @@ pPrim :: Parser Value
 pPrim = choice
     [ pvChar
     , pvString
+    , try pvRational
     , try pvDouble
     , try pvInteger
-    , pvBoolean
+    , try pvBoolean
     ]
 
 pvChar :: Parser Value
@@ -33,5 +35,12 @@ pvInteger = integer >>= return . Integer
 pvBoolean :: Parser Value
 pvBoolean = fmap Boolean $ true <|> false
   where
-    true = try (reserved "True") >> return True
-    false = try (reserved "False") >> return False
+    true = reserved "True" >> return True
+    false = reserved "False" >> return False
+
+pvRational :: Parser Value
+pvRational = do
+    n <- integer
+    char '/'
+    d <- integer
+    return (Rational (n % d))

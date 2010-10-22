@@ -34,6 +34,7 @@ data Value
     | Particle { fromParticle :: Particle }
     | Process Channel ThreadId
     | Pattern { fromPattern :: Pattern }
+    | Rational Rational
     | Reference
         { rORef :: {-# UNPACK #-} !ORef
         }
@@ -227,6 +228,7 @@ data IDs =
         , idParticle :: ORef
         , idProcess :: ORef
         , idPattern :: ORef
+        , idRational :: ORef
         , idString :: ORef
         }
 
@@ -257,6 +259,7 @@ instance Eq Value where
     (==) (Method a) (Method b) = a == b
     (==) (Particle a) (Particle b) = a == b
     (==) (Process _ a) (Process _ b) = a == b
+    (==) (Rational a) (Rational b) = a == b
     (==) (Reference a) (Reference b) = a == b
     (==) (String a) (String b) = a == b
     (==) _ _ = False
@@ -345,6 +348,7 @@ startEnv = Env
             , idParticle = error "idParticle not set"
             , idProcess = error "idProcess not set"
             , idPattern = error "idPattern not set"
+            , idRational = error "idRational not set"
             , idString = error "idString not set"
             }
     , channel = error "channel not set"
@@ -517,6 +521,11 @@ isPattern _ = False
 isProcess :: Value -> Bool
 isProcess (Process _ _) = True
 isProcess _ = False
+
+-- | Is a value a Rational?
+isRational :: Value -> Bool
+isRational (Rational _) = True
+isRational _ = False
 
 -- | Is a value a Reference?
 isReference :: Value -> Bool

@@ -153,6 +153,7 @@ initEnv = do
         , ("Particle", \is r -> is { idParticle = r })
         , ("Process", \is r -> is { idProcess = r })
         , ("Pattern", \is r -> is { idPattern = r })
+        , ("Rational", \is r -> is { idRational = r })
         , ("String", \is r -> is { idString = r })
         ]
 
@@ -658,6 +659,11 @@ findPattern v
     | isPattern v = return v
     | otherwise = findValue "Pattern" isPattern v
 
+findRational :: Value -> VM Value
+findRational v
+    | isRational v = return v
+    | otherwise = findValue "Rational" isRational v
+
 findReference :: Value -> VM Value
 findReference v
     | isReference v = return v
@@ -750,6 +756,7 @@ orefFrom ids (Method _) = idMethod ids
 orefFrom ids (Particle _) = idParticle ids
 orefFrom ids (Process _ _) = idProcess ids
 orefFrom ids (Pattern _) = idPattern ids
+orefFrom ids (Rational _) = idRational ids
 orefFrom ids (String _) = idString ids
 
 -- load a file, remembering it to prevent repeated loading

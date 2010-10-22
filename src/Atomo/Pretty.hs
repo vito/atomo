@@ -4,6 +4,7 @@ module Atomo.Pretty (Pretty(..), prettyStack) where
 import Data.IORef
 import Data.List (nub)
 import Data.Maybe (isJust)
+import Data.Ratio
 import Text.PrettyPrint hiding (braces)
 import System.IO.Unsafe
 import qualified Data.Vector as V
@@ -54,6 +55,7 @@ instance Pretty Value where
     prettyFrom _ (Process _ tid) =
         internal "process" $ text (words (show tid) !! 1)
     prettyFrom CNone (Reference r) = pretty (unsafePerformIO (readIORef r))
+    prettyFrom _ (Rational r) = integer (numerator r) <> char '/' <> integer (denominator r)
     prettyFrom _ (Reference _) = internal "object" empty
     prettyFrom _ (String s) = text (show s)
 
