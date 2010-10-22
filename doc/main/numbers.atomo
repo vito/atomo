@@ -26,93 +26,96 @@
 }
 
 #define:{
-    a + b
-    | a is-a?: Integer
-    | b is-a?: Integer
-    > Integer
+    Rational
+    > Object
 }body:{
-    Performs addition on #atomo:a and #atomo:b and returns an #atomo:Integer.
+    Exact ratios between integers.
+
+    #example-segment:({22/7})
 }
 
 #define:{
     a + b
-    > Double
+    | a is-a?: Number
+    | b is-a?: Number
+    > Number
 }body:{
-    Performs addition on #atomo:a and #atomo:b and returns a #atomo:Double.
+    Adds #atomo:a and #atomo:b. If either are #atomo:(Rational)s, it returns a #atomo:Rational; otherwise, if either are #atomo:(Double)s, it returns a #atomo:Double.
 
-    Called with any combination of #atomo:Integer and #atomo:Double (or two #atomo:Doubles).
+    #example:({
+      1 + 2
+      1.0 + 2.0
+      1/2 + 3/4
+      1/2 + 2
+      1.0 + -2
+    })
 }
 
 #define:{
     a - b
-    | a is-a?: Integer
-    | b is-a?: Integer
-    > Integer
+    | a is-a?: Number
+    | b is-a?: Number
+    > Number
 }body:{
-    Performs subtraction on #atomo:a and #atomo:b and returns an #atomo:Integer.
-}
+    Subtracts #atomo:b from #atomo:a. If either are #atomo:(Rational)s, it returns a #atomo:Rational; otherwise, if either are #atomo:(Double)s, it returns a #atomo:Double.
 
-#define:{
-    a - b
-    > Double
-}body:{
-    Performs subtraction on #atomo:a and #atomo:b and returns a #atomo:Double.
-
-    Called with any combination of #atomo:Integer and #atomo:Double (or two #atomo:Doubles).
-}
-
-#define:{
-    a * b
-    | a is-a?: Integer
-    | b is-a?: Integer
-    > Integer
-}body:{
-    Performs multiplication on #atomo:a and #atomo:b and returns an #atomo:Integer.
+    #example:({
+      1 - 2
+      1.0 - 2.0
+      1/2 - 3/4
+      1/2 - 2.5
+      1.0 - -2
+    })
 }
 
 #define:{
     a * b
-    > Double
+    | a is-a?: Number
+    | b is-a?: Number
+    > Number
 }body:{
-    Performs multiplication on #atomo:a and #atomo:b and returns a #atomo:Double.
+    Multiplies #atomo:a by #atomo:b. If either are #atomo:(Rational)s, it returns a #atomo:Rational; otherwise, if either are #atomo:(Double)s, it returns a #atomo:Double.
 
-    Called with any combination of #atomo:Integer and #atomo:Double (or two #atomo:Doubles).
+    #example:({
+      1 * 2
+      1.0 * 2.0
+      1/2 * 3/4
+      1/2 * 2.5
+      1.0 * -2
+    })
 }
 
 #define:{
     a / b
-    | a is-a?: Integer
-    | b is-a?: Integer
-    > Integer
+    | a is-a?: Number
+    | b is-a?: Number
+    > Number
 }body:{
-    Performs division on #atomo:a and #atomo:b and returns an #atomo:Integer.
-}
+    Divides #atomo:a by #atomo:b. If either are #atomo:(Rational)s, it returns a #atomo:Rational; otherwise, if either are #atomo:(Double)s, it returns a #atomo:Double. If both are #atomo:(Integer)s, it performs integer division.
 
-#define:{
-    a / b
-    > Double
-}body:{
-    Performs division on #atomo:a and #atomo:b and returns a #atomo:Double.
-
-    Called with any combination of #atomo:Integer and #atomo:Double (or two #atomo:Doubles).
-}
-
-#define:{
-    a ^ b
-    | a is-a?: Integer
-    | b is-a?: Integer
-    > Integer
-}body:{
-    Performs exponentiation on #atomo:a and #atomo:b and returns an #atomo:Integer.
+    #example:({
+      1 / 2
+      1.0 / 2.0
+      1/2 / 3/4
+      1/2 / 2.5
+      1.0 / -2
+    })
 }
 
 #define:{
     a ^ b
-    > Double
+    | a is-a?: Number
+    | b is-a?: Integer || b is-a?: Double
+    > Number
 }body:{
-    Performs exponentiation on #atomo:a and #atomo:b and returns a #atomo:Double.
+    Raises #atomo:a to the power of #atomo:b. If either are #atomo:(Double)s, it returns a #atomo:Double. If #atomo:a is a #atomo:Rational, #atomo:b must be an #atomo:Integer.
 
-    Called with any combination of #atomo:Integer and #atomo:Double (or two #atomo:Doubles).
+    #example:({
+      1 ^ 2
+      1.0 ^ 2.0
+      1/2 ^ 4
+      1.0 ^ -2
+    })
 }
 
 #define:{
@@ -122,6 +125,12 @@
     > Integer
 }body:{
     Modulus operator.
+
+    #example:({
+      3 % 2
+      6 % 2
+      7 % -2
+    })
 }
 
 #define:{
@@ -131,6 +140,10 @@
     > Integer
 }body:{
     Returns the quotient of dividing #atomo:a by #atomo:b.
+
+    #example:({
+      22 quotient: 5
+    })
 }
 
 #define:{
@@ -140,6 +153,10 @@
     > Integer
 }body:{
     Returns the remainder of dividing #atomo:a by #atomo:b.
+
+    #example:({
+      22 remainder: 5
+    })
 }
 
 #define:{
@@ -148,6 +165,208 @@
     > Double
 }body:{
     Returns the square root of #atomo:n.
+
+    #example:({
+      5 sqrt
+      5.8 sqrt
+    })
+}
+
+#define:{
+    d ceiling
+    | d is-a?: Double
+    > Integer
+}body:{
+    Converts #atomo:d into an #atomo:Integer by rounding up.
+
+    #example:({
+      1.9 ceiling
+      1.1 ceiling
+      1.0 ceiling
+    })
+}
+
+#define:{
+    d round
+    | d is-a?: Double
+    > Integer
+}body:{
+    Rounds #atomo:d down or up to the nearest #atomo:Integer.
+
+    #example:({
+      1.9 round
+      1.5 round
+      1.4 round
+      1.0 round
+    })
+}
+
+#define:{
+    d floor
+    | d is-a?: Double
+    > Integer
+}body:{
+    Converts #atomo:d into an #atomo:Integer by rounding down.
+
+    #example:({
+      1.9 floor
+      1.1 floor
+      1.0 floor
+    })
+}
+
+#define:{
+    n reciprocal
+    | n is-a?: Number
+    > Number
+}body:{
+    Returns the reciprocal of #atomo:n, returning either a #atomo:Double (if #atomo:n is an #atomo:Integer or #atomo:Double) or a #atomo:Rational (if #atomo:n is a #atomo:Rational).
+
+    #example:({
+      2 reciprocal
+      0.5 reciprocal
+      3/4 reciprocal
+    })
+}
+
+#define:{
+    r numerator
+    | r is-a?: Rational
+    > Integer
+}body:{
+    Returns #atomo:(r)'s numerator.
+
+    #example:({
+      3/4 numerator
+    })
+}
+
+#define:{
+    r denominator
+    | r is-a?: Rational
+    > Integer
+}body:{
+    Returns #atomo:(r)'s denominator.
+
+    #example:({
+      3/4 denominator
+    })
+}
+
+#define:{
+    r approximate
+    | r is-a?: Rational
+    > Double
+}body:{
+    Approximates #atomo:r as an (inexact) #atomo:Double.
+
+    #example:({
+      3/4 approximate
+    })
+}
+
+#define:{
+    n rationalize
+    | n is-a?: Integer || n is-a?: Double
+    > Rational
+}body:{
+    Convert an #atomo:Integer or an inexact #atomo:Double into the simplest rational number within #atomo:0.001 of #atomo:n.
+
+    #example:({
+      5 rationalize
+      0.5 rationalize
+      0.1234 rationalize
+    })
+}
+
+#define:{
+    n rationalize: epsilon
+    | n is-a?: Integer || n is-a?: Double
+    > Rational
+}body:{
+    Convert an #atomo:Integer or an inexact #atomo:Double into the simplest rational number within #atomo:epsilon of #atomo:n.
+
+    #example:({
+      0.1234 rationalize: 1.0
+      0.1234 rationalize: 0.1
+      0.1234 rationalize: 0.01
+      0.1234 rationalize: 0.001
+      0.1234 rationalize: 0.0001
+      0.1234 rationalize: 0.0
+    })
+}
+
+#define:{
+    d as: Integer
+    | d is-a?: Double
+    > Integer
+}body:{
+    Converts #atomo:d into an #atomo:Integer by sending #atomo:floor to it.
+
+    #example:({
+      0.75 as: Integer
+      1.75 as: Integer
+    })
+}
+
+#define:{
+    d as: Rational
+    | d is-a?: Double
+    > Rational
+}body:{
+    Converts #atomo:d into a #atomo:Rational by sending #atomo:rationalize to it.
+
+    #example:({
+      0.75 as: Rational
+    })
+}
+
+#define:{
+    i as: Double
+    | i is-a?: Integer
+    > Double
+}body:{
+    Converts #atomo:i into a #atomo:Double.
+
+    #example:({
+      4 as: Double
+    })
+}
+
+#define:{
+    i as: Rational
+    | i is-a?: Integer
+    > Rational
+}body:{
+    Converts #atomo:i into a #atomo:Rational.
+
+    #example:({
+      4 as: Rational
+    })
+}
+
+#define:{
+    r as: Double
+    | r is-a?: Rational
+    > Double
+}body:{
+    Converts #atomo:r into a #atomo:Double by sending #atomo:approximate to it.
+
+    #example:({
+      4/3 as: Double
+    })
+}
+
+#define:{
+    r as: Integer
+    | r is-a?: Rational
+    > Integer
+}body:{
+    Converts #atomo:r into an #atomo:Integer by sending #atomo:approximate and #atomo:floor to it.
+
+    #example:({
+      4/3 as: Integer
+    })
 }
 
 #define:{

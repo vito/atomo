@@ -39,7 +39,17 @@ load = do
         Double d <- here "d" >>= findDouble
         return (Integer (floor d))
 
-    [$p|(d: Double) as: Integer|] =::: [$e|d floor|]
+    [$p|(i: Integer) reciprocal|] =: do
+        Integer i <- here "i" >>= findInteger
+        return (Double (recip (fromIntegral i)))
+
+    [$p|(d: Double) reciprocal|] =: do
+        Double d <- here "d" >>= findDouble
+        return (Double (recip d))
+
+    [$p|(r: Rational) reciprocal|] =: do
+        Rational r <- here "r" >>= findRational
+        return (Rational (recip r))
 
     [$p|(r: Rational) numerator|] =: do
         Rational r <- here "r" >>= findRational
@@ -49,11 +59,27 @@ load = do
         Rational r <- here "r" >>= findRational
         return (Integer (denominator r))
 
-    [$p|(d: Double) as: Rational|] =::: [$e|d as: Rational epsilon: 0.0|]
-    [$p|(d: Double) as: Rational epsilon: (e: Double)|] =: do
+    [$p|(d: Double) as: Integer|] =::: [$e|d floor|]
+    [$p|(d: Double) as: Rational|] =::: [$e|d rationalize|]
+    [$p|(i: Integer) as: Double|] =: do
+        Integer i <- here "i" >>= findInteger
+        return (Double (fromIntegral i))
+    [$p|(i: Integer) as: Rational|] =: do
+        Integer i <- here "i" >>= findInteger
+        return (Rational (i % 1))
+    [$p|(r: Rational) as: Double|] =::: [$e|r approximate|]
+    [$p|(r: Rational) as: Integer|] =::: [$e|r approximate floor|]
+
+    [$p|(i: Integer) rationalize|] =::: [$e|(i as: Double) rationalize|]
+    [$p|(d: Double) rationalize|] =::: [$e|d rationalize: 0.001|]
+    [$p|(d: Double) rationalize: (e: Double)|] =: do
         Double d <- here "d" >>= findDouble
         Double e' <- here "e" >>= findDouble
         return (Rational (approxRational d e'))
+
+    [$p|(r: Rational) approximate|] =: do
+        Rational r <- here "r" >>= findRational
+        return (Double (fromRational r))
 
     [$p|(a: Integer) + (b: Integer)|] =: primII (+)
     [$p|(a: Rational) + (b: Rational)|] =: primRR (+)
