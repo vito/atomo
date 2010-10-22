@@ -58,6 +58,12 @@ load = do
         y <- here "y"
         fmap Boolean (delegatesTo x y)
 
+    [$p|(x: Object) delegates|] =: do
+        o <- here "x" >>= objectFor
+        list (oDelegates o)
+
+    [$p|(x: Object) super|] =::: [$e|x delegates head|]
+
     [$p|(x: Object) is-a?: (y: Object)|] =: do
         x <- here "x"
         y <- here "y"
