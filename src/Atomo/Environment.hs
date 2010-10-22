@@ -589,68 +589,84 @@ findValue' t (Reference r) = do
 findValue' _ _ = return Nothing
 
 findBlock :: Value -> VM Value
-{-# INLINE findBlock #-}
-findBlock = findValue "Block" isBlock
+findBlock v
+    | isBlock v = return v
+    | otherwise = findValue "Block" isBlock v
 
 findBoolean :: Value -> VM Value
-{-# INLINE findBoolean #-}
-findBoolean = findValue "Boolean" isBoolean
+findBoolean v
+    | isBoolean v = return v
+    | otherwise = findValue "Boolean" isBoolean v
 
 findChar :: Value -> VM Value
-{-# INLINE findChar #-}
-findChar = findValue "Char" isChar
+findChar v
+    | isChar v = return v
+    | otherwise = findValue "Char" isChar v
 
 findContinuation :: Value -> VM Value
-{-# INLINE findContinuation #-}
-findContinuation = findValue "Continuation" isContinuation
+findContinuation v
+    | isContinuation v = return v
+    | otherwise = findValue "Continuation" isContinuation v
 
 findDouble :: Value -> VM Value
-{-# INLINE findDouble #-}
-findDouble = findValue "Double" isDouble
+findDouble v
+    | isDouble v = return v
+    | otherwise = findValue "Double" isDouble v
 
 findExpression :: Value -> VM Value
-{-# INLINE findExpression #-}
-findExpression = findValue "Expression" isExpression
+findExpression v
+    | isExpression v = return v
+    | otherwise = findValue "Expression" isExpression v
 
 findHaskell :: Value -> VM Value
-{-# INLINE findHaskell #-}
-findHaskell = findValue "Haskell" isHaskell
+findHaskell v
+    | isHaskell v = return v
+    | otherwise = findValue "Haskell" isHaskell v
 
 findInteger :: Value -> VM Value
-{-# INLINE findInteger #-}
-findInteger = findValue "Integer" isInteger
+findInteger v
+    | isInteger v = return v
+    | otherwise = findValue "Integer" isInteger v
 
 findList :: Value -> VM Value
-{-# INLINE findList #-}
-findList = findValue "List" isList
+findList v
+    | isList v = return v
+    | otherwise = findValue "List" isList v
 
 findMessage :: Value -> VM Value
-{-# INLINE findMessage #-}
-findMessage = findValue "Message" isMessage
+findMessage v
+    | isMessage v = return v
+    | otherwise = findValue "Message" isMessage v
 
 findMethod' :: Value -> VM Value
-{-# INLINE findMethod' #-}
-findMethod' = findValue "Method" isMethod
+findMethod' v
+    | isMethod v = return v
+    | otherwise = findValue "Method" isMethod v
 
 findParticle :: Value -> VM Value
-{-# INLINE findParticle #-}
-findParticle = findValue "Particle" isParticle
+findParticle v
+    | isParticle v = return v
+    | otherwise = findValue "Particle" isParticle v
 
 findProcess :: Value -> VM Value
-{-# INLINE findProcess #-}
-findProcess = findValue "Process" isProcess
+findProcess v
+    | isProcess v = return v
+    | otherwise = findValue "Process" isProcess v
 
 findPattern :: Value -> VM Value
-{-# INLINE findPattern #-}
-findPattern = findValue "Pattern" isPattern
+findPattern v
+    | isPattern v = return v
+    | otherwise = findValue "Pattern" isPattern v
 
 findReference :: Value -> VM Value
-{-# INLINE findReference #-}
-findReference = findValue "Reference" isReference
+findReference v
+    | isReference v = return v
+    | otherwise = findValue "Reference" isReference v
 
 findString :: Value -> VM Value
-{-# INLINE findString #-}
-findString = findValue "String" isString
+findString v
+    | isString v = return v
+    | otherwise = findValue "String" isString v
 
 getString :: Expr -> VM String
 getString e = eval e >>= liftM (fromText . fromString) . findString
