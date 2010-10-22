@@ -120,6 +120,9 @@ initEnv = do
     topObj <- newObject $ \o -> o { oDelegates = [object] }
     modify $ \e -> e { top = topObj }
 
+    -- Lobby is the very bottom scope object
+    define (psingle "Lobby" PThis) (Primitive Nothing topObj)
+
     -- define Object as the root object
     define (psingle "Object" PThis) (Primitive Nothing object)
     modify $ \e -> e
