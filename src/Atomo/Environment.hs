@@ -39,11 +39,16 @@ execWith x e = do
     haltChan <- newChan
 
     forkIO $ do
-        runWith (go x >> gets halt >>= liftIO >> return (particle "ok")) e
+        r <- runWith (go x >> gets halt >>= liftIO >> return (particle "ok")) e
             { halt = writeChan haltChan ()
             }
 
-        return ()
+        either
+            (putStrLn . ("WARNING: exited abnormally with: " ++) . show)
+            (\_ -> return ())
+            r
+
+        writeChan haltChan ()
 
     readChan haltChan
 
