@@ -185,35 +185,39 @@ loadEco = mapM_ eval [$es|
 
     context use: (name: String) version: (check: Block) :=
       { loaded? = Eco loaded lookup: name
+        reload? = (loaded? == @none) or:
+                    { @(ok: p) = loaded?; context (in?: p contexts) not }
 
-        if: ((loaded? == @none) or: { @(ok: p) = loaded?; p context /= context })
+        if: reload?
           then: {
-            Eco packages (lookup: name) match: {
-              @none -> raise: @(package-unavailable: name)
-              @(ok: []) -> raise: @(no-package-versions: name)
-              @(ok: pkgs) ->
-                { satisfactory = pkgs filter: { p | p version join: check }
+            pkg =
+              loaded? match: {
+                @(ok: p) -> (p do: { contexts << context })
 
-                  when: satisfactory empty? do: {
-                    raise: @(no-versions-of: (name -> versions) satisfy: check)
-                  }
+                @none ->
+                  (Eco packages (lookup: name) match: {
+                    @none -> raise: @(package-unavailable: name)
+                    @(ok: []) -> raise: @(no-package-versions: name)
+                    @(ok: pkgs) ->
+                      (pkgs (filter: { p | p version join: check }) match: {
+                        [] -> raise: @(no-versions-of: name satisfy: check)
+                        (p . _) ->
+                          { p contexts = [context]
+                            Eco loaded << (name -> p)
+                            p
+                          } call
+                      })
+                  })
+              }
 
-                  pkg = satisfactory head do:
-                    { context = context
-                    }
+            path = Eco path-to: pkg
 
-                  Eco loaded << (name -> pkg)
+            env = context clone
+            env load: (path </> (Eco which-main: path))
 
-                  path = Eco path-to: pkg
+            pkg environment = env
 
-                  env = context clone
-                  env load: (path </> (Eco which-main: path))
-
-                  pkg environment = env
-
-                  env
-                } call
-            }
+            env
           }
           else: {
             @(ok: p) = loaded?
