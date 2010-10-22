@@ -149,6 +149,32 @@
 }
 
 #define:{
+    x delegates
+    > List
+}body:{
+    Returns a list of #atomo:(x)'s delegates.
+
+    #example:({
+      x = 1 clone
+      x delegates
+      x delegates-to: 2
+      x delegates
+    })
+}
+
+#define:{
+    x super
+    > any
+}body:{
+    Returns the first value that #atomo:x delegates to.
+
+    #example:({
+      1 clone super
+      1 clone join: { delegates-to: 2; super }
+    })
+}
+
+#define:{
     x is-a?: y
     > Boolean
 }body:{
