@@ -64,6 +64,10 @@ run x = runWith (initEnv >> x) startEnv
 runWith :: VM Value -> Env -> IO (Either AtomoError Value)
 runWith x e = evalStateT (runContT (runErrorT x) return) e
 
+-- | evaluate x with e as the environment
+runVM :: VM Value -> Env -> IO (Either AtomoError Value, Env)
+runVM x e = runStateT (runContT (runErrorT x) return) e
+
 -- | print an error, including the previous 10 expressions evaluated
 -- with the most recent on the bottom
 printError :: AtomoError -> VM ()
@@ -84,15 +88,15 @@ printError err = do
 
     modify $ \s -> s { stack = [] }
   where
-    traceback = fmap (reverse . take 10 . reverse) (gets stack)
+    traceback = liftM (reverse . take 10 . reverse) (gets stack)
 
 prettyError :: AtomoError -> VM P.Doc
-prettyError (Error v) = fmap (P.text "error:" P.<+>) (prettyVM v)
+prettyError (Error v) = liftM (P.text "error:" P.<+>) (prettyVM v)
 prettyError e = return (pretty e)
 
 -- | pretty-print by sending \@show to the object
 prettyVM :: Value -> VM P.Doc
-prettyVM = fmap (P.text . fromString) . dispatch . (single "show")
+prettyVM = liftM (P.text . fromText . fromString) . dispatch . (single "show")
 
 -- | spawn a process to execute x. returns the Process.
 spawn :: VM Value -> VM Value
@@ -234,7 +238,7 @@ eval e = eval' e `catchError` pushStack
         return (Particle $ PMSingle n)
     eval' (EParticle { eParticle = EPMKeyword ns mes }) = do
         mvs <- forM mes $
-            maybe (return Nothing) (fmap Just . eval)
+            maybe (return Nothing) (liftM Just . eval)
         return (Particle $ PMKeyword ns mvs)
     eval' (ETop {}) = gets top
     eval' (EVM { eAction = x }) = x
@@ -247,7 +251,7 @@ evalAll (e:es) = eval e >> evalAll es
 
 -- | object creation
 newObject :: (Object -> Object) -> VM Value
-newObject f = fmap Reference . liftIO $
+newObject f = liftM Reference . liftIO $
     newIORef . f $ Object
         { oDelegates = []
         , oMethods = noMethods
@@ -310,9 +314,9 @@ define !p !e = do
     methodPattern p'@(PKeyword { ppTargets = ts }) = do
         ts' <- mapM methodPattern ts
         return p' { ppTargets = ts' }
-    methodPattern PThis = fmap PMatch (gets top)
-    methodPattern (PObject oe) = fmap PMatch (eval oe)
-    methodPattern (PNamed n p') = fmap (PNamed n) (methodPattern p')
+    methodPattern PThis = liftM PMatch (gets top)
+    methodPattern (PObject oe) = liftM PMatch (eval oe)
+    methodPattern (PNamed n p') = liftM (PNamed n) (methodPattern p')
     methodPattern p' = return p'
 
     -- | Swap out a reference match with PThis, for inserting on the object
@@ -649,13 +653,13 @@ findString :: Value -> VM Value
 findString = findValue "String" isString
 
 getString :: Expr -> VM String
-getString e = eval e >>= fmap fromString . findString
+getString e = eval e >>= liftM (fromText . fromString) . findString
 
 getText :: Expr -> VM T.Text
 getText e = eval e >>= findString >>= \(String t) -> return t
 
 getList :: Expr -> VM [Value]
-getList = fmap V.toList . getVector
+getList = liftM V.toList . getVector
 
 getVector :: Expr -> VM (V.Vector Value)
 getVector e = eval e
@@ -680,7 +684,7 @@ ifE = ifVM . eval
 
 referenceTo :: Value -> VM Value
 {-# INLINE referenceTo #-}
-referenceTo = fmap Reference . orefFor
+referenceTo = liftM Reference . orefFor
 
 callBlock :: Value -> [Value] -> VM Value
 callBlock (Block s ps es) vs

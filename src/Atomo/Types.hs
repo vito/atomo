@@ -22,22 +22,22 @@ type VM = ErrorT AtomoError (ContT (Either AtomoError Value) (StateT Env IO))
 data Value
     = Block !Value [Pattern] [Expr]
     | Boolean { fromBoolean :: {-# UNPACK #-} !Bool }
-    | Char {-# UNPACK #-} !Char
-    | Continuation Continuation
-    | Double {-# UNPACK #-} !Double
-    | Expression Expr
+    | Char { fromChar :: {-# UNPACK #-} !Char }
+    | Continuation { fromContinuation :: Continuation }
+    | Double { fromDouble :: {-# UNPACK #-} !Double }
+    | Expression { fromExpression :: Expr }
     | Haskell Dynamic
-    | Integer !Integer
+    | Integer { fromInteger :: !Integer }
     | List VVector
-    | Message Message
-    | Method Method
-    | Particle Particle
+    | Message { fromMessage :: Message }
+    | Method { fromMethod :: Method }
+    | Particle { fromParticle :: Particle }
     | Process Channel ThreadId
-    | Pattern Pattern
+    | Pattern { fromPattern :: Pattern }
     | Reference
         { rORef :: {-# UNPACK #-} !ORef
         }
-    | String !T.Text
+    | String { fromString :: !T.Text }
     deriving Show
 
 data Object =
@@ -409,13 +409,12 @@ list = list' . V.fromList
 list' :: MonadIO m => V.Vector Value -> m Value
 list' = liftM List . liftIO . newIORef
 
-fromString :: Value -> String
-fromString (String s) = T.unpack s
-fromString v = error $ "no fromString for: " ++ show v
+fromText :: T.Text -> String
+fromText = T.unpack
 
-toList :: MonadIO m => Value -> m [Value]
-toList (List vr) = liftM V.toList (liftIO (readIORef vr))
-toList v = error $ "no toList for: " ++ show v
+fromList :: MonadIO m => Value -> m [Value]
+fromList (List vr) = liftM V.toList (liftIO (readIORef vr))
+fromList v = error $ "no fromList for: " ++ show v
 
 single :: String -> Value -> Message
 {-# INLINE single #-}
