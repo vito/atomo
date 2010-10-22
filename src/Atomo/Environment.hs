@@ -689,17 +689,17 @@ getVector e = eval e
     >>= \(List v) -> liftIO . readIORef $ v
 
 here :: String -> VM Value
-here n =
-    gets top
-        >>= dispatch . (single n)
+here n = gets top >>= dispatch . (single n)
 
 ifVM :: VM Value -> VM a -> VM a -> VM a
 ifVM c a b = do
     r <- c
+    if r == Boolean True then a else b
 
-    if r == Boolean True
-        then a
-        else b
+ifVM' :: VM Bool -> VM a -> VM a -> VM a
+ifVM' c a b = do
+    r <- c
+    if r then a else b
 
 ifE :: Expr -> VM a -> VM a -> VM a
 ifE = ifVM . eval
