@@ -378,7 +378,7 @@
 }
 
 #define:{
-    n even?
+    n odd?
     | n is-a?: Integer
     > Boolean
 }body:{
