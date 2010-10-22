@@ -56,12 +56,12 @@ load = do
     [$p|(x: Object) delegates-to?: (y: Object)|] =: do
         x <- here "x"
         y <- here "y"
-        delegatesTo x y >>= bool
+        fmap Boolean (delegatesTo x y)
 
     [$p|(x: Object) is-a?: (y: Object)|] =: do
         x <- here "x"
         y <- here "y"
-        isA x y >>= bool
+        fmap Boolean (isA x y)
 
     [$p|(x: Object) responds-to?: (p: Particle)|] =: do
         x <- here "x"
@@ -72,8 +72,7 @@ load = do
                     PMKeyword ns mvs -> keyword ns (completeKP mvs [x])
                     PMSingle n -> single n x
 
-        findMethod x completed
-            >>= bool . isJust
+        fmap (Boolean . isJust) $ findMethod x completed
 
     [$p|(o: Object) methods|] =: do
         o <- here "o" >>= objectFor

@@ -36,6 +36,7 @@ instance Pretty Value where
         | otherwise = braces $ sep (map (prettyFrom CArgs) ps) <+> char '|' <+> exprs
       where
         exprs = sep . punctuate (text ";") $ map pretty es
+    prettyFrom _ (Boolean b) = text $ show b
     prettyFrom _ (Char c) = text $ show c
     prettyFrom _ (Continuation _) = internal "continuation" empty
     prettyFrom _ (Double d) = double d

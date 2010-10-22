@@ -122,34 +122,27 @@ load = do
             >> return (particle "ok")
 
     [$p|(p: Port) open?|] =:
-        getHandle [$e|p handle|] >>= liftIO . hIsOpen
-            >>= bool
+        getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hIsOpen
 
     [$p|(p: Port) closed?|] =:
-        getHandle [$e|p handle|] >>= liftIO . hIsClosed
-            >>= bool
+        getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hIsClosed
 
     [$p|(p: Port) readable?|] =:
-        getHandle [$e|p handle|] >>= liftIO . hIsReadable
-            >>= bool
+        getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hIsReadable
 
     [$p|(p: Port) writable?|] =:
-        getHandle [$e|p handle|] >>= liftIO . hIsWritable
-            >>= bool
+        getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hIsWritable
 
     [$p|(p: Port) seekable?|] =:
-        getHandle [$e|p handle|] >>= liftIO . hIsSeekable
-            >>= bool
+        getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hIsSeekable
 
     [$p|ready?|] =::: [$e|current-input-port _? ready?|]
     [$p|(p: Port) ready?|] =:
-        getHandle [$e|p handle|] >>= liftIO . hReady
-            >>= bool
+        getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hReady
 
     [$p|eof?|] =::: [$e|current-input-port _? eof?|]
     [$p|(p: Port) eof?|] =:
-        getHandle [$e|p handle|] >>= liftIO . hIsEOF
-            >>= bool
+        getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hIsEOF
 
 
     [$p|File new: (fn: String)|] =::: [$e|Port new: fn|]
@@ -187,7 +180,7 @@ load = do
 
     [$p|File exists?: (fn: String)|] =: do
         fn <- getString [$e|fn|]
-        liftIO (doesFileExist fn) >>= bool
+        fmap Boolean $ liftIO (doesFileExist fn)
 
     [$p|File find-executable: (name: String)|] =: do
         name <- getString [$e|name|]
@@ -198,54 +191,46 @@ load = do
 
     [$p|File readable?: (fn: String)|] =:
         getString [$e|fn|]
-            >>= liftM readable . liftIO . getPermissions
-            >>= bool
+            >>= liftM (Boolean . readable) . liftIO . getPermissions
 
     [$p|File writable?: (fn: String)|] =:
         getString [$e|fn|]
-            >>= liftM writable . liftIO . getPermissions
-            >>= bool
+            >>= liftM (Boolean . writable) . liftIO . getPermissions
 
     [$p|File executable?: (fn: String)|] =:
         getString [$e|fn|]
-            >>= liftM executable . liftIO . getPermissions
-            >>= bool
+            >>= liftM (Boolean . executable) . liftIO . getPermissions
 
     [$p|File searchable?: (fn: String)|] =:
         getString [$e|fn|]
-            >>= liftM searchable . liftIO . getPermissions
-            >>= bool
+            >>= liftM (Boolean . searchable) . liftIO . getPermissions
 
     [$p|File set-readable: (fn: String) to: (b: Boolean)|] =: do
-        t <- bool True
-        b <- here "b"
+        Boolean r <- here "b" >>= findBoolean
         fn <- getString [$e|fn|]
         ps <- liftIO (getPermissions fn)
-        liftIO (setPermissions fn (ps { readable = b == t }))
+        liftIO (setPermissions fn (ps { readable = r }))
         return (particle "ok")
 
     [$p|File set-writable: (fn: String) to: (b: Boolean)|] =: do
-        t <- bool True
-        b <- here "b"
+        Boolean w <- here "b" >>= findBoolean
         fn <- getString [$e|fn|]
         ps <- liftIO (getPermissions fn)
-        liftIO (setPermissions fn (ps { writable = b == t }))
+        liftIO (setPermissions fn (ps { writable = w }))
         return (particle "ok")
 
     [$p|File set-executable: (fn: String) to: (b: Boolean)|] =: do
-        t <- bool True
-        b <- here "b"
+        Boolean x <- here "b" >>= findBoolean
         fn <- getString [$e|fn|]
         ps <- liftIO (getPermissions fn)
-        liftIO (setPermissions fn (ps { executable = b == t }))
+        liftIO (setPermissions fn (ps { executable = x }))
         return (particle "ok")
 
     [$p|File set-searchable: (fn: String) to: (b: Boolean)|] =: do
-        t <- bool True
-        b <- here "b"
+        Boolean s <- here "b" >>= findBoolean
         fn <- getString [$e|fn|]
         ps <- liftIO (getPermissions fn)
-        liftIO (setPermissions fn (ps { searchable = b == t }))
+        liftIO (setPermissions fn (ps { searchable = s }))
         return (particle "ok")
 
     [$p|Directory create: (path: String)|] =: do
@@ -325,7 +310,7 @@ load = do
 
     [$p|Directory exists?: (path: String)|] =: do
         path <- getString [$e|path|]
-        liftIO (doesDirectoryExist path) >>= bool
+        liftM Boolean $ liftIO (doesDirectoryExist path)
 
     [$p|(a: String) </> (b: String)|] =: do
         a <- getString [$e|a|]

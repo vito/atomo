@@ -22,7 +22,7 @@ load = do
         getVector [$e|l|] >>= return . Integer . fromIntegral . V.length
 
     [$p|(l: List) empty?|] =:
-        getVector [$e|l|] >>= bool . V.null
+        liftM (Boolean . V.null) $ getVector [$e|l|]
 
     [$p|(l: List) at: (n: Integer)|] =: do
         Integer n <- here "n" >>= findInteger
@@ -128,11 +128,10 @@ load = do
         vs <- getVector [$e|l|]
         b <- here "b"
 
-        t <- bool True
         nvs <- V.filterM (\v -> do
             as <- list [v]
-            check <- dispatch (keyword ["call"] [b, as])
-            return (check == t)) vs
+            Boolean t <- dispatch (keyword ["call"] [b, as]) >>= findBoolean
+            return t) vs
 
         list' nvs
 
@@ -182,35 +181,26 @@ load = do
         vs <- getVector [$e|l|]
         b <- here "b"
 
-        t <- bool True
         nvs <- V.mapM (\v -> do
             as <- list' (V.singleton v)
-            check <- dispatch (keyword ["call"] [b, as])
-            return (check == t)) vs
+            Boolean t <- dispatch (keyword ["call"] [b, as]) >>= findBoolean
+            return t) vs
 
-        bool (V.and nvs)
+        return $ Boolean (V.and nvs)
 
     [$p|(l: List) any?: b|] =: do
         vs <- getVector [$e|l|]
         b <- here "b"
 
-        t <- bool True
         nvs <- V.mapM (\v -> do
             as <- list' (V.singleton v)
-            check <- dispatch (keyword ["call"] [b, as])
-            return (check == t)) vs
+            Boolean t <- dispatch (keyword ["call"] [b, as]) >>= findBoolean
+            return t) vs
 
-        bool (V.or nvs)
+        return $ Boolean (V.or nvs)
 
-    [$p|(l: List) and|] =: do
-        vs <- getVector [$e|l|]
-        t <- bool True
-        bool (V.all (== t) vs)
-
-    [$p|(l: List) or|] =: do
-        vs <- getVector [$e|l|]
-        t <- bool True
-        bool (V.any (== t) vs)
+    [$p|(l: List) and|] =::: [$e|l all?: @(== True)|]
+    [$p|(l: List) or|] =::: [$e|l any?: @(== True)|]
 
     -- TODO: take-while, drop-while
 
@@ -316,14 +306,13 @@ load = do
         getList [$e|l|] >>= sortVM >>= list
 
     [$p|(l: List) sort-by: cmp|] =: do
-        t <- bool True
         vs <- getList [$e|l|]
         cmp <- here "cmp"
 
         sortByVM (\a b -> do
             as <- list [a, b]
-            r <- dispatch (keyword ["call"] [cmp, as])
-            return (r == t)) vs >>= list
+            Boolean t <- dispatch (keyword ["call"] [cmp, as]) >>= findBoolean
+            return t) vs >>= list
 
     prelude
 
@@ -360,9 +349,8 @@ sortVM :: [Value] -> VM [Value]
 sortVM = sortByVM gt
   where
     gt a b = do
-        t <- bool True
-        r <- dispatch (keyword [">"] [a, b])
-        return (r == t)
+        Boolean t <- dispatch (keyword [">"] [a, b]) >>= findBoolean
+        return t
 
 sortByVM :: (Value -> Value -> VM Bool) -> [Value] -> VM [Value]
 sortByVM = mergesort

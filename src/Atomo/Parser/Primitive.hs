@@ -15,6 +15,7 @@ pPrim = choice
     , pvString
     , try pvDouble
     , try pvInteger
+    , pvBoolean
     ]
 
 pvChar :: Parser Value
@@ -28,3 +29,9 @@ pvDouble = float >>= return . Double
 
 pvInteger :: Parser Value
 pvInteger = integer >>= return . Integer
+
+pvBoolean :: Parser Value
+pvBoolean = fmap Boolean $ true <|> false
+  where
+    true = try (reserved "True") >> return True
+    false = try (reserved "False") >> return False

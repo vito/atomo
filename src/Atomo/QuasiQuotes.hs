@@ -123,6 +123,7 @@ expr n _ = AppE (ConE (mkName n)) (ConE (mkName "Nothing"))
 valueToExp :: Value -> Exp
 valueToExp (Block s as es) =
     AppE (AppE (AppE (ConE (mkName "Block")) (valueToExp s)) (ListE (map patternToExp as))) (ListE (map exprToExp es))
+valueToExp (Boolean b) = AppE (ConE (mkName "Boolean")) (ConE (mkName (show b)))
 valueToExp (Char c) = AppE (ConE (mkName "Char")) (LitE (CharL c))
 valueToExp (Double d) = AppE (ConE (mkName "Double")) (LitE (RationalL (toRational d)))
 valueToExp (Expression e) = AppE (ConE (mkName "Expression")) (exprToExp e)

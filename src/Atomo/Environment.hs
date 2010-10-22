@@ -131,6 +131,7 @@ initEnv = do
   where
     primObjs =
         [ ("Block", \is r -> is { idBlock = r })
+        , ("Boolean", \is r -> is { idBoolean = r })
         , ("Char", \is r -> is { idChar = r })
         , ("Continuation", \is r -> is { idContinuation = r })
         , ("Double", \is r -> is { idDouble = r })
@@ -582,6 +583,10 @@ findBlock :: Value -> VM Value
 {-# INLINE findBlock #-}
 findBlock = findValue "Block" isBlock
 
+findBoolean :: Value -> VM Value
+{-# INLINE findBoolean #-}
+findBoolean = findValue "Boolean" isBoolean
+
 findChar :: Value -> VM Value
 {-# INLINE findChar #-}
 findChar = findValue "Char" isChar
@@ -657,17 +662,11 @@ here n =
     gets top
         >>= dispatch . (single n)
 
-bool :: Bool -> VM Value
-{-# INLINE bool #-}
-bool True = here "True"
-bool False = here "False"
-
 ifVM :: VM Value -> VM a -> VM a -> VM a
 ifVM c a b = do
-    true <- bool True
     r <- c
 
-    if r == true
+    if r == Boolean True
         then a
         else b
 
@@ -714,6 +713,7 @@ orefFrom :: IDs -> Value -> ORef
 {-# INLINE orefFrom #-}
 orefFrom _ (Reference r) = r
 orefFrom ids (Block _ _ _) = idBlock ids
+orefFrom ids (Boolean _) = idBoolean ids
 orefFrom ids (Char _) = idChar ids
 orefFrom ids (Continuation _) = idContinuation ids
 orefFrom ids (Double _) = idDouble ids

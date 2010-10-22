@@ -17,7 +17,7 @@ load = do
     [$p|a equals?: b|] =: do
         a <- here "a"
         b <- here "b"
-        bool (a == b)
+        return $ Boolean (a == b)
 
     [$p|(a: Object) == (b: Object)|] =::: [$e|a equals?: b|]
     [$p|(a: Object) /= (b: Object)|] =::: [$e|(a == b) not|]
@@ -25,127 +25,127 @@ load = do
     [$p|(a: Char) < (b: Char)|] =: do
         Char a <- here "a" >>= findChar
         Char b <- here "b" >>= findChar
-        bool (a < b)
+        return $ Boolean (a < b)
 
     [$p|(a: Integer) < (b: Integer)|] =: do
         Integer a <- here "a" >>= findInteger
         Integer b <- here "b" >>= findInteger
-        bool (a < b)
+        return $ Boolean (a < b)
 
     [$p|(a: Integer) < (b: Double)|] =: do
         Integer a <- here "a" >>= findInteger
         Double b <- here "b" >>= findDouble
-        bool (fromIntegral a < b)
+        return $ Boolean (fromIntegral a < b)
 
     [$p|(a: Double) < (b: Integer)|] =: do
         Double a <- here "a" >>= findDouble
         Integer b <- here "b" >>= findInteger
-        bool (a < fromIntegral b)
+        return $ Boolean (a < fromIntegral b)
 
     [$p|(a: Double) < (b: Double)|] =: do
         Double a <- here "a" >>= findDouble
         Double b <- here "b" >>= findDouble
-        bool (a < b)
+        return $ Boolean (a < b)
 
     [$p|(a: Char) > (b: Char)|] =: do
         Char a <- here "a" >>= findChar
         Char b <- here "b" >>= findChar
-        bool (a > b)
+        return $ Boolean (a > b)
 
     [$p|(a: Integer) > (b: Integer)|] =: do
         Integer a <- here "a" >>= findInteger
         Integer b <- here "b" >>= findInteger
-        bool (a > b)
+        return $ Boolean (a > b)
 
     [$p|(a: Integer) > (b: Double)|] =: do
         Integer a <- here "a" >>= findInteger
         Double b <- here "b" >>= findDouble
-        bool (fromIntegral a > b)
+        return $ Boolean (fromIntegral a > b)
 
     [$p|(a: Double) > (b: Integer)|] =: do
         Double a <- here "a" >>= findDouble
         Integer b <- here "b" >>= findInteger
-        bool (a > fromIntegral b)
+        return $ Boolean (a > fromIntegral b)
 
     [$p|(a: Double) > (b: Double)|] =: do
         Double a <- here "a" >>= findDouble
         Double b <- here "b" >>= findDouble
-        bool (a > b)
+        return $ Boolean (a > b)
 
     [$p|(a: Char) <= (b: Char)|] =: do
         Char a <- here "a" >>= findChar
         Char b <- here "b" >>= findChar
-        bool (a <= b)
+        return $ Boolean (a <= b)
 
     [$p|(a: Integer) <= (b: Integer)|] =: do
         Integer a <- here "a" >>= findInteger
         Integer b <- here "b" >>= findInteger
-        bool (a <= b)
+        return $ Boolean (a <= b)
 
     [$p|(a: Integer) <= (b: Double)|] =: do
         Integer a <- here "a" >>= findInteger
         Double b <- here "b" >>= findDouble
-        bool (fromIntegral a <= b)
+        return $ Boolean (fromIntegral a <= b)
 
     [$p|(a: Double) <= (b: Integer)|] =: do
         Double a <- here "a" >>= findDouble
         Integer b <- here "b" >>= findInteger
-        bool (a <= fromIntegral b)
+        return $ Boolean (a <= fromIntegral b)
 
     [$p|(a: Double) <= (b: Double)|] =: do
         Double a <- here "a" >>= findDouble
         Double b <- here "b" >>= findDouble
-        bool (a <= b)
+        return $ Boolean (a <= b)
 
     [$p|(a: Char) >= (b: Char)|] =: do
         Char a <- here "a" >>= findChar
         Char b <- here "b" >>= findChar
-        bool (a >= b)
+        return $ Boolean (a >= b)
 
     [$p|(a: Integer) >= (b: Integer)|] =: do
         Integer a <- here "a" >>= findInteger
         Integer b <- here "b" >>= findInteger
-        bool (a >= b)
+        return $ Boolean (a >= b)
 
     [$p|(a: Integer) >= (b: Double)|] =: do
         Integer a <- here "a" >>= findInteger
         Double b <- here "b" >>= findDouble
-        bool (fromIntegral a >= b)
+        return $ Boolean (fromIntegral a >= b)
 
     [$p|(a: Double) >= (b: Integer)|] =: do
         Double a <- here "a" >>= findDouble
         Integer b <- here "b" >>= findInteger
-        bool (a >= fromIntegral b)
+        return $ Boolean (a >= fromIntegral b)
 
     [$p|(a: Double) >= (b: Double)|] =: do
         Double a <- here "a" >>= findDouble
         Double b <- here "b" >>= findDouble
-        bool (a >= b)
+        return $ Boolean (a >= b)
 
     [$p|(a: Char) == (b: Char)|] =: do
         Char a <- here "a" >>= findChar
         Char b <- here "b" >>= findChar
-        bool (a == b)
+        return $ Boolean (a == b)
 
     [$p|(a: Integer) == (b: Integer)|] =: do
         Integer a <- here "a" >>= findInteger
         Integer b <- here "b" >>= findInteger
-        bool (a == b)
+        return $ Boolean (a == b)
 
     [$p|(a: Integer) == (b: Double)|] =: do
         Integer a <- here "a" >>= findInteger
         Double b <- here "b" >>= findDouble
-        bool (fromIntegral a == b)
+        return $ Boolean (fromIntegral a == b)
 
     [$p|(a: Double) == (b: Integer)|] =: do
         Double a <- here "a" >>= findDouble
         Integer b <- here "b" >>= findInteger
-        bool (a == fromIntegral b)
+        return $ Boolean (a == fromIntegral b)
 
     [$p|(a: Double) == (b: Double)|] =: do
         Double a <- here "a" >>= findDouble
         Double b <- here "b" >>= findDouble
-        bool (a == b)
+        return $ Boolean (a == b)
 
     [$p|(a: List) == (b: List)|] =: do
         as <- getVector [$e|a|]
@@ -154,48 +154,45 @@ load = do
         if V.length as == V.length bs
             then do
                 eqs <- V.zipWithM (\a b -> dispatch (keyword ["=="] [a, b])) as bs
-                true <- bool True
-                bool (V.all (== true) eqs)
-            else bool False
+                return $ Boolean (V.all (== Boolean True) eqs)
+            else return $ Boolean False
 
     [$p|(a: Process) == (b: Process)|] =: do
         Process _ a <- here "a" >>= findProcess
         Process _ b <- here "b" >>= findProcess
-        bool (a == b)
+        return $ Boolean (a == b)
 
     [$p|(a: Message) == (b: Message)|] =: do
         Message a <- here "a" >>= findMessage
         Message b <- here "b" >>= findMessage
 
-        true <- bool True
         case (a, b) of
             (Single ai _ at, Single bi _ bt) -> do
-                t <- dispatch (keyword ["=="] [at, bt])
-                bool (ai == bi && t == true)
+                Boolean t <- dispatch (keyword ["=="] [at, bt]) >>= findBoolean
+                return $ Boolean (ai == bi && t)
             (Keyword ai _ avs, Keyword bi _ bvs)
                 | ai == bi && length avs == length bvs -> do
                 eqs <- zipWithM (\x y -> dispatch (keyword ["=="] [x, y])) avs bvs
-                bool (all (== true) eqs)
-            _ -> bool False
+                return $ Boolean (all (== Boolean True) eqs)
+            _ -> return $ Boolean False
 
     [$p|(a: Particle) == (b: Particle)|] =: do
         Particle a <- here "a" >>= findParticle
         Particle b <- here "b" >>= findParticle
 
-        true <- bool True
         case (a, b) of
             (PMSingle an, PMSingle bn) ->
-                bool (an == bn)
+                return $ Boolean (an == bn)
             (PMKeyword ans avs, PMKeyword bns bvs)
                 | ans == bns && length avs == length bvs -> do
                 eqs <- zipWithM (\mx my ->
                     case (mx, my) of
-                        (Nothing, Nothing) -> return true
+                        (Nothing, Nothing) -> return (Boolean True)
                         (Just x, Just y) ->
                             dispatch (keyword ["=="] [x, y])
-                        _ -> bool False) avs bvs
-                bool (all (== true) eqs)
-            _ -> bool False
+                        _ -> return $ Boolean False) avs bvs
+                return $ Boolean (all (== Boolean True) eqs)
+            _ -> return $ Boolean False
 
     prelude
 

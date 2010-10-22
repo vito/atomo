@@ -27,7 +27,7 @@ load = do
         getText [$e|s|] >>= return . Integer . fromIntegral . T.length
 
     [$p|(s: String) empty?|] =:
-        getText [$e|s|] >>= bool . T.null
+        liftM (Boolean . T.null) $ getText [$e|s|]
 
     [$p|(s: String) at: (n: Integer)|] =: do
         Integer n <- here "n" >>= findInteger
@@ -245,7 +245,7 @@ load = do
     [$p|(s: String) contains?: (c: Char)|] =: do
         t <- getText [$e|s|]
         Char c <- here "c" >>= findChar
-        bool (T.any (== c) t)
+        return (Boolean (T.any (== c) t))
 
     [$p|(c: Char) in?: (s: String)|] =::: [$e|s contains?: c|]
 
@@ -269,17 +269,17 @@ load = do
     [$p|(a: String) is-prefix-of?: (b: String)|] =: do
         a <- getText [$e|a|]
         b <- getText [$e|b|]
-        bool (T.isPrefixOf a b)
+        return $ Boolean (T.isPrefixOf a b)
 
     [$p|(a: String) is-suffix-of?: (b: String)|] =: do
         a <- getText [$e|a|]
         b <- getText [$e|b|]
-        bool (T.isSuffixOf a b)
+        return $ Boolean (T.isSuffixOf a b)
 
     [$p|(a: String) is-infix-of?: (b: String)|] =: do
         a <- getText [$e|a|]
         b <- getText [$e|b|]
-        bool (T.isInfixOf a b)
+        return $ Boolean (T.isInfixOf a b)
 
     [$p|(a: String) starts-with?: (b: String)|] =::: [$e|b is-prefix-of?: a|]
     [$p|(a: String) ends-with?: (b: String)|] =::: [$e|b is-suffix-of?: a|]

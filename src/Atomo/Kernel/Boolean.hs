@@ -6,13 +6,6 @@ import Atomo
 
 load :: VM ()
 load = mapM_ eval [$es|
-    Boolean = Object clone
-    True = Object clone
-    False = Object clone
-
-    True delegates-to: Boolean
-    False delegates-to: Boolean
-
     True && True = True
     Boolean && Boolean = False
 

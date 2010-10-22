@@ -21,6 +21,7 @@ type VM = ErrorT AtomoError (ContT (Either AtomoError Value) (StateT Env IO))
 
 data Value
     = Block !Value [Pattern] [Expr]
+    | Boolean { fromBoolean :: {-# UNPACK #-} !Bool }
     | Char {-# UNPACK #-} !Char
     | Continuation Continuation
     | Double {-# UNPACK #-} !Double
@@ -213,6 +214,7 @@ data IDs =
         { idMatch :: ORef -- used in dispatch to refer to the object currently being searched
         , idObject :: ORef -- root object
         , idBlock :: ORef
+        , idBoolean :: ORef
         , idChar :: ORef
         , idContinuation :: ORef
         , idDouble :: ORef
@@ -243,6 +245,7 @@ type Continuation = IORef (Value -> VM Value)
 instance Eq Value where
     (==) (Block at aps aes) (Block bt bps bes) =
         at == bt && aps == bps && aes == bes
+    (==) (Boolean a) (Boolean b) = a == b
     (==) (Char a) (Char b) = a == b
     (==) (Continuation a) (Continuation b) = a == b
     (==) (Double a) (Double b) = a == b
@@ -329,6 +332,7 @@ startEnv = Env
             { idMatch = error "idMatch not set"
             , idObject = error "idObject not set"
             , idBlock = error "idBlock not set"
+            , idBoolean = error "idBoolean not set"
             , idChar = error "idChar not set"
             , idContinuation = error "idContinuation not set"
             , idDouble = error "idDouble not set"
@@ -449,6 +453,11 @@ completeKP mvs' vs' = error $ "impossible: completeKP on " ++ show (mvs', vs')
 isBlock :: Value -> Bool
 isBlock (Block _ _ _) = True
 isBlock _ = False
+
+-- | Is a value a Boolean?
+isBoolean :: Value -> Bool
+isBoolean (Boolean _) = True
+isBoolean _ = False
 
 -- | Is a value a Char?
 isChar :: Value -> Bool
