@@ -7,20 +7,11 @@
     > Object
 }body:{
     Boolean values.
-}
 
-#define:{
-    True
-    > Boolean
-}body:{
-    Truthiness.
-}
-
-#define:{
-    False
-    > Boolean
-}body:{
-    Falsiness.
+    #example-segment:({
+      True
+      False
+    })
 }
 
 #define:{
