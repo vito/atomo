@@ -703,18 +703,17 @@ referenceTo :: Value -> VM Value
 referenceTo = liftM Reference . orefFor
 
 callBlock :: Value -> [Value] -> VM Value
-callBlock (Block s ps es) vs
-    | length ps > length vs = throwError (BlockArity (length ps) (length vs))
-    | otherwise = do
-        checkArgs ps vs
-        doBlock (toMethods . concat $ zipWith bindings' ps vs) s es
+callBlock (Block s ps es) vs = do
+    is <- gets primitives
+    checkArgs is ps vs
+    doBlock (toMethods . concat $ zipWith bindings' ps vs) s es
   where
-    checkArgs [] _ = return ()
-    checkArgs (p:ps) (v:vs) = do
-        is <- gets primitives
-        if match is p v
-            then checkArgs ps vs
-            else throwError (Mismatch p v)
+    checkArgs _ [] _ = return ()
+    checkArgs _ _ [] = throwError (BlockArity (length ps) (length vs))
+    checkArgs is (p:ps') (v:vs')
+        | match is p v = checkArgs is ps' vs'
+        | otherwise = throwError (Mismatch p v)
+callBlock x _ = raise ["not-a-block"] [x]
 
 doBlock :: MethodMap -> Value -> [Expr] -> VM Value
 {-# INLINE doBlock #-}
