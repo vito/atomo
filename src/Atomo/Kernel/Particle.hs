@@ -86,3 +86,16 @@ load = do
                     then throwError (ParticleArity 1 0)
                     else return . Message . single n $ head vs
 
+    [$p|(p: Particle) define-on: (targets: List) as: v|] =: do
+        Particle p <- here "p" >>= findParticle
+        vs <- getList [$e|targets|]
+        v <- here "v"
+
+        case p of
+            PMKeyword ns _ ->
+                define (pkeyword ns (map PMatch vs)) (Primitive Nothing v)
+
+            PMSingle n ->
+                define (psingle n (head $ map PMatch vs)) (Primitive Nothing v)
+
+        return (particle "ok")
