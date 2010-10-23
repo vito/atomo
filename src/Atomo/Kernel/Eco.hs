@@ -20,12 +20,16 @@ loadEco = mapM_ eval [$es|
           loaded = []
         }
 
-    Eco Package =
-      Object clone do:
+    Eco Package = Object clone
+
+    Eco Package new :=
+      Eco Package clone do:
         { version = 0 . 1
           dependencies = []
           include = []
           executables = []
+          contexts = []
+          environment = Lobby
         }
 
     (e: Eco) initialize :=
@@ -149,7 +153,7 @@ loadEco = mapM_ eval [$es|
       } call
 
     Eco Package load-from: (file: String) :=
-      Eco Package clone do: { load: file }
+      Eco Package new do: { load: file }
 
     (p: Eco Package) name: (n: String) :=
       p name = n
@@ -190,6 +194,8 @@ loadEco = mapM_ eval [$es|
 
             path = Eco path-to: pkg
 
+            pkg contexts << env super
+
             env load: (path </> (Eco which-main: path))
 
             pkg environment = env
@@ -213,15 +219,13 @@ loadEco = mapM_ eval [$es|
 
         @(ok: p) ->
           condition: {
-            (context in?: p contexts) -> p environment
-
             p version (join: check) not ->
               raise: @(incompatible-version-loaded: name needed: check)
 
+            (context in?: p contexts) -> p environment
+
             otherwise ->
-              { p contexts << context
-                Eco load: name version: check in: context clone
-              } call
+              (Eco load: name version: check in: context clone)
          }
       }
 
