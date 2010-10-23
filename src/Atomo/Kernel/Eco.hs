@@ -177,6 +177,30 @@ loadEco = mapM_ eval [$es|
     (p: Eco Package) executables: (es: List) :=
       p executables = es
 
+    Eco load: name version: check in: env :=
+      Eco packages (lookup: name) match: {
+        @none -> raise: @(package-unavailable: name)
+        @(ok: []) -> raise: @(no-package-versions: name)
+        @(ok: pkgs) ->
+          { pkg =
+              pkgs (filter: { p | p version join: check }) match: {
+                [] -> raise: @(no-versions-of: name satisfy: check)
+                (p . _) -> p
+              }
+
+            path = Eco path-to: pkg
+
+            env load: (path </> (Eco which-main: path))
+
+            pkg environment = env
+
+            when: name (in?: Eco loaded (map: @from)) not do:
+              { Eco loaded << (name -> pkg) }
+
+            env
+          } call
+      }
+
     context use: (name: String) :=
       context use: name version: { True }
 
@@ -184,51 +208,22 @@ loadEco = mapM_ eval [$es|
       context use: name version: { == v }
 
     context use: (name: String) version: (check: Block) :=
-      { loaded? = Eco loaded lookup: name
-        reload? = (loaded? == @none) or:
-                    { @(ok: p) = loaded?; context (in?: p contexts) not }
+      Eco loaded (lookup: name) match: {
+        @none -> (Eco load: name version: check in: context clone)
 
-        if: reload?
-          then: {
-            pkg =
-              loaded? match: {
-                @(ok: p) -> (p do: { contexts << context })
+        @(ok: p) ->
+          condition: {
+            (context in?: p contexts) -> p environment
 
-                @none ->
-                  (Eco packages (lookup: name) match: {
-                    @none -> raise: @(package-unavailable: name)
-                    @(ok: []) -> raise: @(no-package-versions: name)
-                    @(ok: pkgs) ->
-                      (pkgs (filter: { p | p version join: check }) match: {
-                        [] -> raise: @(no-versions-of: name satisfy: check)
-                        (p . _) ->
-                          { p contexts = [context]
-                            Eco loaded << (name -> p)
-                            p
-                          } call
-                      })
-                  })
-              }
-
-            path = Eco path-to: pkg
-
-            env = context clone
-            env load: (path </> (Eco which-main: path))
-
-            pkg environment = env
-
-            env
-          }
-          else: {
-            @(ok: p) = loaded?
-
-            when: p version (join: check) not do: {
+            p version (join: check) not ->
               raise: @(incompatible-version-loaded: name needed: check)
-            }
 
-            p environment
-          }
-      } call
+            otherwise ->
+              { p contexts << context
+                Eco load: name version: check in: context clone
+              } call
+         }
+      }
 
     Eco load
 |]
