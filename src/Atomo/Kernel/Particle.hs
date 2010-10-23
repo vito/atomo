@@ -91,11 +91,21 @@ load = do
         vs <- getList [$e|targets|]
         v <- here "v"
 
+        let targets =
+                map (\v ->
+                    case v of
+                        Pattern p -> p
+                        _ -> PMatch v) vs
+            expr =
+                case v of
+                    Expression e -> e
+                    _ -> Primitive Nothing v
+
         case p of
             PMKeyword ns _ ->
-                define (pkeyword ns (map PMatch vs)) (Primitive Nothing v)
+                define (pkeyword ns targets) expr
 
             PMSingle n ->
-                define (psingle n (head $ map PMatch vs)) (Primitive Nothing v)
+                define (psingle n (head targets)) expr
 
         return (particle "ok")
