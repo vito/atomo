@@ -14,7 +14,7 @@ load = mapM_ eval [$es|
       }
 
     (p: Parameter) show :=
-        "<" .. p _? .. ">"
+        "<" .. p _? show .. ">"
 
     (p: Parameter) _? := p value: self
 
