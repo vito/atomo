@@ -8,7 +8,7 @@ Various comparison operators and methods. All operators have a precedence level 
 }body:{
     Is #atomo:a equivalent to #atomo:b?
 
-    For your definitions, this should be a deep equality check, as opposed to #atomo:(equals:).
+    For your definitions, this should be a deep equality check, as opposed to #atomo:(equals?:).
 }
 
 #define:{
@@ -61,7 +61,7 @@ Various comparison operators and methods. All operators have a precedence level 
 }
 
 #define:{
-    a max: b
+    a min: b
     > any
 }body:{
     Returns the smaller of #atomo:a and #atomo:b using the comparison operator #atomo:(<).

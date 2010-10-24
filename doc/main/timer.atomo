@@ -38,7 +38,7 @@
     | duration is-a?: Number
     > Process
 }body:{
-    Spawns a new process that repeatedly calls #atomo:action at repeated intervals of #atomo:duration microseconds.
+    Spawns a new process that repeatedly calls #atomo:action at intervals of #atomo:duration microseconds.
 
     #example:({
         p = Timer do: { "hello" print } every: 0.5 seconds

@@ -592,7 +592,7 @@
     | delimiter is-a?: List
     > List
 }body:{
-    Split a list into sublists, separated by #atomo:delimiter. Note that strict equality is used for matching the delimiter; it is not an #atomo:(==) dispatch.
+    Split a list into sublists, separated by #atomo:delimiter. Note that strict equality (i.e. #atomo:(equals?:)) is used for matching the delimiter.
 
     #example:({
         [0, 1, 1, 2, 1, 1, 3] split: [1, 1]
