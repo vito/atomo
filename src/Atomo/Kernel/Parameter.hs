@@ -13,6 +13,9 @@ load = mapM_ eval [$es|
       { set-default: v
       }
 
+    (p: Parameter) show :=
+        "<" .. p _? .. ">"
+
     (p: Parameter) _? := p value: self
 
     (p: Parameter) =! v :=
