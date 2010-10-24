@@ -44,6 +44,9 @@ load = do
         x <- here "x" >>= objectFor
         liftM Reference (liftIO $ newIORef x)
 
+    [$p|(x: Object) copy: (diff: Block)|] =:::
+        [$e|x copy do: diff|]
+
     [$p|(x: Object) delegates-to: (y: Object)|] =: do
         f <- here "x" >>= orefFor
         t <- here "y"
@@ -60,7 +63,7 @@ load = do
 
     [$p|(x: Object) delegates|] =: do
         o <- here "x" >>= objectFor
-        list (oDelegates o)
+        return $ list (oDelegates o)
 
     [$p|(x: Object) super|] =::: [$e|x delegates head|]
 
@@ -83,12 +86,10 @@ load = do
     [$p|(o: Object) methods|] =: do
         o <- here "o" >>= objectFor
         let (ss, ks) = oMethods o
-        singles <- mapM (list . map Method) (elemsMap ss) >>= list
-        keywords <- mapM (list . map Method) (elemsMap ks) >>= list
 
         ([$p|ms|] =::) =<< eval [$e|Object clone|]
-        [$p|ms singles|] =:: singles
-        [$p|ms keywords|] =:: keywords
+        [$p|ms singles|] =:: list (map (list . map Method) (elemsMap ss))
+        [$p|ms keywords|] =:: list (map (list . map Method) (elemsMap ks))
         here "ms"
 
     [$p|(s: String) as: String|] =::: [$e|s|]

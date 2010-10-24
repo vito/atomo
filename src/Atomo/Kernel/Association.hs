@@ -26,12 +26,9 @@ load = mapM_ eval [$es|
         then: { @(ok: a) }
         else: { as find: k }
 
-    (l: List) set: k to: v :=
-      (l find: k) match: {
-        @none -> l << (k -> v)
-        @(ok: a) ->
-          { a to = v
-            l
-          } call
-      }
+    [] set: k to: v := [k -> v]
+    (a . as) set: k to: v :=
+      if: (k == a from)
+        then: { (k -> v) . as }
+        else: { a . (as set: k to: v) }
 |]

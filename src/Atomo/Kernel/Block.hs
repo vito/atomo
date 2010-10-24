@@ -34,11 +34,11 @@ load = do
 
     [$p|(b: Block) arguments|] =: do
         Block _ as _ <- here "b" >>= findBlock
-        list (map Pattern as)
+        return $ list (map Pattern as)
 
     [$p|(b: Block) contents|] =: do
         Block _ _ es <- here "b" >>= findBlock
-        list (map Expression es)
+        return $ list (map Expression es)
 
     prelude
 

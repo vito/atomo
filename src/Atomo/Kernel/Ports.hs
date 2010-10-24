@@ -284,8 +284,7 @@ load = do
     [$p|Directory contents: (path: String)|] =:
         getString [$e|path|]
             >>= liftIO . getDirectoryContents
-            >>= return . filter (not . (`elem` [".", ".."]))
-            >>= list . map string
+            >>= return . list . map string . filter (not . (`elem` [".", ".."]))
 
     [$p|Directory current|] =:
         liftM string $ liftIO getCurrentDirectory

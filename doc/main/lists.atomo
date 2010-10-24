@@ -22,21 +22,6 @@
 }
 
 #define:{
-    l copy
-    | l is-a?: List
-    > List
-}body:{
-    Copy a list, yielding a new #atomo:List containing the same values as #atomo:l.
-
-    #example:({
-        a = [1, 2]
-        b = a copy
-        b << 3
-        a
-    })
-}
-
-#define:{
     l length
     | l is-a?: List
     > Integer

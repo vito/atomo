@@ -11,7 +11,7 @@ load = do
     ([$p|Environment|] =::) =<< eval [$e|Object clone|]
 
     [$p|Environment arguments|] =:
-        liftIO getArgs >>= list . map string
+        liftIO getArgs >>= return . list . map string
 
     [$p|Environment program-name|] =:
         liftM string $ liftIO getProgName
@@ -26,4 +26,4 @@ load = do
         assocs <- forM env $ \(k, v) ->
             dispatch (keyword ["->"] [string k, string v])
 
-        list assocs
+        return $ list assocs

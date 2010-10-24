@@ -34,8 +34,7 @@ load = do
         [$p|(o) pass-to: b|] =: callCC $ \c -> do
             b <- here "b"
             cr <- liftIO (newIORef c)
-            as <- list [Continuation cr]
-            dispatch (keyword ["call"] [b, as])
+            dispatch (keyword ["call"] [b, list [Continuation cr]])
         eval [$e|o|]
 
     -- define call/cc and dynamic-wind in a new scope for hiding
@@ -50,7 +49,7 @@ dynamicWind callccObj = do
     ([$p|dynamic-winds|] =::) =<< eval [$e|Parameter new: []|]
 
     [$p|(o: Object) call/cc|] =::: [$e|internal-call/cc pass-to: { cont |
-        winds = dynamic-winds _? copy
+        winds = dynamic-winds _?
 
         new = cont clone do: {
             yield: v := {

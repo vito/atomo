@@ -1,7 +1,6 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Atomo.Kernel.List (load) where
 
-import Data.IORef
 import Data.List.Split
 import qualified Data.Vector as V
 
@@ -14,9 +13,6 @@ load = do
 
     [$p|(l: List) show|] =:::
         [$e|"[" .. l (map: @show) (join: ", ") .. "]"|]
-
-    [$p|(l: List) copy|] =:
-        getVector [$e|l|] >>= list'
 
     [$p|(l: List) length|] =:
         getVector [$e|l|] >>= return . Integer . fromIntegral . V.length
@@ -59,58 +55,57 @@ load = do
                 [ keyParticleN ["from", "take"] [Integer start, Integer num]
                 , l
                 ]
-            else list' $ V.unsafeSlice
+            else return . List $ V.unsafeSlice
                 (fromIntegral start)
                 (fromIntegral num)
                 vs
 
     [$p|[] init|] =::: [$e|raise: @empty-list|]
     [$p|(l: List) init|] =:
-        getVector [$e|l|] >>= list' . V.unsafeInit
+        getVector [$e|l|] >>= return . List . V.unsafeInit
 
     [$p|[] tail|] =::: [$e|raise: @empty-list|]
     [$p|(l: List) tail|] =:
-        getVector [$e|l|] >>= list' . V.unsafeTail
+        getVector [$e|l|] >>= return . List . V.unsafeTail
 
     [$p|(l: List) take: (n: Integer)|] =: do
         vs <- getVector [$e|l|]
         Integer n <- here "n" >>= findInteger
-        list' (V.take (fromIntegral n) vs)
+        return . List $ V.take (fromIntegral n) vs
 
     [$p|(l: List) drop: (n: Integer)|] =: do
         vs <- getVector [$e|l|]
         Integer n <- here "n" >>= findInteger
-        list' (V.drop (fromIntegral n) vs)
+        return . List $ V.drop (fromIntegral n) vs
 
     [$p|v replicate: (n: Integer)|] =: do
         v <- here "v"
         Integer n <- here "n" >>= findInteger
-        list' (V.replicate (fromIntegral n) v)
+        return . List $ V.replicate (fromIntegral n) v
 
     [$p|b repeat: (n: Integer)|] =: do
         b <- here "b"
         Integer n <- here "n" >>= findInteger
         vs <- V.replicateM (fromIntegral n) $
             dispatch (single "call" b)
-        list' vs
+        return $ List vs
 
     [$p|(a: List) .. (b: List)|] =: do
         as <- getVector [$e|a|]
         bs <- getVector [$e|b|]
-        list' (as V.++ bs)
+        return . List $ as V.++ bs
 
     [$p|(l: List) reverse|] =: do
-        getVector [$e|l|] >>= list' . V.reverse
+        getVector [$e|l|] >>= return . List . V.reverse
 
     [$p|(l: List) map: b|] =: do
         vs <- getVector [$e|l|]
         b <- here "b"
 
-        nvs <- V.mapM (\v -> do
-            as <- list' (V.singleton v)
-            dispatch (keyword ["call"] [b, as])) vs
+        nvs <- V.mapM (\v ->
+            dispatch (keyword ["call"] [b, list [v]])) vs
 
-        list' nvs
+        return $ List nvs
 
     [$p|(x: List) zip: (y: List)|] =::: [$e|x zip: y with: @->|]
     [$p|(x: List) zip: (y: List) with: b|] =: do
@@ -118,58 +113,52 @@ load = do
         ys <- getVector [$e|y|]
         b <- here "b"
 
-        nvs <- V.zipWithM (\x y -> do
-            as <- list [x, y]
-            dispatch (keyword ["call"] [b, as])) xs ys
+        nvs <- V.zipWithM (\x y ->
+            dispatch (keyword ["call"] [b, list [x, y]])) xs ys
 
-        list' nvs
+        return $ List nvs
 
     [$p|(l: List) filter: b|] =: do
         vs <- getVector [$e|l|]
         b <- here "b"
 
         nvs <- V.filterM (\v -> do
-            as <- list [v]
-            Boolean t <- dispatch (keyword ["call"] [b, as]) >>= findBoolean
+            Boolean t <- dispatch (keyword ["call"] [b, list [v]]) >>= findBoolean
             return t) vs
 
-        list' nvs
+        return $ List nvs
 
     [$p|[] reduce: b|] =::: [$e|raise: @empty-list|]
     [$p|(l: List) reduce: b|] =: do
         vs <- getVector [$e|l|]
         b <- here "b"
 
-        V.fold1M (\x acc -> do
-            as <- list [x, acc]
-            dispatch (keyword ["call"] [b, as])) vs
+        V.fold1M (\x acc ->
+            dispatch (keyword ["call"] [b, list [x, acc]])) vs
 
     [$p|(l: List) reduce: b with: v|] =: do
         vs <- getVector [$e|l|]
         b <- here "b"
         v <- here "v"
 
-        V.foldM (\x acc -> do
-            as <- list [x, acc]
-            dispatch (keyword ["call"] [b, as])) v vs
+        V.foldM (\x acc ->
+            dispatch (keyword ["call"] [b, list [x, acc]])) v vs
 
     [$p|[] reduce-right: b|] =::: [$e|raise: @empty-list|]
     [$p|(l: List) reduce-right: b|] =: do
         vs <- getVector [$e|l|]
         b <- here "b"
 
-        foldr1MV (\x acc -> do
-            as <- list [x, acc]
-            dispatch (keyword ["call"] [b, as])) vs
+        foldr1MV (\x acc ->
+            dispatch (keyword ["call"] [b, list [x, acc]])) vs
 
     [$p|(l: List) reduce-right: b with: v|] =: do
         vs <- getVector [$e|l|]
         b <- here "b"
         v <- here "v"
 
-        foldrMV (\x acc -> do
-            as <- list [x, acc]
-            dispatch (keyword ["call"] [b, as])) v vs
+        foldrMV (\x acc ->
+            dispatch (keyword ["call"] [b, list [x, acc]])) v vs
 
     [$p|(l: List) concat|] =::: [$e|l reduce: @.. with: []|]
     [$p|(l: List) sum|] =::: [$e|l reduce: @+ with: 0|]
@@ -182,8 +171,7 @@ load = do
         b <- here "b"
 
         nvs <- V.mapM (\v -> do
-            as <- list' (V.singleton v)
-            Boolean t <- dispatch (keyword ["call"] [b, as]) >>= findBoolean
+            Boolean t <- dispatch (keyword ["call"] [b, list [v]]) >>= findBoolean
             return t) vs
 
         return $ Boolean (V.and nvs)
@@ -193,8 +181,7 @@ load = do
         b <- here "b"
 
         nvs <- V.mapM (\v -> do
-            as <- list' (V.singleton v)
-            Boolean t <- dispatch (keyword ["call"] [b, as]) >>= findBoolean
+            Boolean t <- dispatch (keyword ["call"] [b, list [v]]) >>= findBoolean
             return t) vs
 
         return $ Boolean (V.or nvs)
@@ -230,7 +217,7 @@ load = do
         Integer y <- here "y" >>= findInteger
         Integer d <- here "d" >>= findInteger
 
-        list' $ V.generate
+        return . List $ V.generate
             (fromIntegral $ abs ((y - x) `div` d) + 1)
             (Integer . (x +) . (* d) . fromIntegral)
 
@@ -239,7 +226,6 @@ load = do
 
     -- destructive update
     [$p|(l: List) at: (n: Integer) put: v|] =: do
-        List l <- here "l" >>= findList
         vs <- getVector [$e|l|]
 
         Integer n <- here "n" >>= findInteger
@@ -253,66 +239,54 @@ load = do
                 ]
             else do
 
-        liftIO . writeIORef l $ vs V.// [(fromIntegral n, v)]
-
-        return (List l)
+        return (List $ vs V.// [(fromIntegral n, v)])
 
     [$p|v . (l: List)|] =: do
         vs <- getVector [$e|l|]
         v <- here "v"
-        l <- liftIO . newIORef $ V.cons v vs
-        return (List l)
+        return (List $ V.cons v vs)
 
     [$p|(l: List) << v|] =: do
-        List l <- here "l" >>= findList
         vs <- getVector [$e|l|]
         v <- here "v"
 
-        liftIO . writeIORef l $ V.snoc vs v
-
-        return (List l)
+        return . List $ V.snoc vs v
 
     [$p|v >> (l: List)|] =: do
-        List l <- here "l" >>= findList
         vs <- getVector [$e|l|]
         v <- here "v"
 
-        liftIO . writeIORef l $ V.cons v vs
+        return . List $ V.cons v vs
 
-        return (List l)
+    {-[$p|[] pop!|] =::: [$e|raise: @empty-list|]-}
+    {-[$p|(l: List) pop!|] =: do-}
+        {-List l <- here "l" >>= findList-}
+        {-vs <- getVector [$e|l|]-}
 
-    [$p|[] pop!|] =::: [$e|raise: @empty-list|]
-    [$p|(l: List) pop!|] =: do
-        List l <- here "l" >>= findList
-        vs <- getVector [$e|l|]
-
-        liftIO . writeIORef l $ V.tail vs
-
-        return (V.head vs)
+        {-return . List l $ V.tail vs-}
 
     [$p|(l: List) split: (d: List)|] =: do
         l <- getList [$e|l|]
         d <- getList [$e|d|]
 
-        mapM list (splitOn d l) >>= list
+        return $ list (map list (splitOn d l))
 
     [$p|(l: List) split-on: d|] =: do
         l <- getList [$e|l|]
         d <- here "d"
 
-        mapM list (splitWhen (== d) l) >>= list
+        return $ list (map list (splitWhen (== d) l))
 
     [$p|(l: List) sort|] =:
-        getList [$e|l|] >>= sortVM >>= list
+        getList [$e|l|] >>= liftM list . sortVM
 
     [$p|(l: List) sort-by: cmp|] =: do
         vs <- getList [$e|l|]
         cmp <- here "cmp"
 
-        sortByVM (\a b -> do
-            as <- list [a, b]
-            Boolean t <- dispatch (keyword ["call"] [cmp, as]) >>= findBoolean
-            return t) vs >>= list
+        liftM list $ sortByVM (\a b -> do
+            Boolean t <- dispatch (keyword ["call"] [cmp, list [a, b]]) >>= findBoolean
+            return t) vs
 
     prelude
 

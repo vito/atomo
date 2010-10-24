@@ -46,7 +46,7 @@ instance Pretty Value where
     prettyFrom _ (Integer i) = integer i
     prettyFrom _ (List l) =
         brackets . hsep . punctuate comma $ map (prettyFrom CList) vs
-      where vs = V.toList (unsafePerformIO (readIORef l))
+      where vs = V.toList l
     prettyFrom _ (Message m) = internal "message" $ pretty m
     prettyFrom _ (Method (Slot p _)) = internal "slot" $ parens (pretty p)
     prettyFrom _ (Method (Responder p _ _)) = internal "responder" $ parens (pretty p)

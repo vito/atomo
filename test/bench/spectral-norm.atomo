@@ -1,43 +1,39 @@
 (i: Integer) eval-A: (j: Integer) :=
-    1.0 / ((i + j) * (i + j + 1) / 2 + i + 1)
+  1.0 / ((i + j) * (i + j + 1) / 2 + i + 1)
 
 (u: List) eval-A-times :=
-    (0 ... u length) map: { i |
-        (0 ... u length) (map: { j |
-            i eval-A: j * u at: j
+  (0 ... u length) map:
+    { i |
+      (0 ... u length) (map:
+        { j |
+          i eval-A: j * u at: j
         }) sum
     }
 
 (u: List) eval-At-times :=
-    (0 ... u length) map: { i |
-        (0 ... u length) (map: { j |
-            j eval-A: i * u at: j
+  (0 ... u length) map:
+    { i |
+      (0 ... u length) (map:
+        { j |
+          j eval-A: i * u at: j
         }) sum
     }
 
 (u: List) eval-AtA-times :=
-    u eval-A-times eval-At-times
+  u eval-A-times eval-At-times
 
-{
-    n = 100
+{ n = 100
 
-    v = []
-    u = 1 replicate: n
+  v = []
+  u = 1 replicate: n
 
-    10 times: {
-        v = u eval-AtA-times
-        u = v eval-AtA-times
-    }
+  10 times: {
+    v = u eval-AtA-times
+    u = v eval-AtA-times
+  }
 
-    {-vBv = (0 ... n) (map: { i | u at: i * v at: i }) sum-}
-    {-vv = (0 ... n) (map: { i | v at: i * v at: i }) sum-}
-    
-    vBv = 0
-    vv = 0
-    (0 ... n) each: { i |
-        vBv = vBv + (u at: i * v at: i)
-        vv = vv + ((v at: i) ^ 2)
-    }
-
-    (vBv / vv) sqrt print
+  vBv = (0 ... n) (map: { i | u at: i * v at: i }) sum
+  vv = (0 ... n) (map: { i | v at: i * v at: i }) sum
+  
+  (vBv / vv) sqrt print
 } time print

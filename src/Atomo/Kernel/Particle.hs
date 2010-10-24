@@ -55,11 +55,11 @@ load = do
 
     [$p|(p: Particle) names|] =: do
         Particle (PMKeyword ns _) <- here "p" >>= findParticle
-        list (map string ns)
+        return $ list (map string ns)
 
     [$p|(p: Particle) values|] =: do
         (Particle (PMKeyword _ mvs)) <- here "p" >>= findParticle
-        list $
+        return . list $
             map
                 (maybe (particle "none") (keyParticleN ["ok"] . (:[])))
                 mvs

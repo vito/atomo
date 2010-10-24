@@ -239,7 +239,7 @@ type Delegates = [Value]
 type Channel = Chan Value
 type MethodMap = M.IntMap [Method]
 type ORef = IORef Object
-type VVector = IORef (V.Vector Value)
+type VVector = V.Vector Value
 type Continuation = IORef (Value -> VM Value)
 
 
@@ -314,8 +314,8 @@ instance Show Channel where
 instance Show ORef where
     show _ = "ORef"
 
-instance Show VVector where
-    show _ = "VVector"
+{-instance Show VVector where-}
+    {-show _ = "VVector"-}
 
 instance Show Continuation where
     show _ = "Continuation"
@@ -407,17 +407,14 @@ fromHaskell' t (Haskell d) =
         Nothing -> error ("needed Haskell value of type " ++ t)
 fromHaskell' t _ = error ("needed haskell value of type " ++ t)
 
-list :: MonadIO m => [Value] -> m Value
-list = list' . V.fromList
-
-list' :: MonadIO m => V.Vector Value -> m Value
-list' = liftM List . liftIO . newIORef
+list :: [Value] -> Value
+list = List . V.fromList
 
 fromText :: T.Text -> String
 fromText = T.unpack
 
 fromList :: MonadIO m => Value -> m [Value]
-fromList (List vr) = liftM V.toList (liftIO (readIORef vr))
+fromList (List vr) = return $ V.toList vr
 fromList v = error $ "no fromList for: " ++ show v
 
 single :: String -> Value -> Message

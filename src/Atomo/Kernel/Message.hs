@@ -28,4 +28,4 @@ load = do
 
     [$p|(m: Message) targets|] =: do
         Message (Keyword { mTargets = ts }) <- here "m" >>= findMessage
-        list ts
+        return $ list ts

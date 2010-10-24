@@ -57,7 +57,7 @@ load = do
 
     [$p|(e: Expression) targets|] =: do
         Expression (Dispatch _ (EKeyword { emTargets = vs })) <- here "e" >>= findExpression
-        list (map Expression vs)
+        return $ list (map Expression vs)
 
     [$p|(e: Expression) name|] =: do
         Expression (EParticle _ (EPMSingle n)) <- here "e" >>= findExpression
@@ -65,18 +65,18 @@ load = do
 
     [$p|(e: Expression) names|] =: do
         Expression (EParticle _ (EPMKeyword ns _)) <- here "e" >>= findExpression
-        list (map string ns)
+        return $ list (map string ns)
 
     [$p|(e: Expression) values|] =: do
         Expression (EParticle _ (EPMKeyword _ mes)) <- here "e" >>= findExpression
-        list $
+        return . list $
             map
                 (maybe (particle "none") (keyParticle ["ok"] . ([Nothing] ++) . (:[]). Just . Expression))
                 mes
 
     [$p|(e: Expression) contents|] =: do
         Expression (EList _ es) <- here "e" >>= findExpression
-        list (map Expression es)
+        return $ list (map Expression es)
 
     [$p|(e: Expression) pattern|] =: do
         Expression e <- here "e" >>= findExpression

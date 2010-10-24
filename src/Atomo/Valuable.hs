@@ -37,12 +37,12 @@ instance Valuable Int where
     fromValue (Integer i) = return (fromIntegral i)
 
 instance Valuable a => Valuable [a] where
-    toValue xs = mapM toValue xs >>= list
-    fromValue (List v) = liftIO (readIORef v) >>= mapM fromValue . V.toList
+    toValue xs = mapM toValue xs >>= return . list
+    fromValue (List v) = mapM fromValue (V.toList v)
 
 instance Valuable a => Valuable (V.Vector a) where
-    toValue xs = V.mapM toValue xs >>= list'
-    fromValue (List v) = liftIO (readIORef v) >>= V.mapM fromValue
+    toValue xs = V.mapM toValue xs >>= return . List
+    fromValue (List v) = V.mapM fromValue v
 
 instance Valuable T.Text where
     toValue = return . String

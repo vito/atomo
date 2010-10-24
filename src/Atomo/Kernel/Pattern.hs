@@ -25,7 +25,7 @@ load = do
         Pattern p <- here "p" >>= findPattern
 
         case p of
-            PKeyword { ppNames = ns } -> list (map string ns)
+            PKeyword { ppNames = ns } -> return $ list (map string ns)
             _ -> raise ["no-names-for"] [Pattern p]
 
     [$p|(p: Pattern) target|] =: do
@@ -39,7 +39,7 @@ load = do
         Pattern p <- here "p" >>= findPattern
 
         case p of
-            PKeyword { ppTargets = ts } -> list (map Pattern ts)
+            PKeyword { ppTargets = ts } -> return $ list (map Pattern ts)
             _ -> raise ["no-targets-for"] [Pattern p]
 
     [$p|(p: Pattern) matches?: v|] =: do

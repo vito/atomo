@@ -10,7 +10,7 @@ import Atomo
 load :: VM ()
 load = do
     [$p|(s: String) as: List|] =:
-        getString [$e|s|] >>= list . map Char
+        getString [$e|s|] >>= return . list . map Char
 
     [$p|(l: List) to-string|] =: do
         vs <- getList [$e|l|]
@@ -103,57 +103,57 @@ load = do
     [$p|(s: String) split: (d: String)|] =: do
         s <- getText [$e|s|]
         d <- getText [$e|d|]
-        list (map String (T.split d s))
+        return $ list (map String (T.split d s))
 
     -- TODO: split-by
 
     [$p|(s: String) split-on: (d: Char)|] =: do
         s <- getText [$e|s|]
         Char d <- here "d" >>= findChar
-        list (map String (T.splitBy (== d) s))
+        return $ list (map String (T.splitBy (== d) s))
 
     [$p|(s: String) split-at: (n: Integer)|] =: do
         Integer n <- here "n" >>= findInteger
         s <- getText [$e|s|]
         let (a, b) = T.splitAt (fromIntegral n) s
-        list [String a, String b]
+        return $ list [String a, String b]
 
     [$p|(s: String) break-on: (d: Integer)|] =: do
         s <- getText [$e|s|]
         d <- getText [$e|d|]
         let (a, b) = T.break d s
-        list [String a, String b]
+        return $ list [String a, String b]
 
     [$p|(s: String) break-end: (d: Integer)|] =: do
         s <- getText [$e|s|]
         d <- getText [$e|d|]
         let (a, b) = T.breakEnd d s
-        list [String a, String b]
+        return $ list [String a, String b]
 
     [$p|(s: String) group|] =: do
         s <- getText [$e|s|]
-        list (map String (T.group s))
+        return $ list (map String (T.group s))
 
     [$p|(s: String) inits|] =: do
         s <- getText [$e|s|]
-        list (map String (T.inits s))
+        return $ list (map String (T.inits s))
 
     [$p|(s: String) tails|] =: do
         s <- getText [$e|s|]
-        list (map String (T.tails s))
+        return $ list (map String (T.tails s))
 
     [$p|(s: String) chunks-of: (n: Integer)|] =: do
         Integer n <- here "n" >>= findInteger
         s <- getText [$e|s|]
-        list (map String (T.chunksOf (fromIntegral n) s))
+        return $ list (map String (T.chunksOf (fromIntegral n) s))
 
     [$p|(s: String) lines|] =: do
         s <- getText [$e|s|]
-        list (map String (T.lines s))
+        return $ list (map String (T.lines s))
 
     [$p|(s: String) words|] =: do
         s <- getText [$e|s|]
-        list (map String (T.words s))
+        return $ list (map String (T.words s))
 
     [$p|(l: List) unlines|] =::: [$e|l (map: @(<< '\n')) join|]
     [$p|(l: List) unwords|] =::: [$e|l join: " "|]
@@ -162,13 +162,12 @@ load = do
         s <- getString [$e|s|]
         b <- here "b"
 
-        vs <- forM s $ \c -> do
-            as <- list [Char c]
-            dispatch (keyword ["call"] [b, as])
+        vs <- forM s $ \c ->
+            dispatch (keyword ["call"] [b, list [Char c]])
 
         if all isChar vs
             then return (string (map (\(Char c) -> c) vs))
-            else list vs
+            else return $ list vs
 
     [$p|(s: String) each: (b: Block)|] =::: [$e|{ s map: b in-context; s } call|]
 
@@ -293,8 +292,7 @@ load = do
         y <- getText [$e|y|]
         z <- here "z"
 
-        vs <- forM (T.zip x y) $ \(a, b) -> do
-            as <- list [Char a, Char b]
-            dispatch (keyword ["call"] [z, as])
+        vs <- forM (T.zip x y) $ \(a, b) ->
+            dispatch (keyword ["call"] [z, list [Char a, Char b]])
 
-        list vs
+        return $ list vs

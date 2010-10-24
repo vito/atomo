@@ -237,7 +237,7 @@ eval e = eval' e `catchError` pushStack
             }
     eval' (EList { eContents = es }) = do
         vs <- mapM eval es
-        list vs
+        return (list vs)
     eval' (EParticle { eParticle = EPMSingle n }) =
         return (Particle $ PMSingle n)
     eval' (EParticle { eParticle = EPMKeyword ns mes }) = do
@@ -457,15 +457,12 @@ match ids
     matchAll ids ps ts
 match ids (PNamed _ p) v = match ids p v
 match _ PAny _ = True
-match ids (PList ps) (List v) = matchAll ids ps vs
-  where
-    vs = V.toList $ unsafePerformIO (readIORef v)
-match ids (PHeadTail hp tp) (List v) =
+match ids (PList ps) (List v) = matchAll ids ps (V.toList v)
+match ids (PHeadTail hp tp) (List vs) =
     V.length vs > 0 && match ids hp h && match ids tp t
   where
-    vs = unsafePerformIO (readIORef v)
     h = V.head vs
-    t = List (unsafePerformIO (newIORef (V.tail vs)))
+    t = List (V.tail vs)
 match ids (PHeadTail hp tp) (String t) | not (T.null t) =
     match ids hp (Char (T.head t)) && match ids tp (String (T.tail t))
 match ids (PPMKeyword ans aps) (Particle (PMKeyword bns mvs)) =
@@ -538,15 +535,12 @@ bindings' (PPMKeyword _ ps) (Particle (PMKeyword _ mvs)) = concat
     $ map (\(p, Just v) -> bindings' p v)
     $ filter (isJust . snd)
     $ zip ps mvs
-bindings' (PList ps) (List v) = concat (zipWith bindings' ps vs)
-  where
-    vs = V.toList $ unsafePerformIO (readIORef v)
-bindings' (PHeadTail hp tp) (List v) =
+bindings' (PList ps) (List vs) = concat (zipWith bindings' ps (V.toList vs))
+bindings' (PHeadTail hp tp) (List vs) =
     bindings' hp h ++ bindings' tp t
   where
-    vs = unsafePerformIO (readIORef v)
     h = V.head vs
-    t = List (unsafePerformIO (newIORef (V.tail vs)))
+    t = List (V.tail vs)
 bindings' (PHeadTail hp tp) (String t) | not (T.null t) =
     bindings' hp (Char (T.head t)) ++ bindings' tp (String (T.tail t))
 bindings' _ _ = []
@@ -691,7 +685,7 @@ getList = liftM V.toList . getVector
 getVector :: Expr -> VM (V.Vector Value)
 getVector e = eval e
     >>= findList
-    >>= \(List v) -> liftIO . readIORef $ v
+    >>= \(List v) -> return v
 
 here :: String -> VM Value
 here n = gets top >>= dispatch . (single n)

@@ -13,8 +13,11 @@ load = mapM_ eval [$es|
       { set-default: v
       }
 
+    context define: (name: Particle) as: root :=
+        name define-on: [context] as: (Parameter new: root)
+
     (p: Parameter) show :=
-        "<" .. p _? show .. ">"
+      "<" .. p _? show .. ">"
 
     (p: Parameter) _? := p value: self
 
