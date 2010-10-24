@@ -408,14 +408,16 @@ findMethod v m = do
     o <- liftIO (readIORef r)
     case relevant (is { idMatch = r }) o m of
         Nothing -> findFirstMethod m (oDelegates o)
-        Just mt -> return (Just mt)
+        mt -> return mt
 
 -- | find the first value that has a method defiend for `m'
 findFirstMethod :: Message -> [Value] -> VM (Maybe Method)
 findFirstMethod _ [] = return Nothing
 findFirstMethod m (v:vs) = do
-    findMethod v m
-        >>= maybe (findFirstMethod m vs) (return . Just)
+    r <- findMethod v m
+    case r of
+        Nothing -> findFirstMethod m vs
+        _ -> return r
 
 -- | find a relevant method for message `m' on object `o'
 relevant :: IDs -> Object -> Message -> Maybe Method
@@ -740,7 +742,7 @@ objectFor v = orefFor v >>= liftIO . readIORef
 
 orefFor :: Value -> VM ORef
 {-# INLINE orefFor #-}
-orefFor v = gets primitives >>= \is -> return $ orefFrom is v
+orefFor !v = gets primitives >>= \is -> return $ orefFrom is v
 
 orefFrom :: IDs -> Value -> ORef
 {-# INLINE orefFrom #-}
