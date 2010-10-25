@@ -3,6 +3,7 @@ module Atomo.Kernel.Concurrency (load) where
 
 import Atomo
 import Atomo.Method
+import Atomo.Spawn
 
 
 load :: VM ()

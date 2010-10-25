@@ -1,6 +1,6 @@
 module Atomo.Valuable where
 
-import Control.Monad.Trans (liftIO)
+import "monads-fd" Control.Monad.Trans (liftIO)
 import Data.IORef
 import qualified Data.Text as T
 import qualified Data.Vector as V

@@ -3,18 +3,22 @@
 module Atomo.Kernel.Expression (load) where
 
 import Atomo
+import Atomo.Parser (macroExpand, withParser)
 
 
 load :: VM ()
 load = do
-    [$p|(e: Expression) evaluate|] =: do
-        Expression e <- here "e" >>= findExpression
-        eval e
+    [$p|(e: Expression) evaluate|] =:::
+        [$e|e evaluate-in: dispatch sender|]
 
     [$p|(e: Expression) evaluate-in: t|] =: do
         Expression e <- here "e" >>= findExpression
         t <- here "t"
         withTop t (eval e)
+
+    [$p|(e: Expression) expand|] =: do
+        Expression e <- here "e" >>= findExpression
+        liftM Expression $ withParser (macroExpand e)
 
     [$p|(e: Expression) type|] =: do
         Expression e <- here "e" >>= findExpression
@@ -75,8 +79,8 @@ load = do
                 mes
 
     [$p|(e: Expression) contents|] =: do
-        Expression (EList _ es) <- here "e" >>= findExpression
-        return $ list (map Expression es)
+        Expression e <- here "e" >>= findExpression
+        return $ list (map Expression (eContents e))
 
     [$p|(e: Expression) pattern|] =: do
         Expression e <- here "e" >>= findExpression

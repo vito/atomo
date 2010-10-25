@@ -2,22 +2,21 @@
 {-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.Parser.Base where
 
-import Control.Monad.Identity
 import Data.Char
 import Data.List (nub, sort, (\\))
 import Text.Parsec
 import qualified Text.Parsec.Token as P
 
-import Atomo.Types (Expr(..), Operators)
+import Atomo.Types (Expr(..), ParserState, VM)
 
 
-type Parser = ParsecT String Operators Identity
+type Parser = ParsecT String ParserState VM
 
 
 opLetters :: [Char]
 opLetters = "~!@#$%^&*-_=+./\\|<>?"
 
-def :: P.GenLanguageDef String Operators Identity
+def :: P.GenLanguageDef String ParserState VM
 def = P.LanguageDef
     { P.commentStart = "{-"
     , P.commentEnd = "-}"
@@ -25,14 +24,14 @@ def = P.LanguageDef
     , P.nestedComments = True
     , P.identStart = letter <|> oneOf "_"
     , P.identLetter = alphaNum <|> P.opLetter def
-    , P.opStart = oneOf (opLetters \\ "@_")
+    , P.opStart = oneOf (opLetters \\ "@_~")
     , P.opLetter = letter <|> oneOf opLetters
     , P.reservedOpNames = ["=", ":=", ",", "|", "_"]
-    , P.reservedNames = ["dispatch", "operator", "True", "False"]
+    , P.reservedNames = ["dispatch", "operator", "macro", "True", "False"]
     , P.caseSensitive = True
     }
 
-tp :: P.GenTokenParser String Operators Identity
+tp :: P.GenTokenParser String ParserState VM
 tp = makeTokenParser def
 
 lexeme :: Parser a -> Parser a
@@ -229,7 +228,7 @@ tagged p = do
     r <- p
     return r { eLocation = Just pos }
 
-makeTokenParser :: P.GenLanguageDef String Operators Identity -> P.GenTokenParser String Operators Identity
+makeTokenParser :: P.GenLanguageDef String ParserState VM -> P.GenTokenParser String ParserState VM
 makeTokenParser languageDef
     = P.TokenParser{ P.identifier = identifier
                    , P.reserved = reserved

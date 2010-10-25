@@ -6,6 +6,7 @@ import Data.List ((\\))
 import Data.Maybe (isJust)
 
 import Atomo
+import Atomo.Load
 import Atomo.Method
 import Atomo.Pretty
 

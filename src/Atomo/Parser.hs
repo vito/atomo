@@ -1,13 +1,15 @@
 module Atomo.Parser where
 
 import Control.Arrow (first, second)
-import Control.Monad.Error
-import Control.Monad.Identity
-import Control.Monad.State
+import "monads-fd" Control.Monad.Error
+import "monads-fd" Control.Monad.State
 import Data.Maybe (fromJust, isJust)
 import Text.Parsec
+import qualified "mtl" Control.Monad.Trans as MTL
 
 import Atomo.Debug
+import Atomo.Environment
+import Atomo.Method
 import Atomo.Parser.Base
 import {-# SOURCE #-} Atomo.Parser.Pattern
 import Atomo.Parser.Primitive
@@ -25,6 +27,7 @@ defaultPrec = 5
 pExpr :: Parser Expr
 pExpr = choice
     [ try pOperator
+    , try pMacro
     , try pDefine
     , try pSet
     , try pDispatch
@@ -34,8 +37,49 @@ pExpr = choice
     <?> "expression"
 
 pLiteral :: Parser Expr
-pLiteral = try pBlock <|> try pList <|> try pParticle <|> pPrimitive
+pLiteral = try pBlock <|> try pList <|> try pParticle <|> try pQuoted <|> try pUnquoted <|> pPrimitive
     <?> "literal"
+
+pQuoted :: Parser Expr
+pQuoted = tagged $ do
+    char '`'
+    e <- pSpacedExpr
+    return (EQuote Nothing e)
+
+pUnquoted :: Parser Expr
+pUnquoted = tagged $ do
+    char '~'
+    e <- pSpacedExpr
+    return (EUnquote Nothing e)
+
+pSpacedExpr :: Parser Expr
+pSpacedExpr = try pLiteral <|> simpleDispatch <|> parens pExpr
+  where
+    simpleDispatch = tagged $ do
+        name <- ident
+        notFollowedBy (char ':')
+        return (Dispatch Nothing (esingle name (ETop Nothing)))
+
+pMacro :: Parser Expr
+pMacro = tagged (do
+    reserved "macro"
+    (Define { ePattern = p, eExpr = e }) <- pDefine
+    addMacro p e
+    return (EMacro Nothing p e))
+    <?> "macro definition"
+
+addMacro :: Pattern -> Expr -> Parser ()
+addMacro p e =
+    case p of
+        PSingle {} ->
+            modifyState $ \ps -> ps
+                { psMacros = (addMethod (Macro p e) (fst (psMacros ps)), snd (psMacros ps))
+                }
+
+        PKeyword {} ->
+            modifyState $ \ps -> ps
+                { psMacros = (fst (psMacros ps), addMethod (Macro p e) (snd (psMacros ps)))
+                }
 
 pOperator :: Parser Expr
 pOperator = tagged (do
@@ -55,7 +99,7 @@ pOperator = tagged (do
     ops <- commaSep1 operator
 
     forM_ ops $ \name ->
-        modifyState ((name, info) :)
+        modifyState (\ps -> ps { psOperators = (name, info) : psOperators ps })
 
     return (Operator Nothing ops (fst info) (snd info)))
     <?> "operator pragma"
@@ -112,14 +156,14 @@ pdKeys :: Parser Expr
 pdKeys = do
     pos <- getPosition
     msg <- keywords ekeyword (ETop (Just pos)) (try pdCascade <|> headless)
-    ops <- getState
+    ops <- fmap psOperators getState
     return $ Dispatch (Just pos) (toBinaryOps ops msg)
     <?> "keyword dispatch"
   where
     headless = do
         p <- getPosition
         msg <- ckeywd p
-        ops <- getState
+        ops <- fmap psOperators getState
         return (Dispatch (Just p) (toBinaryOps ops msg))
 
     ckeywd pos = do
@@ -231,7 +275,7 @@ cKeyword wc = do
         | all isJust opVals = do
             os <- getState
             pos <- getPosition
-            let msg = toBinaryOps os $ ekeyword opers (map fromJust opVals)
+            let msg = toBinaryOps (psOperators os) $ ekeyword opers (map fromJust opVals)
             return . EPMKeyword nonOpers $
                 partVals ++ [Just $ Dispatch (Just pos) msg]
         | otherwise = fail "invalid particle; toplevel operator with wildcards as values"
@@ -308,30 +352,82 @@ parser = do
     eof
     return es
 
-cparser :: Parser (Operators, [Expr])
+cparser :: Parser (ParserState, [Expr])
 cparser = do
     r <- parser
     s <- getState
     return (s, r)
 
-parseFile :: String -> IO (Either ParseError [Expr])
-parseFile fn = fmap (runIdentity . runParserT parser [] fn) (readFile fn)
+parseFile :: String -> VM [Expr]
+parseFile fn = liftIO (readFile fn) >>= continue (parser >>= mapM macroExpand) fn
 
-parseInput :: String -> Either ParseError [Expr]
-parseInput = runIdentity . runParserT parser [] "<input>"
+parseInput :: String -> VM [Expr]
+parseInput s = continue (parser >>= mapM macroExpand) "<input>" s
 
-parse :: Parser a -> String -> Either ParseError a
-parse p = runIdentity . runParserT p [] "<parse>"
+{-parse :: Parser a -> String -> VM a-}
+{-parse p s = continue p "<parse>" s >>= macroExpand-}
+
+continue :: Parser a -> String -> String -> VM a
+continue p s i = do
+    ps <- gets parserState
+    r <- runParserT (p >>= \r -> getState >>= \ps -> return (r, ps)) ps s i
+    case r of
+        Left e -> throwError (ParseError e)
+        Right (ok, ps') -> do
+            modify $ \e -> e { parserState = ps' }
+            return ok
 
 -- | parse input i from source s, maintaining parser state between parses
 continuedParse :: String -> String -> VM [Expr]
-continuedParse i s = do
-    ps <- gets parserState
-    case runIdentity (runParserT cparser ps s i) of
-        Left e -> throwError (ParseError e)
-        Right (ps', es) -> do
-            modify $ \e -> e { parserState = ps' }
-            return es
+continuedParse i s = continue parser s i
 
-continuedParseFile :: FilePath -> VM [Expr]
-continuedParseFile fn = liftIO (readFile fn) >>= flip continuedParse fn
+withParser :: Parser a -> VM a
+withParser x = continue x "<internal>" ""
+
+macroExpand :: Expr -> Parser Expr
+macroExpand d@(Define { eExpr = e }) = do
+    e' <- macroExpand e
+    return d { eExpr = e' }
+macroExpand s@(Set { eExpr = e }) = do
+    e' <- macroExpand e
+    return s { eExpr = e' }
+macroExpand d@(Dispatch { eMessage = em }) = do
+    ms <- liftM psMacros getState
+    case em of
+        ESingle i n t ->
+            case lookupMap i (fst ms) of
+                Nothing -> do
+                    nt <- macroExpand t
+                    return d { eMessage = em { emTarget = nt } }
+                Just (m:_) -> do
+                    Expression e <- MTL.lift $ runMethod m (Single i n (Expression t))
+                    macroExpand e
+        EKeyword i ns ts ->
+            case lookupMap i (snd ms) of
+                Nothing -> do
+                    nts <- mapM macroExpand ts
+                    return d { eMessage = em { emTargets = nts } }
+                Just (m:_) -> do
+                    Expression e <- MTL.lift $ runMethod m (Keyword i ns (map Expression ts))
+                    macroExpand e
+macroExpand b@(EBlock { eContents = es }) = do
+    nes <- mapM macroExpand es
+    return b { eContents = nes }
+macroExpand l@(EList { eContents = es }) = do
+    nes <- mapM macroExpand es
+    return l { eContents = nes }
+macroExpand m@(EMacro { eExpr = e }) = do -- TODO: is this sane?
+    e' <- macroExpand e
+    return m { eExpr = e' }
+macroExpand p@(EParticle { eParticle = ep }) =
+    case ep of
+        EPMKeyword ns mes -> do
+            nmes <- forM mes $ \me ->
+                case me of
+                    Nothing -> return Nothing
+                    Just e -> liftM Just (macroExpand e)
+
+            return p { eParticle = EPMKeyword ns nmes }
+
+        _ -> return p
+macroExpand e = return e

@@ -13,10 +13,10 @@ module Atomo
 
 import Control.Concurrent
 import Control.Monad
-import Control.Monad.Cont (MonadCont(..), ContT(..))
-import Control.Monad.Error (MonadError(..), ErrorT(..))
-import Control.Monad.State (MonadState(..), StateT(..), evalStateT, gets, modify)
-import Control.Monad.Trans
+import "monads-fd" Control.Monad.Cont (MonadCont(..), ContT(..))
+import "monads-fd" Control.Monad.Error (MonadError(..), ErrorT(..))
+import "monads-fd" Control.Monad.State (MonadState(..), StateT(..), evalStateT, gets, modify)
+import "monads-fd" Control.Monad.Trans
 
 import Atomo.Environment
 import Atomo.QuasiQuotes

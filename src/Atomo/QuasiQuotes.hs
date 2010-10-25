@@ -5,18 +5,27 @@ module Atomo.QuasiQuotes
     , es
     ) where
 
-import Control.Monad.Identity (runIdentity)
+import "monads-fd" Control.Monad.State
+import Data.IORef
+import Data.Typeable
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
+import System.IO.Unsafe
 import Text.Parsec
 import qualified Data.Text as T
 import qualified Language.Haskell.TH as TH
 
+import Atomo.Core
 import Atomo.Parser
 import Atomo.Parser.Pattern
 import Atomo.Parser.Base
+import Atomo.Pretty
 import Atomo.Types
 
+qqEnv :: IORef Env
+qqEnv = unsafePerformIO $ do
+    (_, e) <- runVM (initCore >> return (particle "ok")) startEnv
+    newIORef e
 
 p :: QuasiQuoter
 p = QuasiQuoter quotePatternExp undefined
@@ -37,12 +46,20 @@ withLocation p c s = do
         )
     return (c r)
 
-parsing :: Monad m => Parser a -> String -> (String, Int, Int) -> m a
+parsing :: (Monad m, Typeable a) => Parser a -> String -> (String, Int, Int) -> m a
 parsing p s (file, line, col) =
-    case runIdentity (runParserT pp [] "<qq>" s) of
-        Left e -> fail (show e)
-        Right e -> return e
+    -- OH GOD!
+    -- OH GOD! NO!
+    -- WHYYYYYYYYYYYYYYYYYYYYYY
+    case unsafePerformIO (runWith go (unsafePerformIO (readIORef qqEnv))) of
+        Left e -> fail (show $ pretty e)
+        Right x -> return (fromHaskell' "a" x)
   where
+    go = do
+        r <- fmap haskell $ continue pp "<qq>" s
+        get >>= liftIO . writeIORef qqEnv
+        return r
+
     pp = do
         pos <- getPosition
         setPosition $
@@ -82,6 +99,12 @@ exprToExp (ETop l) =
     expr "ETop" l
 exprToExp (EParticle l p) =
     AppE (expr "EParticle" l) (eparticleToExp p)
+exprToExp (EMacro l p e) =
+    AppE (AppE (expr "EMacro" l) (patternToExp p)) (exprToExp e)
+exprToExp (EQuote l e) =
+    AppE (expr "EQuote" l) (exprToExp e)
+exprToExp (EUnquote l e) =
+    AppE (expr "EUnquote" l) (exprToExp e)
 
 assocToExp :: Assoc -> Exp
 assocToExp ALeft = ConE (mkName "ALeft")

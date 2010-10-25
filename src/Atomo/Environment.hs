@@ -1,170 +1,19 @@
 {-# LANGUAGE BangPatterns #-}
 module Atomo.Environment where
 
-import Control.Monad.Cont
-import Control.Monad.Error
-import Control.Monad.State
-import Control.Concurrent (forkIO)
-import Control.Concurrent.Chan
+import "monads-fd" Control.Monad.Cont
+import "monads-fd" Control.Monad.Error
+import "monads-fd" Control.Monad.State
 import Data.IORef
 import Data.List (nub)
 import Data.Maybe (isJust)
-import System.Directory
-import System.FilePath
 import System.IO.Unsafe
 import qualified Data.Text as T
 import qualified Data.Vector as V
-import qualified Language.Haskell.Interpreter as H
-import qualified Text.PrettyPrint as P
 
 import Atomo.Method
-import Atomo.Parser
-import Atomo.Pretty
 import Atomo.Types
-import {-# SOURCE #-} qualified Atomo.Kernel as Kernel
 
-
------------------------------------------------------------------------------
--- Execution ----------------------------------------------------------------
------------------------------------------------------------------------------
-
--- | execute an action in a new thread, initializing the environment and
--- printing a traceback on error
-exec :: VM Value -> IO ()
-exec x = execWith (initEnv >> x) startEnv
-
--- | execute an action in a new thread, printing a traceback on error
-execWith :: VM Value -> Env -> IO ()
-execWith x e = do
-    haltChan <- newChan
-
-    forkIO $ do
-        r <- runWith (go x >> gets halt >>= liftIO >> return (particle "ok")) e
-            { halt = writeChan haltChan ()
-            }
-
-        either
-            (putStrLn . ("WARNING: exited abnormally with: " ++) . show)
-            (\_ -> return ())
-            r
-
-        writeChan haltChan ()
-
-    readChan haltChan
-
--- | execute x, printing an error if there is one
-go :: VM Value -> VM Value
-go x = catchError x (\e -> printError e >> return (particle "ok"))
-
--- | execute x, initializing the environment with initEnv
-run :: VM Value -> IO (Either AtomoError Value)
-run x = runWith (initEnv >> x) startEnv
-
--- | evaluate x with e as the environment
-runWith :: VM Value -> Env -> IO (Either AtomoError Value)
-runWith x e = evalStateT (runContT (runErrorT x) return) e
-
--- | evaluate x with e as the environment
-runVM :: VM Value -> Env -> IO (Either AtomoError Value, Env)
-runVM x e = runStateT (runContT (runErrorT x) return) e
-
--- | print an error, including the previous 10 expressions evaluated
--- with the most recent on the bottom
-printError :: AtomoError -> VM ()
-printError err = do
-    t <- traceback
-
-    if not (null t)
-        then do
-            liftIO (putStrLn "traceback:")
-
-            forM_ t $ \e -> liftIO $
-                print (prettyStack e)
-
-            liftIO (putStrLn "")
-        else return ()
-
-    prettyError err >>= liftIO . print
-
-    modify $ \s -> s { stack = [] }
-  where
-    traceback = liftM (reverse . take 10 . reverse) (gets stack)
-
-prettyError :: AtomoError -> VM P.Doc
-prettyError (Error v) = liftM (P.text "error:" P.<+>) (prettyVM v)
-prettyError e = return (pretty e)
-
--- | pretty-print by sending \@show to the object
-prettyVM :: Value -> VM P.Doc
-prettyVM = liftM (P.text . fromText . fromString) . dispatch . (single "show")
-
--- | spawn a process to execute x. returns the Process.
-spawn :: VM Value -> VM Value
-spawn x = do
-    e <- get
-    chan <- liftIO newChan
-    tid <- liftIO . forkIO $ do
-        runWith (go x >> return (particle "ok")) (e { channel = chan })
-        return ()
-
-    return (Process chan tid)
-
--- | set up the primitive objects, etc.
-initEnv :: VM ()
-{-# INLINE initEnv #-}
-initEnv = do
-    -- the very root object
-    object <- newObject id
-
-    -- top scope is a proto delegating to the root object
-    topObj <- newObject $ \o -> o { oDelegates = [object] }
-    modify $ \e -> e { top = topObj }
-
-    -- Lobby is the very bottom scope object
-    define (psingle "Lobby" PThis) (Primitive Nothing topObj)
-
-    -- define Object as the root object
-    define (psingle "Object" PThis) (Primitive Nothing object)
-    modify $ \e -> e
-        { primitives = (primitives e) { idObject = rORef object }
-        }
-
-    -- this thread's channel
-    chan <- liftIO newChan
-    modify $ \e -> e { channel = chan }
-
-    -- define primitive objects
-    forM_ primObjs $ \(n, f) -> do
-        o <- newObject $ \o -> o { oDelegates = [object] }
-        define (psingle n PThis) (Primitive Nothing o)
-        modify $ \e -> e { primitives = f (primitives e) (rORef o) }
-
-    Kernel.load
-  where
-    primObjs =
-        [ ("Block", \is r -> is { idBlock = r })
-        , ("Boolean", \is r -> is { idBoolean = r })
-        , ("Char", \is r -> is { idChar = r })
-        , ("Continuation", \is r -> is { idContinuation = r })
-        , ("Double", \is r -> is { idDouble = r })
-        , ("Expression", \is r -> is { idExpression = r })
-        , ("Haskell", \is r -> is { idHaskell = r })
-        , ("Integer", \is r -> is { idInteger = r })
-        , ("List", \is r -> is { idList = r })
-        , ("Message", \is r -> is { idMessage = r })
-        , ("Method", \is r -> is { idMethod = r })
-        , ("Particle", \is r -> is { idParticle = r })
-        , ("Process", \is r -> is { idProcess = r })
-        , ("Pattern", \is r -> is { idPattern = r })
-        , ("Rational", \is r -> is { idRational = r })
-        , ("String", \is r -> is { idString = r })
-        ]
-
-
-
------------------------------------------------------------------------------
--- General ------------------------------------------------------------------
------------------------------------------------------------------------------
 
 -- | evaluation
 eval :: Expr -> VM Value
@@ -216,7 +65,13 @@ eval e = eval' e `catchError` pushStack
         dispatch (Keyword i ns vs)
     eval' (Operator { eNames = ns, eAssoc = a, ePrec = p }) = do
         forM_ ns $ \n -> modify $ \s ->
-            s { parserState = (n, (a, p)) : parserState s }
+            s
+                { parserState =
+                    (parserState s)
+                        { psOperators =
+                            (n, (a, p)) : psOperators (parserState s)
+                        }
+                }
 
         return (particle "ok")
     eval' (Primitive { eValue = v }) = return v
@@ -238,6 +93,21 @@ eval e = eval' e `catchError` pushStack
     eval' (EList { eContents = es }) = do
         vs <- mapM eval es
         return (list vs)
+    eval' (EMacro { ePattern = p, eExpr = e }) = do
+        ps <- gets parserState
+        modify $ \s -> s
+            { parserState = ps
+                { psMacros =
+                    case p of
+                        PSingle {} ->
+                            (addMethod (Macro p e) (fst (psMacros ps)), snd (psMacros ps))
+
+                        PKeyword {} ->
+                            (fst (psMacros ps), addMethod (Macro p e) (snd (psMacros ps)))
+                }
+            }
+
+        return (particle "ok")
     eval' (EParticle { eParticle = EPMSingle n }) =
         return (Particle $ PMSingle n)
     eval' (EParticle { eParticle = EPMKeyword ns mes }) = do
@@ -246,6 +116,62 @@ eval e = eval' e `catchError` pushStack
         return (Particle $ PMKeyword ns mvs)
     eval' (ETop {}) = gets top
     eval' (EVM { eAction = x }) = x
+    eval' (EUnquote { eExpr = e' }) = raise ["out-of-quote"] [Expression e']
+    eval' (EQuote { eExpr = qe }) = do
+        unquoted <- unquote 0 qe
+        return (Expression unquoted)
+      where
+        unquote :: Int -> Expr -> VM Expr
+        unquote 0 (EUnquote { eExpr = e' }) = do
+            r <- eval e'
+            case r of
+                Expression e'' -> return e''
+                _ -> return (Primitive Nothing r)
+        unquote n u@(EUnquote { eExpr = e' }) = do
+            ne <- unquote (n - 1) e'
+            return (u { eExpr = ne })
+        unquote n d@(Define { eExpr = e' }) = do
+            ne <- unquote n e'
+            return (d { eExpr = ne })
+        unquote n s@(Set { eExpr = e' }) = do
+            ne <- unquote n e'
+            return (s { eExpr = ne })
+        unquote n d@(Dispatch { eMessage = em }) =
+            case em of
+                EKeyword { emTargets = ts } -> do
+                    nts <- mapM (unquote n) ts
+                    return d { eMessage = em { emTargets = nts } }
+
+                ESingle { emTarget = t } -> do
+                    nt <- unquote n t
+                    return d { eMessage = em { emTarget = nt } }
+        unquote n b@(EBlock { eContents = es }) = do
+            nes <- mapM (unquote n) es
+            return b { eContents = nes }
+        unquote n l@(EList { eContents = es }) = do
+            nes <- mapM (unquote n) es
+            return l { eContents = nes }
+        unquote n p@(EParticle { eParticle = ep }) =
+            case ep of
+                EPMKeyword ns mes -> do
+                    nmes <- forM mes $ \me ->
+                        case me of
+                            Nothing -> return Nothing
+                            Just e' -> liftM Just (unquote n e')
+
+                    return p { eParticle = EPMKeyword ns nmes }
+
+                _ -> return p
+        unquote n q@(EQuote { eExpr = e' }) = do
+            ne <- unquote (n + 1) e'
+            return q { eExpr = ne }
+        unquote _ p@(Primitive {}) = return p
+        unquote _ t@(ETop {}) = return t
+        unquote _ v@(EVM {}) = return v
+        unquote _ o@(Operator {}) = return o
+        unquote _ d@(EDispatchObject {}) = return d
+
+        {-unquote _ e' = liftIO (putStrLn ("WARNING: no unquote for " ++ show e')) >> return e'-}
 
 -- | evaluating multiple expressions, returning the last result
 evalAll :: [Expr] -> VM Value
@@ -509,6 +435,14 @@ runMethod (Responder { mPattern = p, mContext = c, mExpr = e }) m = do
         }
 
     withTop nt $ eval e
+runMethod (Macro { mPattern = p, mExpr = e }) m = do
+    t <- gets top
+    nt <- newObject $ \o -> o
+        { oDelegates = [t]
+        , oMethods = (bindings p m, emptyMap)
+        }
+
+    withTop nt $ eval e
 
 -- | evaluate an action in a new scope
 newScope :: VM Value -> VM Value
@@ -758,75 +692,6 @@ orefFrom ids (Pattern _) = idPattern ids
 orefFrom ids (Rational _) = idRational ids
 orefFrom ids (String _) = idString ids
 
--- load a file, remembering it to prevent repeated loading
--- searches with cwd as lowest priority
-requireFile :: FilePath -> VM Value
-requireFile fn = do
-    initialPath <- gets loadPath
-    file <- findFile (initialPath ++ [""]) fn
-
-    alreadyLoaded <- gets ((file `elem`) . loaded)
-    if alreadyLoaded
-        then return (particle "already-loaded")
-        else do
-
-    modify $ \s -> s { loaded = file : loaded s }
-
-    doLoad file
-
--- load a file
--- searches with cwd as highest priority
-loadFile :: FilePath -> VM Value
-loadFile fn = do
-    initialPath <- gets loadPath
-    findFile ("":initialPath) fn >>= doLoad
-
--- execute a file
-doLoad :: FilePath -> VM Value
-doLoad file =
-    case takeExtension file of
-        ".hs" -> do
-            int <- liftIO . H.runInterpreter $ do
-                H.loadModules [file]
-                H.setTopLevelModules ["Main"]
-                H.interpret "load" (H.as :: VM ())
-
-            load <- either (throwError . ImportError) return int
-
-            load
-
-            return (particle "ok")
-
-        _ -> do
-            initialPath <- gets loadPath
-
-            ast <- continuedParseFile file
-
-            modify $ \s -> s
-                { loadPath = [takeDirectory file]
-                }
-
-            r <- evalAll ast
-
-            modify $ \s -> s
-                { loadPath = initialPath
-                }
-
-            return r
-
--- | given a list of paths to search, find the file to load
--- attempts to find the filename with .atomo and .hs extensions
-findFile :: [FilePath] -> FilePath -> VM FilePath
-findFile [] fn = throwError (FileNotFound fn)
-findFile (p:ps) fn = do
-    check <- filterM (liftIO . doesFileExist . ((p </> fn) <.>)) exts
-
-    case check of
-        [] -> findFile ps fn
-        (ext:_) -> liftIO (canonicalizePath $ p </> fn <.> ext)
-  where
-    exts = ["", "atomo", "hs"]
-
 -- | does one value delegate to another?
 delegatesTo :: Value -> Value -> VM Bool
 delegatesTo f t = do
@@ -859,3 +724,4 @@ isA x y = do
         if di
             then return True
             else isA' ds
+

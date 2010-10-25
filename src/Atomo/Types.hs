@@ -1,12 +1,12 @@
-{-# LANGUAGE BangPatterns, TypeSynonymInstances #-}
+{-# LANGUAGE BangPatterns, DeriveDataTypeable, TypeSynonymInstances #-}
 module Atomo.Types where
 
 import Control.Concurrent (ThreadId)
 import Control.Concurrent.Chan
-import Control.Monad.Trans
-import Control.Monad.Cont
-import Control.Monad.Error
-import Control.Monad.State
+import "monads-fd" Control.Monad.Trans
+import "monads-fd" Control.Monad.Cont
+import "monads-fd" Control.Monad.Error
+import "monads-fd" Control.Monad.State
 import Data.Dynamic
 import Data.Hashable (hash)
 import Data.IORef
@@ -39,14 +39,14 @@ data Value
         { rORef :: {-# UNPACK #-} !ORef
         }
     | String { fromString :: !T.Text }
-    deriving Show
+    deriving (Show, Typeable)
 
 data Object =
     Object
         { oDelegates :: !Delegates
         , oMethods :: !(MethodMap, MethodMap) -- singles, keywords
         }
-    deriving Show
+    deriving (Show, Typeable)
 
 data Method
     = Responder
@@ -54,11 +54,15 @@ data Method
         , mContext :: !Value
         , mExpr :: !Expr
         }
+    | Macro
+        { mPattern :: !Pattern
+        , mExpr :: !Expr
+        }
     | Slot
         { mPattern :: !Pattern
         , mValue :: !Value
         }
-    deriving (Eq, Show)
+    deriving (Eq, Show, Typeable)
 
 data Message
     = Keyword
@@ -71,12 +75,12 @@ data Message
         , mName :: String
         , mTarget :: Value
         }
-    deriving (Eq, Show)
+    deriving (Eq, Show, Typeable)
 
 data Particle
     = PMSingle String
     | PMKeyword [String] [Maybe Value]
-    deriving (Eq, Show)
+    deriving (Eq, Show, Typeable)
 
 data AtomoError
     = Error Value
@@ -90,7 +94,7 @@ data AtomoError
     | NoExpressions
     | ValueNotFound String Value
     | DynamicNeeded String
-    deriving Show
+    deriving (Show, Typeable)
 
 -- pattern-matches
 data Pattern
@@ -112,7 +116,7 @@ data Pattern
         , ppTarget :: Pattern
         }
     | PThis
-    deriving Show
+    deriving (Show, Typeable)
 
 -- expressions
 data Expr
@@ -152,6 +156,11 @@ data Expr
         { eLocation :: Maybe SourcePos
         , eContents :: [Expr]
         }
+    | EMacro
+        { eLocation :: Maybe SourcePos
+        , ePattern :: Pattern
+        , eExpr :: Expr
+        }
     | EParticle
         { eLocation :: Maybe SourcePos
         , eParticle :: EParticle
@@ -163,7 +172,15 @@ data Expr
         { eLocation :: Maybe SourcePos
         , eAction :: VM Value
         }
-    deriving Show
+    | EQuote
+        { eLocation :: Maybe SourcePos
+        , eExpr :: Expr
+        }
+    | EUnquote
+        { eLocation :: Maybe SourcePos
+        , eExpr :: Expr
+        }
+    deriving (Show, Typeable)
 
 data EMessage
     = EKeyword
@@ -176,12 +193,12 @@ data EMessage
         , emName :: String
         , emTarget :: Expr
         }
-    deriving (Eq, Show)
+    deriving (Eq, Show, Typeable)
 
 data EParticle
     = EPMSingle String
     | EPMKeyword [String] [Maybe Expr]
-    deriving (Eq, Show)
+    deriving (Eq, Show, Typeable)
 
 -- the evaluation environment
 data Env =
@@ -194,12 +211,13 @@ data Env =
         , loaded :: [FilePath]
         , stack :: [Expr]
         , call :: Call
-        , parserState :: Operators
+        , parserState :: ParserState
         }
+    deriving Typeable
 
 -- operator associativity
 data Assoc = ALeft | ARight
-    deriving (Eq, Show)
+    deriving (Eq, Show, Typeable)
 
 -- meta information for the dispatch
 data Call =
@@ -208,6 +226,7 @@ data Call =
         , callMessage :: Message
         , callContext :: Value
         }
+    deriving (Show, Typeable)
 
 -- a giant record of the objects for each primitive value
 data IDs =
@@ -231,7 +250,18 @@ data IDs =
         , idRational :: ORef
         , idString :: ORef
         }
+    deriving (Show, Typeable)
 
+
+data ParserState =
+    ParserState
+        { psOperators :: Operators
+        , psMacros :: (MethodMap, MethodMap)
+        }
+    deriving (Show, Typeable)
+
+startParserState :: ParserState
+startParserState = ParserState [] (M.empty, M.empty)
 
 -- helper synonyms
 type Operators = [(String, (Assoc, Integer))] -- name -> assoc, precedence
@@ -357,8 +387,16 @@ startEnv = Env
     , loaded = []
     , stack = []
     , call = error "call not set"
-    , parserState = []
+    , parserState = startParserState
     }
+
+-- | evaluate x with e as the environment
+runWith :: VM Value -> Env -> IO (Either AtomoError Value)
+runWith x e = evalStateT (runContT (runErrorT x) return) e
+
+-- | evaluate x with e as the environment
+runVM :: VM Value -> Env -> IO (Either AtomoError Value, Env)
+runVM x e = runStateT (runContT (runErrorT x) return) e
 
 
 -----------------------------------------------------------------------------

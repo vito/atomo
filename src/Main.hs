@@ -1,7 +1,7 @@
 module Main where
 
-import Control.Monad.Cont
-import Control.Monad.Error
+import "monads-fd" Control.Monad.Cont
+import "monads-fd" Control.Monad.Error
 import Data.Char (isSpace)
 import Prelude hiding (catch)
 import System.Console.Haskeline
@@ -10,7 +10,10 @@ import System.Environment (getArgs)
 import System.FilePath
 
 import Atomo.Environment
+import Atomo.Load
 import Atomo.Parser
+import Atomo.PrettyVM
+import Atomo.Run
 import Atomo.Types
 
 

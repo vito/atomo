@@ -154,6 +154,8 @@ instance Pretty Expr where
         brackets . sep . punctuate comma $ map (prettyFrom CList) es
     prettyFrom c (EParticle _ p) = char '@' <> prettyFrom c p
     prettyFrom _ (ETop {}) = text "<top>"
+    prettyFrom _ (EQuote _ e) = char '`' <> parens (pretty e)
+    prettyFrom _ (EUnquote _ e) = char '~' <> parens (pretty e)
 
 
 instance Pretty EMessage where
