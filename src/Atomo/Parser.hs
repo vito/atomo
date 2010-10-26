@@ -387,21 +387,19 @@ macroExpand s@(Set { eExpr = e }) = do
 macroExpand d@(Dispatch { eMessage = em }) = do
     ms <- liftM psMacros getState
     case em of
-        ESingle i n t ->
+        ESingle i n t -> do
+            nt <- macroExpand t
             case lookupMap i (fst ms) of
-                Nothing -> do
-                    nt <- macroExpand t
-                    return d { eMessage = em { emTarget = nt } }
+                Nothing -> return d { eMessage = em { emTarget = nt } }
                 Just (m:_) -> do
-                    Expression e <- MTL.lift $ runMethod m (Single i n (Expression t))
+                    Expression e <- MTL.lift $ runMethod m (Single i n (Expression nt))
                     macroExpand e
-        EKeyword i ns ts ->
+        EKeyword i ns ts -> do
+            nts <- mapM macroExpand ts
             case lookupMap i (snd ms) of
-                Nothing -> do
-                    nts <- mapM macroExpand ts
-                    return d { eMessage = em { emTargets = nts } }
+                Nothing -> return d { eMessage = em { emTargets = nts } }
                 Just (m:_) -> do
-                    Expression e <- MTL.lift $ runMethod m (Keyword i ns (map Expression ts))
+                    Expression e <- MTL.lift $ runMethod m (Keyword i ns (map Expression nts))
                     macroExpand e
 macroExpand b@(EBlock { eContents = es }) = do
     nes <- mapM macroExpand es
