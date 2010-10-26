@@ -12,6 +12,8 @@ load = do
 
     [$p|(action: Block) catch: (recover: Block)|] =:
         catchError (eval [$e|action call|]) $ \err -> do
+            modify $ \s -> s { stack = [] }
+
             recover <- here "recover"
             dispatch (keyword ["call"] [recover, list [asValue err]])
 
@@ -20,6 +22,8 @@ load = do
             (do r <- eval [$e|action call|]
                 eval [$e|cleanup call|]
                 return r) $ \err -> do
+            modify $ \s -> s { stack = [] }
+
             recover <- here "recover"
 
             res <- dispatch (keyword ["call"] [recover, list [asValue err]])
