@@ -47,10 +47,14 @@ load = do
                     then throwError (ParticleArity 1 0)
                     else return . Message . single n $ head vs
 
-    [$p|(p: Particle) define-on: (targets: List) as: v|] =: do
+    [$p|(p: Particle) define-on: (targets: List) as: v|] =:::
+        [$e|p define-on: targets as: v in: sender|]
+
+    [$p|(p: Particle) define-on: (targets: List) as: v in: c|] =: do
         Particle p <- here "p" >>= findParticle
         vs <- getList [$e|targets|]
         v <- here "v"
+        c <- here "c"
 
         let targets =
                 map (\v ->
@@ -62,9 +66,7 @@ load = do
                     Expression e -> e
                     _ -> Primitive Nothing v
 
-        s <- here "sender"
-
-        withTop s $ do
+        withTop c $ do
             case p of
                 PMKeyword ns _ ->
                     define (pkeyword ns targets) expr

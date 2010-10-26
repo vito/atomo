@@ -7,7 +7,7 @@ macro x match: ts :=
       { pair |
         [p, e] = pair targets
         @match-on: define-on: [obj, p as: Pattern] as:
-          `({ delegates-to: sender; ~e } call)
+          `({ delegates-to: sender; ~e } call) in: Lobby
       }
 
     `(~obj match-on: ~x)
