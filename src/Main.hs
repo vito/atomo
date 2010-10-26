@@ -81,23 +81,21 @@ repl quiet = do
 
             Nothing -> askQuit (repl' input r)
       where
-        evaluate expr =
-            continuedParse (input ++ expr) "<input>"
-                >>= evalAll
+        evaluate expr = parseInput (input ++ expr) >>= evalAll
 
         prompt
             | quiet = ""
             | null input = "> "
             | otherwise = ". "
 
-    askQuit continue = do
+    askQuit c = do
         r <- liftIO . runInputT defaultSettings $
             getInputChar "really quit? (y/n) "
 
         case r of
             Just 'y' -> return (particle "ok")
-            Just 'n' -> continue
-            _ -> askQuit continue
+            Just 'n' -> c
+            _ -> askQuit c
 
     bracesBalanced s = hangingBraces s == 0
       where
