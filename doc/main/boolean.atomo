@@ -20,7 +20,7 @@
     | b is-a?: Boolean
     > in?: [True, False]
 }body:{
-    Test whether #atomo:a and #atomo:b are both #atomo:True.
+    Test whether #atomo:a and #atomo:b are both #atomo:True. This is actually a macro which calls the short-circuiting #atomo:(and:).
 
     #example:({
         True && False
@@ -34,7 +34,12 @@
     | b is-a?: Boolean
     > in?: [True, False]
 }body:{
-    Test if either #atomo:a or #atomo:b are #atomo:True.
+    Test if either #atomo:a or #atomo:b are #atomo:True. This is actually a macro which calls the short-circuiting #atomo:(or:).
+
+    #example:({
+        True || False
+        (1 == 1) || ('a' /= 'b')
+    })
 }
 
 #define:{
@@ -125,6 +130,8 @@
     Similar to Scheme's #code:{cond}, this construct takes a block pairing tests with their branch, and goes through each pairing until a test yields #atomo:True, in which case it evaluates the expression that test was associated with.
 
     If no branches yield #atomo:True, #atomo:@no-true-branches is raised.
+
+    NOTE: #italic:{This is a macro which expands to chained #atomo:(if:then:else:) dispatches.}
 
     #example:({
         condition: { False -> "Hello!" print; True -> "Goodbye!" print }

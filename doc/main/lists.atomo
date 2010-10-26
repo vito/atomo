@@ -4,20 +4,11 @@
     List
     > Object
 }body:{
-    Lists are mutable, growable vectors of arbitrary values.
+    Lists are immutable, growable vectors of arbitrary values.
 
     #example-segment:({
         [1, '2', "three", 4]
         []
-    })
-    
-    Like objects, they are reference values:
-
-    #example:({
-        a = [1, 2]
-        b = a
-        b << 3
-        a
     })
 }
 
@@ -44,13 +35,6 @@
         [] empty?
         [1, 2, 3] empty?
     })
-}
-
-#define:{
-    l copy
-    > List
-}body:{
-    Returns a new #atomo:List with the same contents as #atomo:l.
 }
 
 #define:{
@@ -534,7 +518,7 @@
     | l is-a?: List
     > List
 }body:{
-    Pushes a value onto the end of a list, updating it in-place.
+    Pushes a value onto the end of a list.
 
     #example:({
         a = [1, 2, 3]
@@ -548,25 +532,11 @@
     | l is-a?: List
     > List
 }body:{
-    Pushes a value onto the front of a list, updating it in-place.
+    Pushes a value onto the front of a list. Same as #atomo:(.).
 
     #example:({
         a = [1, 2, 3]
         4 >> a
-        a
-    })
-}
-
-#define:{
-    l pop!
-    | l is-a?: List
-    > List
-}body:{
-    Removes the first value of a list, updating it in-place and returning the popped value. If the list is empty, #atomo:(@empty-list) is raised.
-
-    #example:({
-        a = [1, 2, 3]
-        a pop!
         a
     })
 }

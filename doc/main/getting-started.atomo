@@ -85,13 +85,12 @@ As you can see, first we set #atomo:b to #atomo:[1, 2], and then we immediately 
 
 #section:{Lexical Scoping via Delegation}
 
-You'll notice earlier I used the term #italic:{top-level object} for describing the scope of the #atomo:a definition. This is the entirety of Atomo's scoping system. It's objects all the way down. The nearest lexical scope to a point in your code (henceforth called the #italic:{top-level} or #italic:{top}) is simply an object that delegates down the chain to the surrounding scope, and so on and son on until it hits rock #italic:{bottom} - #atomo:Object.
+You'll notice earlier I used the term #italic:{top-level object} for describing the scope of the #atomo:a definition. This is the entirety of Atomo's scoping system. It's objects all the way down. The nearest lexical scope to a point in your code (henceforth called the #italic:{top-level} or #italic:{top}) is simply an object that delegates down the chain to the surrounding scope, and so on and son on until it hits rock #italic:{bottom} - #atomo:Object. You can jump back to the context of your method dispatch via #atomo:sender.
 
-This brings you tons of delicious dynamic power, because scopes are simply objects - first-class values. With that, there's a handy dandy keyword that can be used to get all sorts of meta-information about the circumstances of a dispatch - aptly named, #atomo:(dispatch)! Want to see what a method is in the context in which your method was called? Use #atomo:(dispatch sender). Just send a message to that and you'll get a reply from the sender of the message that found your method. This is exactly how I/O works in Atomo - #atomo:print and #atomo:read-line use #atomo:(dispatch sender current-output-port) and #atomo:current-input-port for determining the port to read/write with.
 
 #interaction:({
     x = 1
-    foo := ("x is: " .. dispatch sender x show) print
+    foo := ("x is: " .. sender x show) print
     foo
     { x = 42; foo } call
     x
