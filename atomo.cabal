@@ -101,7 +101,8 @@ library
     Atomo.Kernel.Time,
     Atomo.Kernel.Exception,
     Atomo.Kernel.Environment,
-    Atomo.Kernel.Continuation
+    Atomo.Kernel.Continuation,
+    Paths_atomo
 
 
 executable atomo
