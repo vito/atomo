@@ -57,6 +57,12 @@ load = do
 
                 return (keyParticle ["yes"] [Nothing, Just o])
             else return (particle "no")
+
+    [$p|(p: Pattern) set-to: v|] =: do
+        Pattern p <- here "p" >>= findPattern
+        v <- here "v"
+        s <- eval [$e|sender|]
+        withTop s (set p v)
   where
     -- convert an expression to the pattern match it represents
     toPattern (Dispatch { eMessage = EKeyword { emNames = ["."], emTargets = [h, t] } }) = do

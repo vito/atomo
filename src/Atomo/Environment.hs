@@ -36,15 +36,7 @@ eval e = eval' e `catchError` pushStack
         return v
     eval' (Set { ePattern = p, eExpr = ev }) = do
         v <- eval ev
-
-        is <- gets primitives
-        if match is p v
-            then do
-                forM_ (bindings' p v) $ \(p', v') -> do
-                    define p' (Primitive (eLocation ev) v')
-
-                return v
-            else throwError (Mismatch p v)
+        set p v
     eval' (Dispatch
             { eMessage = ESingle
                 { emID = i
@@ -246,6 +238,17 @@ define !p !e = do
         PSingle i n (setSelf o t)
     setSelf _ p' = p'
 
+
+set :: Pattern -> Value -> VM Value
+set p v = do
+    is <- gets primitives
+    if match is p v
+        then do
+            forM_ (bindings' p v) $ \(p', v') -> do
+                define p' (Primitive Nothing v')
+
+            return v
+        else throwError (Mismatch p v)
 
 -- | find the target objects for a pattern
 targets :: IDs -> Pattern -> VM [ORef]
