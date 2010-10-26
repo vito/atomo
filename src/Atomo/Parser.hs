@@ -81,6 +81,8 @@ addMacro p e =
                 { psMacros = (fst (psMacros ps), addMethod (Macro p e) (snd (psMacros ps)))
                 }
 
+        _ -> error $ "impossible: addMacro: p is " ++ show p
+
 pOperator :: Parser Expr
 pOperator = tagged (do
     reserved "operator"
@@ -246,11 +248,11 @@ cKeyword wc = do
         | otherwise = value
 
     keywordDispatch
-        | wc = wildcard <|> dispatch
-        | otherwise = dispatch
+        | wc = wildcard <|> disp
+        | otherwise = disp
 
     value = fmap Just pdCascade
-    dispatch = fmap Just pDispatch
+    disp = fmap Just pDispatch
 
     keyword' = do
         name <- try (do
@@ -363,7 +365,7 @@ parseInput s = continue (parser >>= mapM macroExpand) "<input>" s
 continue :: Parser a -> String -> String -> VM a
 continue p s i = do
     ps <- gets parserState
-    r <- runParserT (p >>= \r -> getState >>= \ps -> return (r, ps)) ps s i
+    r <- runParserT (p >>= \r -> getState >>= \ps' -> return (r, ps')) ps s i
     case r of
         Left e -> throwError (ParseError e)
         Right (ok, ps') -> do

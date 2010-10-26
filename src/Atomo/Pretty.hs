@@ -50,6 +50,7 @@ instance Pretty Value where
     prettyFrom _ (Message m) = internal "message" $ pretty m
     prettyFrom _ (Method (Slot p _)) = internal "slot" $ parens (pretty p)
     prettyFrom _ (Method (Responder p _ _)) = internal "responder" $ parens (pretty p)
+    prettyFrom _ (Method (Macro p _)) = internal "macro" $ parens (pretty p)
     prettyFrom _ (Particle p) = char '@' <> pretty p
     prettyFrom _ (Pattern p) = internal "pattern" $ pretty p
     prettyFrom _ (Process _ tid) =
@@ -81,6 +82,8 @@ instance Pretty Object where
             prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v
         prettyMethod (Responder { mPattern = p, mExpr = e }) =
             prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine e
+        prettyMethod (Macro { mPattern = p, mExpr = e }) =
+            text "macro" <+> prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine e
 
 instance Pretty Message where
     prettyFrom _ (Single _ n t) = prettyFrom CSingle t <+> text n
@@ -151,6 +154,7 @@ instance Pretty Expr where
     prettyFrom _ (EVM {}) = text "<vm>"
     prettyFrom _ (EList _ es) =
         brackets . sep . punctuate comma $ map (prettyFrom CList) es
+    prettyFrom _ (EMacro _ p v) = text "macro" <+> prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v
     prettyFrom c (EParticle _ p) = char '@' <> prettyFrom c p
     prettyFrom _ (ETop {}) = text "<top>"
     prettyFrom _ (EQuote _ e) = char '`' <> parens (pretty e)

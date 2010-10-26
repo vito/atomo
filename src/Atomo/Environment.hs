@@ -73,17 +73,19 @@ eval e = eval' e `catchError` pushStack
     eval' (EList { eContents = es }) = do
         vs <- mapM eval es
         return (list vs)
-    eval' (EMacro { ePattern = p, eExpr = e }) = do
+    eval' (EMacro { ePattern = p, eExpr = e' }) = do
         ps <- gets parserState
         modify $ \s -> s
             { parserState = ps
                 { psMacros =
                     case p of
                         PSingle {} ->
-                            (addMethod (Macro p e) (fst (psMacros ps)), snd (psMacros ps))
+                            (addMethod (Macro p e') (fst (psMacros ps)), snd (psMacros ps))
 
                         PKeyword {} ->
-                            (fst (psMacros ps), addMethod (Macro p e) (snd (psMacros ps)))
+                            (fst (psMacros ps), addMethod (Macro p e') (snd (psMacros ps)))
+
+                        _ -> error $ "impossible: eval EMacro: p is " ++ show p
                 }
             }
 
@@ -131,6 +133,9 @@ eval e = eval' e `catchError` pushStack
         unquote n l@(EList { eContents = es }) = do
             nes <- mapM (unquote n) es
             return l { eContents = nes }
+        unquote n m@(EMacro { eExpr = e' }) = do
+            ne <- unquote n e'
+            return m { eExpr = ne }
         unquote n p@(EParticle { eParticle = ep }) =
             case ep of
                 EPMKeyword ns mes -> do

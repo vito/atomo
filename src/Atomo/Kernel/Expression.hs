@@ -31,7 +31,10 @@ load = do
             EBlock {} -> return (particle "block")
             EVM {} -> return (particle "vm")
             EList {} -> return (particle "list")
+            EMacro {} -> return (particle "macro")
             ETop {} -> return (particle "top")
+            EQuote {} -> return (particle "quote")
+            EUnquote {} -> return (particle "unquote")
             EParticle {} -> return (particle "particle")
 
     [$p|(e: Expression) dispatch-type|] =: do
