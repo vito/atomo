@@ -39,35 +39,3 @@ load = do
     [$p|(b: Block) contents|] =: do
         Block _ _ es <- here "b" >>= findBlock
         return $ list (map Expression es)
-
-    prelude
-
-
-prelude :: VM ()
-prelude = mapM_ eval [$es|
-    (b: Block) repeat :=
-      { b in-context call
-        b repeat
-      } call
-
-    (b: Block) in-context :=
-      b clone do:
-        { call := b context join: b
-          call: vs := b context join: b with: vs
-        }
-
-    (a: Block) .. (b: Block) :=
-      Block new: (a contents .. b contents) in: dispatch sender
-
-    (start: Integer) to: (end: Integer) by: (diff: Integer) do: b :=
-      (start to: end by: diff) each: b
-
-    (start: Integer) up-to: (end: Integer) do: b :=
-      start to: end by: 1 do: b
-
-    (start: Integer) down-to: (end: Integer) do: b :=
-      start to: end by: -1 do: b
-
-    (n: Integer) times: (b: Block) :=
-      1 up-to: n do: b in-context
-|]

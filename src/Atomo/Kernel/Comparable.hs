@@ -143,8 +143,6 @@ load = do
                         _ -> return $ Boolean False) avs bvs
                 return $ Boolean (all (== Boolean True) eqs)
             _ -> return $ Boolean False
-
-    prelude
   where
     primII f = do
         Integer a <- here "a" >>= findInteger
@@ -190,14 +188,3 @@ load = do
         Rational a <- here "a" >>= findRational
         Integer b <- here "b" >>= findInteger
         return (Boolean $ f a (toRational b))
-
-
-
-prelude :: VM ()
-prelude = mapM_ eval [$es|
-    x max: y :=
-      if: (x > y) then: { x } else: { y }
-
-    x min: y :=
-      if: (x < y) then: { x } else: { y }
-|]

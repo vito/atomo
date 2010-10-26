@@ -1,0 +1,8 @@
+(n: Integer) even? := 2 divides?: n
+(n: Integer) odd? := n even? not
+
+(x: Integer) divides?: (y: Integer) :=
+  (y % x) == 0
+
+(x: Integer) divisible-by?: (y: Integer) :=
+  y divides?: x

@@ -288,27 +288,6 @@ load = do
             Boolean t <- dispatch (keyword ["call"] [cmp, list [a, b]]) >>= findBoolean
             return t) vs
 
-    prelude
-
-
-prelude :: VM ()
-prelude = mapM_ eval [$es|
-    (l: List) each: (b: Block) :=
-      { l map: b in-context
-        l
-      } call
-
-    [] includes?: List := False
-    (x: List) includes?: (y: List) :=
-      if: (x (take: y length) == y)
-        then: { True }
-        else: { x tail includes?: y }
-
-    [] join: List := []
-    [x] join: List := x
-    (x . xs) join: (d: List) :=
-      x .. d .. (xs join: d)
-|]
 
 foldr1MV :: (Value -> Value -> VM Value) -> V.Vector Value -> VM Value
 foldr1MV f vs = foldrMV f (V.last vs) (V.init vs)

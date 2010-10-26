@@ -6,9 +6,12 @@ import "monads-fd" Control.Monad.State
 
 import Atomo.Core
 import Atomo.Environment
+import Atomo.Load
 import Atomo.Spawn (go)
 import Atomo.Types
 import qualified Atomo.Kernel as Kernel
+
+import Paths_atomo
 
 
 -----------------------------------------------------------------------------
@@ -46,4 +49,34 @@ run x = runWith (initEnv >> x) startEnv
 -- | set up the primitive objects, etc.
 initEnv :: VM ()
 {-# INLINE initEnv #-}
-initEnv = initCore >> Kernel.load
+initEnv = initCore >> Kernel.load >> loadPrelude
+
+loadPrelude :: VM ()
+loadPrelude = do
+    forM_ preludes $ \p ->
+        liftIO (getDataFileName ("prelude/" ++ p))
+            >>= loadFile
+
+    here "Eco" >>= dispatch . single "load"
+
+    return ()
+  where
+    preludes =
+        [ "core"
+
+        , "association"
+        , "parameter"
+
+        , "block"
+        , "boolean"
+        , "comparable"
+        , "continuation"
+        , "list"
+        , "numeric"
+        , "particle"
+        , "ports"
+        , "time"
+
+        , "version"
+        , "eco"
+        ]

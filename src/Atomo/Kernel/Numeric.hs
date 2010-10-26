@@ -133,8 +133,6 @@ load = do
     [$p|(a: Integer) % (b: Integer)|] =: primII mod
     [$p|(a: Integer) quotient: (b: Integer)|] =: primII quot
     [$p|(a: Integer) remainder: (b: Integer)|] =: primII rem
-
-    prelude
   where
     primII f = do
         Integer a <- here "a" >>= findInteger
@@ -180,16 +178,3 @@ load = do
         Rational a <- here "a" >>= findRational
         Integer b <- here "b" >>= findInteger
         return (Rational (f a (toRational b)))
-
-
-prelude :: VM ()
-prelude = mapM_ eval [$es|
-    (n: Integer) even? := 2 divides?: n
-    (n: Integer) odd? := n even? not
-
-    (x: Integer) divides?: (y: Integer) :=
-      (y % x) == 0
-
-    (x: Integer) divisible-by?: (y: Integer) :=
-      y divides?: x
-|]

@@ -31,6 +31,8 @@ cabal-version:       >= 1.6
 
 extra-source-files: bin/eco
 
+data-files:         prelude/*.atomo
+
 source-repository   head
     type:           darcs
     location:       http://darcsden.com/alex/atomo
@@ -97,12 +99,8 @@ library
     Atomo.Kernel.Pattern,
     Atomo.Kernel.Ports,
     Atomo.Kernel.Time,
-    Atomo.Kernel.Boolean,
-    Atomo.Kernel.Association,
-    Atomo.Kernel.Parameter,
     Atomo.Kernel.Exception,
     Atomo.Kernel.Environment,
-    Atomo.Kernel.Eco,
     Atomo.Kernel.Continuation
 
 

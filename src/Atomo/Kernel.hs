@@ -23,12 +23,8 @@ import qualified Atomo.Kernel.Particle as Particle
 import qualified Atomo.Kernel.Pattern as Pattern
 import qualified Atomo.Kernel.Ports as Ports
 import qualified Atomo.Kernel.Time as Time
-import qualified Atomo.Kernel.Boolean as Boolean
-import qualified Atomo.Kernel.Association as Association
-import qualified Atomo.Kernel.Parameter as Parameter
 import qualified Atomo.Kernel.Exception as Exception
 import qualified Atomo.Kernel.Environment as Environment
-import qualified Atomo.Kernel.Eco as Eco
 import qualified Atomo.Kernel.Continuation as Continuation
 
 load :: VM ()
@@ -155,9 +151,6 @@ load = do
         joinWith v b as
 
 
-    Association.load
-    Boolean.load
-    Parameter.load
     Numeric.load
     List.load
     String.load
@@ -173,33 +166,8 @@ load = do
     Time.load
     Exception.load
     Environment.load
-    Eco.load
     Continuation.load
 
-    prelude
-
-
-prelude :: VM ()
-prelude = mapM_ eval [$es|
-    v match: (b: Block) :=
-      if: b contents empty?
-          then: { raise: @(no-matches-for: v) }
-          else: {
-            es = b contents
-            [p, e] = es head targets
-
-            match = (p as: Pattern) matches?: v
-            if: (match == @no)
-              then: {
-                v match: (Block new: es tail in: b context)
-              }
-              else: {
-                @(yes: bindings) = match
-                bindings delegates-to: b context
-                e evaluate-in: bindings
-              }
-          }
-|]
 
 joinWith :: Value -> Value -> [Value] -> VM Value
 joinWith t (Block s ps bes) as

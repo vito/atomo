@@ -26,9 +26,6 @@ load = do
     [$p|Port standard-output|] =:: soutp
     [$p|Port standard-error|] =:: serrp
 
-    ([$p|current-output-port|] =::) =<< eval [$e|Parameter new: Port standard-output|]
-    ([$p|current-input-port|] =::) =<< eval [$e|Parameter new: Port standard-input|]
-
     [$p|Port new: (fn: String)|] =::: [$e|Port new: fn mode: @read-write|]
     [$p|Port new: (fn: String) mode: (m: Particle)|] =: do
         fn <- getString [$e|fn|]
@@ -48,7 +45,6 @@ load = do
 
         portObj hdl
 
-    [$p|(x: Object) print|] =::: [$e|current-output-port _? print: x|]
     [$p|(p: Port) print: x|] =: do
         x <- here "x"
         hdl <- getHandle [$e|p handle|]
@@ -59,7 +55,6 @@ load = do
         liftIO (hFlush hdl)
         return x
 
-    [$p|(x: Object) display|] =::: [$e|current-output-port _? display: x|]
     [$p|(p: Port) display: x|] =: do
         x <- here "x"
         hdl <- getHandle [$e|p handle|]
@@ -70,7 +65,6 @@ load = do
         liftIO (hFlush hdl)
         return x
 
-    [$p|read|] =::: [$e|current-input-port _? read|]
     [$p|(p: Port) read|] =: do
         h <- getHandle [$e|p handle|]
 
@@ -89,7 +83,6 @@ load = do
             is | all isPrimitive is -> evalAll is
             (i:_) -> return (Expression i)
 
-    [$p|read-line|] =::: [$e|current-input-port _? read-line|]
     [$p|(p: Port) read-line|] =: do
         h <- getHandle [$e|p handle|]
         done <- liftIO (hIsEOF h)
@@ -98,7 +91,6 @@ load = do
             then raise' "end-of-input"
             else liftM String $ liftIO (TIO.hGetLine h)
 
-    [$p|read-char|] =::: [$e|current-input-port _? read-char|]
     [$p|(p: Port) read-char|] =: do
         h <- getHandle [$e|p handle|]
         b <- liftIO (hGetBuffering h)
@@ -108,7 +100,6 @@ load = do
 
         return (Char c)
 
-    [$p|contents|] =::: [$e|current-input-port _? contents|]
     [$p|(p: Port) contents|] =:
         getHandle [$e|p handle|] >>= liftIO . TIO.hGetContents
             >>= return . String
@@ -136,11 +127,9 @@ load = do
     [$p|(p: Port) seekable?|] =:
         getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hIsSeekable
 
-    [$p|ready?|] =::: [$e|current-input-port _? ready?|]
     [$p|(p: Port) ready?|] =:
         getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hReady
 
-    [$p|eof?|] =::: [$e|current-input-port _? eof?|]
     [$p|(p: Port) eof?|] =:
         getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hIsEOF
 
@@ -320,8 +309,6 @@ load = do
         a <- getString [$e|a|]
         b <- getString [$e|b|]
         return (string (a <.> b))
-
-    prelude
   where
     portObj hdl = newScope $ do
         port <- eval [$e|Port clone|]
@@ -380,44 +367,3 @@ load = do
             else do
                 cs <- hGetUntil h x
                 return (c:cs)
-
-
-prelude :: VM ()
-prelude = mapM_ eval [$es|
-    with-output-to: (fn: String) do: b :=
-      { Port (new: fn mode: @write) } wrap: @close do:
-        { file |
-          with-output-to: file do: b
-        }
-
-    with-output-to: (p: Port) do: b :=
-      with: current-output-port as: p do: b
-
-    with-input-from: (fn: String) do: (b: Block) :=
-      { Port (new: fn mode: @read) } wrap: @close do:
-        { file |
-          with-input-from: file do: b
-        }
-
-    with-input-from: (p: Port) do: (b: Block) :=
-        with: current-input-port as: p do: b
-
-
-    with-all-output-to: (fn: String) do: b :=
-      { Port (new: fn mode: @write) } wrap: @close do:
-        { file |
-          with-all-output-to: file do: b
-        }
-
-    with-all-output-to: (p: Port) do: b :=
-        with-default: current-output-port as: p do: b
-
-    with-all-input-from: (fn: String) do: (b: Block) :=
-      { Port (new: fn mode: @read) } wrap: @close do:
-        { file |
-          with-all-input-from: file do: b
-        }
-
-    with-all-input-from: (p: Port) do: (b: Block) :=
-      with-default: current-input-port as: p do: b
-|]

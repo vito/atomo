@@ -1,0 +1,69 @@
+Version = Object clone
+
+(major: Integer) . (minor: Integer) :=
+  Version clone do:
+    { major = major
+      minor = minor
+    }
+
+(major: Integer) . (rest: Version) :=
+  Version clone do:
+    { major = major
+      minor = rest
+    }
+
+(v: Version) show :=
+  v major show .. " . " .. v minor show
+
+(v: Version) as: String :=
+  v major show .. "." .. v minor (as: String)
+
+(s: String) as: Version :=
+  s (split-on: '.') (map: @(as: Integer)) reduce-right: @.
+
+(n: Integer) as: Version := n . 0
+
+(a: Version) == (b: Version) :=
+  (a major == b major) and: { a minor == b minor }
+
+(n: Integer) == (v: Version) :=
+  (n == v major) && (v minor == 0)
+
+(v: Version) == (n: Integer) :=
+  (n == v major) && (v minor == 0)
+
+(a: Version) > (b: Version) :=
+  (a major > b major) or: { a minor > b minor }
+
+(n: Integer) > (v: Version) :=
+  (n > v major) or: { v major == n && (v minor /= 0) }
+
+(v: Version) > (n: Integer) :=
+  (v major > n) or: { v major == n && (v minor /= 0) }
+
+(a: Version) < (b: Version) :=
+  (a major < b major) or: { a minor < b minor }
+
+(n: Integer) < (v: Version) :=
+  (n < v major) or: { v major == n && (v minor /= 0) }
+
+(v: Version) < (n: Integer) :=
+  (v major < n) or: { v major == n && (v minor /= 0) }
+
+(a: Version) >= (b: Version) :=
+  (a major >= b major) or: { a minor >= b minor }
+
+(n: Integer) >= (v: Version) :=
+  n >= v major
+
+(v: Version) >= (n: Integer) :=
+  v major >= n
+
+(a: Version) <= (b: Version) :=
+  (a major <= b major) or: { a minor <= b minor }
+
+(n: Integer) <= (v: Version) :=
+  n <= v major
+
+(v: Version) <= (n: Integer) :=
+  v major <= n

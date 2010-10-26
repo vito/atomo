@@ -7,45 +7,6 @@ import Atomo
 
 load :: VM ()
 load = do
-    [$p|(p: Particle) show|] =::: [$e|
-        p type match: {
-            @keyword -> {
-                operator? = @(all?: @(in?: "~!@#$%^&*-_=+./\\\|<>?:"))
-
-                keywordfy = { str |
-                    if: (operator? call: [str])
-                        then: { str }
-                        else: { str .. ":" }
-                }
-                    
-                vs := p values map: { v |
-                    v match: {
-                        @none -> "_"
-                        @(ok: v) -> v show
-                    }
-                }
-
-                initial := vs head match: {
-                    "_" -> ""
-                    v -> v .. " "
-                }
-
-                rest := (p names zip: vs tail) (map: { pair |
-                    keywordfy call: [pair from] .. " " .. pair to
-                }) (join: " ")
-
-                if: p values (all?: @(== @none))
-                    then: { "@" .. p names (map: { n | keywordfy call: [n] }) join }
-                    else: {
-                        "@(" .. initial .. rest .. ")"
-                    }
-            } call
-
-            @single ->
-                ("@" .. p name)
-        }
-    |]
-
     [$p|(p: Particle) call: (targets: List)|] =:::
         [$e|(p complete: targets) send|]
 

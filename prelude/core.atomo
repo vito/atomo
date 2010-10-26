@@ -1,0 +1,14 @@
+macro x match: ts :=
+  { obj = Object clone
+
+    (obj) match-on: x := raise: @(no-matches-for: x)
+
+    ts contents each:
+      { pair |
+        [p, e] = pair targets
+        @match-on: define-on: [obj, p as: Pattern] as:
+          `({ delegates-to: sender; ~e } call)
+      }
+
+    `(~obj match-on: ~x)
+  } call

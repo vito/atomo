@@ -1,0 +1,40 @@
+(p: Particle) show :=
+  p type match: {
+    @keyword ->
+      { operator?: str := str all?: @(in?: "~!@#$%^&*-_=+./\\|<>?:")
+
+        keywordfy: str :=
+          if: (operator?: str)
+            then: { str }
+            else: { str .. ":" }
+            
+        vs := p values map:
+          { v |
+            v match:
+              { @none -> "_"
+                @(ok: v) -> v show
+              }
+          }
+
+        initial :=
+          vs head match: {
+            "_" -> ""
+            v -> v .. " "
+          }
+
+        rest :=
+          (p names zip: vs tail)
+            (map:
+              { pair |
+                keywordfy: pair from .. " " .. pair to
+              })
+            (join: " ")
+
+        if: p values (all?: @(== @none))
+          then: { "@" .. p names (map: { n | keywordfy: n }) join }
+          else: { "@(" .. initial .. rest .. ")" }
+      } call
+
+    @single ->
+      ("@" .. p name)
+  }

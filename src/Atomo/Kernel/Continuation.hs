@@ -27,75 +27,8 @@ load = do
     [$p|(c: Continuation) yield|] =::: [$e|c yield: @ok|]
     [$p|(c: Continuation) call|] =::: [$e|c yield: @ok|]
 
-    -- an object providing lower-level call/cc functionality
-    -- only used in call/cc's definition
-    callccObj <- newScope $ do
-        ([$p|o|] =::) =<< eval [$e|Object clone|]
-        [$p|(o) pass-to: b|] =: callCC $ \c -> do
-            b <- here "b"
-            cr <- liftIO (newIORef c)
-            dispatch (keyword ["call"] [b, list [Continuation cr]])
-        eval [$e|o|]
-
-    -- define call/cc and dynamic-wind in a new scope for hiding
-    -- helper methods (internal-call/cc, dynamic-winds, dynamic-unwind)
-    newScope (dynamicWind callccObj >> return (particle "ok"))
-
-    return ()
-
-dynamicWind :: Value -> VM ()
-dynamicWind callccObj = do
-    [$p|internal-call/cc|] =:: callccObj
-    ([$p|dynamic-winds|] =::) =<< eval [$e|Parameter new: []|]
-
-    [$p|(o: Object) call/cc|] =::: [$e|internal-call/cc pass-to: { cont |
-        winds = dynamic-winds _?
-
-        new = cont clone do: {
-            yield: v := {
-                dynamic-unwind: winds
-                    delta: (dynamic-winds _? length - winds length)
-
-                cont yield: v
-            } call
-        }
-
-        o call: [new]
-    }|]
-
-    [$p|(v: Block) before: (b: Block)|] =::: [$e|v before: b after: { @ok }|]
-    [$p|(v: Block) after: (a: Block)|] =::: [$e|v before: { @ok } after: a|]
-    [$p|(v: Block) before: (b: Block) after: (a: Block)|] =::: [$e|{
-        b call
-
-        dynamic-winds =! ((b -> a) . dynamic-winds _?)
-
-        { v call } ensuring: {
-            dynamic-winds =! dynamic-winds _? tail
-            a call
-        }
-    } call|]
-
-    [$p|(init: Block) wrap: cleanup do: action|] =::: [$e|
-        { action call: [x] } before: { x = init call } in-context after: { cleanup call: [x] }
-    |]
-
-    [$p|dynamic-unwind: to delta: d|] =::: [$e|{
-        condition: {
-            (dynamic-winds _? == to) -> @ok
-
-            (d < 0) -> {
-                dynamic-unwind: to tail delta: (d + 1)
-                to head from call
-                dynamic-winds =! to
-                @ok
-            } call
-
-            otherwise -> {
-                post = dynamic-winds _? head to
-                dynamic-winds =! dynamic-winds _? tail
-                post call
-                dynamic-unwind: to delta: (d - 1)
-            } call
-        }
-    } call|]
+    -- internal call/cc, quite unsafe (no unwinding)
+    [$p|(o: Object) raw-call/cc|] =: callCC $ \c -> do
+        o <- here "o"
+        cr <- liftIO (newIORef c)
+        dispatch (keyword ["call"] [o, list [Continuation cr]])
