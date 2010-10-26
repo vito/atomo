@@ -386,6 +386,18 @@ match ids (PHeadTail hp tp) (String t) | not (T.null t) =
     match ids hp (Char (T.head t)) && match ids tp (String (T.tail t))
 match ids (PPMKeyword ans aps) (Particle (PMKeyword bns mvs)) =
     ans == bns && matchParticle ids aps mvs
+match _ PEDefine (Expression (Define {})) = True
+match _ PESet (Expression (Set {})) = True
+match _ PEDispatch (Expression (Dispatch {})) = True
+match _ PEOperator (Expression (Operator {})) = True
+match _ PEPrimitive (Expression (Primitive {})) = True
+match _ PEBlock (Expression (EBlock {})) = True
+match _ PEList (Expression (EList {})) = True
+match _ PEMacro (Expression (EMacro {})) = True
+match _ PEParticle (Expression (EParticle {})) = True
+match _ PETop (Expression (ETop {})) = True
+match _ PEQuote (Expression (EQuote {})) = True
+match _ PEUnquote (Expression (EUnquote {})) = True
 match _ _ _ = False
 
 refMatch :: IDs -> ORef -> ORef -> Bool

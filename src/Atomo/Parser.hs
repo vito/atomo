@@ -63,7 +63,10 @@ pSpacedExpr = try pLiteral <|> simpleDispatch <|> parens pExpr
 pMacro :: Parser Expr
 pMacro = tagged (do
     reserved "macro"
-    (Define { ePattern = p, eExpr = e }) <- pDefine
+    p <- ppMacro
+    reserved ":="
+    whiteSpace
+    e <- pExpr
     addMacro p e
     return (EMacro Nothing p e))
     <?> "macro definition"
@@ -387,22 +390,22 @@ macroExpand s@(Set { eExpr = e }) = do
     e' <- macroExpand e
     return s { eExpr = e' }
 macroExpand d@(Dispatch { eMessage = em }) = do
-    ms <- liftM psMacros getState
-    case em of
-        ESingle i n t -> do
-            nt <- macroExpand t
-            case lookupMap i (fst ms) of
-                Nothing -> return d { eMessage = em { emTarget = nt } }
-                Just (m:_) -> do
-                    Expression e <- MTL.lift $ runMethod m (Single i n (Expression nt))
-                    macroExpand e
-        EKeyword i ns ts -> do
-            nts <- mapM macroExpand ts
-            case lookupMap i (snd ms) of
-                Nothing -> return d { eMessage = em { emTargets = nts } }
-                Just (m:_) -> do
-                    Expression e <- MTL.lift $ runMethod m (Keyword i ns (map Expression nts))
-                    macroExpand e
+    (msg, nem) <- expandMsg em
+
+    mm <- findMacro msg
+    case mm of
+        Just m -> do
+            Expression e <- MTL.lift $ runMethod m msg
+            macroExpand e
+
+        _ -> return d { eMessage = nem }
+  where
+    expandMsg (ESingle i n t) = do
+        nt <- macroExpand t
+        return (Single i n (Expression nt), ESingle i n nt)
+    expandMsg (EKeyword i ns ts) = do
+        nts <- mapM macroExpand ts
+        return (Keyword i ns (map Expression nts), EKeyword i ns nts)
 macroExpand b@(EBlock { eContents = es }) = do
     nes <- mapM macroExpand es
     return b { eContents = nes }
@@ -424,3 +427,18 @@ macroExpand p@(EParticle { eParticle = ep }) =
 
         _ -> return p
 macroExpand e = return e
+
+-- | find a findMacro method for message `m' on object `o'
+findMacro :: Message -> Parser (Maybe Method)
+findMacro m = do
+    ids <- MTL.lift (gets primitives)
+    ms <- methods m
+    maybe (return Nothing) (firstMatch ids m) (lookupMap (mID m) ms)
+  where
+    methods (Single {}) = fmap (fst . psMacros) getState
+    methods (Keyword {}) = fmap (snd . psMacros) getState
+
+    firstMatch _ _ [] = return Nothing
+    firstMatch ids' m' (mt:mts)
+        | match ids' (mPattern mt) (Message m') = return (Just mt)
+        | otherwise = firstMatch ids' m' mts

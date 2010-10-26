@@ -1,4 +1,4 @@
-macro x match: ts :=
+macro x match: (ts: Block) :=
   { obj = Object clone
 
     (obj) match-on: x := raise: @(no-matches-for: x)

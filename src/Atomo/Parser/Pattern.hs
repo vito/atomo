@@ -36,6 +36,51 @@ pObjectPattern = choice
 ppSet :: Parser Pattern
 ppSet = try ppDefine <|> pPattern
 
+ppMacro :: Parser Pattern
+ppMacro = try ppMacroKeywords <|> ppMacroSingle
+
+ppMacroSingle :: Parser Pattern
+ppMacroSingle = do
+    (t, v) <- choice
+        [ try $ do
+            t <- ppMacroRole
+            v <- identifier
+            return (t, v)
+
+        , do
+            v <- identifier
+            return (PAny, v)
+        ]
+
+    return $ psingle v t
+
+ppMacroKeywords :: Parser Pattern
+ppMacroKeywords = keywords pkeyword PAny ppMacroRole
+
+ppMacroRole :: Parser Pattern
+ppMacroRole = choice
+    [ symbol "Define" >> return PEDefine
+    , symbol "Set" >> return PESet
+    , symbol "Dispatch" >> return PEDispatch
+    , symbol "Operator" >> return PEOperator
+    , symbol "Primitive" >> return PEPrimitive
+    , symbol "Block" >> return PEBlock
+    , symbol "List" >> return PEList
+    , symbol "Macro" >> return PEMacro
+    , symbol "Particle" >> return PEParticle
+    , symbol "Top" >> return PETop
+    , symbol "Quote" >> return PEQuote
+    , symbol "Unquote" >> return PEUnquote
+    , ppAny
+    , ppNamedMacro
+    ]
+  where
+    ppNamedMacro = parens $ do
+        n <- identifier
+        delimit ":"
+        p <- ppMacroRole
+        return $ PNamed n p
+
 ppDefine :: Parser Pattern
 ppDefine = try ppKeywords <|> ppSingle
 

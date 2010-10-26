@@ -132,6 +132,19 @@ instance Pretty Pattern where
     prettyFrom _ (PSingle _ n p) = pretty p <+> text n
     prettyFrom _ PThis = text "<this>"
 
+    prettyFrom _ PEDefine = text "Define"
+    prettyFrom _ PESet = text "Set"
+    prettyFrom _ PEDispatch = text "Dispatch"
+    prettyFrom _ PEOperator = text "Operator"
+    prettyFrom _ PEPrimitive = text "Primitive"
+    prettyFrom _ PEBlock = text "Block"
+    prettyFrom _ PEList = text "List"
+    prettyFrom _ PEMacro = text "Macro"
+    prettyFrom _ PEParticle = text "Particle"
+    prettyFrom _ PETop = text "Top"
+    prettyFrom _ PEQuote = text "Quote"
+    prettyFrom _ PEUnquote = text "Unquote"
+
 
 instance Pretty Expr where
     prettyFrom _ (Define _ p v) = prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v

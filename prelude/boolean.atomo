@@ -36,7 +36,7 @@ False show := "False"
 
 otherwise := True
 
-macro condition: bs :=
+macro condition: (bs: Block) :=
   { ps = bs contents map:
       { pair |
         [c, e] = pair targets

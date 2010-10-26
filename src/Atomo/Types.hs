@@ -116,6 +116,20 @@ data Pattern
         , ppTarget :: Pattern
         }
     | PThis
+
+    -- expression types, used in macros
+    | PEDefine
+    | PESet
+    | PEDispatch
+    | PEOperator
+    | PEPrimitive
+    | PEBlock
+    | PEList
+    | PEMacro
+    | PEParticle
+    | PETop
+    | PEQuote
+    | PEUnquote
     deriving (Show, Typeable)
 
 -- expressions
