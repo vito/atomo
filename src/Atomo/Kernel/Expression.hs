@@ -9,7 +9,7 @@ import Atomo.Parser (macroExpand, withParser)
 load :: VM ()
 load = do
     [$p|(e: Expression) evaluate|] =:::
-        [$e|e evaluate-in: dispatch sender|]
+        [$e|e evaluate-in: sender|]
 
     [$p|(e: Expression) evaluate-in: t|] =: do
         Expression e <- here "e" >>= findExpression
@@ -29,7 +29,6 @@ load = do
             Operator {} -> return (particle "operator")
             Primitive {} -> return (particle "primitive")
             EBlock {} -> return (particle "block")
-            EDispatchObject {} -> return (particle "call")
             EVM {} -> return (particle "vm")
             EList {} -> return (particle "list")
             ETop {} -> return (particle "top")

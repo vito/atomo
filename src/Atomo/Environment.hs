@@ -78,18 +78,6 @@ eval e = eval' e `catchError` pushStack
     eval' (EBlock { eArguments = as, eContents = es }) = do
         t <- gets top
         return (Block t as es)
-    eval' (EDispatchObject {}) = do
-        c <- gets call
-        newObject $ \o -> o
-            { oMethods =
-                ( toMethods
-                    [ (psingle "sender" PThis, callSender c)
-                    , (psingle "message" PThis, Message (callMessage c))
-                    , (psingle "context" PThis, callContext c)
-                    ]
-                , emptyMap
-                )
-            }
     eval' (EList { eContents = es }) = do
         vs <- mapM eval es
         return (list vs)
@@ -169,9 +157,6 @@ eval e = eval' e `catchError` pushStack
         unquote _ t@(ETop {}) = return t
         unquote _ v@(EVM {}) = return v
         unquote _ o@(Operator {}) = return o
-        unquote _ d@(EDispatchObject {}) = return d
-
-        {-unquote _ e' = liftIO (putStrLn ("WARNING: no unquote for " ++ show e')) >> return e'-}
 
 -- | evaluating multiple expressions, returning the last result
 evalAll :: [Expr] -> VM Value
@@ -421,17 +406,14 @@ matchParticle _ _ _ = False
 runMethod :: Method -> Message -> VM Value
 runMethod (Slot { mValue = v }) _ = return v
 runMethod (Responder { mPattern = p, mContext = c, mExpr = e }) m = do
+    t <- gets top
+
     nt <- newObject $ \o -> o
         { oDelegates = [c]
-        , oMethods = (bindings p m, emptyMap)
-        }
-
-    modify $ \e' -> e'
-        { call = Call
-            { callSender = top e'
-            , callMessage = m
-            , callContext = c
-            }
+        , oMethods =
+            ( insertMap (Slot (psingle "sender" PThis) t) $ bindings p m
+            , emptyMap
+            )
         }
 
     withTop nt $ eval e

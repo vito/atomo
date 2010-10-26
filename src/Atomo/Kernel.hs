@@ -33,7 +33,7 @@ import qualified Atomo.Kernel.Continuation as Continuation
 
 load :: VM ()
 load = do
-    [$p|this|] =::: [$e|dispatch sender|]
+    [$p|this|] =::: [$e|sender|]
 
     [$p|(x: Object) clone|] =: do
         x <- here "x"

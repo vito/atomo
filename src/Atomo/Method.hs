@@ -3,6 +3,7 @@ module Atomo.Method
     , elemsMap
     , emptyMap
     , insertMethod
+    , insertMap
     , lookupMap
     , noMethods
     , nullMap
@@ -122,3 +123,8 @@ nullMap = M.null
 
 elemsMap :: MethodMap -> [[Method]]
 elemsMap = M.elems
+
+insertMap :: Method -> MethodMap -> MethodMap
+insertMap m mm = M.insert key [m] mm
+  where
+    key = ppID (mPattern m)

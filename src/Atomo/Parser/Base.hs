@@ -27,7 +27,7 @@ def = P.LanguageDef
     , P.opStart = oneOf (opLetters \\ "@_~")
     , P.opLetter = letter <|> oneOf opLetters
     , P.reservedOpNames = ["=", ":=", ",", "|", "_"]
-    , P.reservedNames = ["dispatch", "operator", "macro", "True", "False"]
+    , P.reservedNames = ["operator", "macro", "True", "False"]
     , P.caseSensitive = True
     }
 

@@ -147,7 +147,6 @@ instance Pretty Expr where
         | otherwise = braces $ sep (map pretty ps) <+> char '|' <+> exprs
       where
         exprs = sep . punctuate (text ";") $ map pretty es
-    prettyFrom _ (EDispatchObject {}) = text "dispatch"
     prettyFrom CDefine (EVM {}) = text "..."
     prettyFrom _ (EVM {}) = text "<vm>"
     prettyFrom _ (EList _ es) =

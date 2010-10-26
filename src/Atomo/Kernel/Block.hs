@@ -8,7 +8,7 @@ import Atomo
 load :: VM ()
 load = do
     [$p|Block new: (l: List)|] =:::
-        [$e|Block new: l in: dispatch sender|]
+        [$e|Block new: l in: sender|]
 
     [$p|Block new: (l: List) in: t|] =: do
         t <- here "t"

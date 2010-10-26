@@ -177,7 +177,7 @@ pdCascade = do
     pos <- getPosition
 
     chain <- wsManyStart
-        (fmap DNormal (try pLiteral <|> pCall <|> parens pExpr) <|> cascaded)
+        (fmap DNormal (try pLiteral <|> parens pExpr) <|> cascaded)
         cascaded
 
     return $ dispatches pos chain
@@ -223,10 +223,6 @@ pBlock = tagged (braces $ do
 
     return $ EBlock Nothing arguments code)
     <?> "block"
-
-pCall :: Parser Expr
-pCall = tagged (reserved "dispatch" >> return (EDispatchObject Nothing))
-    <?> "dispatch object"
 
 cSingle :: Bool -> Parser EParticle
 cSingle p = do
@@ -363,9 +359,6 @@ parseFile fn = liftIO (readFile fn) >>= continue (parser >>= mapM macroExpand) f
 
 parseInput :: String -> VM [Expr]
 parseInput s = continue (parser >>= mapM macroExpand) "<input>" s
-
-{-parse :: Parser a -> String -> VM a-}
-{-parse p s = continue p "<parse>" s >>= macroExpand-}
 
 continue :: Parser a -> String -> String -> VM a
 continue p s i = do

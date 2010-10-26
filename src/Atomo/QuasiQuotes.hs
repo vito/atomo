@@ -90,8 +90,6 @@ exprToExp (Operator l ns a p) = AppE (AppE (AppE (expr "Operator" l) (ListE (map
 exprToExp (Primitive l v) = AppE (expr "Primitive" l) (valueToExp v)
 exprToExp (EBlock l as es) =
     AppE (AppE (expr "EBlock" l) (ListE (map patternToExp as))) (ListE (map exprToExp es))
-exprToExp (EDispatchObject l) =
-    expr "EDispatchObject" l
 exprToExp (EVM _ _) = error "cannot exprToExp EVM"
 exprToExp (EList l es) =
     AppE (expr "EList" l) (ListE (map exprToExp es))

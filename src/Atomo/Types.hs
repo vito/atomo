@@ -149,9 +149,6 @@ data Expr
         , eArguments :: [Pattern]
         , eContents :: [Expr]
         }
-    | EDispatchObject
-        { eLocation :: Maybe SourcePos
-        }
     | EList
         { eLocation :: Maybe SourcePos
         , eContents :: [Expr]
@@ -210,7 +207,6 @@ data Env =
         , loadPath :: [FilePath]
         , loaded :: [FilePath]
         , stack :: [Expr]
-        , call :: Call
         , parserState :: ParserState
         }
     deriving Typeable
@@ -218,15 +214,6 @@ data Env =
 -- operator associativity
 data Assoc = ALeft | ARight
     deriving (Eq, Show, Typeable)
-
--- meta information for the dispatch
-data Call =
-    Call
-        { callSender :: Value
-        , callMessage :: Message
-        , callContext :: Value
-        }
-    deriving (Show, Typeable)
 
 -- a giant record of the objects for each primitive value
 data IDs =
@@ -326,7 +313,6 @@ instance Eq Expr where
     (==) (Primitive _ a) (Primitive _ b) = a == b
     (==) (EBlock _ aas aes) (EBlock _ bas bes) =
         aas == bas && aes == bes
-    (==) (EDispatchObject _) (EDispatchObject _) = True
     (==) (EList _ aes) (EList _ bes) = aes == bes
     (==) (EParticle _ ap') (EParticle _ bp) = ap' == bp
     (==) (ETop _) (ETop _) = True
@@ -343,9 +329,6 @@ instance Show Channel where
 
 instance Show ORef where
     show _ = "ORef"
-
-{-instance Show VVector where-}
-    {-show _ = "VVector"-}
 
 instance Show Continuation where
     show _ = "Continuation"
@@ -386,7 +369,6 @@ startEnv = Env
     , loadPath = []
     , loaded = []
     , stack = []
-    , call = error "call not set"
     , parserState = startParserState
     }
 
