@@ -24,7 +24,7 @@ Version = Object clone
 (n: Integer) as: Version := n . 0
 
 (a: Version) == (b: Version) :=
-  (a major == b major) and: { a minor == b minor }
+  a major == b major && a minor == b minor
 
 (n: Integer) == (v: Version) :=
   (n == v major) && (v minor == 0)
@@ -33,25 +33,25 @@ Version = Object clone
   (n == v major) && (v minor == 0)
 
 (a: Version) > (b: Version) :=
-  (a major > b major) or: { a minor > b minor }
+  a major > b major || a minor > b minor
 
 (n: Integer) > (v: Version) :=
-  (n > v major) or: { v major == n && (v minor /= 0) }
+  n > v major || v major == n && v minor /= 0
 
 (v: Version) > (n: Integer) :=
-  (v major > n) or: { v major == n && (v minor /= 0) }
+  v major > n || v major == n && v minor /= 0
 
 (a: Version) < (b: Version) :=
-  (a major < b major) or: { a minor < b minor }
+  a major < b major || a minor < b minor
 
 (n: Integer) < (v: Version) :=
-  (n < v major) or: { v major == n && (v minor /= 0) }
+  n < v major || v major == n && v minor /= 0
 
 (v: Version) < (n: Integer) :=
-  (v major < n) or: { v major == n && (v minor /= 0) }
+  v major < n || v major == n && v minor /= 0
 
 (a: Version) >= (b: Version) :=
-  (a major >= b major) or: { a minor >= b minor }
+  a major >= b major || a minor >= b minor
 
 (n: Integer) >= (v: Version) :=
   n >= v major
@@ -60,7 +60,7 @@ Version = Object clone
   v major >= n
 
 (a: Version) <= (b: Version) :=
-  (a major <= b major) or: { a minor <= b minor }
+  a major <= b major || a minor <= b minor
 
 (n: Integer) <= (v: Version) :=
   n <= v major

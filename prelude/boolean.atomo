@@ -1,14 +1,11 @@
-True && True = True
-Boolean && Boolean = False
-
 False and: _ = False
 True and: (b: Block) := b call
 
-True || Boolean = True
-False || (b: Boolean) := b
-
 True or: _ = True
 False or: (b: Block) := b call
+
+macro a && b := `(~a and: { ~b })
+macro a || b := `(~a or: { ~b })
 
 True not := False
 False not := True
