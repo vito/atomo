@@ -183,14 +183,14 @@ Eco load: name version: check in: env :=
 
         path = Eco path-to: pkg
 
-        pkg contexts << env super
+        pkg contexts = pkg contexts << env super
 
         env load: (path </> (Eco which-main: path))
 
         pkg environment = env
 
         when: name (in?: Eco loaded (map: @from)) not do:
-          { Eco loaded << (name -> pkg) }
+          { Eco loaded = Eco loaded << (name -> pkg) }
 
         env
       } call
