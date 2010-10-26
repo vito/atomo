@@ -220,8 +220,9 @@ pBlock :: Parser Expr
 pBlock = tagged (braces $ do
     arguments <- option [] . try $ do
         ps <- many1 pPattern
-        delimit "|"
         whiteSpace
+        string "|"
+        whiteSpace1
         return ps
 
     code <- wsBlock pExpr
