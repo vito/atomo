@@ -62,11 +62,14 @@ load = do
                     Expression e -> e
                     _ -> Primitive Nothing v
 
-        case p of
-            PMKeyword ns _ ->
-                define (pkeyword ns targets) expr
+        s <- here "sender"
 
-            PMSingle n ->
-                define (psingle n (head targets)) expr
+        withTop s $ do
+            case p of
+                PMKeyword ns _ ->
+                    define (pkeyword ns targets) expr
 
-        return (particle "ok")
+                PMSingle n ->
+                    define (psingle n (head targets)) expr
+
+            return (particle "ok")
