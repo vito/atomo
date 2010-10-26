@@ -3,7 +3,6 @@ module Atomo.Types where
 
 import Control.Concurrent (ThreadId)
 import Control.Concurrent.Chan
-import "monads-fd" Control.Monad.Trans
 import "monads-fd" Control.Monad.Cont
 import "monads-fd" Control.Monad.Error
 import "monads-fd" Control.Monad.State
@@ -447,8 +446,8 @@ list = List . V.fromList
 fromText :: T.Text -> String
 fromText = T.unpack
 
-fromList :: MonadIO m => Value -> m [Value]
-fromList (List vr) = return $ V.toList vr
+fromList :: Value -> [Value]
+fromList (List vr) = V.toList vr
 fromList v = error $ "no fromList for: " ++ show v
 
 single :: String -> Value -> Message
