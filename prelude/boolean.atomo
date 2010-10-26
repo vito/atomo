@@ -36,14 +36,15 @@ False show := "False"
 
 otherwise := True
 
-condition: (b: Block) :=
-  if: b contents empty?
-    then: { raise: @no-true-branches }
-    else: {
-      es = b contents
-      [c, e] = es head targets
+macro condition: bs :=
+  { ps = bs contents map:
+      { pair |
+        [c, e] = pair targets
+        c -> e
+      }
 
-      if: (c evaluate-in: b context)
-        then: { e evaluate-in: b context }
-        else: { condition: (Block new: es tail in: b context) }
-    }
+    ps reduce-right:
+      { pair x |
+        `(if: ~(pair from) then: { ~(pair to) } else: { ~x })
+      } with: `(raise: @no-true-branches)
+  } call
