@@ -240,8 +240,7 @@ joinWith t (Block s ps bes) as
 
                 withTop blockScope (evalAll bes)
   where
-    bs = addMethod (Slot (psingle "this" PThis) t) $
-            toMethods . concat $ zipWith bindings' ps as
+    bs = toMethods . concat $ zipWith bindings' ps as
 
     merge (os, ok) (ns, nk) =
         ( foldl (flip addMethod) os (concat $ elemsMap ns)
