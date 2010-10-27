@@ -88,10 +88,6 @@
         a = 1
         this
     })
-
-    This is implemented like so:
-
-    #atomo-block:(this := dispatch sender)
 }
 
 #define:{

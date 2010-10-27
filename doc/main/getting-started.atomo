@@ -153,7 +153,7 @@ If no roles understand the message, it sends either #atomo:(did-not-understand:)
 
 That's a lot to swallow right now, so let's just dive in and play around with this thing. Let's write a small Rock-Paper-Scissors game. First we'll define the three different objects involved in the game:
 
-#(rps = Object clone)
+#(rps = Lobby clone)
 
 #interaction:({
     Rock = Object clone
