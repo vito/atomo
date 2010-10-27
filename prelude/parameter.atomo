@@ -30,31 +30,17 @@ with-default: (p: Parameter) as: new do: (action: Block) :=
   } call
 
 macro with: (bs: List) do: action :=
-  { ps = bs contents map:
-      { pair |
-        [p, v] = pair targets
-        p -> v
-      }
-
-    chain = ps reduce-right:
-      { pair x |
-        `{ with: ~(pair from) as: ~(pair to) do: ~x }
-      } with: action
-
-    chain contents head
-  } call
+  bs contents
+    (reduce-right:
+      { `(~a -> ~b) x |
+        `{ with: ~a as: ~b do: ~x }
+      } with: action)
+    contents head
 
 macro with-defaults: (bs: List) do: action :=
-  { ps = bs contents map:
-      { pair |
-        [p, v] = pair targets
-        p -> v
-      }
-
-    chain = ps reduce-right:
-      { pair x |
-        `{ with-default: ~(pair from) as: ~(pair to) do: ~x }
-      } with: action
-
-    chain contents head
-  } call
+  bs contents
+    (reduce-right:
+      { `(~a -> ~b) x |
+        `{ with: ~a as: ~b do: ~x }
+      } with: action)
+    contents head

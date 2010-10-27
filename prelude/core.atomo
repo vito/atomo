@@ -4,8 +4,7 @@ macro x match: (ts: Block) :=
     (obj) match-on: x := raise: @(no-matches-for: x)
 
     ts contents each:
-      { pair |
-        [p, e] = pair targets
+      { `(~p -> ~e) |
         @match-on: define-on: [obj, p as: Pattern] as:
           `({ delegates-to: sender; ~e } call) in: Lobby
       }

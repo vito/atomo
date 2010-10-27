@@ -34,14 +34,7 @@ False show := "False"
 otherwise := True
 
 macro condition: (bs: Block) :=
-  { ps = bs contents map:
-      { pair |
-        [c, e] = pair targets
-        c -> e
-      }
-
-    ps reduce-right:
-      { pair x |
-        `(if: ~(pair from) then: { ~(pair to) } else: { ~x })
-      } with: `(raise: @no-true-branches)
-  } call
+  bs contents reduce-right:
+    { `(~test -> ~branch) x |
+      `(if: ~test then: { ~branch } else: { ~x })
+    } with: `(raise: @no-true-branches)
