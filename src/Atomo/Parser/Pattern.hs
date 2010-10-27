@@ -59,18 +59,18 @@ ppMacroKeywords = keywords pkeyword PAny ppMacroRole
 
 ppMacroRole :: Parser Pattern
 ppMacroRole = choice
-    [ symbol "Define" >> return PEDefine
-    , symbol "Set" >> return PESet
-    , symbol "Dispatch" >> return PEDispatch
-    , symbol "Operator" >> return PEOperator
-    , symbol "Primitive" >> return PEPrimitive
-    , symbol "Block" >> return PEBlock
-    , symbol "List" >> return PEList
-    , symbol "Macro" >> return PEMacro
-    , symbol "Particle" >> return PEParticle
-    , symbol "Top" >> return PETop
-    , symbol "Quote" >> return PEQuote
-    , symbol "Unquote" >> return PEUnquote
+    [ try $ symbol "Define" >> return PEDefine
+    , try $ symbol "Set" >> return PESet
+    , try $ symbol "Dispatch" >> return PEDispatch
+    , try $ symbol "Operator" >> return PEOperator
+    , try $ symbol "Primitive" >> return PEPrimitive
+    , try $ symbol "Block" >> return PEBlock
+    , try $ symbol "List" >> return PEList
+    , try $ symbol "Macro" >> return PEMacro
+    , try $ symbol "Particle" >> return PEParticle
+    , try $ symbol "Top" >> return PETop
+    , try $ symbol "Quote" >> return PEQuote
+    , try $ symbol "Unquote" >> return PEUnquote
     , ppAny
     , ppNamedMacro
     ]
