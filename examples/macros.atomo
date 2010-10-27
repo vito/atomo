@@ -1,0 +1,27 @@
+macro lif: test then: a else: b :=
+  `(if: ~test then: { ~a } else: { ~b })
+
+lif: (1 == 1)
+  then: "We're good!" print
+  else: "Uh oh." print
+
+macro a &&& b :=
+  `(~a and: { ~b })
+
+True &&& { "Called!" print; False } call
+False &&& { "Not called!" print; False } call
+
+macro condition: (bs: Block) :=
+  bs contents reduce-right:
+    { `(~test -> ~branch) x |
+      `(if: ~test then: { ~branch } else: { ~x })
+    } with: `(raise: @no-true-branches)
+
+condition: {
+  False -> "nope!" print
+  False -> "nope!" print
+  False -> "nope!" print
+  True -> "yep!" print
+}
+
+`(condition: { False -> "nope!"; True -> "yep!" }) expand print
