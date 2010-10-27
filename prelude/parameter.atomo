@@ -5,8 +5,8 @@ Parameter new: v := Parameter clone do:
   { set-default: v
   }
 
-context define: (name: Particle) as: root :=
-    name define-on: [context] as: (Parameter new: root)
+macro define: (x: Dispatch) as: root :=
+  `(~(x as: Pattern) set-to: (Parameter new: ~root))
 
 (p: Parameter) show :=
   "<" .. p _? show .. ">"
@@ -29,10 +29,32 @@ with-default: (p: Parameter) as: new do: (action: Block) :=
     action before: { p set-default: new } after: { p set-default: old }
   } call
 
-with: [] do: (action: Block) := action call
-with: (b . bs) do: (action: Block) :=
-  with: b from as: b to do: { with: bs do: action }
+macro with: (bs: List) do: action :=
+  { ps = bs contents map:
+      { pair |
+        [p, v] = pair targets
+        p -> v
+      }
 
-with-defaults: [] do: (action: Block) := action call
-with-defaults: (b . bs) do: (action: Block) :=
-  with-default: b from as: b to do: { with: bs do: action }
+    chain = ps reduce-right:
+      { pair x |
+        `{ with: ~(pair from) as: ~(pair to) do: ~x }
+      } with: action
+
+    chain contents head
+  } call
+
+macro with-defaults: (bs: List) do: action :=
+  { ps = bs contents map:
+      { pair |
+        [p, v] = pair targets
+        p -> v
+      }
+
+    chain = ps reduce-right:
+      { pair x |
+        `{ with-default: ~(pair from) as: ~(pair to) do: ~x }
+      } with: action
+
+    chain contents head
+  } call
