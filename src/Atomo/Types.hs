@@ -129,6 +129,8 @@ data Pattern
     | PETop
     | PEQuote
     | PEUnquote
+
+    | PExpr Expr
     deriving (Show, Typeable)
 
 -- expressions

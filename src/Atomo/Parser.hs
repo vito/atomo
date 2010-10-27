@@ -58,6 +58,7 @@ pSpacedExpr = try pLiteral <|> simpleDispatch <|> parens pExpr
     simpleDispatch = tagged $ do
         name <- ident
         notFollowedBy (char ':')
+        spacing
         return (Dispatch Nothing (esingle name (ETop Nothing)))
 
 pMacro :: Parser Expr

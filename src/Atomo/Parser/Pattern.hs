@@ -16,6 +16,7 @@ pPattern = choice
     , ppList
     , ppString
     , ppParticle
+    , ppExpr
     , ppAny
     , parens pPattern
     ]
@@ -29,6 +30,7 @@ pObjectPattern = choice
     , ppList
     , ppString
     , ppParticle
+    , ppExpr
     , ppAnySensitive
     , parens pObjectPattern
     ]
@@ -38,6 +40,11 @@ ppSet = try ppDefine <|> pPattern
 
 ppMacro :: Parser Pattern
 ppMacro = try ppMacroKeywords <|> ppMacroSingle
+
+ppExpr :: Parser Pattern
+ppExpr = do
+    q <- pQuoted
+    return (PExpr (eExpr q))
 
 ppMacroSingle :: Parser Pattern
 ppMacroSingle = do
@@ -59,7 +66,8 @@ ppMacroKeywords = keywords pkeyword PAny ppMacroRole
 
 ppMacroRole :: Parser Pattern
 ppMacroRole = choice
-    [ try $ symbol "Define" >> return PEDefine
+    [ ppExpr
+    , try $ symbol "Define" >> return PEDefine
     , try $ symbol "Set" >> return PESet
     , try $ symbol "Dispatch" >> return PEDispatch
     , try $ symbol "Operator" >> return PEOperator

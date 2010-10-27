@@ -145,6 +145,8 @@ instance Pretty Pattern where
     prettyFrom _ PEQuote = text "Quote"
     prettyFrom _ PEUnquote = text "Unquote"
 
+    prettyFrom _ (PExpr e) = pretty (EQuote Nothing e)
+
 
 instance Pretty Expr where
     prettyFrom _ (Define _ p v) = prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v

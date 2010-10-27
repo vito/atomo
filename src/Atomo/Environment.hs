@@ -398,6 +398,7 @@ match _ PEParticle (Expression (EParticle {})) = True
 match _ PETop (Expression (ETop {})) = True
 match _ PEQuote (Expression (EQuote {})) = True
 match _ PEUnquote (Expression (EUnquote {})) = True
+match _ (PExpr a) (Expression b) = matchExpr 0 a b
 match _ _ _ = False
 
 refMatch :: IDs -> ORef -> ORef -> Bool
@@ -412,6 +413,40 @@ matchAll :: IDs -> [Pattern] -> [Value] -> Bool
 matchAll _ [] [] = True
 matchAll ids (p:ps) (v:vs) = match ids p v && matchAll ids ps vs
 matchAll _ _ _ = False
+
+matchEParticle :: Int -> [Maybe Expr] -> [Maybe Expr] -> Bool
+matchEParticle _ [] [] = True
+matchEParticle n (Just a:as) (Just b:bs) =
+    matchExpr n a b && matchEParticle n as bs
+matchEParticle n (Nothing:as) (Nothing:bs) = matchEParticle n as bs
+matchEParticle _ _ _ = False
+
+matchExpr :: Int -> Expr -> Expr -> Bool
+matchExpr 0 (EUnquote {}) _ = True
+matchExpr n (EUnquote { eExpr = a }) (EUnquote { eExpr = b }) =
+    matchExpr (n - 1) a b
+matchExpr n (Define { ePattern = ap', eExpr = a }) (Define { ePattern = bp, eExpr = b }) =
+    ap' == bp && matchExpr n a b
+matchExpr n (Set { ePattern = ap', eExpr = a }) (Set { ePattern = bp, eExpr = b }) =
+    ap' == bp && matchExpr n a b
+matchExpr n (Dispatch { eMessage = am@(EKeyword {}) }) (Dispatch { eMessage = bm@(EKeyword {}) }) =
+    emID am == emID bm && length (emTargets am) == length (emTargets bm) && (and $ zipWith (matchExpr n) (emTargets am) (emTargets bm))
+matchExpr n (Dispatch { eMessage = am@(ESingle {}) }) (Dispatch { eMessage = bm@(ESingle {}) }) =
+    emID am == emID bm && matchExpr n (emTarget am) (emTarget bm)
+matchExpr n (EBlock { eArguments = aps, eContents = as }) (EBlock { eArguments = bps, eContents = bs }) =
+    aps == bps && length as == length bs && (and $ zipWith (matchExpr n) as bs)
+matchExpr n (EList { eContents = as }) (EList { eContents = bs }) =
+    length as == length bs && (and $ zipWith (matchExpr n) as bs)
+matchExpr n (EMacro { ePattern = ap', eExpr = a }) (EMacro { ePattern = bp, eExpr = b }) =
+    ap' == bp && matchExpr n a b
+matchExpr n (EParticle { eParticle = ap' }) (EParticle { eParticle = bp }) =
+    case (ap', bp) of
+        (EPMKeyword ans ames, EPMKeyword bns bmes) ->
+            ans == bns && matchEParticle n ames bmes
+        _ -> ap' == bp
+matchExpr n (EQuote { eExpr = a }) (EQuote { eExpr = b }) =
+    matchExpr (n + 1) a b
+matchExpr _ a b = a == b
 
 matchParticle :: IDs -> [Pattern] -> [Maybe Value] -> Bool
 matchParticle _ [] [] = True
@@ -479,8 +514,40 @@ bindings' (PHeadTail hp tp) (List vs) =
     t = List (V.tail vs)
 bindings' (PHeadTail hp tp) (String t) | not (T.null t) =
     bindings' hp (Char (T.head t)) ++ bindings' tp (String (T.tail t))
+bindings' (PExpr a) (Expression b) = exprBindings 0 a b
 bindings' _ _ = []
 
+
+exprBindings :: Int -> Expr -> Expr -> [(Pattern, Value)]
+exprBindings 0 (EUnquote { eExpr = Dispatch { eMessage = ESingle { emName = n } } }) e =
+    [(psingle n PThis, Expression e)]
+exprBindings n (EUnquote { eExpr = a }) (EUnquote { eExpr = b }) =
+    exprBindings (n - 1) a b
+exprBindings n (Define { eExpr = a }) (Define { eExpr = b }) =
+    exprBindings n a b
+exprBindings n (Set { eExpr = a }) (Set { eExpr = b }) =
+    exprBindings n a b
+exprBindings n (Dispatch { eMessage = am@(EKeyword {}) }) (Dispatch { eMessage = bm@(EKeyword {}) }) =
+    concat $ zipWith (exprBindings n) (emTargets am) (emTargets bm)
+exprBindings n (Dispatch { eMessage = am@(ESingle {}) }) (Dispatch { eMessage = bm@(ESingle {}) }) =
+    exprBindings n (emTarget am) (emTarget bm)
+exprBindings n (EBlock { eContents = as }) (EBlock { eContents = bs }) =
+    concat $ zipWith (exprBindings n) as bs
+exprBindings n (EList { eContents = as }) (EList { eContents = bs }) =
+    concat $ zipWith (exprBindings n) as bs
+exprBindings n (EMacro { eExpr = a }) (EMacro { eExpr = b }) =
+    exprBindings n a b
+exprBindings n (EParticle { eParticle = ap' }) (EParticle { eParticle = bp }) =
+    case (ap', bp) of
+        (EPMKeyword _ ames, EPMKeyword _ bmes) ->
+            concat
+                . map (\(Just a, Just b) -> exprBindings n a b)
+                . filter (isJust . fst)
+                $ zip ames bmes
+        _ -> []
+exprBindings n (EQuote { eExpr = a }) (EQuote { eExpr = b }) =
+    exprBindings (n + 1) a b
+exprBindings _ _ _ = []
 
 
 -----------------------------------------------------------------------------
