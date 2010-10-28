@@ -41,6 +41,6 @@ macro with-defaults: (bs: List) do: action :=
   bs contents
     (reduce-right:
       { `(~a -> ~b) x |
-        `{ with: ~a as: ~b do: ~x }
+        `{ with-default: ~a as: ~b do: ~x }
       } with: action)
     contents head
