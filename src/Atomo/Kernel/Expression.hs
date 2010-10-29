@@ -23,7 +23,11 @@ load = do
     [$p|(e: Expression) type|] =: do
         Expression e <- here "e" >>= findExpression
         case e of
-            Dispatch {} -> return (particle "dispatch")
+            Dispatch { eMessage = EKeyword {} } ->
+                return (keyParticleN ["dispatch"] [particle "keyword"])
+            Dispatch { eMessage = ESingle {} } ->
+                return (keyParticleN ["dispatch"] [particle "single"])
+
             Define {} -> return (particle "define")
             Set {} -> return (particle "set")
             Operator {} -> return (particle "operator")
@@ -35,54 +39,75 @@ load = do
             ETop {} -> return (particle "top")
             EQuote {} -> return (particle "quote")
             EUnquote {} -> return (particle "unquote")
-            EParticle {} -> return (particle "particle")
 
-    [$p|(e: Expression) dispatch-type|] =: do
-        Expression (Dispatch _ d) <- here "e" >>= findExpression
-        case d of
-            ESingle {} -> return (particle "single")
-            EKeyword {} -> return (particle "keyword")
-
-    [$p|(e: Expression) particle-type|] =: do
-        Expression (EParticle _ p) <- here "e" >>= findExpression
-        case p of
-            EPMKeyword {} -> return (particle "keyword")
-            EPMSingle {} -> return (particle "single")
+            EParticle { eParticle = EPMKeyword _ _ } ->
+                return (keyParticleN ["particle"] [particle "keyword"])
+            EParticle { eParticle = EPMSingle _ } ->
+                return (keyParticleN ["particle"] [particle "single"])
 
     [$p|(e: Expression) target|] =: do
-        Expression (Dispatch _ (ESingle { emTarget = t })) <- here "e" >>= findExpression
-        return (Expression t)
+        Expression e <- here "e" >>= findExpression
 
-    [$p|(e: Expression) particle|] =: do
-        Expression (Dispatch _ em) <- here "e" >>= findExpression
-
-        case em of
-            EKeyword { emNames = ns } ->
-                return (keyParticle ns (replicate (length ns + 1) Nothing))
-            ESingle { emName = n } -> return (particle n)
+        case e of
+            Dispatch { eMessage = ESingle { emTarget = t } } ->
+                return (Expression t)
+            _ -> raise ["no-target-for"] [Expression e]
 
     [$p|(e: Expression) targets|] =: do
-        Expression (Dispatch _ (EKeyword { emTargets = vs })) <- here "e" >>= findExpression
-        return $ list (map Expression vs)
+        Expression e <- here "e" >>= findExpression
+
+        case e of
+            Dispatch { eMessage = EKeyword { emTargets = ts } } ->
+                return (list (map Expression ts))
+            _ -> raise ["no-targets-for"] [Expression e]
 
     [$p|(e: Expression) name|] =: do
-        Expression (EParticle _ (EPMSingle n)) <- here "e" >>= findExpression
-        return (string n)
+        Expression e <- here "e" >>= findExpression
+
+        case e of
+            EParticle _ (EPMSingle n) -> return (string n)
+            Dispatch { eMessage = ESingle { emName = n } } ->
+                return (string n)
+            _ -> raise ["no-name-for"] [Expression e]
 
     [$p|(e: Expression) names|] =: do
-        Expression (EParticle _ (EPMKeyword ns _)) <- here "e" >>= findExpression
-        return $ list (map string ns)
+        Expression e <- here "e" >>= findExpression
+
+        case e of
+            EParticle _ (EPMKeyword ns _) ->
+                return (list (map string ns))
+            Dispatch { eMessage = EKeyword { emNames = ns } } ->
+                return (list (map string ns))
+            _ -> raise ["no-names-for"] [Expression e]
 
     [$p|(e: Expression) values|] =: do
-        Expression (EParticle _ (EPMKeyword _ mes)) <- here "e" >>= findExpression
-        return . list $
-            map
-                (maybe (particle "none") (keyParticle ["ok"] . ([Nothing] ++) . (:[]). Just . Expression))
-                mes
+        Expression e <- here "e" >>= findExpression
+
+        case e of
+            EParticle { eParticle = EPMKeyword _ mes } ->
+                return . list $
+                    map
+                        (maybe (particle "none") (keyParticleN ["ok"] . (:[]) . Expression))
+                        mes
+            _ -> raise ["no-values-for"] [Expression e]
 
     [$p|(e: Expression) contents|] =: do
         Expression e <- here "e" >>= findExpression
-        return $ list (map Expression (eContents e))
+
+        case e of
+            EBlock { eContents = es } ->
+                return (list (map Expression es))
+            EList { eContents = es } ->
+                return (list (map Expression es))
+            _ -> raise ["no-contents-for"] [Expression e]
+
+    [$p|(e: Expression) arguments|] =: do
+        Expression e <- here "e" >>= findExpression
+
+        case e of
+            EBlock { eArguments = as } ->
+                return (list (map Pattern as))
+            _ -> raise ["no-arguments-for"] [Expression e]
 
     [$p|(e: Expression) pattern|] =: do
         Expression e <- here "e" >>= findExpression
