@@ -284,18 +284,16 @@ targets _ p = error $ "no targets for " ++ show p
 -- | dispatch a message and return a value
 dispatch :: Message -> VM Value
 dispatch !m = do
-    find <- findFirstMethod m vs
+    find <- findFirstMethod m (vs m)
     case find of
         Just method -> runMethod method m
         Nothing ->
-            case vs of
+            case vs m of
                 [v] -> sendDNU v
-                _ -> sendDNUs vs 0
+                _ -> sendDNUs (vs m) 0
   where
-    vs =
-        case m of
-            Single { mTarget = t } -> [t]
-            Keyword { mTargets = ts } -> ts
+    vs (Single { mTarget = t }) = [t]
+    vs (Keyword { mTargets = ts }) = ts
 
     sendDNU v = do
         find <- findMethod v (dnuSingle v)
