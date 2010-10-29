@@ -130,6 +130,7 @@ ppSingle = do
         , ppList
         , ppString
         , ppParticle
+        , ppExpr
         , ppWildcard
         , parens pNonExpr
         ]

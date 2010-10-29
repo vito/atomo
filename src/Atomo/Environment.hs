@@ -272,6 +272,7 @@ targets is (PHeadTail h t) = do
         then return [idList is, idString is]
         else return [idList is]
 targets is (PPMKeyword {}) = return [idParticle is]
+targets is (PExpr _) = return [idExpression is]
 targets _ p = error $ "no targets for " ++ show p
 
 
