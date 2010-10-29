@@ -88,6 +88,7 @@ load = do
                 Just e -> toPattern e
 
         return (PPMKeyword ns ps)
+    toPattern (EQuote { eExpr = e }) = return (PExpr e)
     toPattern (Primitive { eValue = v }) =
         return (PMatch v)
     toPattern e = raise ["unknown-pattern"] [Expression e]
