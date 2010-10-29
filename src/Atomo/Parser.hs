@@ -68,7 +68,7 @@ pMacro = tagged (do
     reserved ":="
     whiteSpace
     e <- pExpr
-    addMacro p e
+    macroExpand e >>= addMacro p
     return (EMacro Nothing p e))
     <?> "macro definition"
 
