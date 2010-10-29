@@ -8,6 +8,7 @@ import Atomo.Parser (macroExpand, withParser)
 
 load :: VM ()
 load = do
+    [$p|`Block new: (es: List)|] =::: [$e|`Block new: es arguments: []|]
     [$p|`Block new: (es: List) arguments: (as: List)|] =: do
         es <- getList [$e|es|]
         as <- getList [$e|as|]
