@@ -16,20 +16,20 @@ pong: notify :=
     @finished ->
       { "         | ." print
         "volley finished" print
-        notify ! @done
+        notify <- @done
       } call
 
     -- got a ping, send a pong
     @(ping: pid) ->
       { "       . |" print
-        pid ! @pong
+        pid <- @pong
         pong: notify -- loop
       } call
   }
 
-ping: 0 ponger: pid := pid ! @finished
+ping: 0 ponger: pid := pid <- @finished
 ping: n ponger: pid :=
-  { pid ! @(ping: self)
+  { pid <- @(ping: self)
 
     -- got a pong send a ping
     receive match: {

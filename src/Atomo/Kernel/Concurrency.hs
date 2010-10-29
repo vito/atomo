@@ -20,7 +20,7 @@ load = do
 
     [$p|halt|] =: gets halt >>= liftIO >> return (particle "ok")
 
-    [$p|(p: Process) ! v|] =: do
+    [$p|(p: Process) <- v|] =: do
         Process chan _ <- here "p" >>= findProcess
         v <- here "v"
         liftIO (writeChan chan v)
