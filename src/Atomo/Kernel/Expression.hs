@@ -8,6 +8,11 @@ import Atomo.Parser (macroExpand, withParser)
 
 load :: VM ()
 load = do
+    [$p|`Block new: (es: List) arguments: (as: List)|] =: do
+        es <- getList [$e|es|]
+        as <- getList [$e|as|]
+        return (Expression (EBlock Nothing (map fromPattern as) (map fromExpression es)))
+
     [$p|(e: Expression) evaluate|] =:::
         [$e|e evaluate-in: sender|]
 
