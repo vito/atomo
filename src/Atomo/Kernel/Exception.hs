@@ -6,9 +6,7 @@ import Atomo
 
 load :: VM ()
 load = do
-    [$p|raise: v|] =: do
-        v <- here "v"
-        throwError (Error v)
+    [$p|raise: v|] =: here "v" >>= throwError . Error
 
     [$p|(action: Block) catch: (recover: Block)|] =:
         catchError (eval [$e|action call|]) $ \err -> do
@@ -30,30 +28,12 @@ load = do
             eval [$e|cleanup call|]
             return res
 
-    [$p|(action: Block) handle: (branches: Block)|] =::: [$e|
-        action catch: { e |
-            { e match: branches } catch: { e* |
-                e* match: {
-                    @(no-matches-for: _) -> raise: e
-                    _ -> raise: e*
-                }
-            }
-        }
-    |]
-
-    [$p|(a: Block) handle: (b: Block) ensuring: (c: Block)|] =::: [$e|
-        { a handle: b } ensuring: c
-    |]
-
     [$p|(action: Block) ensuring: (cleanup: Block)|] =:
         catchError
             (do r <- eval [$e|action call|]
                 eval [$e|cleanup call|]
                 return r)
             (\err -> eval [$e|cleanup call|] >> throwError err)
-
-    [$p|v ensuring: p do: b|] =:::
-        [$e|{ b call: [v] } ensuring: { p call: [v] }|]
 
 
 

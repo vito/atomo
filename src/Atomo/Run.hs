@@ -65,6 +65,7 @@ loadPrelude = do
         [ "core"
 
         , "association"
+        , "exception"
         , "parameter"
 
         , "block"
