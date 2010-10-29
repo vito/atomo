@@ -7,17 +7,21 @@ import Atomo
 
 load :: VM ()
 load = do
-    [$p|Block new: (l: List)|] =:::
-        [$e|Block new: l in: sender|]
+    [$p|Block new: (es: List)|] =:::
+        [$e|Block new: es arguments: [] in: sender|]
 
-    [$p|Block new: (l: List) in: t|] =: do
+    [$p|Block new: (es: List) arguments: (as: List)|] =:::
+        [$e|Block new: es arguments: as in: sender|]
+
+    [$p|Block new: (es: List) in: t|] =:::
+        [$e|Block new: es arguments: [] in: t|]
+
+    [$p|Block new: (es: List) arguments: (as: List) in: t|] =: do
         t <- here "t"
-        es <- getList [$e|l|]
+        es <- getList [$e|es|]
+        as <- getList [$e|as|]
 
-        let toExpr (Expression e') = e'
-            toExpr v = Primitive Nothing v
-
-        return (Block t [] (map toExpr es))
+        return (Block t (map fromPattern as) (map fromExpression es))
 
     [$p|(b: Block) call|] =: do
         b <- here "b" >>= findBlock
