@@ -52,7 +52,7 @@ pUnquoted = tagged $ do
     return (EUnquote Nothing e)
 
 pSpacedExpr :: Parser Expr
-pSpacedExpr = try pLiteral <|> simpleDispatch <|> parens pExpr
+pSpacedExpr = pLiteral <|> simpleDispatch <|> parens pExpr
   where
     simpleDispatch = tagged $ do
         name <- ident
@@ -91,7 +91,7 @@ pOperator = tagged (do
     reserved "operator"
 
     info <- choice
-        [ try $ do
+        [ do
             a <- choice
                 [ symbol "right" >> return ARight
                 , symbol "left" >> return ALeft
@@ -113,10 +113,10 @@ pParticle :: Parser Expr
 pParticle = tagged (do
     char '@'
     c <- choice
-        [ try (cSingle True)
-        , try (cKeyword True)
-        , try binary
-        , try symbols
+        [ cKeyword True
+        , binary
+        , try (cSingle True)
+        , symbols
         ]
     return (EParticle Nothing c))
     <?> "particle"
@@ -198,8 +198,8 @@ pdCascade = do
     <?> "single dispatch"
   where
     cascaded = fmap DParticle $ choice
-        [ try (cSingle False)
-        , try (cKeyword False)
+        [ cKeyword False
+        , cSingle False
         ]
 
     -- start off by dispatching on either a primitive or Top

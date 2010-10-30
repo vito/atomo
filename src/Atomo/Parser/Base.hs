@@ -182,8 +182,8 @@ indentAwareStart cmp delim allowSeq s p = do
     wsmany start []
   where
     wsmany o es = choice
-        [ try $ do
-            x <- if null es then s else p
+        [ do
+            x <- if null es then s else try p
 
             new <- lookAhead (whiteSpace >> getPosition)
             sequential <- fmap (== new) $ lookAhead (spacing >> getPosition)
@@ -197,30 +197,20 @@ indentAwareStart cmp delim allowSeq s p = do
         ]
 
 keyword :: Parser a -> Parser (String, a)
-keyword p = try $ do
-    name <- try (do
-        name <- ident
-        char ':'
-        return name) <|> operator
+keyword p = do
+    name <- keywordName
     whiteSpace1
     target <- p
     return (name, target)
 
+keywordName :: Parser String
+keywordName = operator <|> (ident >>= \name -> char ':' >> return name)
+
 keywords :: Show a => ([String] -> [a] -> b) -> a -> Parser a -> Parser b
 keywords c d p = do
-    (first, ks) <- choice
-        [ try $ do
-            f <- p
-            fs <- wsMany1 (keyword p)
-            return (f, fs)
-        , do
-            fs <- wsMany1 (keyword p)
-            return (d, fs)
-        ]
-
-    let (ns, ps) = unzip ks
-
-    return $ c ns (first:ps)
+    r <- choice [try (lookAhead keywordName) >> return d, p]
+    (ns, rs) <- fmap unzip $ wsMany1 (keyword p)
+    return (c ns (r:rs))
 
 tagged :: Parser Expr -> Parser Expr
 tagged p = do
@@ -449,7 +439,7 @@ makeTokenParser languageDef
     zeroNumber      = do{ char '0'
                         ; hexadecimal <|> octal <|> decimal <|> return 0
                         }
-                      <?> ""
+                      <?> "zeroNumber"
 
     decimal         = number 10 digit
     hexadecimal     = do{ oneOf "xX"; number 16 hexDigit }
@@ -587,10 +577,10 @@ spacing :: Parser ()
 spacing = skipMany spacing1
 
 spacing1 :: Parser ()
-spacing1 | noLine && noMulti  = simpleSpace <?> ""
-         | noLine             = simpleSpace <|> multiLineComment <?> ""
-         | noMulti            = simpleSpace <|> oneLineComment <?> ""
-         | otherwise          = simpleSpace <|> oneLineComment <|> multiLineComment <?> ""
+spacing1 | noLine && noMulti  = simpleSpace <?> "whitespace"
+         | noLine             = simpleSpace <|> multiLineComment <?> "whitespace or multiline comment"
+         | noMulti            = simpleSpace <|> oneLineComment <?> "whitespace or line comment"
+         | otherwise          = simpleSpace <|> oneLineComment <|> multiLineComment <?> "whitespace or commend"
          where
              noLine  = null (P.commentLine def)
              noMulti = null (P.commentStart def)
