@@ -7,7 +7,6 @@ import Data.Maybe (fromJust, isJust)
 import Text.Parsec
 import qualified "mtl" Control.Monad.Trans as MTL
 
-import Atomo.Debug
 import Atomo.Environment
 import Atomo.Method
 import Atomo.Parser.Base
@@ -28,9 +27,9 @@ pExpr :: Parser Expr
 pExpr = choice
     [ pOperator
     , pMacro
-    , try pDefine
-    , try pSet
     , try pDispatch
+    , pDefine
+    , pSet
     , pLiteral
     , parens pExpr
     ]
@@ -133,29 +132,38 @@ pParticle = tagged (do
 
 pDefine :: Parser Expr
 pDefine = tagged (do
-    pattern <- ppDefine
-    dump ("pDefine: define pattern", pattern)
-    reservedOp ":="
+    pattern <- try $ do
+        p <- ppDefine
+        reservedOp ":="
+        return p
+
     whiteSpace
     expr <- pExpr
+
     return $ Define Nothing pattern expr)
     <?> "definition"
 
 pSet :: Parser Expr
 pSet = tagged (do
-    pattern <- ppSet
-    dump ("pSet: set pattern", pattern)
-    reservedOp "="
+    pattern <- try $ do
+        p <- ppSet
+        reservedOp "="
+        return p
+
     whiteSpace
     expr <- pExpr
+
     return $ Set Nothing pattern expr)
     <?> "set"
 
 pDispatch :: Parser Expr
-pDispatch = choice
-    [ try pdKeys
-    , pdCascade
-    ]
+pDispatch = do
+    d <- choice
+        [ try pdKeys
+        , pdCascade
+        ]
+    notFollowedBy (reserved ":=" <|> reserved "=")
+    return d
     <?> "dispatch"
 
 pdKeys :: Parser Expr
