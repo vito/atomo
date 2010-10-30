@@ -26,8 +26,8 @@ defaultPrec = 5
 
 pExpr :: Parser Expr
 pExpr = choice
-    [ try pOperator
-    , try pMacro
+    [ pOperator
+    , pMacro
     , try pDefine
     , try pSet
     , try pDispatch
@@ -37,7 +37,7 @@ pExpr = choice
     <?> "expression"
 
 pLiteral :: Parser Expr
-pLiteral = try pBlock <|> try pList <|> try pParticle <|> try pQuoted <|> try pUnquoted <|> pPrimitive
+pLiteral = pBlock <|> pList <|> pParticle <|> pQuoted <|> pUnquoted <|> pPrimitive
     <?> "literal"
 
 pQuoted :: Parser Expr
