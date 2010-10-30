@@ -47,6 +47,37 @@ load = do
                     then throwError (ParticleArity 1 0)
                     else return . Message . single n $ head vs
 
+    [$p|(p: Particle) define-on: v as: e|] =:::
+        [$e|p define-on: v with: [] as: e in: sender|]
+
+    [$p|(p: Particle) define-on: v with: (targets: List) as: e|] =:::
+        [$e|p define-on: v with: targets as: e in: sender|]
+
+    [$p|(p: Particle) define-on: v with: (targets: List) as: e in: c|] =: do
+        Particle p <- here "p" >>= findParticle
+        v <- here "v"
+        ts <- getList [$e|targets|]
+        e <- here "e"
+        c <- here "c"
+
+        let targets =
+                map (\v ->
+                    case v of
+                        Pattern p -> p
+                        _ -> PMatch v) ts
+            pat =
+                case p of
+                    PMKeyword ns _ ->
+                        pkeyword ns (PThis:targets)
+                    PMSingle n ->
+                        psingle n PThis
+            m =
+                case e of
+                    Expression e' -> Responder pat c e'
+                    _ -> Slot pat v
+
+        withTop c $ defineOn v m >> return (particle "ok")
+
     [$p|(p: Particle) define-on: (targets: List) as: v|] =:::
         [$e|p define-on: targets as: v in: sender|]
 

@@ -188,29 +188,35 @@ withTop t x = do
 -- Define -------------------------------------------------------------------
 -----------------------------------------------------------------------------
 
+defineOn :: Value -> Method -> VM ()
+defineOn v m = do
+    o <- orefFor v
+    obj <- liftIO (readIORef o)
+
+    let (oss, oks) = oMethods obj
+        ms (PSingle {}) = (addMethod m oss, oks)
+        ms (PKeyword {}) = (oss, addMethod m oks)
+        ms x = error $ "impossible: defining with pattern " ++ show x
+
+    liftIO . writeIORef o $
+        obj { oMethods = ms (mPattern m) }
+
 -- | define a pattern to evaluate an expression
 define :: Pattern -> Expr -> VM ()
 define !p !e = do
     is <- gets primitives
     newp <- methodPattern p
+    m <- method newp e
 
     os <-
         case p of
             PKeyword { ppTargets = (t:_) } | isTop t ->
                 targets is (head (ppTargets newp))
+
             _ -> targets is newp
 
-    m <- method newp e
     forM_ os $ \o -> do
-        obj <- liftIO (readIORef o)
-
-        let (oss, oks) = oMethods obj
-            ms (PSingle {}) = (addMethod (m o) oss, oks)
-            ms (PKeyword {}) = (oss, addMethod (m o) oks)
-            ms x = error $ "impossible: defining with pattern " ++ show x
-
-        liftIO . writeIORef o $
-            obj { oMethods = ms newp }
+        defineOn (Reference o) (m o)
   where
     isTop PThis = True
     isTop (PObject ETop {}) = True

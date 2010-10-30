@@ -1,11 +1,12 @@
 macro x match: (ts: Block) :=
   { obj = Object clone
 
-    (obj) match-on: x := raise: @(no-matches-for: x)
+    @match-on: define-on: obj with: [`x as: Pattern] as:
+      `(raise: @(no-matches-for: x))
 
     ts contents each:
       { `(~p -> ~e) |
-        @match-on: define-on: [obj, p as: Pattern] as:
+        @match-on: define-on: obj with: [p as: Pattern] as:
           `({ delegates-to: sender; ~e } call) in: Lobby
       }
 
