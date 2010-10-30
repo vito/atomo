@@ -1,10 +1,10 @@
-macro (action: Block) handle: (branches: Block) :=
+macro action handle: (branches: Block) :=
   { matches = `Block new: (branches contents .. [`(e -> raise: e)])
     `(~action catch: { e | e match: ~matches })
   } call
 
-(a: Block) handle: (b: Block) ensuring: (c: Block) :=
-  { a handle: b } ensuring: c
+macro a handle: (b: Block) ensuring: (c: Block) :=
+  `({ ~a handle: ~b } ensuring: ~c)
 
 v ensuring: p do: b :=
   { b call: [v] } ensuring: { p call: [v] }
