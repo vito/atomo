@@ -27,6 +27,7 @@ pExpr :: Parser Expr
 pExpr = choice
     [ pOperator
     , pMacro
+    , pForMacro
     , try pDispatch
     , pDefine
     , pSet
@@ -59,6 +60,14 @@ pSpacedExpr = pLiteral <|> simpleDispatch <|> parens pExpr
         notFollowedBy (char ':')
         spacing
         return (Dispatch Nothing (esingle name (ETop Nothing)))
+
+pForMacro :: Parser Expr
+pForMacro = tagged (do
+    reserved "for-macro"
+    e <- pExpr
+    MTL.lift (eval e)
+    return (Primitive Nothing (Expression e))) --e)
+    <?> "for-macro expression"
 
 pMacro :: Parser Expr
 pMacro = tagged (do
