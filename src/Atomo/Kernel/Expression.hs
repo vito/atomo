@@ -3,7 +3,7 @@
 module Atomo.Kernel.Expression (load) where
 
 import Atomo
-import Atomo.Parser (macroExpand, withParser)
+import Atomo.Parser (macroExpand, parseInput, withParser)
 
 
 load :: VM ()
@@ -14,12 +14,19 @@ load = do
         as <- getList [$e|as|]
         return (Expression (EBlock Nothing (map fromPattern as) (map fromExpression es)))
 
+    [$p|`List new: (es: List)|] =: do
+        es <- getList [$e|es|]
+        return (Expression (EList Nothing (map fromExpression es)))
+
+    [$p|(s: String) parse-expressions|] =:
+        getString [$e|s|] >>= liftM (list . map Expression) . parseInput
+
     [$p|(e: Expression) evaluate|] =:::
         [$e|e evaluate-in: sender|]
 
     [$p|(e: Expression) evaluate-in: t|] =: do
-        Expression e <- here "e" >>= findExpression
         t <- here "t"
+        Expression e <- here "e" >>= findExpression
         withTop t (eval e)
 
     [$p|(e: Expression) expand|] =: do
