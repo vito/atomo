@@ -14,7 +14,10 @@ type Parser = ParsecT String ParserState VM
 
 
 opLetters :: [Char]
-opLetters = "~!@#$%^&*-_=+./\\|<>?"
+opLetters = "~!@#$%^&*-=+./\\|<>?"
+
+isOperator :: String -> Bool
+isOperator = all (`elem` opLetters)
 
 def :: P.GenLanguageDef String ParserState VM
 def = P.LanguageDef
@@ -22,12 +25,12 @@ def = P.LanguageDef
     , P.commentEnd = "-}"
     , P.commentLine = "--"
     , P.nestedComments = True
-    , P.identStart = letter <|> oneOf "_"
+    , P.identStart = letter <|> P.opStart def <|> oneOf "_"
     , P.identLetter = alphaNum <|> P.opLetter def
-    , P.opStart = oneOf (opLetters \\ "@_~")
-    , P.opLetter = letter <|> oneOf opLetters
-    , P.reservedOpNames = ["=", ":=", ",", "|", "_"]
-    , P.reservedNames = ["operator", "macro", "True", "False"]
+    , P.opStart = oneOf (opLetters \\ "@~")
+    , P.opLetter = oneOf opLetters
+    , P.reservedOpNames = ["=", ":=", ",", "|"]
+    , P.reservedNames = ["operator", "macro", "for-macro", "True", "False"]
     , P.caseSensitive = True
     }
 
@@ -56,10 +59,12 @@ lowIdentifier :: Parser String
 lowIdentifier = lexeme lowIdent
 
 anyIdent :: Parser String
-anyIdent = do
+anyIdent = try $ do
     c <- P.identStart def
     cs <- many (P.identLetter def)
-    return (c:cs)
+    if isOperator (c:cs)
+        then unexpected "operator"
+        else return (c:cs)
 
 anyIdentifier :: Parser String
 anyIdentifier = lexeme anyIdent
@@ -92,7 +97,7 @@ ident :: Parser String
 ident = P.identifier tp
 
 operator :: Parser String
-operator = do
+operator = try $ do
     c <- P.opStart def
     cs <- many (P.opLetter def)
     if (c:cs) `elem` P.reservedOpNames def
@@ -199,12 +204,14 @@ indentAwareStart cmp delim allowSeq s p = do
 keyword :: Parser a -> Parser (String, a)
 keyword p = do
     name <- keywordName
-    whiteSpace1
     target <- p
     return (name, target)
 
 keywordName :: Parser String
-keywordName = operator <|> (ident >>= \name -> char ':' >> return name)
+keywordName = do
+    n <- operator <|> (ident >>= \name -> char ':' >> return name)
+    whiteSpace1
+    return n
 
 keywords :: Show a => ([String] -> [a] -> b) -> a -> Parser a -> Parser b
 keywords c d p = do
@@ -469,10 +476,10 @@ makeTokenParser languageDef
           }
 
     oper =
-        do{ c <- (P.opStart languageDef)
+        try (do{ c <- (P.opStart languageDef)
           ; cs <- many (P.opLetter languageDef)
           ; return (c:cs)
-          }
+          })
         <?> "operator"
 
     isReservedOp name =
@@ -510,11 +517,12 @@ makeTokenParser languageDef
           }
 
 
-    ident
-        = do{ c <- P.identStart languageDef
-            ; cs <- many (P.identLetter languageDef)
-            ; return (c:cs)
-            }
+    ident = try (do
+        c <- P.identStart def
+        cs <- many (P.identLetter def)
+        if isOperator (c:cs)
+            then unexpected "operator"
+            else return (c:cs))
         <?> "identifier"
 
     isReservedName name

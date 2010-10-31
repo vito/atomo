@@ -359,10 +359,6 @@ toBinaryOps ops (EKeyword h (n:ns) (v:vs))
             Just (_, p) -> p
 toBinaryOps _ u = error $ "cannot toBinaryOps: " ++ show u
 
-isOperator :: String -> Bool
-isOperator "" = error "isOperator: empty string"
-isOperator (c:_) = c `elem` opLetters
-
 parser :: Parser [Expr]
 parser = do
     optional (string "#!" >> manyTill anyToken newline)
@@ -379,7 +375,7 @@ cparser = do
     return (s, r)
 
 parseFile :: String -> VM [Expr]
-parseFile fn = liftIO (readFile fn) >>= continue (parser >>= mapM macroExpand) fn
+parseFile fn = liftIO (readFile fn) >>= continue (fileParser >>= mapM macroExpand) fn
 
 parseInput :: String -> VM [Expr]
 parseInput s = continue (parser >>= mapM macroExpand) "<input>" s
