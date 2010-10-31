@@ -1,6 +1,5 @@
 module Atomo.Load where
 
-import "monads-fd" Control.Monad.Error
 import "monads-fd" Control.Monad.State
 import System.Directory
 import System.FilePath

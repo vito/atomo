@@ -2,8 +2,8 @@
 module Atomo.Environment where
 
 import "monads-fd" Control.Monad.Cont
-import "monads-fd" Control.Monad.Error
 import "monads-fd" Control.Monad.State
+import Data.Dynamic
 import Data.IORef
 import Data.List (nub)
 import Data.Maybe (isJust)
@@ -17,12 +17,8 @@ import Atomo.Types
 
 -- | evaluation
 eval :: Expr -> VM Value
-eval e = eval' e `catchError` pushStack
+eval e = eval' e
   where
-    pushStack err = do
-        modify $ \s -> s { stack = e : stack s }
-        throwError err
-
     eval' (Define { ePattern = p, eExpr = ev }) = do
         define p ev
         return (particle "ok")
@@ -175,9 +171,9 @@ withTop t x = do
     o <- gets top
     modify (\e -> e { top = t })
 
-    res <- catchError x $ \err -> do
-        modify (\e -> e { top = o })
-        throwError err
+    res <- x --catchError x $ \err -> do
+        {-modify (\e -> e { top = o })-}
+        {-throwError err-}
 
     modify (\e -> e { top = o })
 
@@ -721,7 +717,7 @@ callBlock (Block s ps es) vs = do
     checkArgs is ps vs
     doBlock (toMethods . concat $ zipWith bindings' ps vs) s es
   where
-    checkArgs _ [] _ = return ()
+    checkArgs _ [] _ = return (particle "ok")
     checkArgs _ _ [] = throwError (BlockArity (length ps) (length vs))
     checkArgs is (p:ps') (v:vs')
         | match is p v = checkArgs is ps' vs'
@@ -799,3 +795,20 @@ isA x y = do
             then return True
             else isA' ds
 
+raise :: [String] -> [Value] -> VM a
+{-# INLINE raise #-}
+raise ns vs = gets top >>= \t -> dispatch (keyword ["error"] [t, keyParticleN ns vs]) >> undefined
+
+raise' :: String -> VM a
+{-# INLINE raise' #-}
+raise' s = gets top >>= \t -> dispatch (keyword ["error"] [t, particle s]) >> undefined
+
+fromHaskell :: Typeable a => String -> Value -> VM a
+fromHaskell t (Haskell d) =
+    case fromDynamic d of
+        Just a -> return a
+        Nothing -> raise ["dynamic-needed"] [string t]
+fromHaskell t _ = raise ["dynamic-needed"] [string t]
+
+throwError :: AtomoError -> VM a
+throwError e = gets top >>= \t -> dispatch (keyword ["error"] [t, asValue e]) >> undefined

@@ -1,7 +1,6 @@
 module Main where
 
 import "monads-fd" Control.Monad.Cont
-import "monads-fd" Control.Monad.Error
 import Data.Char (isSpace)
 import Prelude hiding (catch)
 import System.Console.Haskeline
@@ -73,9 +72,7 @@ repl quiet = do
             Just part | not (bracesBalanced $ input ++ part) ->
                 repl' (input ++ part) r
             Just expr -> do
-                catchError
-                    (evaluate expr >>= prettyVM >>= liftIO . print)
-                    printError
+                evaluate expr >>= prettyVM >>= liftIO . print
 
                 repl' "" r
 

@@ -21,4 +21,4 @@ spawn x = do
 
 -- | execute x, printing an error if there is one
 go :: VM Value -> VM Value
-go x = catchError x (\e -> printError e >> return (particle "ok"))
+go x = x --catchError x (\e -> printError e >> return (particle "ok"))

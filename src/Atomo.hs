@@ -6,7 +6,6 @@ module Atomo
     , module Control.Concurrent
     , module Control.Monad
     , module Control.Monad.Cont
-    , module Control.Monad.Error
     , module Control.Monad.State
     , module Control.Monad.Trans
     ) where
@@ -14,7 +13,6 @@ module Atomo
 import Control.Concurrent
 import Control.Monad
 import "monads-fd" Control.Monad.Cont (MonadCont(..), ContT(..))
-import "monads-fd" Control.Monad.Error (MonadError(..), ErrorT(..))
 import "monads-fd" Control.Monad.State (MonadState(..), StateT(..), evalStateT, gets, modify)
 import "monads-fd" Control.Monad.Trans
 

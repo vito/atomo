@@ -4,19 +4,17 @@ module Atomo.Types where
 import Control.Concurrent (ThreadId)
 import Control.Concurrent.Chan
 import "monads-fd" Control.Monad.Cont
-import "monads-fd" Control.Monad.Error
 import "monads-fd" Control.Monad.State
 import Data.Dynamic
 import Data.Hashable (hash)
 import Data.IORef
-import Data.Typeable
 import Text.Parsec (ParseError, SourcePos)
 import qualified Data.IntMap as M
 import qualified Data.Text as T
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
 
-type VM = ErrorT AtomoError (ContT (Either AtomoError Value) (StateT Env IO))
+type VM = ContT Value (StateT Env IO)
 
 data Value
     = Block !Value [Pattern] [Expr]
@@ -335,10 +333,6 @@ instance Eq Expr where
     (==) _ _ = False
 
 
-instance Error AtomoError where
-    strMsg = Error . string
-
-
 instance Show Channel where
     show _ = "Channel"
 
@@ -388,12 +382,12 @@ startEnv = Env
     }
 
 -- | evaluate x with e as the environment
-runWith :: VM Value -> Env -> IO (Either AtomoError Value)
-runWith x e = evalStateT (runContT (runErrorT x) return) e
+runWith :: VM Value -> Env -> IO Value
+runWith x e = evalStateT (runContT x return) e
 
 -- | evaluate x with e as the environment
-runVM :: VM Value -> Env -> IO (Either AtomoError Value, Env)
-runVM x e = runStateT (runContT (runErrorT x) return) e
+runVM :: VM Value -> Env -> IO (Value, Env)
+runVM x e = runStateT (runContT x return) e
 
 
 -----------------------------------------------------------------------------
@@ -412,14 +406,6 @@ keyParticleN :: [String] -> [Value] -> Value
 {-# INLINE keyParticleN #-}
 keyParticleN ns vs = keyParticle ns (Nothing:map Just vs)
 
-raise :: [String] -> [Value] -> VM a
-{-# INLINE raise #-}
-raise ns vs = throwError . Error $ keyParticleN ns vs
-
-raise' :: String -> VM a
-{-# INLINE raise' #-}
-raise' = throwError . Error . particle
-
 string :: String -> Value
 {-# INLINE string #-}
 string = String . T.pack
@@ -427,20 +413,6 @@ string = String . T.pack
 haskell :: Typeable a => a -> Value
 {-# INLINE haskell #-}
 haskell = Haskell . toDyn
-
-fromHaskell :: Typeable a => String -> Value -> VM a
-fromHaskell t (Haskell d) =
-    case fromDynamic d of
-        Just a -> return a
-        Nothing -> throwError (DynamicNeeded t)
-fromHaskell t _ = throwError (DynamicNeeded t)
-
-fromHaskell' :: Typeable a => String -> Value -> a
-fromHaskell' t (Haskell d) =
-    case fromDynamic d of
-        Just a -> a
-        Nothing -> error ("needed Haskell value of type " ++ t)
-fromHaskell' t _ = error ("needed haskell value of type " ++ t)
 
 list :: [Value] -> Value
 list = List . V.fromList
@@ -568,3 +540,39 @@ isReference _ = False
 isString :: Value -> Bool
 isString (String _) = True
 isString _ = False
+
+asValue :: AtomoError -> Value
+asValue (Error v) = v
+asValue (ParseError pe) =
+    keyParticleN ["parse-error"] [string (show pe)]
+asValue (DidNotUnderstand m) =
+    keyParticleN ["did-not-understand"] [Message m]
+asValue (Mismatch pat v) =
+    keyParticleN
+        ["pattern", "did-not-match"]
+        [Pattern pat, v]
+asValue (ImportError ie) =
+    keyParticleN ["import-error"] [string (show ie)]
+asValue (FileNotFound fn) =
+    keyParticleN ["file-not-found"] [string fn]
+asValue (ParticleArity e' g) =
+    keyParticleN
+        ["particle-needed", "given"]
+        [Integer (fromIntegral e'), Integer (fromIntegral g)]
+asValue (BlockArity e' g) =
+    keyParticleN
+        ["block-expected", "given"]
+        [Integer (fromIntegral e'), Integer (fromIntegral g)]
+asValue NoExpressions = particle "no-expressions"
+asValue (ValueNotFound d v) =
+    keyParticleN ["could-not-found", "in"] [string d, v]
+asValue (DynamicNeeded t) =
+    keyParticleN ["dynamic-needed"] [string t]
+
+fromHaskell' :: Typeable a => String -> Value -> a
+fromHaskell' t (Haskell d) =
+    case fromDynamic d of
+        Just a -> a
+        Nothing -> error ("needed Haskell value of type " ++ t)
+fromHaskell' t _ = error ("needed haskell value of type " ++ t)
+

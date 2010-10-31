@@ -52,8 +52,7 @@ parsing p s (file, line, col) =
     -- OH GOD! NO!
     -- WHYYYYYYYYYYYYYYYYYYYYYY
     case unsafePerformIO (runWith go (unsafePerformIO (readIORef qqEnv))) of
-        Left e -> fail (show $ pretty e)
-        Right x -> return (fromHaskell' "a" x)
+        x -> return (fromHaskell' "a" x)
   where
     go = do
         r <- fmap haskell $ continue pp "<qq>" s

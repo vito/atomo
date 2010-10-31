@@ -1,13 +1,13 @@
-{ dynamic-winds = Parameter new: []
+{ define: *dynamic-winds* as: []
 
   (o: Object) call/cc :=
     { cc |
-      winds = dynamic-winds _?
+      winds = *dynamic-winds* _?
 
       new = cc clone do:
         { yield: v :=
             { dynamic-unwind: winds
-                delta: (dynamic-winds _? length - winds length)
+                delta: (*dynamic-winds* _? length - winds length)
 
               cc yield: v
             } call
@@ -22,12 +22,15 @@
   (v: Block) before: (b: Block) after: (a: Block) :=
     { b call
 
-      dynamic-winds =! ((b -> a) . dynamic-winds _?)
+      *dynamic-winds* =! ((b -> a) . *dynamic-winds* _?)
 
-      { v call } ensuring:
-        { dynamic-winds =! dynamic-winds _? tail
-          a call
-        }
+      res = v call
+
+      a call
+
+      *dynamic-winds* =! *dynamic-winds* _? tail
+
+      res
     } call
 
   (init: Block) wrap: cleanup do: action :=
@@ -35,18 +38,18 @@
 
   dynamic-unwind: to delta: d :=
     condition: {
-      (dynamic-winds _? == to) -> @ok
+      (*dynamic-winds* _? == to) -> @ok
 
       (d < 0) ->
         { dynamic-unwind: to tail delta: (d + 1)
           to head from call
-          dynamic-winds =! to
+          *dynamic-winds* =! to
           @ok
         } call
 
       otherwise ->
-        { post = dynamic-winds _? head to
-          dynamic-winds =! dynamic-winds _? tail
+        { post = *dynamic-winds* _? head to
+          *dynamic-winds* =! *dynamic-winds* _? tail
           post call
           dynamic-unwind: to delta: (d - 1)
         } call

@@ -1,7 +1,6 @@
 module Atomo.Run where
 
 import Control.Concurrent
-import "monads-fd" Control.Monad.Error
 import "monads-fd" Control.Monad.State
 
 import Atomo.Core
@@ -33,17 +32,17 @@ execWith x e = do
             { halt = writeChan haltChan ()
             }
 
-        either
-            (putStrLn . ("WARNING: exited abnormally with: " ++) . show)
-            (\_ -> return ())
-            r
+        {-either-}
+            {-(putStrLn . ("WARNING: exited abnormally with: " ++) . show)-}
+            {-(\_ -> return ())-}
+            {-r-}
 
         writeChan haltChan ()
 
     readChan haltChan
 
 -- | execute x, initializing the environment with initEnv
-run :: VM Value -> IO (Either AtomoError Value)
+run :: VM Value -> IO Value
 run x = runWith (initEnv >> x) startEnv
 
 -- | set up the primitive objects, etc.
@@ -77,6 +76,8 @@ loadPrelude = do
         , "particle"
         , "ports"
         , "time"
+
+        , "condition"
 
         , "version"
         , "eco"
