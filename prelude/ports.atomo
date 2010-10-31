@@ -48,3 +48,19 @@ with-all-input-from: (fn: String) do: (b: Block) :=
 
 with-all-input-from: (p: Port) do: (b: Block) :=
   with-default: current-input-port as: p do: b
+
+Directory copy: (from: String) to: (to: String) :=
+  { Directory create-tree-if-missing: to
+
+    Directory (contents: from) map:
+      { c |
+        f = from </> c
+        t = to </> c
+
+        if: Directory (exists?: f)
+          then: { Directory copy: f to: t }
+          else: { File copy: f to: t }
+      }
+
+    @ok
+  } call

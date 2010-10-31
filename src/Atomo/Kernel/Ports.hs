@@ -255,21 +255,6 @@ load = do
         liftIO (renameDirectory from to)
         return (particle "ok")
 
-    [$p|Directory copy: (from: String) to: (to: String)|] =::: [$e|{
-        Directory create-tree-if-missing: to
-
-        Directory (contents: from) map: { c |
-            f = from / c
-            t = to / c
-
-            if: Directory (exists?: f)
-                then: { Directory copy: f to: t }
-                else: { File copy: f to: t }
-        }
-
-        @ok
-    } call|]
-
     [$p|Directory contents: (path: String)|] =:
         getString [$e|path|]
             >>= liftIO . getDirectoryContents
