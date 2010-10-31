@@ -1,0 +1,68 @@
+define: *handlers* as: []
+define: *restarts* as: []
+
+for-macro Handler = Object clone do: { handle: _ := @ok }
+for-macro Restart = Object clone
+
+Restart new: n as: (a: Block) in: (c: Continuation) :=
+  Restart clone do:
+    { name = n
+      action = a
+      context = c
+    }
+
+x ensuring: y := x after: y
+
+signal: v := *handlers* _? map: @(handle: v)
+
+error: e :=
+  { signal: e
+
+    with-output-to: Port standard-error do: {
+      '-' (repeat: 78) print
+      ("*** " .. e show) print
+
+      when: *restarts* _? empty?
+        do: { halt }
+
+      "" print
+      "restarts:" print
+
+      index = 0
+      *restarts* _? each:
+        { restart |
+          ("  :" .. index show .. ": " .. restart name show) print
+          index = index + 1
+        }
+    }
+
+    chosen = *restarts* _? at: read
+    chosen context yield: chosen action call
+  } call
+
+macro (action: Block) with-restarts: (restarts: Block) :=
+  { rs = restarts contents map:
+      { `(~n -> ~e) | `(Restart new: ~n as: { ~e } in: cc) }
+
+    `({ cc | ~action with-restarts: ~(`List new: rs) } call/cc)
+  } call
+
+(action: Block) with-restarts: (restarts: List) :=
+  with: *restarts* as: (restarts .. *restarts* _?) do: action
+
+restart: name :=
+  *restarts* _? (filter: { r | r name == name }) match: {
+    (r . _) -> r context yield: r action call
+    [] -> error: @(unknown-restart: name)
+  }
+
+(a: Block) bind: (bs: Block) :=
+  { h = Handler clone
+
+    bs contents map:
+      { `(~c -> ~e) |
+        @handle: define-on: h with: [c as: Pattern] as: e in: sender
+      }
+
+    with: *handlers* as: (h . *handlers* _?) do: a
+  } call
