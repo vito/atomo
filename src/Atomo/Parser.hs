@@ -361,18 +361,16 @@ toBinaryOps _ u = error $ "cannot toBinaryOps: " ++ show u
 
 parser :: Parser [Expr]
 parser = do
-    optional (string "#!" >> manyTill anyToken newline)
     whiteSpace
     es <- wsBlock pExpr
     whiteSpace
     eof
     return es
 
-cparser :: Parser (ParserState, [Expr])
-cparser = do
-    r <- parser
-    s <- getState
-    return (s, r)
+fileParser :: Parser [Expr]
+fileParser = do
+    optional (string "#!" >> manyTill anyToken (eol <|> eof))
+    parser
 
 parseFile :: String -> VM [Expr]
 parseFile fn = liftIO (readFile fn) >>= continue (fileParser >>= mapM macroExpand) fn

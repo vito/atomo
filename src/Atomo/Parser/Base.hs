@@ -37,6 +37,9 @@ def = P.LanguageDef
 tp :: P.GenTokenParser String ParserState VM
 tp = makeTokenParser def
 
+eol :: Parser ()
+eol = newline >> return ()
+
 lexeme :: Parser a -> Parser a
 lexeme = P.lexeme tp
 
