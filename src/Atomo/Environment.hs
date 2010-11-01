@@ -12,6 +12,7 @@ import qualified Data.Text as T
 import qualified Data.Vector as V
 
 import Atomo.Method
+import Atomo.Pretty
 import Atomo.Types
 
 
@@ -792,11 +793,11 @@ isA x y = do
 
 raise :: [String] -> [Value] -> VM a
 {-# INLINE raise #-}
-raise ns vs = gets top >>= \t -> dispatch (keyword ["error"] [t, keyParticleN ns vs]) >> undefined
+raise ns vs = throwError . Error $ keyParticleN ns vs
 
 raise' :: String -> VM a
 {-# INLINE raise' #-}
-raise' s = gets top >>= \t -> dispatch (keyword ["error"] [t, particle s]) >> undefined
+raise' = throwError . Error . particle
 
 fromHaskell :: Typeable a => String -> Value -> VM a
 fromHaskell t (Haskell d) =
@@ -806,4 +807,9 @@ fromHaskell t (Haskell d) =
 fromHaskell t _ = raise ["dynamic-needed"] [string t]
 
 throwError :: AtomoError -> VM a
-throwError e = gets top >>= \t -> dispatch (keyword ["error"] [t, asValue e]) >> undefined
+throwError e = gets top >>= \t ->
+    ifVM (dispatch (keyword ["responds-to?"] [t, particle "Error"]))
+        (dispatch (msg t) >> undefined)
+        (error ("panic: " ++ show (pretty e)))
+  where
+    msg t = keyword ["error"] [t, asValue e]
