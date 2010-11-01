@@ -8,6 +8,7 @@ module Atomo.Method
     , noMethods
     , nullMap
     , toMethods
+    , unsafeDelegatesTo
     ) where
 
 import Data.IORef

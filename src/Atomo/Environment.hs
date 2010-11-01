@@ -361,12 +361,11 @@ match ids PThis (Reference y) =
     refMatch ids (idMatch ids) y
 match ids PThis y =
     match ids (PMatch (Reference (idMatch ids))) (Reference (orefFrom ids y))
-match ids (PMatch x) (Reference y) =
-    refMatch ids (orefFrom ids x) y
+match _ (PMatch x) y | x == y = True
+match _ (PMatch x) (Reference y) =
+    unsafeDelegatesTo (Reference y) x
 match ids (PMatch (Reference x)) y =
     match ids (PMatch (Reference x)) (Reference (orefFrom ids y))
-match _ (PMatch x) y =
-    x == y
 match ids
     (PSingle { ppTarget = p })
     (Message (Single { mTarget = t })) =
