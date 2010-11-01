@@ -6,19 +6,17 @@
   for-macro Handler = Object clone do: { handle: _ := @ok }
   for-macro Restart = Object clone
 
-  Restart new: n as: (a: Block) in: (c: Continuation) :=
+  Restart new: (a: Block) in: (c: Continuation) :=
     Restart clone do:
-      { name = n
-        action = a
-        context = c
+      { jump: as := c yield: (a call: as)
       }
 
   macro action with-restarts: (restarts: Block) :=
     { rs = restarts contents map:
         { `(~n -> ~e) |
           e type match: {
-            @block -> `(Restart new: ~n as: ~e in: cc)
-            _ -> `(Restart new: ~n as: { ~e } in: cc)
+            @block -> `(~n -> Restart new: ~e in: cc)
+            _ -> `(~n -> Restart new: { ~e } in: cc)
           }
         }
 
@@ -51,26 +49,24 @@
         "" print
         "restarts:" print
 
-        index = 0
-        *restarts* _? each:
-          { restart |
-            ("  " .. index show .. ": " .. restart name show) print
-            index = index + 1
+        *restarts* _? (zip: (0 .. *restarts* _? length)) map:
+          { choice |
+            [index, name] = [choice from, choice to from]
+            ("  " .. index show .. ": " .. name show) print
           }
       }
 
-      chosen = *restarts* _? at: read
-      chosen context yield: chosen action call
+      chosen = *restarts* _? (at: read) to
+      chosen jump: []
     } call
 
-  (super) restart: name with: (params: List) :=
-    *restarts* _? (filter: { r | r name == name }) match: {
-      (r . _) -> r context yield: r action (call: params)
-      [] -> error: @(unknown-restart: name)
-    }
+  (super) restart: name := restart: name with: []
 
-  (super) restart: name :=
-    restart: name with: []
+  (super) restart: name with: (params: List) :=
+    *restarts* _? (lookup: name) match: {
+      @(ok: r) -> chosen jump: params
+      @none -> error: @(unknown-restart: name)
+    }
 
   (a: Block) bind: (bs: Block) :=
     { h = Handler clone
