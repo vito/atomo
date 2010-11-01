@@ -17,139 +17,137 @@ import Atomo.Types
 
 -- | evaluation
 eval :: Expr -> VM Value
-eval e = eval' e
-  where
-    eval' (Define { ePattern = p, eExpr = ev }) = do
-        define p ev
-        return (particle "ok")
-    eval' (Set { ePattern = p@(PSingle {}), eExpr = ev }) = do
-        v <- eval ev
-        define p (Primitive (eLocation ev) v)
-        return v
-    eval' (Set { ePattern = p@(PKeyword {}), eExpr = ev }) = do
-        v <- eval ev
-        define p (Primitive (eLocation ev) v)
-        return v
-    eval' (Set { ePattern = p, eExpr = ev }) = do
-        v <- eval ev
-        set p v
-    eval' (Dispatch
-            { eMessage = ESingle
-                { emID = i
-                , emName = n
-                , emTarget = t
-                }
-            }) = do
-        v <- eval t
-        dispatch (Single i n v)
-    eval' (Dispatch
-            { eMessage = EKeyword
-                { emID = i
-                , emNames = ns
-                , emTargets = ts
-                }
-            }) = do
-        vs <- mapM eval ts
-        dispatch (Keyword i ns vs)
-    eval' (Operator { eNames = ns, eAssoc = a, ePrec = p }) = do
-        forM_ ns $ \n -> modify $ \s ->
-            s
-                { parserState =
-                    (parserState s)
-                        { psOperators =
-                            (n, (a, p)) : psOperators (parserState s)
-                        }
-                }
-
-        return (particle "ok")
-    eval' (Primitive { eValue = v }) = return v
-    eval' (EBlock { eArguments = as, eContents = es }) = do
-        t <- gets top
-        return (Block t as es)
-    eval' (EList { eContents = es }) = do
-        vs <- mapM eval es
-        return (list vs)
-    eval' (EMacro { ePattern = p, eExpr = e' }) = do
-        ps <- gets parserState
-        modify $ \s -> s
-            { parserState = ps
-                { psMacros =
-                    case p of
-                        PSingle {} ->
-                            (addMethod (Macro p e') (fst (psMacros ps)), snd (psMacros ps))
-
-                        PKeyword {} ->
-                            (fst (psMacros ps), addMethod (Macro p e') (snd (psMacros ps)))
-
-                        _ -> error $ "impossible: eval EMacro: p is " ++ show p
-                }
+eval (Define { ePattern = p, eExpr = ev }) = do
+    define p ev
+    return (particle "ok")
+eval (Set { ePattern = p@(PSingle {}), eExpr = ev }) = do
+    v <- eval ev
+    define p (Primitive (eLocation ev) v)
+    return v
+eval (Set { ePattern = p@(PKeyword {}), eExpr = ev }) = do
+    v <- eval ev
+    define p (Primitive (eLocation ev) v)
+    return v
+eval (Set { ePattern = p, eExpr = ev }) = do
+    v <- eval ev
+    set p v
+eval (Dispatch
+        { eMessage = ESingle
+            { emID = i
+            , emName = n
+            , emTarget = t
+            }
+        }) = do
+    v <- eval t
+    dispatch (Single i n v)
+eval (Dispatch
+        { eMessage = EKeyword
+            { emID = i
+            , emNames = ns
+            , emTargets = ts
+            }
+        }) = do
+    vs <- mapM eval ts
+    dispatch (Keyword i ns vs)
+eval (Operator { eNames = ns, eAssoc = a, ePrec = p }) = do
+    forM_ ns $ \n -> modify $ \s ->
+        s
+            { parserState =
+                (parserState s)
+                    { psOperators =
+                        (n, (a, p)) : psOperators (parserState s)
+                    }
             }
 
-        return (particle "ok")
-    eval' (EParticle { eParticle = EPMSingle n }) =
-        return (Particle $ PMSingle n)
-    eval' (EParticle { eParticle = EPMKeyword ns mes }) = do
-        mvs <- forM mes $
-            maybe (return Nothing) (liftM Just . eval)
-        return (Particle $ PMKeyword ns mvs)
-    eval' (ETop {}) = gets top
-    eval' (EVM { eAction = x }) = x
-    eval' (EUnquote { eExpr = e' }) = raise ["out-of-quote"] [Expression e']
-    eval' (EQuote { eExpr = qe }) = do
-        unquoted <- unquote 0 qe
-        return (Expression unquoted)
-      where
-        unquote :: Int -> Expr -> VM Expr
-        unquote 0 (EUnquote { eExpr = e' }) = do
-            r <- eval e'
-            case r of
-                Expression e'' -> return e''
-                _ -> return (Primitive Nothing r)
-        unquote n u@(EUnquote { eExpr = e' }) = do
-            ne <- unquote (n - 1) e'
-            return (u { eExpr = ne })
-        unquote n d@(Define { eExpr = e' }) = do
-            ne <- unquote n e'
-            return (d { eExpr = ne })
-        unquote n s@(Set { eExpr = e' }) = do
-            ne <- unquote n e'
-            return (s { eExpr = ne })
-        unquote n d@(Dispatch { eMessage = em }) =
-            case em of
-                EKeyword { emTargets = ts } -> do
-                    nts <- mapM (unquote n) ts
-                    return d { eMessage = em { emTargets = nts } }
+    return (particle "ok")
+eval (Primitive { eValue = v }) = return v
+eval (EBlock { eArguments = as, eContents = es }) = do
+    t <- gets top
+    return (Block t as es)
+eval (EList { eContents = es }) = do
+    vs <- mapM eval es
+    return (list vs)
+eval (EMacro { ePattern = p, eExpr = e }) = do
+    ps <- gets parserState
+    modify $ \s -> s
+        { parserState = ps
+            { psMacros =
+                case p of
+                    PSingle {} ->
+                        (addMethod (Macro p e) (fst (psMacros ps)), snd (psMacros ps))
 
-                ESingle { emTarget = t } -> do
-                    nt <- unquote n t
-                    return d { eMessage = em { emTarget = nt } }
-        unquote n b@(EBlock { eContents = es }) = do
-            nes <- mapM (unquote n) es
-            return b { eContents = nes }
-        unquote n l@(EList { eContents = es }) = do
-            nes <- mapM (unquote n) es
-            return l { eContents = nes }
-        unquote n m@(EMacro { eExpr = e' }) = do
-            ne <- unquote n e'
-            return m { eExpr = ne }
-        unquote n p@(EParticle { eParticle = ep }) =
-            case ep of
-                EPMKeyword ns mes -> do
-                    nmes <- forM mes $ \me ->
-                        case me of
-                            Nothing -> return Nothing
-                            Just e' -> liftM Just (unquote n e')
+                    PKeyword {} ->
+                        (fst (psMacros ps), addMethod (Macro p e) (snd (psMacros ps)))
 
-                    return p { eParticle = EPMKeyword ns nmes }
+                    _ -> error $ "impossible: eval EMacro: p is " ++ show p
+            }
+        }
 
-                _ -> return p
-        unquote n q@(EQuote { eExpr = e' }) = do
-            ne <- unquote (n + 1) e'
-            return q { eExpr = ne }
-        unquote _ p@(Primitive {}) = return p
-        unquote _ t@(ETop {}) = return t
-        unquote _ v@(EVM {}) = return v
-        unquote _ o@(Operator {}) = return o
+    return (particle "ok")
+eval (EParticle { eParticle = EPMSingle n }) =
+    return (Particle $ PMSingle n)
+eval (EParticle { eParticle = EPMKeyword ns mes }) = do
+    mvs <- forM mes $
+        maybe (return Nothing) (liftM Just . eval)
+    return (Particle $ PMKeyword ns mvs)
+eval (ETop {}) = gets top
+eval (EVM { eAction = x }) = x
+eval (EUnquote { eExpr = e }) = raise ["out-of-quote"] [Expression e]
+eval (EQuote { eExpr = qe }) = do
+    unquoted <- unquote 0 qe
+    return (Expression unquoted)
+    where
+    unquote :: Int -> Expr -> VM Expr
+    unquote 0 (EUnquote { eExpr = e }) = do
+        r <- eval e
+        case r of
+            Expression e' -> return e'
+            _ -> return (Primitive Nothing r)
+    unquote n u@(EUnquote { eExpr = e }) = do
+        ne <- unquote (n - 1) e
+        return (u { eExpr = ne })
+    unquote n d@(Define { eExpr = e }) = do
+        ne <- unquote n e
+        return (d { eExpr = ne })
+    unquote n s@(Set { eExpr = e }) = do
+        ne <- unquote n e
+        return (s { eExpr = ne })
+    unquote n d@(Dispatch { eMessage = em }) =
+        case em of
+            EKeyword { emTargets = ts } -> do
+                nts <- mapM (unquote n) ts
+                return d { eMessage = em { emTargets = nts } }
+
+            ESingle { emTarget = t } -> do
+                nt <- unquote n t
+                return d { eMessage = em { emTarget = nt } }
+    unquote n b@(EBlock { eContents = es }) = do
+        nes <- mapM (unquote n) es
+        return b { eContents = nes }
+    unquote n l@(EList { eContents = es }) = do
+        nes <- mapM (unquote n) es
+        return l { eContents = nes }
+    unquote n m@(EMacro { eExpr = e }) = do
+        ne <- unquote n e
+        return m { eExpr = ne }
+    unquote n p@(EParticle { eParticle = ep }) =
+        case ep of
+            EPMKeyword ns mes -> do
+                nmes <- forM mes $ \me ->
+                    case me of
+                        Nothing -> return Nothing
+                        Just e -> liftM Just (unquote n e)
+
+                return p { eParticle = EPMKeyword ns nmes }
+
+            _ -> return p
+    unquote n q@(EQuote { eExpr = e }) = do
+        ne <- unquote (n + 1) e
+        return q { eExpr = ne }
+    unquote _ p@(Primitive {}) = return p
+    unquote _ t@(ETop {}) = return t
+    unquote _ v@(EVM {}) = return v
+    unquote _ o@(Operator {}) = return o
 
 -- | evaluating multiple expressions, returning the last result
 evalAll :: [Expr] -> VM Value
@@ -171,9 +169,7 @@ withTop t x = do
     o <- gets top
     modify (\e -> e { top = t })
 
-    res <- x --catchError x $ \err -> do
-        {-modify (\e -> e { top = o })-}
-        {-throwError err-}
+    res <- x
 
     modify (\e -> e { top = o })
 
