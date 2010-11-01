@@ -51,7 +51,7 @@
 
         *restarts* _? (zip: (0 .. *restarts* _? length)) map:
           { choice |
-            [index, name] = [choice from, choice to from]
+            [index, name] = [choice to, choice from from]
             ("  " .. index show .. ": " .. name show) print
           }
       }
