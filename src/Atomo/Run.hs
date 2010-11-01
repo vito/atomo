@@ -64,8 +64,10 @@ loadPrelude = do
         [ "core"
 
         , "association"
-        , "exception"
         , "parameter"
+
+        , "condition"
+        , "exception"
 
         , "block"
         , "boolean"
@@ -76,8 +78,6 @@ loadPrelude = do
         , "particle"
         , "ports"
         , "time"
-
-        , "condition"
 
         , "version"
         , "eco"
