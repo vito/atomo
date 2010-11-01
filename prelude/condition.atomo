@@ -68,6 +68,9 @@
       @none -> error: @(unknown-restart: name)
     }
 
+  (super) find-restart: name :=
+    *restarts* _? lookup: name
+
   (a: Block) bind: (bs: Block) :=
     { h = Handler clone
 
