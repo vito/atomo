@@ -1,0 +1,29 @@
+describe: "condition" as: {
+  describe: @signal: as: {
+    it: "triggers matching handlers" so: {
+      define: x as: 0
+      { signal: @foo } bind: { @foo -> (x =! 1) }
+      x _? should-be: 1
+    }
+
+    it: "does not trigger non-matching handlers" so: {
+      define: x as: 0
+      { signal: @foo } bind: { @bar -> (x =! 1) }
+      x _? should-be: 0
+    }
+
+    it: "goes through handlers, nearest-first" so: {
+      define: xs as: []
+
+      { { signal: @foo
+        } bind: {
+          @foo -> (xs =! 1 . xs _?)
+        }
+      } bind: {
+        @foo -> (xs =! 2 . xs _?)
+      }
+
+      xs _? should-be: [2, 1]
+    }
+  }
+}

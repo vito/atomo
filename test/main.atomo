@@ -1,6 +1,7 @@
 use: "therie"
 
 theorize: {
+  load: "suite/condition.atomo"
   load: "suite/dispatch.atomo"
   load: "suite/blocks.atomo"
 }
