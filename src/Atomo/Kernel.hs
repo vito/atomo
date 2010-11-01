@@ -58,6 +58,11 @@ load = do
         y <- here "y"
         fmap Boolean (delegatesTo x y)
 
+    [$p|(x: Object) dump|] =: do
+        o <- here "x"
+        liftIO (print o)
+        return o
+
     [$p|(x: Object) delegates|] =: do
         o <- here "x" >>= objectFor
         return $ list (oDelegates o)
