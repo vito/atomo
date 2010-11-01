@@ -7,7 +7,7 @@ start: token := {
         { roundtrip: id next: pid } spawn
     } with: self
 
-    h ! token
+    h <- token
 
     roundtrip: 1 next: h
 } call
@@ -18,11 +18,11 @@ roundtrip: id next: pid :=
 
         1 -> {
             id print
-            main ! @done
+            main <- @done
         } call
 
         (token: Integer) -> {
-            pid ! (token - 1)
+            pid <- (token - 1)
             roundtrip: id next: pid
         } call
     }
