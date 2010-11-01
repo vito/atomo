@@ -4,7 +4,7 @@ macro x match: (ts: Block) :=
     @match-on: define-on: obj with: [`x as: Pattern] as:
       `(raise: @(no-matches-for: x))
 
-    ts contents each:
+    ts contents map:
       { `(~p -> ~e) |
         @match-on: define-on: obj with: [p as: Pattern] as:
           `({ delegates-to: sender; ~e } call) in: Lobby
