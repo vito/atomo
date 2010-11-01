@@ -29,7 +29,7 @@ execWith x e = do
 
     forkIO $ do
         r <- runWith (go x >> gets halt >>= liftIO >> return (particle "ok")) e
-            { halt = writeChan haltChan ()
+            { halt = writeChan haltChan () >> myThreadId >>= killThread
             }
 
         {-either-}
