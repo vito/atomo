@@ -64,7 +64,7 @@
 
   (super) restart: name with: (params: List) :=
     *restarts* _? (lookup: name) match: {
-      @(ok: r) -> chosen jump: params
+      @(ok: r) -> r jump: params
       @none -> error: @(unknown-restart: name)
     }
 
