@@ -1,4 +1,3 @@
-{-# LANGUAGE OverloadedStrings, RankNTypes #-}
 {-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.Parser.Base where
 

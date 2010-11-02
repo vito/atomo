@@ -97,7 +97,7 @@ eval (EUnquote { eExpr = e }) = raise ["out-of-quote"] [Expression e]
 eval (EQuote { eExpr = qe }) = do
     unquoted <- unquote 0 qe
     return (Expression unquoted)
-    where
+  where
     unquote :: Int -> Expr -> VM Expr
     unquote 0 (EUnquote { eExpr = e }) = do
         r <- eval e
@@ -208,7 +208,7 @@ define !p !e = do
 
             _ -> targets is newp
 
-    forM_ os $ \o -> do
+    forM_ os $ \o ->
         defineOn (Reference o) (m o)
   where
     isTop PThis = True
