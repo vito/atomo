@@ -63,6 +63,7 @@ loadPrelude = do
     preludes =
         [ "core"
 
+        , "boolean"
         , "association"
         , "parameter"
 
@@ -70,7 +71,6 @@ loadPrelude = do
         , "exception"
 
         , "block"
-        , "boolean"
         , "comparable"
         , "continuation"
         , "list"
