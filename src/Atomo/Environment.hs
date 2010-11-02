@@ -396,14 +396,15 @@ match _ PETop (Expression (ETop {})) = True
 match _ PEQuote (Expression (EQuote {})) = True
 match _ PEUnquote (Expression (EUnquote {})) = True
 match _ (PExpr a) (Expression b) = matchExpr 0 a b
+match ids p (Reference y) = delegatesMatch ids p y
 match _ _ _ = False
 
 refMatch :: IDs -> ORef -> ORef -> Bool
-refMatch ids x y = x == y || delegatesMatch
-  where
-    delegatesMatch = any
-        (match ids (PMatch (Reference x)))
-        (oDelegates (unsafePerformIO (readIORef y)))
+refMatch ids x y = x == y || delegatesMatch ids (PMatch (Reference x)) y
+
+delegatesMatch :: IDs -> Pattern -> ORef -> Bool
+delegatesMatch ids p x =
+    any (match ids p) (oDelegates (unsafePerformIO (readIORef x)))
 
 -- | match multiple patterns with multiple values
 matchAll :: IDs -> [Pattern] -> [Value] -> Bool
@@ -512,6 +513,8 @@ bindings' (PHeadTail hp tp) (List vs) =
 bindings' (PHeadTail hp tp) (String t) | not (T.null t) =
     bindings' hp (Char (T.head t)) ++ bindings' tp (String (T.tail t))
 bindings' (PExpr a) (Expression b) = exprBindings 0 a b
+bindings' p (Reference r) =
+    concat . map (bindings' p) $ oDelegates (unsafePerformIO (readIORef r))
 bindings' _ _ = []
 
 
