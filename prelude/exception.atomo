@@ -1,6 +1,6 @@
 macro action handle: (branches: Block) :=
   { handlers = `Block new: (branches contents map:
-      { `(~c -> ~e) | `(~c -> { restart: @use-value with: [~e] })
+      { `(~c -> ~e) | `(~c -> restart: @use-value with: [~e])
       })
 
     `({ ~action with-restarts: { @use-value -> { r | r } } } bind: ~handlers)

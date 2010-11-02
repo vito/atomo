@@ -56,6 +56,8 @@
           }
       }
 
+      "[!]> " display
+
       chosen = *restarts* _? (at: read) to
       chosen jump: []
     } call
@@ -76,9 +78,19 @@
 
       bs contents map:
         { `(~c -> ~e) |
-          if: (e type == @block)
-            then: { @handle: define-on: h with: [`(e: ~(c evaluate-in: sender)) as: Pattern] as: `(~e call: [e]) in: sender }
-            else: { @handle: define-on: h with: [c as: Pattern] as: e in: sender }
+          [arg, expr] =
+            condition: {
+              e type == @block && e arguments empty? not ->
+                [`(e: ~(c evaluate-in: sender)) as: Pattern, `(~e call: [e])]
+
+              e type == @block ->
+                [c as: Pattern, `(~e call)]
+
+              otherwise ->
+                [c as: Pattern, e]
+            }
+
+          @handle: define-on: h with: [arg] as: expr in: sender
         }
 
       with: *handlers* as: (h . *handlers* _?) do: a
