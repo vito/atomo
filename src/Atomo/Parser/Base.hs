@@ -14,10 +14,10 @@ type Parser = ParsecT String ParserState VM
 
 
 opLetters :: [Char]
-opLetters = "~!@#$%^&*-=+./\\|<>?"
+opLetters = "!@#%&*-./\\?"
 
 isOperator :: String -> Bool
-isOperator = all (`elem` opLetters)
+isOperator = all (\c -> isSymbol c || c `elem` opLetters)
 
 def :: P.GenLanguageDef String ParserState VM
 def = P.LanguageDef
@@ -27,8 +27,8 @@ def = P.LanguageDef
     , P.nestedComments = True
     , P.identStart = letter <|> P.opStart def <|> oneOf "_"
     , P.identLetter = alphaNum <|> P.opLetter def
-    , P.opStart = oneOf (opLetters \\ "@~")
-    , P.opLetter = oneOf opLetters
+    , P.opStart = satisfy isSymbol <|> oneOf (opLetters \\ "@~")
+    , P.opLetter = satisfy isSymbol <|> oneOf opLetters
     , P.reservedOpNames = ["=", ":=", ",", "|"]
     , P.reservedNames = ["operator", "macro", "for-macro", "True", "False"]
     , P.caseSensitive = True
