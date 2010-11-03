@@ -1,3 +1,15 @@
+Default-Debugger = Object clone do:
+  { run: e :=
+      { Restart show-options-for: e
+
+        "!> " display
+
+        Restart (get: read) jump: []
+      } call
+  }
+
+define: current-debugger as: Default-Debugger
+
 { define: *handlers* as: []
   define: *restarts* as: []
 
@@ -5,6 +17,27 @@
 
   for-macro Handler = Object clone do: { handle: _ := @ok }
   for-macro Restart = Object clone
+
+  Restart show-options-for: e :=
+    with-output-to: Port standard-error do: {
+      '-' (repeat: 78) print
+      ("*** " .. e show) print
+
+      when: *restarts* _? empty?
+        do: { halt }
+
+      "" print
+      "restarts:" print
+
+      *restarts* _? (zip: (0 .. *restarts* _? length)) map:
+        { choice |
+          [index, name] = [choice to, choice from from]
+          ("  " .. index show .. ": " .. name show) print
+        }
+    }
+
+  Restart get: (n: Integer) :=
+    *restarts* _? (at: n) to
 
   Restart new: (a: Block) in: (c: Continuation) :=
     Restart clone do:
@@ -39,27 +72,7 @@
 
       signal: err
 
-      with-output-to: Port standard-error do: {
-        '-' (repeat: 78) print
-        ("*** " .. e show) print
-
-        when: *restarts* _? empty?
-          do: { halt }
-
-        "" print
-        "restarts:" print
-
-        *restarts* _? (zip: (0 .. *restarts* _? length)) map:
-          { choice |
-            [index, name] = [choice to, choice from from]
-            ("  " .. index show .. ": " .. name show) print
-          }
-      }
-
-      "[!]> " display
-
-      chosen = *restarts* _? (at: read) to
-      chosen jump: []
+      current-debugger _? run: e
     } call
 
   (super) restart: name := restart: name with: []
