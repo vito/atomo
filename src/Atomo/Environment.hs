@@ -812,7 +812,7 @@ fromHaskell t _ = raise ["dynamic-needed"] [string t]
 throwError :: AtomoError -> VM a
 throwError e = gets top >>= \t ->
     ifVM (dispatch (keyword ["responds-to?"] [t, particle "Error"]))
-        (dispatch (msg t) >> undefined)
+        (dispatch (msg t) >> (error $ "panic: error returned normally for: " ++ show (pretty e)))
         (error ("panic: " ++ show (pretty e)))
   where
     msg t = keyword ["error"] [t, asValue e]
