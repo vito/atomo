@@ -1,3 +1,5 @@
+- (n: Number) := -1 * n
+
 (n: Integer) even? := 2 divides?: n
 (n: Integer) odd? := n even? not
 
