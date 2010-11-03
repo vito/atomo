@@ -74,7 +74,7 @@ load = do
         return (PNamed n p)
     toPattern (Dispatch { eMessage = ESingle { emName = "_" } }) =
         return PAny
-    toPattern (Dispatch { eMessage = ESingle { emName = n } }) =
+    toPattern (Dispatch { eMessage = ESingle { emTarget = ETop {}, emName = n } }) =
         return (PNamed n PAny)
     toPattern (EList { eContents = es }) = do
         ps <- mapM toPattern es
