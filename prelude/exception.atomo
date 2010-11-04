@@ -1,9 +1,10 @@
 macro action handle: (branches: Block) :=
-  { handlers = `Block new: (branches contents map:
+  { handlers = branches contents map:
       { `(~c -> ~e) | `(~c -> restart: @use-value with: [~e])
-      })
+      }
 
-    `({ ~action with-restarts: { @use-value -> { r | r } } } bind: ~handlers)
+    `({ ~action with-restarts: { @use-value -> { r | r } } }
+        bind: ~(`Block new: handlers))
   } call
 
 macro a handle: (b: Block) ensuring: (c: Block) :=
@@ -17,19 +18,11 @@ macro a handle: (b: Block) ensuring: (c: Block) :=
     Error -> { e | restart: @use-value with: [recover call: [e]] }
   }
 
-(action: Block) catch: (recover: Block) ensuring: (cleanup: Block) :=
-  { { res = action call; cleanup call; res } with-restarts: {
-      @use-value -> { r | cleanup call; r }
-    }
-  } bind: {
-    Error -> { e | restart: @use-value with: [recover call: [e]] }
-  }
+macro a catch: (b: Block) ensuring: (c: Block) :=
+  `({ ~a catch: ~b } ensuring: ~c)
 
 (action: Block) ensuring: (cleanup: Block) :=
-  { res = action call; cleanup call; res
-  } bind: {
-    Error -> cleanup call
-  }
+  action after: cleanup
 
 v ensuring: p do: b :=
   { b call: [v] } ensuring: { p call: [v] }
