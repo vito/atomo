@@ -359,8 +359,8 @@ match ids PThis (Reference y) =
 match ids PThis y =
     match ids (PMatch (Reference (idMatch ids))) (Reference (orefFrom ids y))
 match _ (PMatch x) y | x == y = True
-match _ (PMatch x) (Reference y) =
-    unsafeDelegatesTo (Reference y) x
+match ids (PMatch x) (Reference y) =
+    delegatesMatch ids (PMatch x) y
 match ids (PMatch (Reference x)) y =
     match ids (PMatch (Reference x)) (Reference (orefFrom ids y))
 match ids
