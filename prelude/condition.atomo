@@ -42,6 +42,8 @@ define: current-debugger as: Default-Debugger
   Restart new: (a: Block) in: (c: Continuation) :=
     Restart clone do:
       { jump: as := c yield: (a call: as)
+        action = a
+        context = c
       }
 
   macro action with-restarts: (restarts: Block) :=
