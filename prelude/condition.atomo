@@ -19,8 +19,7 @@ define: current-debugger as: Default-Debugger
   for-macro Restart = Object clone
 
   Restart show-options-for: e :=
-    with-output-to: Port standard-error do: {
-      '-' (repeat: 78) print
+    { '-' (repeat: 78) print
       ("*** " .. e show) print
 
       when: *restarts* _? empty?
@@ -34,7 +33,7 @@ define: current-debugger as: Default-Debugger
           [index, name] = [choice to, choice from from]
           ("  " .. index show .. ": " .. name show) print
         }
-    }
+    } call
 
   Restart get: (n: Integer) :=
     *restarts* _? (at: n) to
@@ -74,15 +73,20 @@ define: current-debugger as: Default-Debugger
 
       signal: err
 
-      current-debugger _? run: e
+      with-output-to: Port standard-error do: {
+        current-debugger _? run: e
+      }
     } call
 
   (super) restart: name := restart: name with: []
 
   (super) restart: name with: (params: List) :=
     *restarts* _? (lookup: name) match: {
-      @(ok: r) -> r jump: params
-      @none -> error: @(unknown-restart: name)
+      @(ok: r) ->
+        r jump: params
+
+      @none ->
+        error: @(unknown-restart: name)
     }
 
   (super) find-restart: name :=
