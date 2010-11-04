@@ -12,7 +12,7 @@ import qualified Language.Haskell.Interpreter as H
 
 import Atomo.Method
 import Atomo.Types hiding (keyword)
-import Atomo.Parser.Base (opLetters)
+import Atomo.Parser.Base (isOperator)
 
 
 data Context
@@ -281,8 +281,8 @@ keywords = keywords' (prettyFrom CKeyword)
 
 keyword :: String -> String
 keyword k
-    | all (`elem` opLetters) k = k
-    | otherwise                = k ++ ":"
+    | isOperator k = k
+    | otherwise    = k ++ ":"
 
 infixr 4 <++>, <+++>
 
