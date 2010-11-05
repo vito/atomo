@@ -2,6 +2,8 @@
 {-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.Kernel.Pattern (load) where
 
+import Data.Char (isUpper)
+
 import Atomo
 import Atomo.Method
 
@@ -62,7 +64,14 @@ load = do
         Pattern p <- here "p" >>= findPattern
         v <- here "v"
         s <- eval [$e|sender|]
-        withTop s (set p v)
+
+        let isMethod (PSingle {}) = True
+            isMethod (PKeyword {}) = True
+            isMethod _ = False
+
+        if isMethod p
+            then define p (Primitive Nothing v) >> return v
+            else withTop s (set p v)
   where
     -- convert an expression to the pattern match it represents
     toPattern (Dispatch { eMessage = EKeyword { emNames = ["."], emTargets = [h, t] } }) = do
@@ -72,10 +81,16 @@ load = do
     toPattern (Dispatch { eMessage = EKeyword { emNames = [n], emTargets = [ETop {}, x] } }) = do
         p <- toPattern x
         return (PNamed n p)
+    toPattern (Dispatch { eMessage = EKeyword { emNames = ns, emTargets = ts } }) = do
+        ps <- mapM toPattern ts
+        return (pkeyword ns ps)
     toPattern (Dispatch { eMessage = ESingle { emName = "_" } }) =
         return PAny
-    toPattern (Dispatch { eMessage = ESingle { emTarget = ETop {}, emName = n } }) =
-        return (PNamed n PAny)
+    toPattern d@(Dispatch { eMessage = ESingle { emTarget = ETop {}, emName = n } })
+        | isUpper (head n) = return (PObject d)
+        | otherwise = return (PNamed n PAny)
+    toPattern (Dispatch { eMessage = ESingle { emTarget = d@(Dispatch {}), emName = n } }) =
+        return (psingle n (PObject d))
     toPattern (EList { eContents = es }) = do
         ps <- mapM toPattern es
         return (PList ps)
