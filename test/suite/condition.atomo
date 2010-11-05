@@ -25,5 +25,19 @@ describe: "condition" as: {
 
       xs _? should-be: [2, 1]
     }
+
+    it: "calls the nearest restart if names conflict" so: {
+      res =
+        { { res = { error: @foo } with-restarts: { @use-value -> { r | r } }
+            res .. "?"
+          } with-restarts: {
+            @use-value -> { r | r }
+          }
+        } bind: {
+          Error -> { restart: @use-value with: ["!"] }
+        }
+
+      res should-be: "!?"
+    }
   }
 }
