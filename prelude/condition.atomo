@@ -13,7 +13,24 @@ define: current-debugger as: Default-Debugger
 { define: *handlers* as: []
   define: *restarts* as: []
 
-  (super) Error = Object clone
+  super do: {
+    Condition = Object clone
+
+    Error = Condition clone
+    Simple-Error = Error clone
+
+    Warning = Condition clone
+    Simple-Warning = Warning clone
+  }
+
+  Simple-Error new: v :=
+    Simple-Error clone do: { delegates-to: v; value = v }
+
+  Simple-Warning new: v :=
+    Simple-Warning clone do: { delegates-to: v; value = v }
+
+  (e: Simple-Error) show := "<error " .. e value show .. ">"
+  (e: Simple-Warning) show := "<warning " .. e value show .. ">"
 
   for-macro Handler = Object clone do: { handle: _ := @ok }
   for-macro Restart = Object clone
@@ -69,7 +86,7 @@ define: current-debugger as: Default-Debugger
       @ok
     } call
 
-  (super) error: v := error: (v clone do: { delegates-to: Error })
+  (super) error: v := error: (Simple-Error new: v)
   (super) error: (e: Error) :=
     { signal: e
 
