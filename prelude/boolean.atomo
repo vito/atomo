@@ -22,6 +22,8 @@ when: True do: (action: Block) :=
     @ok
   } call
 
+macro e when: b := `(when: ~b do: { ~e })
+
 while: (test: Block) do: (action: Block) :=
   when: test call do:
     { action in-context call

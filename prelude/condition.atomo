@@ -44,8 +44,7 @@
     { '-' (repeat: 78) print
       ("*** " .. e describe-error) print
 
-      when: *restarts* _? empty?
-        do: { halt }
+      halt when: *restarts* _? empty?
 
       "" print
       "restarts:" print
