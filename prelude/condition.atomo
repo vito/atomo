@@ -39,11 +39,15 @@ define: current-debugger as: Default-Debugger
     *restarts* _? (at: n) to
 
   Restart new: (a: Block) in: (c: Continuation) :=
-    Restart clone do:
-      { jump: as := c yield: (a call: as)
-        action = a
-        context = c
-      }
+    { res = *restarts* _?
+      Restart clone do:
+        { jump: as := with: *restarts* as: res do: { c yield: (a call: as) }
+          action = a
+          context = c
+        }
+    } call
+
+  (r: Restart) show := "<restart " .. r action show .. ">"
 
   macro action with-restarts: (restarts: Block) :=
     { rs = restarts contents map:
@@ -65,13 +69,9 @@ define: current-debugger as: Default-Debugger
       @ok
     } call
 
-  (super) error: e :=
-    { err =
-        if: (e is-a?: Error)
-          then: { e }
-          else: { e clone do: { delegates-to: Error } }
-
-      signal: err
+  (super) error: v := error: (v clone do: { delegates-to: Error })
+  (super) error: (e: Error) :=
+    { signal: e
 
       with-output-to: Port standard-error do: {
         current-debugger _? run: e
