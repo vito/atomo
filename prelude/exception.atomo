@@ -1,22 +1,20 @@
 macro action handle: (branches: Block) :=
   { handlers = branches contents map:
-      { `(~c -> ~e) | `(~c -> restart: @use-value with: [~e])
+      { `(~c -> ~e) | `(~c -> escape-handle yield: ~e)
       }
 
-    `({ ~action with-restarts: { @use-value -> { r | r } } }
-        bind: ~(`Block new: handlers))
+    `({ escape-handle | ~action bind: ~(`Block new: handlers) } call/cc)
   } call
 
 macro a handle: (b: Block) ensuring: (c: Block) :=
   `({ ~a handle: ~b } ensuring: ~c)
 
 (action: Block) catch: (recover: Block) :=
-  { action with-restarts: {
-      @use-value -> { r | r }
+  { cc |
+    action bind: {
+      Error -> { e | cc yield: (recover call: [e]) }
     }
-  } bind: {
-    Error -> { e | restart: @use-value with: [recover call: [e]] }
-  }
+  } call/cc
 
 macro a catch: (b: Block) ensuring: (c: Block) :=
   `({ ~a catch: ~b } ensuring: ~c)
