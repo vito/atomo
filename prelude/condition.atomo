@@ -1,19 +1,20 @@
-Default-Debugger = Object clone do:
-  { run: e :=
-      { Restart show-options-for: e
-
-        "!> " display
-
-        Restart (get: read) jump: []
-      } call
-  }
-
-define: current-debugger as: Default-Debugger
-
 { define: *handlers* as: []
   define: *restarts* as: []
 
   super do: {
+    Default-Debugger = Object clone do:
+      { run: e :=
+          { Restart show-options-for: e
+
+            "!> " display
+
+            Restart (get: read) jump: []
+          } call
+      }
+
+    define: current-debugger as: Default-Debugger
+    define: error-output as: Port standard-error
+
     Condition = Object clone
 
     Error = Condition clone
@@ -22,6 +23,13 @@ define: current-debugger as: Default-Debugger
     Warning = Condition clone
     Simple-Warning = Warning clone
   }
+
+  Handler = Object clone do: { handle: _ := @ok }
+  for-macro Restart = Object clone
+
+  (o: Object) describe-error := o as: String
+  (e: Simple-Error) describe-error := e value as: String
+  (w: Simple-Warning) describe-error := w value as: String
 
   Simple-Error new: v :=
     Simple-Error clone do: { delegates-to: v; value = v }
@@ -32,12 +40,9 @@ define: current-debugger as: Default-Debugger
   (e: Simple-Error) show := "<error " .. e value show .. ">"
   (e: Simple-Warning) show := "<warning " .. e value show .. ">"
 
-  for-macro Handler = Object clone do: { handle: _ := @ok }
-  for-macro Restart = Object clone
-
   Restart show-options-for: e :=
     { '-' (repeat: 78) print
-      ("*** " .. e show) print
+      ("*** " .. e describe-error) print
 
       when: *restarts* _? empty?
         do: { halt }
@@ -70,8 +75,8 @@ define: current-debugger as: Default-Debugger
     { rs = restarts contents map:
         { `(~n -> ~e) |
           e type match: {
-            @block -> `(~n -> Restart new: ~e in: cc)
-            _ -> `(~n -> Restart new: { ~e } in: cc)
+            @block -> `(~n -> ~Restart new: ~e in: cc)
+            _ -> `(~n -> ~Restart new: { ~e } in: cc)
           }
         }
 
@@ -90,10 +95,23 @@ define: current-debugger as: Default-Debugger
   (super) error: (e: Error) :=
     { signal: e
 
-      with-output-to: Port standard-error do: {
+      with-output-to: error-output _? do: {
         current-debugger _? run: e
       }
     } call
+
+  (super) warning: v := warning: (Simple-Warning new: v)
+  (super) warning: (w: Warning) :=
+    { signal: w
+
+      with-output-to: error-output _? do: {
+        ("WARNING: " .. w describe-error) print
+      }
+
+      @ok
+    } with-restarts: {
+      @muffle-warning -> @ok
+    }
 
   (super) restart: name := restart: name with: []
 
@@ -109,21 +127,27 @@ define: current-debugger as: Default-Debugger
   (super) find-restart: name :=
     *restarts* _? lookup: name
 
+  expr-for: e :=
+    condition: {
+      e type == @block && e arguments empty? not ->
+        `(~e call: [s])
+
+      e type == @block ->
+        `(~e call)
+
+      otherwise -> e
+  }
+
   (a: Block) bind: (bs: Block) :=
     { h = Handler clone
 
       bs contents map:
-        { `(~c -> ~e) |
+        { branch |
           [arg, expr] =
-            condition: {
-              e type == @block && e arguments empty? not ->
-                [`(e: ~(c evaluate-in: sender)) as: Pattern, `(~e call: [e])]
-
-              e type == @block ->
-                [c as: Pattern, `(~e call)]
-
-              otherwise ->
-                [c as: Pattern, e]
+            branch match: {
+              `(~c -> ~e) -> [c as: Pattern, e]
+              `(~c => ~e) -> [`(s: ~(c evaluate-in: sender)) as: Pattern, expr-for: e]
+              unknown -> error: @(invalid-branch-syntax: unknown)
             }
 
           @handle: define-on: h with: [arg] as: expr in: sender

@@ -34,7 +34,7 @@ describe: "condition" as: {
             @use-value -> { r | r }
           }
         } bind: {
-          Error -> { restart: @use-value with: ["!"] }
+          Error => { restart: @use-value with: ["!"] }
         }
 
       res should-be: "!?"
