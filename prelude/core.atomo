@@ -1,3 +1,42 @@
+@(parse-error: d) describe-error :=
+  "parse error:\n" .. (d indent: 2)
+
+@(did-not-understand: m) describe-error :=
+  "message not understood: " .. m show
+
+@(pattern: p did-not-match: v) describe-error :=
+  v show .. " did not match pattern: " .. p show
+
+@(unknown-hint-error: d) describe-error :=
+  "unknown hint error:\n" .. (d indent: 2)
+
+@(wont-compile: es) describe-error :=
+  "Haskell source won't compile:\n" .. es (map: @(indent: 2)) (join: "\n\n")
+
+@(not-allowed: e) describe-error :=
+  "not allowed: " .. e
+
+@(ghc-exception: e) describe-error :=
+  "GHC exception: " .. e
+
+@(file-not-found: f) describe-error :=
+  "file not found: " .. f
+
+@(particle-needed: n given: g) describe-error :=
+  "particle needed " .. n show .. " values to complete, given " .. g show
+
+@(block-expected: e given: g) describe-error :=
+  "block expected " .. e show .. " arguments, given " .. g show
+
+@no-expressions describe-error := "no expressions to evaluate"
+
+@(could-not-find: t in: v) describe-error :=
+  "could not find a " .. t .. " in: " .. v show
+
+@(dynamic-needed: t) describe-error :=
+  "expecting Haskell value of type " .. t
+
+
 macro x match: (ts: Block) :=
   { obj = Object clone
 

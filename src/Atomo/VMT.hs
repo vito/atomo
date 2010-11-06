@@ -44,5 +44,5 @@ getEnv = VMT $ \e -> return (e, e)
 putEnv :: Monad m => Env -> VMT m ()
 putEnv e = VMT $ \_ -> return ((), e)
 
-execVM :: Monad m => (VMT m a) -> Env -> (AtomoError -> m a) -> m a
-execVM x e h = liftM fst (runVMT x e) -- TODO: handle
+execVM :: Monad m => VMT m a -> Env -> m a
+execVM x e = liftM fst (runVMT x e)

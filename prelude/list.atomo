@@ -1,3 +1,5 @@
+@empty-list describe-error := "list is empty"
+
 (l: List) each: (b: Block) :=
   { l map: b in-context
     l

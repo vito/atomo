@@ -12,7 +12,6 @@ import qualified Data.Text as T
 import qualified Data.Vector as V
 
 import Atomo.Method
-import Atomo.Pretty
 import Atomo.Types
 
 
@@ -812,7 +811,7 @@ fromHaskell t _ = raise ["dynamic-needed"] [string t]
 throwError :: AtomoError -> VM a
 throwError e = gets top >>= \t ->
     ifVM (dispatch (keyword ["responds-to?"] [t, particle "Error"]))
-        (dispatch (msg t) >> (error $ "panic: error returned normally for: " ++ show (pretty e)))
-        (error ("panic: " ++ show (pretty e)))
+        (dispatch (msg t) >> (error $ "panic: error returned normally for: " ++ show e))
+        (error ("panic: " ++ show e))
   where
     msg t = keyword ["error"] [t, asValue e]

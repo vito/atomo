@@ -2,13 +2,11 @@
 module Atomo.Pretty (Pretty(..), prettyStack) where
 
 import Data.IORef
-import Data.List (nub)
 import Data.Maybe (isJust)
 import Data.Ratio
 import Text.PrettyPrint hiding (braces)
 import System.IO.Unsafe
 import qualified Data.Vector as V
-import qualified Language.Haskell.Interpreter as H
 
 import Atomo.Method
 import Atomo.Types hiding (keyword)
@@ -195,47 +193,6 @@ instance Pretty EParticle where
             case me of
                 Nothing -> text "_"
                 Just e -> pretty e
-
-
-instance Pretty AtomoError where
-    prettyFrom _ (Error v) = text "error:" <+> pretty v
-    prettyFrom _ (DidNotUnderstand m) =
-        text "message not understood:" $$ nest 2 (pretty m)
-    prettyFrom _ (ParseError e) =
-        text "parse error:" $$ nest 2 (text (show e))
-    prettyFrom _ (Mismatch p v) =
-        text "pattern" <+> char '<' <> pretty p <> char '>' <+> text "did not match value:" <+> pretty v
-    prettyFrom _ (ImportError (H.UnknownError s)) =
-        text "import error:" <+> text s
-    prettyFrom _ (ImportError (H.WontCompile ges)) =
-        text "import error:" $$ nest 2 (vcat (map (\e -> text e <> char '\n') (nub (map H.errMsg ges))))
-    prettyFrom _ (ImportError (H.NotAllowed s)) =
-        text "import error:" <+> text s
-    prettyFrom _ (ImportError (H.GhcException s)) =
-        text "import error:" <+> text s
-    prettyFrom _ (FileNotFound fn) =
-        text "file not found:" <+> text fn
-    prettyFrom _ (ParticleArity e g) =
-        text . unwords $
-            [ "particle needs"
-            , show e
-            , "values to complete,"
-            , show g
-            , "given"
-            ]
-    prettyFrom _ (BlockArity e g) =
-        text . unwords $
-            [ "block expects"
-            , show e
-            , "arguments,"
-            , show g
-            , "given"
-            ]
-    prettyFrom _ NoExpressions = text "no expressions to evaluate"
-    prettyFrom _ (ValueNotFound d v) =
-        text ("could not find a " ++ d ++ " in") <+> pretty v
-    prettyFrom _ (DynamicNeeded t) =
-        text "dynamic value not of type" <+> text t
 
 
 instance Pretty Delegates where

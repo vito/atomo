@@ -58,11 +58,6 @@ load = do
         y <- here "y"
         fmap Boolean (delegatesTo x y)
 
-    [$p|(x: Object) dump|] =: do
-        o <- here "x"
-        liftIO (print o)
-        return o
-
     [$p|(x: Object) delegates|] =: do
         o <- here "x" >>= objectFor
         return $ list (oDelegates o)
@@ -93,6 +88,13 @@ load = do
         [$p|ms singles|] =:: list (map (list . map Method) (elemsMap ss))
         [$p|ms keywords|] =:: list (map (list . map Method) (elemsMap ks))
         here "ms"
+
+    [$p|(x: Object) dump|] =: do
+        o <- here "x"
+        liftIO (print o)
+        return o
+
+    [$p|(x: Object) describe-error|] =::: [$e|x as: String|]
 
     [$p|(s: String) as: String|] =::: [$e|s|]
 

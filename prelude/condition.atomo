@@ -27,9 +27,8 @@
   Handler = Object clone do: { handle: _ := @ok }
   for-macro Restart = Object clone
 
-  (o: Object) describe-error := o as: String
-  (e: Simple-Error) describe-error := e value as: String
-  (w: Simple-Warning) describe-error := w value as: String
+  (e: Simple-Error) describe-error := e value describe-error
+  (w: Simple-Warning) describe-error := w value describe-error
 
   Simple-Error new: v :=
     Simple-Error clone do: { delegates-to: v; value = v }
@@ -42,11 +41,10 @@
 
   Restart show-options-for: e :=
     { '-' (repeat: 78) print
-      ("*** " .. e describe-error) print
+      e describe-error lines (map: { l | "*** " .. l }) unlines print
 
       halt when: *restarts* _? empty?
 
-      "" print
       "restarts:" print
 
       *restarts* _? (zip: (0 .. *restarts* _? length)) map:

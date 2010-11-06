@@ -7,6 +7,7 @@ import "monads-fd" Control.Monad.Cont
 import "monads-fd" Control.Monad.State
 import Data.Dynamic
 import Data.Hashable (hash)
+import Data.List (nub)
 import Data.IORef
 import Text.Parsec (ParseError, SourcePos)
 import qualified Data.IntMap as M
@@ -551,8 +552,14 @@ asValue (Mismatch pat v) =
     keyParticleN
         ["pattern", "did-not-match"]
         [Pattern pat, v]
-asValue (ImportError ie) =
-    keyParticleN ["import-error"] [string (show ie)]
+asValue (ImportError (H.UnknownError s)) =
+    keyParticleN ["unknown-hint-error"] [string s]
+asValue (ImportError (H.WontCompile ges)) =
+    keyParticleN ["wont-compile"] [list (nub $ map (string . H.errMsg) ges)]
+asValue (ImportError (H.NotAllowed s)) =
+    keyParticleN ["not-allowed"] [string s]
+asValue (ImportError (H.GhcException s)) =
+    keyParticleN ["ghc-exception"] [string s]
 asValue (FileNotFound fn) =
     keyParticleN ["file-not-found"] [string fn]
 asValue (ParticleArity e' g) =

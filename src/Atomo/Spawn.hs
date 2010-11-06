@@ -2,9 +2,7 @@ module Atomo.Spawn where
 
 import Control.Concurrent
 import "monads-fd" Control.Monad.State
-import "monads-fd" Control.Monad.Error
 
-import Atomo.PrettyVM
 import Atomo.Types
 
 

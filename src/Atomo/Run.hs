@@ -28,14 +28,9 @@ execWith x e = do
     haltChan <- newChan
 
     forkIO $ do
-        r <- runWith (go x >> gets halt >>= liftIO >> return (particle "ok")) e
+        runWith (go x >> gets halt >>= liftIO >> return (particle "ok")) e
             { halt = writeChan haltChan () >> myThreadId >>= killThread
             }
-
-        {-either-}
-            {-(putStrLn . ("WARNING: exited abnormally with: " ++) . show)-}
-            {-(\_ -> return ())-}
-            {-r-}
 
         writeChan haltChan ()
 
@@ -77,6 +72,7 @@ loadPrelude = do
         , "numeric"
         , "particle"
         , "ports"
+        , "string"
         , "time"
 
         , "version"

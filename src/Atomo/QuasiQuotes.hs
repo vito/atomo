@@ -19,7 +19,6 @@ import Atomo.Core
 import Atomo.Parser
 import Atomo.Parser.Pattern
 import Atomo.Parser.Base
-import Atomo.Pretty
 import Atomo.Types
 
 qqEnv :: IORef Env
