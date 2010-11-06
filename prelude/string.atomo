@@ -4,11 +4,9 @@
     s lines (map: { l | ' ' (repeat: n) .. l }) (join: "\n")
 
   (s: String) word-wrap: (length: Integer) :=
-    s lines (map:
-      { l |
-        -- TODO: l take-while: @space? would be cleaner
-        (l take: (l length - l strip-start length)) .. (wrap-line: l to: length)
-        }) unlines
+    s lines
+      (map: { l | (l take-while: @space?) .. (wrap-line: l to: length) })
+      unlines
 
   wrap-line: l to: length :=
     { words = l words
