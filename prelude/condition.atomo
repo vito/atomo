@@ -92,7 +92,7 @@
     } call
 
   (action: Block) with-restarts: (restarts: List) :=
-    with: *restarts* as: (restarts .. *restarts* _?) do: action
+    modify: *restarts* as: { rs | restarts .. rs } do: action
 
   (super) signal: v :=
     { *handlers* _? map: @(handle: v)
@@ -167,6 +167,6 @@
           @handle: define-on: h with: [arg] as: expr in: sender
         }
 
-      with: *handlers* as: (h . *handlers* _?) do: a
+      modify: *handlers* as: { hs | h . hs } do: a
     } call
 } call

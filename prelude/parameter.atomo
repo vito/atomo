@@ -44,3 +44,6 @@ macro with-defaults: (bs: List) do: action :=
         `{ with-default: ~a as: ~b do: ~x }
       } with: action)
     contents head
+
+macro modify: param as: change do: action :=
+  `(with: ~param as: (~change call: [~param _?]) do: ~action)

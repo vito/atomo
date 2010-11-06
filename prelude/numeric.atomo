@@ -1,3 +1,6 @@
+macro x += y := `(~(x as: Pattern) set-to: (~x + ~y))
+macro x -= y := `(~(x as: Pattern) set-to: (~x - ~y))
+
 - (n: Number) := -1 * n
 
 (n: Integer) even? := 2 divides?: n
