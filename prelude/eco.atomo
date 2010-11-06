@@ -228,13 +228,13 @@ context use: (name: String) version: (check: Block) :=
   "package unavailable: " .. name
 
 @(no-versions-of: pkg satisfy: check for: needer) describe-error :=
-  "no versions of " .. pkg .. " satisfy version constraint " .. check show .. " needed by " .. needer
+  "no versions of '" .. pkg .. "' satisfy version constraint " .. check show .. " needed by " .. needer
 
 @(no-package-versions: pkg) describe-error :=
-  "weird: package " .. pkg .. " has no versions"
+  "weird: package '" .. pkg .. "' has no versions"
 
 @(no-versions-of: pkg satisfy: check) describe-error :=
-  "no versions of " .. pkg .. " satisfy version constraint " .. check show
+  "no versions of '" .. pkg .. "' satisfy version constraint " .. check show
 
 @(incompatible-version-loaded: pkg needed: check) describe-error :=
-  "package " .. pkg .. " with version constraint " .. check show .. " required, but an incompatible version has already been loaded"
+  "package '" .. pkg .. "' with version constraint " .. check show .. " required, but an incompatible version has already been loaded"

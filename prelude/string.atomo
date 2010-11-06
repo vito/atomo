@@ -1,4 +1,31 @@
-@empty-string describe-error := "string is empty"
+{ @empty-string describe-error := "string is empty"
 
-(s: String) indent: (n: Integer) :=
-  s lines (map: { l | ' ' (repeat: n) .. l }) (join: "\n")
+  (s: String) indent: (n: Integer) :=
+    s lines (map: { l | ' ' (repeat: n) .. l }) (join: "\n")
+
+  (s: String) word-wrap: (length: Integer) :=
+    s lines (map:
+      { l |
+        -- TODO: l take-while: @space? would be cleaner
+        (l take: (l length - l strip-start length)) .. (wrap-line: l to: length)
+        }) unlines
+
+  wrap-line: l to: length :=
+    { words = l words
+
+      main = this
+      ok-words = []
+
+      { stop |
+        words each:
+          { w |
+            stop yield when: (ok-words  (<< w) unwords length > length)
+            main ok-words = ok-words << w
+          }
+      } call/cc
+
+      [ ok-words unwords
+        words (drop: ok-words length) unwords word-wrap: length
+      ] unlines strip-end
+    } call
+} call

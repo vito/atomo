@@ -41,7 +41,12 @@
 
   Restart show-options-for: e :=
     { '-' (repeat: 78) print
-      e describe-error lines (map: { l | "*** " .. l }) unlines print
+      e describe-error
+        (word-wrap: 74)
+        lines
+        (map: { l | "*** " .. l })
+        unlines
+        print
 
       halt when: *restarts* _? empty?
 
