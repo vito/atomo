@@ -29,11 +29,7 @@
               @(special: n) ->
                 when: (n all?: @digit?) do: {
                   r = Restart get: (n as: Integer)
-
-                  r action arguments length match: {
-                    0 -> r jump: []
-                    n -> r jump: (get-n-values: n)
-                  }
+                  r jump: (get-n-values: r action arguments length)
                 }
             }
           } call
@@ -47,7 +43,7 @@
 
   (env: Object) basic-repl :=
     { prompt =
-        { signal: @prompt; prompt } with-restarts: {
+        { signal: @prompt; "> " } with-restarts: {
           @use-prompt -> { p | p }
         }
 
