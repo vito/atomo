@@ -25,6 +25,7 @@ import qualified Atomo.Kernel.Ports as Ports
 import qualified Atomo.Kernel.Time as Time
 import qualified Atomo.Kernel.Environment as Environment
 import qualified Atomo.Kernel.Continuation as Continuation
+import qualified Atomo.Kernel.Char as Char
 
 load :: VM ()
 load = do
@@ -172,6 +173,7 @@ load = do
     Time.load
     Environment.load
     Continuation.load
+    Char.load
 
 
 joinWith :: Value -> Value -> [Value] -> VM Value

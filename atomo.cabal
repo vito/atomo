@@ -101,6 +101,7 @@ library
     Atomo.Kernel.Time,
     Atomo.Kernel.Environment,
     Atomo.Kernel.Continuation,
+    Atomo.Kernel.Char,
     Paths_atomo
 
 
