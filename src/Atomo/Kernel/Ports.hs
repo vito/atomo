@@ -27,6 +27,10 @@ load = do
     [$p|Port standard-output|] =:: soutp
     [$p|Port standard-error|] =:: serrp
 
+    [$p|(p: Port) show|] =: do
+        hdl <- getHandle [$e|p handle|] >>= liftIO . hShow
+        return (string ("<port " ++ hdl ++ ">"))
+
     [$p|Port new: (fn: String)|] =::: [$e|Port new: fn mode: @read-write|]
     [$p|Port new: (fn: String) mode: (m: Particle)|] =: do
         fn <- getString [$e|fn|]
