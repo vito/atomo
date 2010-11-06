@@ -1,6 +1,7 @@
 { define: *dynamic-winds* as: []
 
-  (o: Object) call/cc :=
+  (o: Object) call/cc := o call/cc: []
+  (o: Object) call/cc: as :=
     { cc |
       winds = *dynamic-winds* _?
 
@@ -13,7 +14,7 @@
             } call
         }
 
-      o call: [new]
+      o call: (new . as)
     } raw-call/cc
 
   (v: Block) before: (b: Block) := v before: b after: { @ok }
