@@ -65,7 +65,29 @@ load = do
         getText [$e|s|] >>=
             return . String . T.drop (fromIntegral n)
 
-    -- TODO: take-while:, drop-while:
+    [$p|(s: String) take-while: test|] =: do
+        t <- here "test"
+        s <- getString [$e|s|]
+
+        let takeWhileM [] = return []
+            takeWhileM (x:xs) =
+                ifVM (dispatch (keyword ["call"] [t, list [Char x]]))
+                    (liftM (x:) (takeWhileM xs))
+                    (return [])
+
+        liftM string $ takeWhileM s
+
+    [$p|(s: String) drop-while: test|] =: do
+        t <- here "test"
+        s <- getString [$e|s|]
+
+        let dropWhileM [] = return []
+            dropWhileM (x:xs) =
+                ifVM (dispatch (keyword ["call"] [t, list [Char x]]))
+                    (dropWhileM xs)
+                    (return (x:xs))
+
+        liftM string $ dropWhileM s
 
     [$p|(c: Char) repeat: (n: Integer)|] =: do
         Char c <- here "c" >>= findChar

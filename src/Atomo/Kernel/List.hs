@@ -189,7 +189,29 @@ load = do
     [$p|(l: List) and|] =::: [$e|l all?: @(== True)|]
     [$p|(l: List) or|] =::: [$e|l any?: @(== True)|]
 
-    -- TODO: take-while, drop-while
+    [$p|(l: List) take-while: test|] =: do
+        t <- here "test"
+        l <- getList [$e|l|]
+
+        let takeWhileM [] = return []
+            takeWhileM (x:xs) =
+                ifVM (dispatch (keyword ["call"] [t, list [x]]))
+                    (liftM (x:) (takeWhileM xs))
+                    (return [])
+
+        liftM list $ takeWhileM l
+
+    [$p|(l: List) drop-while: test|] =: do
+        t <- here "test"
+        l <- getList [$e|l|]
+
+        let dropWhileM [] = return []
+            dropWhileM (x:xs) =
+                ifVM (dispatch (keyword ["call"] [t, list [x]]))
+                    (dropWhileM xs)
+                    (return (x:xs))
+
+        liftM list $ dropWhileM l
 
     [$p|v in?: (l: List)|] =::: [$e|l contains?: v|]
     [$p|(l: List) contains?: v|] =::: [$e|l any?: @(== v)|]
