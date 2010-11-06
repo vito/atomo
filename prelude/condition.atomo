@@ -77,12 +77,18 @@
     { rs = restarts contents map:
         { `(~n -> ~e) |
           e type match: {
-            @block -> `(~n -> ~Restart new: ~e in: cc)
-            _ -> `(~n -> ~Restart new: { ~e } in: cc)
+            @block -> `(~n -> ~e)
+            _ -> `(~n -> { ~e })
           }
         }
 
-      `({ cc | ~action with-restarts: ~(`List new: rs) } call/cc)
+      `(
+        { cc action pairs |
+          restarts = pairs map:
+            { a | a from -> (~Restart new: a to in: cc) }
+          action with-restarts: restarts
+        } call/cc: [~action, ~(`List new: rs)]
+      )
     } call
 
   (action: Block) with-restarts: (restarts: List) :=
@@ -129,15 +135,16 @@
   (super) find-restart: name :=
     *restarts* _? lookup: name
 
-  expr-for: e :=
+  -- yield a hygienic expr to define on the handler
+  expr-for: e in: env :=
     condition: {
       e type == @block && e arguments empty? not ->
-        `(~e call: [s])
+        `(~(e evaluate-in: env) call: [s])
 
       e type == @block ->
-        `(~e call)
+        `(~(e evaluate-in: env) call)
 
-      otherwise -> e
+      otherwise -> `(~(`{ ~e } evaluate-in: env) call)
   }
 
   (a: Block) bind: (bs: Block) :=
@@ -148,7 +155,12 @@
           [arg, expr] =
             branch match: {
               `(~c -> ~e) -> [c as: Pattern, e]
-              `(~c => ~e) -> [`(s: ~(c evaluate-in: sender)) as: Pattern, expr-for: e]
+
+              `(~c => ~e) ->
+                [ `(s: ~(c evaluate-in: sender)) as: Pattern
+                  expr-for: e in: sender
+                ]
+
               unknown -> error: @(invalid-branch-syntax: unknown)
             }
 
