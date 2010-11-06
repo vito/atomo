@@ -11,16 +11,14 @@
   wrap-line: l to: length :=
     { words = l words
 
-      main = this
-      ok-words = []
+      line-length = 0
 
-      { stop |
-        words each:
+      ok-words =
+        words take-while:
           { w |
-            stop yield when: (ok-words  (<< w) unwords length > length)
-            main ok-words = ok-words << w
-          }
-      } call/cc
+            line-length = line-length + 1 + w length
+            line-length < length
+          } in-context
 
       [ ok-words unwords
         words (drop: ok-words length) unwords word-wrap: length
