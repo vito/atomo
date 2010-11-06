@@ -32,11 +32,11 @@ load = do
                 ]
             else return (vs `V.unsafeIndex` fromIntegral n)
 
-    [$p|[] head|] =::: [$e|raise: @empty-list|]
+    [$p|[] head|] =::: [$e|error: @empty-list|]
     [$p|(l: List) head|] =:
         getVector [$e|l|] >>= return . V.unsafeHead
 
-    [$p|[] last|] =::: [$e|raise: @empty-list|]
+    [$p|[] last|] =::: [$e|error: @empty-list|]
     [$p|(l: List) last|] =:
         getVector [$e|l|] >>= return . V.unsafeLast
 
@@ -60,11 +60,11 @@ load = do
                 (fromIntegral num)
                 vs
 
-    [$p|[] init|] =::: [$e|raise: @empty-list|]
+    [$p|[] init|] =::: [$e|error: @empty-list|]
     [$p|(l: List) init|] =:
         getVector [$e|l|] >>= return . List . V.unsafeInit
 
-    [$p|[] tail|] =::: [$e|raise: @empty-list|]
+    [$p|[] tail|] =::: [$e|error: @empty-list|]
     [$p|(l: List) tail|] =:
         getVector [$e|l|] >>= return . List . V.unsafeTail
 
@@ -128,7 +128,7 @@ load = do
 
         return $ List nvs
 
-    [$p|[] reduce: b|] =::: [$e|raise: @empty-list|]
+    [$p|[] reduce: b|] =::: [$e|error: @empty-list|]
     [$p|(l: List) reduce: b|] =: do
         vs <- getVector [$e|l|]
         b <- here "b"
@@ -144,7 +144,7 @@ load = do
         V.foldM (\x acc ->
             dispatch (keyword ["call"] [b, list [x, acc]])) v vs
 
-    [$p|[] reduce-right: b|] =::: [$e|raise: @empty-list|]
+    [$p|[] reduce-right: b|] =::: [$e|error: @empty-list|]
     [$p|(l: List) reduce-right: b|] =: do
         vs <- getVector [$e|l|]
         b <- here "b"
@@ -257,13 +257,6 @@ load = do
         v <- here "v"
 
         return . List $ V.cons v vs
-
-    {-[$p|[] pop!|] =::: [$e|raise: @empty-list|]-}
-    {-[$p|(l: List) pop!|] =: do-}
-        {-List l <- here "l" >>= findList-}
-        {-vs <- getVector [$e|l|]-}
-
-        {-return . List l $ V.tail vs-}
 
     [$p|(l: List) split: (d: List)|] =: do
         l <- getList [$e|l|]

@@ -49,4 +49,4 @@ macro condition: (bs: Block) :=
   bs contents reduce-right:
     { `(~test -> ~branch) x |
       `(if: ~test then: { ~branch } else: { ~x })
-    } with: `(raise: @no-true-branches)
+    } with: `(error: @no-true-branches)

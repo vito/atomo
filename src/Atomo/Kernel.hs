@@ -23,7 +23,6 @@ import qualified Atomo.Kernel.Particle as Particle
 import qualified Atomo.Kernel.Pattern as Pattern
 import qualified Atomo.Kernel.Ports as Ports
 import qualified Atomo.Kernel.Time as Time
-import qualified Atomo.Kernel.Exception as Exception
 import qualified Atomo.Kernel.Environment as Environment
 import qualified Atomo.Kernel.Continuation as Continuation
 
@@ -171,7 +170,6 @@ load = do
     Pattern.load
     Ports.load
     Time.load
-    Exception.load
     Environment.load
     Continuation.load
 

@@ -41,7 +41,7 @@ macro x match: (ts: Block) :=
   { obj = Object clone
 
     @match-on: define-on: obj with: [`x as: Pattern] as:
-      `(raise: @(no-matches-for: x))
+      `(error: @(no-matches-for: x))
 
     ts contents map:
       { `(~p -> ~e) |

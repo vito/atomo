@@ -99,7 +99,6 @@ library
     Atomo.Kernel.Pattern,
     Atomo.Kernel.Ports,
     Atomo.Kernel.Time,
-    Atomo.Kernel.Exception,
     Atomo.Kernel.Environment,
     Atomo.Kernel.Continuation,
     Paths_atomo

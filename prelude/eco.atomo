@@ -27,7 +27,7 @@ Eco Package new :=
 (e: Eco) initialize: pkg :=
   { pkg dependencies each: { c |
       e packages (find: c from) match: {
-        @none -> raise: @(package-unavailable: c from needed: c to)
+        @none -> error: @(package-unavailable: c from needed: c to)
 
         -- filter out versions not satisfying our dependency
         @(ok: d) ->
@@ -35,7 +35,7 @@ Eco Package new :=
 
             safe match: {
               [] ->
-                raise: @(no-versions-of: d satisfy: c to for: pkg name)
+                error: @(no-versions-of: d satisfy: c to for: pkg name)
 
               -- initialize the first safe version of the package
               (p . _) ->
@@ -172,12 +172,12 @@ Eco Package load-from: (file: String) :=
 
 Eco load: name version: check in: env :=
   Eco packages (lookup: name) match: {
-    @none -> raise: @(package-unavailable: name)
-    @(ok: []) -> raise: @(no-package-versions: name)
+    @none -> error: @(package-unavailable: name)
+    @(ok: []) -> error: @(no-package-versions: name)
     @(ok: pkgs) ->
       { pkg =
           pkgs (filter: { p | p version join: check }) match: {
-            [] -> raise: @(no-versions-of: name satisfy: check)
+            [] -> error: @(no-versions-of: name satisfy: check)
             (p . _) -> p
           }
 
@@ -215,7 +215,7 @@ context use: (name: String) version: (check: Block) :=
     @(ok: p) ->
       condition: {
         p version (join: check) not ->
-          raise: @(incompatible-version-loaded: name needed: check)
+          error: @(incompatible-version-loaded: name needed: check)
 
         (context in?: p contexts) -> p environment
 
