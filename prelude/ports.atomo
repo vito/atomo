@@ -1,3 +1,4 @@
+*history-file* = Parameter new: (Directory home </> ".atomo_history")
 current-output-port = Parameter new: Port standard-output
 current-input-port = Parameter new: Port standard-input
 

@@ -1,0 +1,106 @@
+{ evaluate-all: [] in: _ := error: @no-expressions
+  evaluate-all: [e] in: t := e evaluate-in: t
+  evaluate-all: (e . es) in: t :=
+    { e evaluate-in: t
+      evaluate-all: es in: t
+    } call
+
+  do-input: (s: String) in: env :=
+    s parse-expressions match: {
+      [] -> @ok
+      es -> (evaluate-all: es in: env) show print
+    }
+
+  get-value: t :=
+    (interaction: "> ") parse-expressions match: {
+      [] -> get-value: t
+      es -> evaluate-all: es in: t
+    }
+
+  repl-debugger =
+    Object clone do:
+      { run: e :=
+          { Restart show-options-for: e
+
+            { basic-repl } bind: {
+              @prompt ->
+                restart: @use-prompt with: ["[!]> "]
+
+              @(special: n) ->
+                when: (n all?: @digit?) do: {
+                  r = Restart get: (n as: Integer)
+
+                  r action arguments length match: {
+                    0 -> r jump: []
+                    n -> r jump: (get-n-values: n)
+                  }
+                }
+            }
+          } call
+      }
+
+  get-n-values: 0 = []
+  get-n-values: n :=
+    { ("enter value (" .. n show .. " to go): ") display
+      (get-value: sender) . (get-n-values: (n - 1))
+    } call
+
+  (env: Object) basic-repl :=
+    { prompt =
+        { signal: @prompt; prompt } with-restarts: {
+          @use-prompt -> { p | p }
+        }
+
+      in =
+        { interaction: prompt } handle: {
+          @end-of-input -> { signal: @quit; "" } call
+        }
+
+      in match: {
+        ':' . name ->
+          signal: @(special: name)
+
+        source ->
+          { try :=
+              { do-input: source in: env } with-restarts: {
+                @retry -> try
+                @abort -> @ok
+              }
+
+            try
+          } call
+      }
+
+      signal: @loop
+    } repeat
+
+  (env: Object) repl :=
+    { stop |
+      with: current-debugger as: repl-debugger do: {
+        frame = 0
+
+        { env basic-repl } bind: {
+          @prompt ->
+            restart: @use-prompt with: ["[" .. frame show .. "]> "]
+
+          @loop -> (super frame = frame + 1)
+
+          @(special: "h") ->
+            ":h\thelp" print
+
+          @quit ->
+            { ask :=
+                { "really quit? (y/n) " display
+                  { read-char } (after: { "" print }) match: {
+                    'y' -> stop yield
+                    'n' -> @ok
+                    _ -> ask
+                  }
+                } call
+
+              ask
+            } call
+        }
+      }
+    } call/cc
+} call

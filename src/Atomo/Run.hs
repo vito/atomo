@@ -77,4 +77,6 @@ loadPrelude = do
 
         , "version"
         , "eco"
+
+        , "repl"
         ]

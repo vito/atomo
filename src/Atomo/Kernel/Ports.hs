@@ -3,6 +3,7 @@ module Atomo.Kernel.Ports (load) where
 
 import Data.Char (isSpace)
 import Data.Maybe (catMaybes)
+import System.Console.Haskeline
 import System.Directory
 import System.FilePath ((</>), (<.>))
 import System.IO
@@ -294,7 +295,21 @@ load = do
         a <- getString [$e|a|]
         b <- getString [$e|b|]
         return (string (a <.> b))
+
+    [$p|interaction: (prompt: String)|] =: do
+        prompt <- getString [$e|prompt|]
+        history <- getString [$e|*history-file* _?|]
+        line <- liftIO (runInput history (getInputLine prompt))
+
+        case line of
+            Just i -> return (string i)
+            Nothing -> raise' "end-of-input"
+
   where
+    runInput history = runInputT defaultSettings
+        { historyFile = Just history
+        }
+
     portObj hdl = newScope $ do
         port <- eval [$e|Port clone|]
         [$p|p|] =:: port

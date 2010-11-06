@@ -1,19 +1,15 @@
+{-# LANGUAGE QuasiQuotes #-}
 module Main where
 
 import "monads-fd" Control.Monad.Cont
-import Data.Char (isSpace)
 import Prelude hiding (catch)
-import System.Console.Haskeline
-import System.Directory (getHomeDirectory)
 import System.Environment (getArgs)
-import System.FilePath
 
-import Atomo.Environment
+import Atomo
 import Atomo.Load
 import Atomo.Parser
 import Atomo.PrettyVM
 import Atomo.Run
-import Atomo.Types
 
 
 main :: IO ()
@@ -22,23 +18,23 @@ main = do
 
     case args of
         r | null r || r == ["-d"] ->
-            exec (repl (r == ["-d"]))
+            exec repl
 
         ("-e":expr:_) -> exec $ do
             ast <- continuedParse expr "<input>"
             r <- evalAll ast
-            p <- prettyVM r
-            liftIO (print p)
+            d <- prettyVM r
+            liftIO (print d)
             return (particle "ok")
 
         ("-s":expr:_) -> exec $ do
             ast <- continuedParse expr "<input>"
             evalAll ast
-            repl False
+            repl
 
         ("-l":fn:_) -> exec $ do
             loadFile fn
-            repl False
+            repl
 
         (fn:_) | not (head fn == '-') ->
             exec (loadFile fn)
@@ -53,54 +49,5 @@ main = do
             , "\tatomo FILE\texecute FILE"
             ]
 
-repl :: Bool -> VM Value
-repl quiet = do
-    home <- liftIO getHomeDirectory
-    repl' "" $ runInput home . withInterrupt
-  where
-    escape Interrupt = return Nothing
-
-    runInput home = runInputT defaultSettings
-        { historyFile = Just (home </> ".atomo_history")
-        }
-
-    repl' input r = do
-        me <- liftIO (catch (r $ getInputLine prompt) escape)
-
-        case me of
-            Just blank | null (dropWhile isSpace blank) -> repl' input r
-            Just part | not (bracesBalanced $ input ++ part) ->
-                repl' (input ++ part) r
-            Just expr -> do
-                evaluate expr >>= prettyVM >>= liftIO . print
-
-                repl' "" r
-
-            Nothing -> askQuit (repl' input r)
-      where
-        evaluate expr = parseInput (input ++ expr) >>= evalAll
-
-        prompt
-            | quiet = ""
-            | null input = "> "
-            | otherwise = ". "
-
-    askQuit c = do
-        r <- liftIO . runInputT defaultSettings $
-            getInputChar "really quit? (y/n) "
-
-        case r of
-            Just 'y' -> return (particle "ok")
-            Just 'n' -> c
-            _ -> askQuit c
-
-    bracesBalanced s = hangingBraces s == 0
-      where
-        hangingBraces :: String -> Int
-        hangingBraces [] = 0
-        hangingBraces (b:ss)
-            | b == '"' = hangingBraces (tail $ dropWhile (/= '"') ss)
-            | b == '\'' = hangingBraces (tail $ dropWhile (/= '\'') ss)
-            | b `elem` "([{" = 1 + hangingBraces ss
-            | b `elem` ")]}" = hangingBraces ss - 1
-            | otherwise = hangingBraces ss
+repl :: VM Value
+repl = eval [$e|Lobby clone repl|]
