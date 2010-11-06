@@ -61,6 +61,7 @@ loadPrelude = do
         , "boolean"
         , "association"
         , "parameter"
+        , "string"
 
         , "condition"
         , "exception"
@@ -72,7 +73,6 @@ loadPrelude = do
         , "numeric"
         , "particle"
         , "ports"
-        , "string"
         , "time"
 
         , "version"

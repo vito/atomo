@@ -155,8 +155,13 @@ load = do
         s <- getText [$e|s|]
         return $ list (map String (T.words s))
 
-    [$p|(l: List) unlines|] =::: [$e|l (map: @(<< '\n')) join|]
-    [$p|(l: List) unwords|] =::: [$e|l join: " "|]
+    [$p|(l: List) unlines|] =: do
+        l <- getList [$e|l|]
+        return $ String (T.unlines (map fromString l))
+
+    [$p|(l: List) unwords|] =: do
+        l <- getList [$e|l|]
+        return $ String (T.unwords (map fromString l))
 
     [$p|(s: String) map: b|] =: do
         s <- getString [$e|s|]
@@ -175,6 +180,8 @@ load = do
         Char c <- here "c" >>= findChar
         s <- getText [$e|s|]
         return (String (T.cons c s))
+
+    [$p|(c: Char) >> (s: String)|] =::: [$e|c . s|]
 
     [$p|(s: String) << (c: Char)|] =: do
         s <- getText [$e|s|]
@@ -296,3 +303,12 @@ load = do
             dispatch (keyword ["call"] [z, list [Char a, Char b]])
 
         return $ list vs
+
+    [$p|(x: List) zip: (y: String)|] =::: [$e|x zip: (y as: List)|]
+    [$p|(x: String) zip: (y: List)|] =::: [$e|(x as: List) zip: y|]
+
+    [$p|(x: List) zip: (y: String) with: z|] =:::
+        [$e|x zip: (y as: List) with: z|]
+
+    [$p|(x: String) zip: (y: List) with: z|] =:::
+        [$e|(x as: List) zip: y with: z|]
