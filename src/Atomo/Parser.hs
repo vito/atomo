@@ -106,7 +106,7 @@ pOperator = tagged (do
                 ]
             prec <- option defaultPrec (try integer)
             return (a, prec)
-        , fmap ((,) ALeft) integer
+        , liftM ((,) ALeft) integer
         ]
 
     ops <- commaSep1 operator
@@ -114,7 +114,7 @@ pOperator = tagged (do
     forM_ ops $ \name ->
         modifyState (\ps -> ps { psOperators = (name, info) : psOperators ps })
 
-    return (Operator Nothing ops (fst info) (snd info)))
+    return (uncurry (Operator Nothing ops) info))
     <?> "operator pragma"
 
 pParticle :: Parser Expr
@@ -178,14 +178,14 @@ pdKeys :: Parser Expr
 pdKeys = do
     pos <- getPosition
     msg <- keywords ekeyword (ETop (Just pos)) (try pdCascade <|> headless)
-    ops <- fmap psOperators getState
+    ops <- liftM psOperators getState
     return $ Dispatch (Just pos) (toBinaryOps ops msg)
     <?> "keyword dispatch"
   where
     headless = do
         p <- getPosition
         msg <- ckeywd p
-        ops <- fmap psOperators getState
+        ops <- liftM psOperators getState
         return (Dispatch (Just p) (toBinaryOps ops msg))
 
     ckeywd pos = do
@@ -199,13 +199,13 @@ pdCascade = do
     pos <- getPosition
 
     chain <- wsManyStart
-        (fmap DNormal (try pLiteral <|> parens pExpr) <|> cascaded)
+        (liftM DNormal (try pLiteral <|> parens pExpr) <|> cascaded)
         cascaded
 
     return $ dispatches pos chain
     <?> "single dispatch"
   where
-    cascaded = fmap DParticle $ choice
+    cascaded = liftM DParticle $ choice
         [ cKeyword False
         , cSingle False
         ]
@@ -230,7 +230,7 @@ pdCascade = do
     dispatches' _ x y = error $ "impossible: dispatches' on " ++ show (x, y)
 
 pList :: Parser Expr
-pList = (tagged . fmap (EList Nothing) $ brackets (wsDelim "," pExpr))
+pList = (tagged . liftM (EList Nothing) $ brackets (wsDelim "," pExpr))
     <?> "list"
 
 pBlock :: Parser Expr
@@ -272,8 +272,8 @@ cKeyword wc = do
         | wc = wildcard <|> disp
         | otherwise = disp
 
-    value = fmap Just pdCascade
-    disp = fmap Just pDispatch
+    value = liftM Just pdCascade
+    disp = liftM Just pDispatch
 
     keyword' = do
         name <- try (do
@@ -299,7 +299,7 @@ cKeyword wc = do
                 partVals ++ [Just $ Dispatch (Just pos) msg]
         | otherwise = fail "invalid particle; toplevel operator with wildcards as values"
       where
-        (nonOpers, opers) = first (n:) $ span (not . isOperator) ns
+        (nonOpers, opers) = first (n:) $ break isOperator ns
         (partVals, opVals) = splitAt (length nonOpers) mvs
 
 -- work out precadence, associativity, etc. from a stream of operators
@@ -375,7 +375,7 @@ parseFile :: String -> VM [Expr]
 parseFile fn = liftIO (readFile fn) >>= continue (fileParser >>= mapM macroExpand) fn
 
 parseInput :: String -> VM [Expr]
-parseInput s = continue (parser >>= mapM macroExpand) "<input>" s
+parseInput = continue (parser >>= mapM macroExpand) "<input>"
 
 continue :: Parser a -> String -> String -> VM a
 continue p s i = do
@@ -447,8 +447,8 @@ findMacro m = do
     ms <- methods m
     maybe (return Nothing) (firstMatch ids m) (lookupMap (mID m) ms)
   where
-    methods (Single {}) = fmap (fst . psMacros) getState
-    methods (Keyword {}) = fmap (snd . psMacros) getState
+    methods (Single {}) = liftM (fst . psMacros) getState
+    methods (Keyword {}) = liftM (snd . psMacros) getState
 
     firstMatch _ _ [] = return Nothing
     firstMatch ids' m' (mt:mts)

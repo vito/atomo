@@ -10,7 +10,7 @@ import Atomo
 load :: VM ()
 load = do
     [$p|(s: String) as: List|] =:
-        getString [$e|s|] >>= return . list . map Char
+        liftM (list . map Char) (getString [$e|s|])
 
     [$p|(l: List) to-string|] =: do
         vs <- getList [$e|l|]
@@ -24,7 +24,7 @@ load = do
         return (String (T.singleton c))
 
     [$p|(s: String) length|] =:
-        getText [$e|s|] >>= return . Integer . fromIntegral . T.length
+        liftM (Integer . fromIntegral . T.length) (getText [$e|s|])
 
     [$p|(s: String) empty?|] =:
         liftM (Boolean . T.null) $ getText [$e|s|]
@@ -39,31 +39,29 @@ load = do
 
     [$p|"" head|] =::: [$e|error: @empty-string|]
     [$p|(s: String) head|] =:
-        getText [$e|s|] >>= return . Char . T.head
+        liftM (Char . T.head) (getText [$e|s|])
 
     [$p|"" last|] =::: [$e|error: @empty-string|]
     [$p|(s: String) last|] =:
-        getText [$e|s|] >>= return . Char . T.last
+        liftM (Char . T.last) (getText [$e|s|])
 
     -- TODO: @from:to:
 
     [$p|"" init|] =::: [$e|error: @empty-string|]
     [$p|(s: String) init|] =:
-        getText [$e|s|] >>= return . String . T.init
+        liftM (String . T.init) (getText [$e|s|])
 
     [$p|"" tail|] =::: [$e|error: @empty-string|]
     [$p|(s: String) tail|] =:
-        getText [$e|s|] >>= return . String . T.tail
+        liftM (String . T.tail) (getText [$e|s|])
 
     [$p|(s: String) take: (n: Integer)|] =: do
         Integer n <- here "n" >>= findInteger
-        getText [$e|s|] >>=
-            return . String . T.take (fromIntegral n)
+        liftM (String . T.take (fromIntegral n)) (getText [$e|s|])
 
     [$p|(s: String) drop: (n: Integer)|] =: do
         Integer n <- here "n" >>= findInteger
-        getText [$e|s|] >>=
-            return . String . T.drop (fromIntegral n)
+        liftM (String . T.drop (fromIntegral n)) (getText [$e|s|])
 
     [$p|(s: String) take-while: test|] =: do
         t <- here "test"
@@ -96,8 +94,7 @@ load = do
 
     [$p|(s: String) repeat: (n: Integer)|] =: do
         Integer n <- here "n" >>= findInteger
-        getText [$e|s|] >>=
-            return . String . T.replicate (fromIntegral n)
+        liftM (String . T.replicate (fromIntegral n)) (getText [$e|s|])
 
     [$p|(a: String) .. (b: String)|] =: do
         a <- getText [$e|a|]
@@ -105,7 +102,7 @@ load = do
         return (String (a `T.append` b))
 
     [$p|(s: String) reverse|] =:
-        getText [$e|s|] >>= return . String . T.reverse
+        liftM (String . T.reverse) (getText [$e|s|])
 
     [$p|(l: List) join|] =::: [$e|l reduce: @.. with: ""|]
 
@@ -216,14 +213,14 @@ load = do
         s <- getText [$e|new|]
         return (String (T.replace n s h))
 
-    [$p|(s: String) case-fold|] =: do
-        getText [$e|s|] >>= return . String . T.toCaseFold
+    [$p|(s: String) case-fold|] =:
+        liftM (String . T.toCaseFold) (getText [$e|s|])
 
-    [$p|(s: String) lowercase|] =: do
-        getText [$e|s|] >>= return . String . T.toLower
+    [$p|(s: String) lowercase|] =:
+        liftM (String . T.toLower) (getText [$e|s|])
 
-    [$p|(s: String) uppercase|] =: do
-        getText [$e|s|] >>= return . String . T.toUpper
+    [$p|(s: String) uppercase|] =:
+        liftM (String . T.toUpper) (getText [$e|s|])
 
     [$p|(s: String) left-justify: (length: Integer) with: (c: Char)|] =: do
         s <- getText [$e|s|]
@@ -246,26 +243,26 @@ load = do
 
         return (String (T.center (fromIntegral l) c s))
 
-    [$p|(s: String) strip|] =: do
-        getText [$e|s|] >>= return . String . T.strip
+    [$p|(s: String) strip|] =:
+        liftM (String . T.strip) (getText [$e|s|])
 
-    [$p|(s: String) strip-start|] =: do
-        getText [$e|s|] >>= return . String . T.stripStart
+    [$p|(s: String) strip-start|] =:
+        liftM (String . T.stripStart) (getText [$e|s|])
 
-    [$p|(s: String) strip-end|] =: do
-        getText [$e|s|] >>= return . String . T.stripEnd
+    [$p|(s: String) strip-end|] =:
+        liftM (String . T.stripEnd) (getText [$e|s|])
 
     [$p|(s: String) strip: (c: Char)|] =: do
         Char c <- here "c" >>= findChar
-        getText [$e|s|] >>= return . String . T.dropAround (== c)
+        liftM (String . T.dropAround (== c)) (getText [$e|s|])
 
     [$p|(s: String) strip-start: (c: Char)|] =: do
         Char c <- here "c" >>= findChar
-        getText [$e|s|] >>= return . String . T.dropWhile (== c)
+        liftM (String . T.dropWhile (== c)) (getText [$e|s|])
 
     [$p|(s: String) strip-end: (c: Char)|] =: do
         Char c <- here "c" >>= findChar
-        getText [$e|s|] >>= return . String . T.dropWhileEnd (== c)
+        liftM (String . T.dropWhileEnd (== c)) (getText [$e|s|])
 
     [$p|(s: String) all?: b|] =::: [$e|(s as: List) all?: b|]
     [$p|(s: String) any?: b|] =::: [$e|(s as: List) any?: b|]
@@ -283,31 +280,31 @@ load = do
     [$p|(s: String) reduce-right: b|] =::: [$e|(s as: List) reduce-right: b|]
     [$p|(s: String) reduce-right: b with: v|] =::: [$e|(s as: List) reduce-right: b with: v|]
 
-    [$p|(s: String) maximum|] =: do
-        getText [$e|s|] >>= return . Char . T.maximum
+    [$p|(s: String) maximum|] =:
+        liftM (Char . T.maximum) (getText [$e|s|])
 
-    [$p|(s: String) minimum|] =: do
-        getText [$e|s|] >>= return . Char . T.minimum
+    [$p|(s: String) minimum|] =:
+        liftM (Char . T.minimum) (getText [$e|s|])
 
     [$p|(s: String) sort|] =:
-        getString [$e|s|] >>= return . string . sort
+        liftM (string . sort) (getString [$e|s|])
 
     [$p|(s: String) sort-by: cmp|] =::: [$e|s (as: List) (sort-by: cmp) to-string|]
 
     [$p|(a: String) is-prefix-of?: (b: String)|] =: do
         a <- getText [$e|a|]
         b <- getText [$e|b|]
-        return $ Boolean (T.isPrefixOf a b)
+        return $ Boolean (a `T.isPrefixOf` b)
 
     [$p|(a: String) is-suffix-of?: (b: String)|] =: do
         a <- getText [$e|a|]
         b <- getText [$e|b|]
-        return $ Boolean (T.isSuffixOf a b)
+        return $ Boolean (a `T.isSuffixOf` b)
 
     [$p|(a: String) is-infix-of?: (b: String)|] =: do
         a <- getText [$e|a|]
         b <- getText [$e|b|]
-        return $ Boolean (T.isInfixOf a b)
+        return $ Boolean (a `T.isInfixOf` b)
 
     [$p|(a: String) starts-with?: (b: String)|] =::: [$e|b is-prefix-of?: a|]
     [$p|(a: String) ends-with?: (b: String)|] =::: [$e|b is-suffix-of?: a|]

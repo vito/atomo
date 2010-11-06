@@ -247,7 +247,7 @@ set p v = do
     is <- gets primitives
     if match is p v
         then do
-            forM_ (bindings' p v) $ \(p', v') -> do
+            forM_ (bindings' p v) $ \(p', v') ->
                 define p' (Primitive Nothing v')
 
             return v
@@ -255,7 +255,7 @@ set p v = do
 
 -- | find the target objects for a pattern
 targets :: IDs -> Pattern -> VM [ORef]
-targets _ (PMatch v) = orefFor v >>= return . (: [])
+targets _ (PMatch v) = liftM (: []) (orefFor v)
 targets is (PSingle _ _ p) = targets is p
 targets is (PKeyword _ _ ps) = do
     ts <- mapM (targets is) ps
@@ -427,13 +427,13 @@ matchExpr n (Define { ePattern = ap', eExpr = a }) (Define { ePattern = bp, eExp
 matchExpr n (Set { ePattern = ap', eExpr = a }) (Set { ePattern = bp, eExpr = b }) =
     ap' == bp && matchExpr n a b
 matchExpr n (Dispatch { eMessage = am@(EKeyword {}) }) (Dispatch { eMessage = bm@(EKeyword {}) }) =
-    emID am == emID bm && length (emTargets am) == length (emTargets bm) && (and $ zipWith (matchExpr n) (emTargets am) (emTargets bm))
+    emID am == emID bm && length (emTargets am) == length (emTargets bm) && and (zipWith (matchExpr n) (emTargets am) (emTargets bm))
 matchExpr n (Dispatch { eMessage = am@(ESingle {}) }) (Dispatch { eMessage = bm@(ESingle {}) }) =
     emID am == emID bm && matchExpr n (emTarget am) (emTarget bm)
 matchExpr n (EBlock { eArguments = aps, eContents = as }) (EBlock { eArguments = bps, eContents = bs }) =
-    aps == bps && length as == length bs && (and $ zipWith (matchExpr n) as bs)
+    aps == bps && length as == length bs && and (zipWith (matchExpr n) as bs)
 matchExpr n (EList { eContents = as }) (EList { eContents = bs }) =
-    length as == length bs && (and $ zipWith (matchExpr n) as bs)
+    length as == length bs && and (zipWith (matchExpr n) as bs)
 matchExpr n (EMacro { ePattern = ap', eExpr = a }) (EMacro { ePattern = bp, eExpr = b }) =
     ap' == bp && matchExpr n a b
 matchExpr n (EParticle { eParticle = ap' }) (EParticle { eParticle = bp }) =
@@ -499,8 +499,8 @@ bindings p m = error $ "impossible: bindings on " ++ show (p, m)
 -- | given a pattern and avalue, return the bindings as a list of pairs
 bindings' :: Pattern -> Value -> [(Pattern, Value)]
 bindings' (PNamed n p) v = (psingle n PThis, v) : bindings' p v
-bindings' (PPMKeyword _ ps) (Particle (PMKeyword _ mvs)) = concat
-    $ map (\(p, Just v) -> bindings' p v)
+bindings' (PPMKeyword _ ps) (Particle (PMKeyword _ mvs)) =
+    concatMap (\(p, Just v) -> bindings' p v)
     $ filter (isJust . snd)
     $ zip ps mvs
 bindings' (PList ps) (List vs) = concat (zipWith bindings' ps (V.toList vs))
@@ -513,7 +513,7 @@ bindings' (PHeadTail hp tp) (String t) | not (T.null t) =
     bindings' hp (Char (T.head t)) ++ bindings' tp (String (T.tail t))
 bindings' (PExpr a) (Expression b) = exprBindings 0 a b
 bindings' p (Reference r) =
-    concat . map (bindings' p) $ oDelegates (unsafePerformIO (readIORef r))
+    concatMap (bindings' p) $ oDelegates (unsafePerformIO (readIORef r))
 bindings' _ _ = []
 
 
@@ -539,10 +539,9 @@ exprBindings n (EMacro { eExpr = a }) (EMacro { eExpr = b }) =
 exprBindings n (EParticle { eParticle = ap' }) (EParticle { eParticle = bp }) =
     case (ap', bp) of
         (EPMKeyword _ ames, EPMKeyword _ bmes) ->
-            concat
-                . map (\(Just a, Just b) -> exprBindings n a b)
-                . filter (isJust . fst)
-                $ zip ames bmes
+            concatMap (\(Just a, Just b) -> exprBindings n a b)
+            $ filter (isJust . fst)
+            $ zip ames bmes
         _ -> []
 exprBindings n (EQuote { eExpr = a }) (EQuote { eExpr = b }) =
     exprBindings (n + 1) a b
@@ -690,7 +689,7 @@ getVector e = eval e
     >>= \(List v) -> return v
 
 here :: String -> VM Value
-here n = gets top >>= dispatch . (single n)
+here n = gets top >>= dispatch . single n
 
 ifVM :: VM Value -> VM a -> VM a -> VM a
 ifVM c a b = do
@@ -811,7 +810,7 @@ fromHaskell t _ = raise ["dynamic-needed"] [string t]
 throwError :: AtomoError -> VM a
 throwError e = gets top >>= \t ->
     ifVM (dispatch (keyword ["responds-to?"] [t, particle "Error"]))
-        (dispatch (msg t) >> (error $ "panic: error returned normally for: " ++ show e))
+        (dispatch (msg t) >> error ("panic: error returned normally for: " ++ show e))
         (error ("panic: " ++ show e))
   where
     msg t = keyword ["error"] [t, asValue e]

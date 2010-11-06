@@ -24,7 +24,7 @@ main = do
             ast <- continuedParse expr "<input>"
             r <- evalAll ast
             d <- prettyVM r
-            liftIO (print d)
+            liftIO (putStrLn d)
             return (particle "ok")
 
         ("-s":expr:_) -> exec $ do
@@ -36,7 +36,7 @@ main = do
             loadFile fn
             repl
 
-        (fn:_) | not (head fn == '-') ->
+        (fn:_) | head fn /= '-' ->
             exec (loadFile fn)
 
         _ -> putStrLn . unlines $

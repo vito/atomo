@@ -8,6 +8,7 @@ import "monads-fd" Control.Monad.State
 import Data.Dynamic
 import Data.Hashable (hash)
 import Data.List (nub)
+import Data.Maybe (fromMaybe)
 import Data.IORef
 import Text.Parsec (ParseError, SourcePos)
 import qualified Data.IntMap as M
@@ -384,11 +385,11 @@ startEnv = Env
 
 -- | evaluate x with e as the environment
 runWith :: VM Value -> Env -> IO Value
-runWith x e = evalStateT (runContT x return) e
+runWith x = evalStateT (runContT x return)
 
 -- | evaluate x with e as the environment
 runVM :: VM Value -> Env -> IO (Value, Env)
-runVM x e = runStateT (runContT x return) e
+runVM x = runStateT (runContT x return)
 
 
 -----------------------------------------------------------------------------
@@ -578,8 +579,7 @@ asValue (DynamicNeeded t) =
 
 fromHaskell' :: Typeable a => String -> Value -> a
 fromHaskell' t (Haskell d) =
-    case fromDynamic d of
-        Just a -> a
-        Nothing -> error ("needed Haskell value of type " ++ t)
+    fromMaybe (error ("needed Haskell value of type " ++ t))
+        (fromDynamic d)
 fromHaskell' t _ = error ("needed haskell value of type " ++ t)
 

@@ -2,7 +2,7 @@
 module Atomo.Pretty (Pretty(..), prettyStack) where
 
 import Data.IORef
-import Data.Maybe (isJust)
+import Data.Maybe (isNothing)
 import Data.Ratio
 import Text.PrettyPrint hiding (braces)
 import System.IO.Unsafe
@@ -63,8 +63,7 @@ instance Pretty Object where
         [ internal "object" $ parens (text "delegates to" <+> pretty ds)
 
         , if not (nullMap ss)
-              then nest 2 $ vcat (flip map (elemsMap ss) $ (\ms ->
-                  vcat (map prettyMethod ms))) <>
+              then nest 2 $ vcat (map (vcat . map prettyMethod) (elemsMap ss)) <>
                       if not (nullMap ks)
                           then char '\n'
                           else empty
@@ -91,8 +90,8 @@ instance Pretty Message where
 instance Pretty Particle where
     prettyFrom _ (PMSingle e) = text e
     prettyFrom _ (PMKeyword ns vs)
-        | all (not . isJust) vs = text . concat $ map keyword ns
-        | not (isJust (head vs)) =
+        | all isNothing vs = text . concat $ map keyword ns
+        | isNothing (head vs) =
             parens $ headlessKeywords' prettyVal ns (tail vs)
         | otherwise = parens (keywords' prettyVal ns vs)
       where
@@ -118,7 +117,7 @@ instance Pretty Pattern where
     prettyFrom _ (PNamed n p) = parens $ text n <> colon <+> pretty p
     prettyFrom _ (PObject e) = pretty e
     prettyFrom _ (PPMKeyword ns ps)
-        | all isAny ps = char '@' <> text (concat $ map keyword ns)
+        | all isAny ps = char '@' <> text (concatMap keyword ns)
         | isAny (head ps) =
             char '@' <> parens (headlessKeywords' (prettyFrom CKeyword) ns (tail ps))
         | otherwise = char '@' <> parens (keywords' (prettyFrom CKeyword) ns ps)
@@ -184,8 +183,8 @@ instance Pretty EMessage where
 instance Pretty EParticle where
     prettyFrom _ (EPMSingle e) = text e
     prettyFrom _ (EPMKeyword ns es)
-        | all (not . isJust) es = text . concat $ map keyword ns
-        | not (isJust (head es)) =
+        | all isNothing es = text . concat $ map keyword ns
+        | isNothing (head es) =
             parens $ headlessKeywords' prettyVal ns (tail es)
         | otherwise = parens $ keywords' prettyVal ns es
       where

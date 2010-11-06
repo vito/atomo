@@ -15,10 +15,10 @@ load = do
         [$e|"[" .. l (map: @show) (join: ", ") .. "]"|]
 
     [$p|(l: List) length|] =:
-        getVector [$e|l|] >>= return . Integer . fromIntegral . V.length
+        liftM (Integer . fromIntegral . V.length) (getVector [$e|l|])
 
     [$p|(l: List) empty?|] =:
-        liftM (Boolean . V.null) $ getVector [$e|l|]
+        liftM (Boolean . V.null) (getVector [$e|l|])
 
     [$p|(l: List) at: (n: Integer)|] =: do
         Integer n <- here "n" >>= findInteger
@@ -34,11 +34,11 @@ load = do
 
     [$p|[] head|] =::: [$e|error: @empty-list|]
     [$p|(l: List) head|] =:
-        getVector [$e|l|] >>= return . V.unsafeHead
+        liftM V.unsafeHead (getVector [$e|l|])
 
     [$p|[] last|] =::: [$e|error: @empty-list|]
     [$p|(l: List) last|] =:
-        getVector [$e|l|] >>= return . V.unsafeLast
+        liftM V.unsafeLast (getVector [$e|l|])
 
     -- TODO: handle negative ranges
     [$p|(l: List) from: (s: Integer) to: (e: Integer)|] =:::
@@ -62,11 +62,11 @@ load = do
 
     [$p|[] init|] =::: [$e|error: @empty-list|]
     [$p|(l: List) init|] =:
-        getVector [$e|l|] >>= return . List . V.unsafeInit
+        liftM (List . V.unsafeInit) (getVector [$e|l|])
 
     [$p|[] tail|] =::: [$e|error: @empty-list|]
     [$p|(l: List) tail|] =:
-        getVector [$e|l|] >>= return . List . V.unsafeTail
+        liftM (List . V.unsafeTail) (getVector [$e|l|])
 
     [$p|(l: List) take: (n: Integer)|] =: do
         vs <- getVector [$e|l|]
@@ -95,8 +95,8 @@ load = do
         bs <- getVector [$e|b|]
         return . List $ as V.++ bs
 
-    [$p|(l: List) reverse|] =: do
-        getVector [$e|l|] >>= return . List . V.reverse
+    [$p|(l: List) reverse|] =:
+        liftM (List . V.reverse) (getVector [$e|l|])
 
     [$p|(l: List) map: b|] =: do
         vs <- getVector [$e|l|]
@@ -259,9 +259,7 @@ load = do
                 [ Integer n
                 , l'
                 ]
-            else do
-
-        return (List $ vs V.// [(fromIntegral n, v)])
+            else return (List $ vs V.// [(fromIntegral n, v)])
 
     [$p|v . (l: List)|] =: do
         vs <- getVector [$e|l|]
@@ -324,19 +322,19 @@ sortByVM :: (Value -> Value -> VM Bool) -> [Value] -> VM [Value]
 sortByVM = mergesort
 
 mergesort :: (Value -> Value -> VM Bool) -> [Value] -> VM [Value]
-mergesort cmp = mergesort' cmp . map (\x -> [x])
+mergesort cmp = mergesort' cmp . map (: [])
 
 mergesort' :: (Value -> Value -> VM Bool) -> [[Value]] -> VM [Value]
 mergesort' _ [] = return []
 mergesort' _ [xs] = return xs
-mergesort' cmp xss = merge_pairs cmp xss >>= mergesort' cmp
+mergesort' cmp xss = mergePairs cmp xss >>= mergesort' cmp
 
-merge_pairs :: (Value -> Value -> VM Bool) -> [[Value]] -> VM [[Value]]
-merge_pairs _ [] = return []
-merge_pairs _ [xs] = return [xs]
-merge_pairs cmp (xs:ys:xss) = do
+mergePairs :: (Value -> Value -> VM Bool) -> [[Value]] -> VM [[Value]]
+mergePairs _ [] = return []
+mergePairs _ [xs] = return [xs]
+mergePairs cmp (xs:ys:xss) = do
     z <- merge cmp xs ys
-    zs <- merge_pairs cmp xss
+    zs <- mergePairs cmp xss
     return (z:zs)
 
 merge :: (Value -> Value -> VM Bool) -> [Value] -> [Value] -> VM [Value]

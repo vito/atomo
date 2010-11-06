@@ -80,7 +80,7 @@ comparePrecisions as bs =
 
 unsafeDelegatesTo :: Value -> Value -> Bool
 unsafeDelegatesTo (Reference f) t =
-    t `elem` ds || any (flip unsafeDelegatesTo t) ds
+    t `elem` ds || any (`unsafeDelegatesTo` t) ds
   where
     ds = oDelegates (unsafePerformIO (readIORef f))
 unsafeDelegatesTo _ _ = False
@@ -107,7 +107,7 @@ insertMethod x ys@(y:ys') =
         _ -> y : insertMethod x ys'
 
 toMethods :: [(Pattern, Value)] -> MethodMap
-toMethods bs = foldl (\ss (p, v) -> addMethod (Slot p v) ss) emptyMap bs
+toMethods = foldl (\ss (p, v) -> addMethod (Slot p v) ss) emptyMap
 
 noMethods :: (MethodMap, MethodMap)
 noMethods = (M.empty, M.empty)

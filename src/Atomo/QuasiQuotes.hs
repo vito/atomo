@@ -54,17 +54,16 @@ parsing p s (file, line, col) =
         x -> return (fromHaskell' "a" x)
   where
     go = do
-        r <- fmap haskell $ continue pp "<qq>" s
+        r <- liftM haskell $ continue pp "<qq>" s
         get >>= liftIO . writeIORef qqEnv
         return r
 
     pp = do
         pos <- getPosition
         setPosition $
-            (flip setSourceName) file $
-            (flip setSourceLine) line $
-            (flip setSourceColumn) col $
-            pos
+            flip setSourceName file $
+            flip setSourceLine line $
+            setSourceColumn pos col
         whiteSpace
         e <- p
         whiteSpace

@@ -1,6 +1,7 @@
 {-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.Parser.Base where
 
+import Control.Monad (liftM)
 import Data.Char
 import Data.List (nub, sort, (\\))
 import Text.Parsec
@@ -12,7 +13,7 @@ import Atomo.Types (Expr(..), ParserState, VM)
 type Parser = ParsecT String ParserState VM
 
 
-opLetters :: [Char]
+opLetters :: String
 opLetters = "!@#%&*-./\\?"
 
 isOperator :: String -> Bool
@@ -193,7 +194,7 @@ indentAwareStart cmp delim allowSeq s p = do
             x <- if null es then s else try p
 
             new <- lookAhead (whiteSpace >> getPosition)
-            sequential <- fmap (== new) $ lookAhead (spacing >> getPosition)
+            sequential <- liftM (== new) $ lookAhead (spacing >> getPosition)
 
             delimited <- option False $ try delim
 
@@ -218,7 +219,7 @@ keywordName = do
 keywords :: Show a => ([String] -> [a] -> b) -> a -> Parser a -> Parser b
 keywords c d p = do
     r <- choice [try (lookAhead keywordName) >> return d, p]
-    (ns, rs) <- fmap unzip $ wsMany1 (keyword p)
+    (ns, rs) <- liftM unzip $ wsMany1 (keyword p)
     return (c ns (r:rs))
 
 tagged :: Parser Expr -> Parser Expr
@@ -267,10 +268,10 @@ makeTokenParser languageDef
     -----------------------------------------------------------
     -- Bracketing
     -----------------------------------------------------------
-    parens p        = between (open "(") (close ")") p
-    braces p        = between (open "{") (close "}") p
-    angles p        = between (open "<") (close ">") p
-    brackets p      = between (open "[") (close "]") p
+    parens          = between (open "(") (close ")")
+    braces          = between (open "{") (close "}")
+    angles          = between (open "<") (close ">")
+    brackets        = between (open "[") (close "]")
 
     semi            = delimit ";"
     comma           = delimit ","
@@ -352,7 +353,7 @@ makeTokenParser languageDef
 
 
     -- escape code tables
-    escMap          = zip ("abfnrtv\\\"\'") ("\a\b\f\n\r\t\v\\\"\'")
+    escMap          = zip "abfnrtv\\\"\'" "\a\b\f\n\r\t\v\\\"\'"
     asciiMap        = zip (ascii3codes ++ ascii2codes) (ascii3 ++ ascii2)
 
     ascii2codes     = ["BS","HT","LF","VT","FF","CR","SO","SI","EM",
@@ -361,21 +362,18 @@ makeTokenParser languageDef
                        "DLE","DC1","DC2","DC3","DC4","NAK","SYN","ETB",
                        "CAN","SUB","ESC","DEL"]
 
-    ascii2          = ['\BS','\HT','\LF','\VT','\FF','\CR','\SO','\SI',
-                       '\EM','\FS','\GS','\RS','\US','\SP']
-    ascii3          = ['\NUL','\SOH','\STX','\ETX','\EOT','\ENQ','\ACK',
-                       '\BEL','\DLE','\DC1','\DC2','\DC3','\DC4','\NAK',
-                       '\SYN','\ETB','\CAN','\SUB','\ESC','\DEL']
+    ascii2          = "\b\t\n\v\f\r\SO\SI\EM\FS\GS\RS\US "
+    ascii3          = "\NUL\SOH\STX\ETX\EOT\ENQ\ACK\a\DLE\DC1\DC2\DC3\DC4\NAK\SYN\ETB\CAN\SUB\ESC\DEL"
 
 
     -----------------------------------------------------------
     -- Numbers
     -----------------------------------------------------------
-    naturalOrFloat  = lexeme (natFloat) <?> "number"
+    naturalOrFloat  = lexeme natFloat <?> "number"
 
-    float           = lexeme floating   <?> "float"
-    integer         = lexeme int        <?> "integer"
-    natural         = lexeme nat        <?> "natural"
+    float           = lexeme floating <?> "float"
+    integer         = lexeme int      <?> "integer"
+    natural         = lexeme nat      <?> "natural"
 
 
     -- floats
@@ -411,7 +409,7 @@ makeTokenParser languageDef
                         }
                     <|>
                       do{ expo <- exponent'
-                        ; return ((fromInteger n)*expo)
+                        ; return (fromInteger n*expo)
                         }
 
     fraction        = do{ char '.'
@@ -472,7 +470,7 @@ makeTokenParser languageDef
     operator =
         lexeme $ try $
         do{ name <- oper
-          ; if (isReservedOp name)
+          ; if isReservedOp name
              then unexpected ("reserved operator " ++ show name)
              else return name
           }
@@ -484,8 +482,8 @@ makeTokenParser languageDef
           })
         <?> "operator"
 
-    isReservedOp name =
-        isReserved (sort (P.reservedOpNames languageDef)) name
+    isReservedOp =
+        isReserved (sort (P.reservedOpNames languageDef))
 
 
     -----------------------------------------------------------
@@ -513,7 +511,7 @@ makeTokenParser languageDef
     identifier =
         try $
         do{ name <- ident
-          ; if (isReservedName name)
+          ; if isReservedName name
              then unexpected ("reserved word " ++ show name)
              else return name
           }
@@ -538,7 +536,7 @@ makeTokenParser languageDef
         = scan names
         where
           scan []       = False
-          scan (r:rs)   = case (compare r name) of
+          scan (r:rs)   = case compare r name of
                             LT  -> scan rs
                             EQ  -> True
                             GT  -> False

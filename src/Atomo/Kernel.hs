@@ -56,7 +56,7 @@ load = do
     [$p|(x: Object) delegates-to?: (y: Object)|] =: do
         x <- here "x"
         y <- here "y"
-        fmap Boolean (delegatesTo x y)
+        liftM Boolean (delegatesTo x y)
 
     [$p|(x: Object) delegates|] =: do
         o <- here "x" >>= objectFor
@@ -67,7 +67,7 @@ load = do
     [$p|(x: Object) is-a?: (y: Object)|] =: do
         x <- here "x"
         y <- here "y"
-        fmap Boolean (isA x y)
+        liftM Boolean (isA x y)
 
     [$p|(x: Object) responds-to?: (p: Particle)|] =: do
         x <- here "x"
@@ -78,7 +78,7 @@ load = do
                     PMKeyword ns mvs -> keyword ns (completeKP mvs [x])
                     PMSingle n -> single n x
 
-        fmap (Boolean . isJust) $ findMethod x completed
+        liftM (Boolean . isJust) $ findMethod x completed
 
     [$p|(o: Object) methods|] =: do
         o <- here "o" >>= objectFor
@@ -180,7 +180,7 @@ joinWith :: Value -> Value -> [Value] -> VM Value
 joinWith t (Block s ps bes) as
     | length ps > length as =
         throwError (BlockArity (length ps) (length as))
-    | null as || null ps = do
+    | null as || null ps =
         case t of
             Reference r -> do
                 Object ds ms <- objectFor t

@@ -8,7 +8,7 @@ import Atomo
 
 load :: VM ()
 load = do
-    mapM_ eval $
+    mapM_ eval
         [ [$e|operator right 8 ^|]
         , [$e|operator 7 %, *, /|]
         , [$e|operator 6 +, -|]

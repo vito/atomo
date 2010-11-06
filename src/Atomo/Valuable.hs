@@ -1,5 +1,6 @@
 module Atomo.Valuable where
 
+import Control.Monad (liftM)
 import "monads-fd" Control.Monad.Trans (liftIO)
 import Data.IORef
 import qualified Data.Text as T
@@ -37,11 +38,11 @@ instance Valuable Int where
     fromValue (Integer i) = return (fromIntegral i)
 
 instance Valuable a => Valuable [a] where
-    toValue xs = mapM toValue xs >>= return . list
+    toValue xs = liftM list (mapM toValue xs)
     fromValue (List v) = mapM fromValue (V.toList v)
 
 instance Valuable a => Valuable (V.Vector a) where
-    toValue xs = V.mapM toValue xs >>= return . List
+    toValue xs = liftM List (V.mapM toValue xs)
     fromValue (List v) = V.mapM fromValue v
 
 instance Valuable T.Text where

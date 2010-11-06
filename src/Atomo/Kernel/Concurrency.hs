@@ -13,10 +13,7 @@ load = do
         tid <- liftIO myThreadId
         return (Process chan tid)
 
-    [$p|receive|] =: do
-        chan <- gets channel
-        v <- liftIO (readChan chan)
-        return v
+    [$p|receive|] =: gets channel >>= liftIO . readChan
 
     [$p|halt|] =: gets halt >>= liftIO >> return (particle "ok")
 

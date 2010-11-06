@@ -36,14 +36,14 @@ load = do
         vs <- getList [$e|targets|]
 
         case p of
-            PMKeyword ns mvs -> do
+            PMKeyword ns mvs ->
                 let blanks = length (filter (== Nothing) mvs)
-
-                if blanks > length vs
-                    then throwError (ParticleArity blanks (length vs))
-                    else return . Message . keyword ns $ completeKP mvs vs
-            PMSingle n -> do
-                if length vs == 0
+                in
+                    if blanks > length vs
+                        then throwError (ParticleArity blanks (length vs))
+                        else return . Message . keyword ns $ completeKP mvs vs
+            PMSingle n ->
+                if null vs
                     then throwError (ParticleArity 1 0)
                     else return . Message . single n $ head vs
 

@@ -106,8 +106,7 @@ load = do
         return (Char c)
 
     [$p|(p: Port) contents|] =:
-        getHandle [$e|p handle|] >>= liftIO . TIO.hGetContents
-            >>= return . String
+        getHandle [$e|p handle|] >>= liftM String . liftIO . TIO.hGetContents
 
     [$p|(p: Port) flush|] =:
         getHandle [$e|p handle|] >>= liftIO . hFlush
@@ -174,7 +173,7 @@ load = do
 
     [$p|File exists?: (fn: String)|] =: do
         fn <- getString [$e|fn|]
-        fmap Boolean $ liftIO (doesFileExist fn)
+        liftM Boolean $ liftIO (doesFileExist fn)
 
     [$p|File find-executable: (name: String)|] =: do
         name <- getString [$e|name|]
@@ -261,9 +260,8 @@ load = do
         return (particle "ok")
 
     [$p|Directory contents: (path: String)|] =:
-        getString [$e|path|]
-            >>= liftIO . getDirectoryContents
-            >>= return . list . map string . filter (not . (`elem` [".", ".."]))
+        liftM (list . map string . filter (`notElem` [".", ".."]))
+            (getString [$e|path|] >>= liftIO . getDirectoryContents)
 
     [$p|Directory current|] =:
         liftM string $ liftIO getCurrentDirectory
@@ -327,9 +325,7 @@ load = do
       where
         dropSpaces = do
             c <- hLookAhead h
-            if isSpace c
-                then hGetChar h >> dropSpaces
-                else return ()
+            when (isSpace c) (hGetChar h >> dropSpaces)
 
         hGetSegment' stop = do
             end <- hIsEOF h

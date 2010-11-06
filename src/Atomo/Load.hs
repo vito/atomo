@@ -43,9 +43,7 @@ doLoad file =
                 H.setTopLevelModules ["Main"]
                 H.interpret "load" (H.as :: VM ())
 
-            load <- either (throwError . ImportError) return int
-
-            load
+            join (either (throwError . ImportError) return int)
 
             return (particle "ok")
 

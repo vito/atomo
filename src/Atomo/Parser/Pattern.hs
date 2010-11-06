@@ -1,5 +1,6 @@
 module Atomo.Parser.Pattern where
 
+import Control.Monad (liftM)
 import Text.Parsec
 
 import Atomo.Debug
@@ -224,7 +225,7 @@ ppParticle = do
     char '@'
     try keywordParticle <|> singleParticle
   where
-    singleParticle = fmap (PMatch . Particle . PMSingle) anyIdentifier
+    singleParticle = liftM (PMatch . Particle . PMSingle) anyIdentifier
 
     keywordParticle = choice
         [ parens $ do

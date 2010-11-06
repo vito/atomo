@@ -1,5 +1,6 @@
 module Atomo.Parser.Primitive where
 
+import Control.Monad (liftM)
 import Data.Ratio
 import Text.Parsec
 
@@ -8,7 +9,7 @@ import Atomo.Types as T
 
 
 pPrimitive :: Parser Expr
-pPrimitive = tagged $ fmap (Primitive Nothing) pPrim
+pPrimitive = tagged $ liftM (Primitive Nothing) pPrim
 
 pPrim :: Parser Value
 pPrim = choice
@@ -21,19 +22,19 @@ pPrim = choice
     ]
 
 pvChar :: Parser Value
-pvChar = charLiteral >>= return . Char
+pvChar = liftM Char charLiteral
 
 pvString :: Parser Value
-pvString = stringLiteral >>= return . T.string
+pvString = liftM T.string stringLiteral
 
 pvDouble :: Parser Value
-pvDouble = float >>= return . Double
+pvDouble = liftM Double float
 
 pvInteger :: Parser Value
-pvInteger = integer >>= return . Integer
+pvInteger = liftM Integer integer
 
 pvBoolean :: Parser Value
-pvBoolean = fmap Boolean $ true <|> false
+pvBoolean = liftM Boolean $ true <|> false
   where
     true = reserved "True" >> return True
     false = reserved "False" >> return False
