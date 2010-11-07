@@ -1,13 +1,13 @@
 #title:{Exception Handling}tag:"exceptions"
 
 #define:{
-    raise: v
+    error: v
     > undefined
 }body:{
-    Raises #atomo:v as an error. The return value is undefined, as it immediately aborts.
+    Signals #atomo:v as an error. If the signal exits normally, a debugger is started; hence, this method never exits normally.
 
     #example:({
-        { "x" print; raise: 1; "y" print } call
+        { "x" print; error: 1; "y" print } call
     })
 }
 
@@ -22,7 +22,7 @@
     Yields the result of #atomo:action or #atomo:recover.
 
     #example:({
-        { raise: @error } catch: { e | @(got: e) }
+        { error: @error } catch: { e | @(got: e) }
         { @ok } catch: { @caught }
     })
 }
@@ -38,7 +38,7 @@
 
     #example:({
         { @ok } catch: { @caught } ensuring: { "cleaning up" print }
-        { raise: @not-ok } catch: { @caught } ensuring: { "cleaning up" print }
+        { error: @not-ok } catch: { @caught } ensuring: { "cleaning up" print }
     })
 }
 
@@ -51,9 +51,9 @@
     Similar to #atomo:(catch:), but #atomo:branches is a block containing exception patterns bound to the action to take if they're thrown. If none of the exceptions match any of the patterns, the exception is re-thrown.
 
     #example:({
-        { raise: @foo } handle: { @foo -> 1; @bar -> 2 }
-        { raise: @bar } handle: { @foo -> 1; @bar -> 2 }
-        { raise: @baz } handle: { @foo -> 1; @bar -> 2 }
+        { error: @foo } handle: { @foo -> 1; @bar -> 2 }
+        { error: @bar } handle: { @foo -> 1; @bar -> 2 }
+        { error: @baz } handle: { @foo -> 1; @bar -> 2 }
         { @ok } handle: { @foo -> 1; @bar -> 2 }
     })
 }
@@ -66,8 +66,8 @@
     Similar to #atomo:(handle:), but with an #atomo:(ensuring:) block.
 
     #example:({
-        { raise: @foo } handle: { @foo -> 1 } ensuring: { "hi" print }
-        { raise: @baz } handle: { @foo -> 1 } ensuring: { "hi" print }
+        { error: @foo } handle: { @foo -> 1 } ensuring: { "hi" print }
+        { error: @baz } handle: { @foo -> 1 } ensuring: { "hi" print }
         { @ok } handle: { @foo -> 1 } ensuring: { "hi" print }
     })
 }
@@ -84,7 +84,7 @@
 
     #example:({
         { @ok } ensuring: { "cleaning up" print }
-        { raise: @not-ok } ensuring: { "cleaning up" print }
+        { error: @not-ok } ensuring: { "cleaning up" print }
     })
 }
 
