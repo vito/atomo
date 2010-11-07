@@ -39,7 +39,7 @@ instance Pretty Value where
     prettyFrom _ (Char c) = char '$' <> (text . tail . init $ show c)
     prettyFrom _ (Continuation _) = internal "continuation" empty
     prettyFrom _ (Double d) = double d
-    prettyFrom _ (Expression e) = internal "expression" $ pretty e
+    prettyFrom _ (Expression e) = char '\'' <> parens (pretty e)
     prettyFrom _ (Haskell v) = internal "haskell" $ text (show v)
     prettyFrom _ (Integer i) = integer i
     prettyFrom _ (List l) =
