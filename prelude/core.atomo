@@ -45,8 +45,8 @@ macro x match: (ts: Block) :=
 
     ts contents map:
       { `(~p -> ~e) |
-        @match-on:in: define-on: obj with: [p as: Pattern, 'context as: Pattern] as:
-          `('~e evaluate-in: (this with-delegates: [context])) in: Lobby
+        @match-on:in: define-on: obj with: [p as: Pattern, '-context as: Pattern] as:
+          `('~e evaluate-in: (this with-delegates: [-context])) in: Lobby
       }
 
     `(~obj match-on: ~x in: this)
