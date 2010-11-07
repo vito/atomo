@@ -62,6 +62,14 @@ load = do
         o <- here "x" >>= objectFor
         return $ list (oDelegates o)
 
+    [$p|(x: Object) with-delegates: (ds: List)|] =: do
+        ds <- getList [$e|ds|]
+        x <- here "x" >>= objectFor
+        newObject $ \o -> o
+            { oMethods = oMethods x
+            , oDelegates = ds
+            }
+
     [$p|(x: Object) super|] =::: [$e|x delegates head|]
 
     [$p|(x: Object) is-a?: (y: Object)|] =: do
