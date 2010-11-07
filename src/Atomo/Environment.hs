@@ -461,8 +461,6 @@ matchParticle _ _ _ = False
 runMethod :: Method -> Message -> VM Value
 runMethod (Slot { mValue = v }) _ = return v
 runMethod (Responder { mPattern = p, mContext = c, mExpr = e }) m = do
-    t <- gets top
-
     nt <- newObject $ \o -> o
         { oDelegates = [c]
         , oMethods =
