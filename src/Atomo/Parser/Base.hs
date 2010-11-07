@@ -3,7 +3,7 @@ module Atomo.Parser.Base where
 
 import Control.Monad (liftM)
 import Data.Char
-import Data.List (nub, sort, (\\))
+import Data.List (nub, sort)
 import Text.Parsec
 import qualified Text.Parsec.Token as P
 
@@ -13,11 +13,12 @@ import Atomo.Types (Expr(..), ParserState, VM)
 type Parser = ParsecT String ParserState VM
 
 
-opLetters :: String
-opLetters = "!@#%&*-./\\?"
+isOpLetter :: Char -> Bool
+isOpLetter c = c `elem` "!@#%&*-./\\?" || isSymbol c
 
 isOperator :: String -> Bool
-isOperator = all (\c -> isSymbol c || c `elem` opLetters)
+isOperator "" = False
+isOperator cs = head cs `notElem` "@$~" && all isOpLetter cs
 
 def :: P.GenLanguageDef String ParserState VM
 def = P.LanguageDef
@@ -27,8 +28,8 @@ def = P.LanguageDef
     , P.nestedComments = True
     , P.identStart = letter <|> P.opStart def <|> oneOf "_"
     , P.identLetter = alphaNum <|> P.opLetter def
-    , P.opStart = satisfy (\c -> isSymbol c && c /= '$') <|> oneOf (opLetters \\ "@~")
-    , P.opLetter = satisfy isSymbol <|> oneOf opLetters
+    , P.opStart = satisfy (\c -> c `notElem` "@$~" && isOpLetter c)
+    , P.opLetter = satisfy isOpLetter
     , P.reservedOpNames = ["=", ":=", ",", "|"]
     , P.reservedNames = ["operator", "macro", "for-macro", "this", "True", "False"]
     , P.caseSensitive = True
