@@ -46,7 +46,7 @@ macro x match: (ts: Block) :=
     ts contents map:
       { `(~p -> ~e) |
         @match-on: define-on: obj with: [p as: Pattern] as:
-          `({ delegates-to: sender; ~e } call) in: Lobby
+          `('~e evaluate-in: (this with-delegates: [sender])) in: Lobby
       }
 
     `(~obj match-on: ~x)
