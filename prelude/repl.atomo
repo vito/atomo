@@ -50,6 +50,7 @@
       in =
         { interaction: prompt } handle: {
           @end-of-input -> { signal: @quit; "" } call
+          @interrupt -> { signal: @quit; "" } call
         }
 
       in match: {

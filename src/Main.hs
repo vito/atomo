@@ -2,7 +2,6 @@
 module Main where
 
 import "monads-fd" Control.Monad.Cont
-import Prelude hiding (catch)
 import System.Environment (getArgs)
 
 import Atomo

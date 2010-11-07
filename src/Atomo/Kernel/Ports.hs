@@ -3,7 +3,7 @@ module Atomo.Kernel.Ports (load) where
 
 import Data.Char (isSpace)
 import Data.Maybe (catMaybes)
-import System.Console.Haskeline
+import System.Console.Haskeline as Haskeline
 import System.Directory
 import System.FilePath ((</>), (<.>))
 import System.IO
@@ -301,11 +301,15 @@ load = do
     [$p|interaction: (prompt: String)|] =: do
         prompt <- getString [$e|prompt|]
         history <- getString [$e|*history-file* _?|]
-        line <- liftIO (runInput history (getInputLine prompt))
+        line <-
+            liftIO $ Haskeline.catch
+                (liftM Just $ runInput history (withInterrupt (getInputLine prompt)))
+                (\Interrupt -> return Nothing)
 
         case line of
-            Just i -> return (string i)
-            Nothing -> raise' "end-of-input"
+            Just (Just i) -> return (string i)
+            Just Nothing -> raise' "end-of-input"
+            Nothing -> raise' "interrupt"
 
   where
     runInput history = runInputT defaultSettings
