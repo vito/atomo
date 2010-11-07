@@ -12,7 +12,7 @@ macro a handle: (b: Block) ensuring: (c: Block) :=
 (action: Block) catch: (recover: Block) :=
   { cc |
     action bind: {
-      Error -> { e | cc yield: (recover call: [e]) }
+      Error => { e | cc yield: (recover call: [e]) }
     }
   } call/cc
 
