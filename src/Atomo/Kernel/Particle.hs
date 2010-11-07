@@ -76,7 +76,7 @@ load = do
                     Expression e' -> Responder pat c e'
                     _ -> Slot pat v
 
-        withTop c $ defineOn v m >> return (particle "ok")
+        defineOn v m >> return (particle "ok")
 
     [$p|(p: Particle) define-on: (targets: List) as: v|] =:::
         [$e|p define-on: targets as: v in: sender|]
