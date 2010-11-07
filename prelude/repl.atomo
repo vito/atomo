@@ -1,7 +1,7 @@
 { evaluate-all: [] in: _ := error: @no-expressions
-  evaluate-all: [e] in: t := e evaluate-in: t
+  evaluate-all: [e] in: t := t evaluate: e
   evaluate-all: (e . es) in: t :=
-    { e evaluate-in: t
+    { t evaluate: e
       evaluate-all: es in: t
     } call
 

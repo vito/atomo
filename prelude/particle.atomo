@@ -38,12 +38,3 @@
     @single ->
       ("@" .. p name)
   }
-
-macro p define-on: v as: e :=
-  `(~p define-on: ~v with: [] as: ~e in: this)
-
-macro p define-on: v with: targets as: e :=
-  `(~p define-on: ~v with: ~targets as: ~e in: this)
-
-macro p define-on: targets as: e :=
-  `(~p define-on: ~targets as: ~e in: this)

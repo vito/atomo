@@ -1,5 +1,8 @@
-macro `Block new: es := `(Block new: ~es arguments: [] in: this)
-macro `Block new: es arguments: as := `(Block new: ~es arguments: ~as in: this)
+context Block: (es: List) :=
+  Block new: es arguments: [] in: context
+
+context Block: (es: List) arguments: (as: List) :=
+  Block new: es arguments: as in: context
 
 (b: Block) repeat :=
   { b in-context call

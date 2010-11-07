@@ -27,7 +27,7 @@ describe: "dispatch" as: {
       }
 
       it: "matches on Chars" so: {
-        on: Char match: ['a', 'b', 'c']
+        on: Char match: [$a, $b, $c]
       }
 
       it: "matches on Doubles" so: {
@@ -49,8 +49,8 @@ describe: "dispatch" as: {
       Z = Y clone
 
       X foo := 1
-      X bar := 'a'
-      Y bar := 'b'
+      X bar := $a
+      Y bar := $b
       X baz := "one"
       Y baz := "two"
       Z baz := "three"
@@ -58,9 +58,9 @@ describe: "dispatch" as: {
       Y fizz := @y
       Z buzz := @z
 
-      [ X -> [1, 'a', "one"]
-        Y -> [1, 'b', "two"]
-        Z -> [1, 'b', "three"]
+      [ X -> [1, $a, "one"]
+        Y -> [1, $b, "two"]
+        Z -> [1, $b, "three"]
       ] map:
         { a |
           [a from foo, a from bar, a from baz]

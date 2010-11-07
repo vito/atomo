@@ -24,7 +24,7 @@
     Simple-Warning = Warning clone
   }
 
-  Handler = Object clone do: { handle: _ := @ok }
+  for-macro Handler = Object clone do: { handle: _ := @ok }
   for-macro Restart = Object clone
 
   (e: Simple-Error) describe-error := e value describe-error
@@ -135,40 +135,43 @@
   (super) find-restart: name :=
     *restarts* _? lookup: name
 
-  -- yield a hygienic expr to define on the handler
-  expr-for: e in: env :=
-    condition: {
-      e type == @block && e arguments empty? not ->
-        `(~(e evaluate-in: env) call: [s])
+  (super) with-handler: (h: Handler) do: (action: Block) :=
+    modify: *handlers* as: { hs | h . hs } do: action
 
-      e type == @block ->
-        `(~(e evaluate-in: env) call)
-
-      otherwise -> `(~(`{ ~e } evaluate-in: env) call)
-  }
-
-  (a: Block) bind: (bs: Block) in: context :=
+  macro a bind: (bs: Block) :=
     { h = Handler clone
 
-      bs contents map:
-        { branch |
-          [arg, expr] =
-            branch match: {
-              `(~c -> ~e) -> [c as: Pattern, e]
+      (h) in: c :=
+        { h context = c
+          h
+        } call
 
-              `(~c => ~e) ->
-                [ `(s: ~(c evaluate-in: context)) as: Pattern
-                  expr-for: e in: context
-                ]
+      -- yield a hygienic expr to define on the handler
+      expr-for: e :=
+        condition: {
+          e type == @block && e arguments empty? not ->
+            ``(~'~e call: [~s]) -- wow
 
-              unknown -> error: @(invalid-branch-syntax: unknown)
-            }
+          e type == @block ->
+            `'(~e call)
 
-          @handle: define-on: h with: [arg] as: expr in: context
+          otherwise -> `'~e
         }
 
-      modify: *handlers* as: { hs | h . hs } do: a
+      signals = bs contents map:
+        { `(~pat -> ~expr) |
+          Lobby
+            define: @handle:
+              on: `(h: ~h) (as: Pattern)
+              with: [`(s: ~pat) as: Pattern]
+              as: `(
+                { match: ~(pat as: Pattern) on: s
+                  (with-delegates: [h context])
+                    evaluate: ~(expr-for: expr)
+                } call
+              )
+        }
+
+      `(with-handler: (~h in: this) do: ~a)
     } call
 } call
-
-macro a bind: b := `(~a bind: ~b in: this)

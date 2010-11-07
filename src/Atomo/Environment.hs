@@ -184,7 +184,7 @@ withTop t x = do
 -----------------------------------------------------------------------------
 
 defineOn :: Value -> Method -> VM ()
-defineOn v m = do
+defineOn v m' = do
     o <- orefFor v
     obj <- liftIO (readIORef o)
 
@@ -195,12 +195,14 @@ defineOn v m = do
 
     liftIO . writeIORef o $
         obj { oMethods = ms (mPattern m) }
+  where
+    m = m' { mPattern = setSelf v (mPattern m') }
 
 -- | define a pattern to evaluate an expression
 define :: Pattern -> Expr -> VM ()
 define !p !e = do
     is <- gets primitives
-    newp <- methodPattern p
+    newp <- matchable p
     m <- method newp e
 
     os <-
@@ -211,38 +213,26 @@ define !p !e = do
             _ -> targets is newp
 
     forM_ os $ \o ->
-        defineOn (Reference o) (m o)
+        defineOn (Reference o) m
   where
     isTop PThis = True
     isTop (PObject ETop {}) = True
     isTop _ = False
 
-    method p' (Primitive _ v) = return (\o -> Slot (setSelf o p') v)
-    method p' e' = gets top >>= \t ->
-        return (\o -> Responder (setSelf o p') t e')
+    method p' (Primitive _ v) = return (Slot p' v)
+    method p' e' = gets top >>= \t -> return (Responder p' t e')
 
-    methodPattern p'@(PSingle { ppTarget = t }) = do
-        t' <- methodPattern t
-        return p' { ppTarget = t' }
-    methodPattern p'@(PKeyword { ppTargets = ts }) = do
-        ts' <- mapM methodPattern ts
-        return p' { ppTargets = ts' }
-    methodPattern PThis = liftM PMatch (gets top)
-    methodPattern (PObject oe) = liftM PMatch (eval oe)
-    methodPattern (PNamed n p') = liftM (PNamed n) (methodPattern p')
-    methodPattern p' = return p'
 
-    -- | Swap out a reference match with PThis, for inserting on the object
-    setSelf :: ORef -> Pattern -> Pattern
-    setSelf o (PKeyword i ns ps) =
-        PKeyword i ns (map (setSelf o) ps)
-    setSelf o (PMatch (Reference x))
-        | o == x = PThis
-    setSelf o (PNamed n p') =
-        PNamed n (setSelf o p')
-    setSelf o (PSingle i n t) =
-        PSingle i n (setSelf o t)
-    setSelf _ p' = p'
+-- | Swap out a reference match with PThis, for inserting on the object
+setSelf :: Value -> Pattern -> Pattern
+setSelf v (PKeyword i ns ps) =
+    PKeyword i ns (map (setSelf v) ps)
+setSelf v (PMatch x) | v == x = PThis
+setSelf v (PNamed n p') =
+    PNamed n (setSelf v p')
+setSelf v (PSingle i n t) =
+    PSingle i n (setSelf v t)
+setSelf _ p' = p'
 
 
 set :: Pattern -> Value -> VM Value
@@ -255,6 +245,21 @@ set p v = do
 
             return v
         else throwError (Mismatch p v)
+
+
+-- | turn any PObject patterns into PMatches
+matchable :: Pattern -> VM Pattern
+matchable p'@(PSingle { ppTarget = t }) = do
+    t' <- matchable t
+    return p' { ppTarget = t' }
+matchable p'@(PKeyword { ppTargets = ts }) = do
+    ts' <- mapM matchable ts
+    return p' { ppTargets = ts' }
+matchable PThis = liftM PMatch (gets top)
+matchable (PObject oe) = liftM PMatch (eval oe)
+matchable (PNamed n p') = liftM (PNamed n) (matchable p')
+matchable p' = return p'
+
 
 -- | find the target objects for a pattern
 targets :: IDs -> Pattern -> VM [ORef]

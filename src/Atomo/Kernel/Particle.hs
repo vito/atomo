@@ -47,32 +47,42 @@ load = do
                     then throwError (ParticleArity 1 0)
                     else return . Message . single n $ head vs
 
-    [$p|(p: Particle) define-on: v with: (targets: List) as: e in: c|] =: do
+    [$p|c define: (p: Particle) on: v with: (targets: List) as: e|] =: do
         Particle p <- here "p" >>= findParticle
         v <- here "v"
         ts <- getList [$e|targets|]
         e <- here "e"
         c <- here "c"
 
-        let targets =
-                map (\v ->
-                    case v of
-                        Pattern p -> p
-                        _ -> PMatch v) ts
-            pat =
+        let toPattern (Pattern p) = p
+            toPattern v = PMatch v
+            
+            others = map toPattern ts
+            
+            main = toPattern v
+
+        ids <- gets primitives
+        obj <- targets ids main
+
+        pat <-
+            matchable $
                 case p of
                     PMKeyword ns _ ->
-                        pkeyword ns (PThis:targets)
+                        pkeyword ns (main:others)
                     PMSingle n ->
-                        psingle n PThis
-            m =
+                        psingle n main
+
+        let m =
                 case e of
                     Expression e' -> Responder pat c e'
                     _ -> Slot pat v
 
-        defineOn v m >> return (particle "ok")
+        forM_ obj $ \o ->
+            defineOn (Reference o) m
+        
+        return (particle "ok")
 
-    [$p|(p: Particle) define-on: (targets: List) as: v in: c|] =: do
+    [$p|c define: (p: Particle) on: (targets: List) as: v|] =: do
         Particle p <- here "p" >>= findParticle
         vs <- getList [$e|targets|]
         v <- here "v"

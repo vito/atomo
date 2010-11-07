@@ -6,7 +6,7 @@ Parameter new: v := Parameter clone do:
   }
 
 macro define: (x: Dispatch) as: root :=
-  `(~(x as: Pattern) set-to: (Parameter new: ~root))
+  `(match: ~(x as: Pattern) on: (Parameter new: ~root))
 
 (p: Parameter) show :=
   "<" .. p _? show .. ">"

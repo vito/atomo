@@ -1,13 +1,4 @@
 describe: "blocks" as: {
-    describe: @new: as: {
-        it: "creates a new block in its sender's context" so: {
-            a = 1
-            x = { a | { a } } call: [2]
-            x call should-be: 2
-            Block (new: x contents) call should-be: 1
-        }
-    }
-
     describe: @new:in: as: {
         it: "creates a new block in a given context" so: {
             a = 1

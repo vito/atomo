@@ -60,10 +60,10 @@ load = do
                 return (keyParticle ["yes"] [Nothing, Just o])
             else return (particle "no")
 
-    [$p|(p: Pattern) set-to: v in: s|] =: do
-        Pattern p <- here "p" >>= findPattern
+    [$p|top match: (p: Pattern) on: v|] =: do
+        p <- here "p" >>= findPattern >>= matchable . fromPattern
         v <- here "v"
-        s <- here "s"
+        t <- here "top"
 
         let isMethod (PSingle {}) = True
             isMethod (PKeyword {}) = True
@@ -71,7 +71,7 @@ load = do
 
         if isMethod p
             then define p (Primitive Nothing v) >> return v
-            else withTop s (set p v)
+            else withTop t (set p v)
   where
     -- convert an expression to the pattern match it represents
     toPattern (Dispatch { eMessage = EKeyword { emNames = ["."], emTargets = [h, t] } }) = do

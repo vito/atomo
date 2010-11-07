@@ -200,7 +200,7 @@ context use: (name: String) :=
   context use: name version: { True }
 
 context use: (name: String) version: (v: Version) :=
-  context use: name version: `({ == ~v }) evaluate
+  context use: name version: (evaluate: `({ == ~v }))
 
 macro context use: name version: (v: Primitive) :=
   `(~context use: ~name version: { == ~v })

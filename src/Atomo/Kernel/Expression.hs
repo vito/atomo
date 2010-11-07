@@ -21,8 +21,8 @@ load = do
     [$p|(s: String) parse-expressions|] =:
         getString [$e|s|] >>= liftM (list . map Expression) . parseInput
 
-    [$p|(e: Expression) evaluate-in: t|] =: do
-        t <- here "t"
+    [$p|top evaluate: (e: Expression)|] =: do
+        t <- here "top"
         Expression e <- here "e" >>= findExpression
         withTop t (eval e)
 
