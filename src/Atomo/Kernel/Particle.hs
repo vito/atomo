@@ -47,12 +47,6 @@ load = do
                     then throwError (ParticleArity 1 0)
                     else return . Message . single n $ head vs
 
-    [$p|(p: Particle) define-on: v as: e|] =:::
-        [$e|p define-on: v with: [] as: e in: sender|]
-
-    [$p|(p: Particle) define-on: v with: (targets: List) as: e|] =:::
-        [$e|p define-on: v with: targets as: e in: sender|]
-
     [$p|(p: Particle) define-on: v with: (targets: List) as: e in: c|] =: do
         Particle p <- here "p" >>= findParticle
         v <- here "v"
@@ -77,9 +71,6 @@ load = do
                     _ -> Slot pat v
 
         defineOn v m >> return (particle "ok")
-
-    [$p|(p: Particle) define-on: (targets: List) as: v|] =:::
-        [$e|p define-on: targets as: v in: sender|]
 
     [$p|(p: Particle) define-on: (targets: List) as: v in: c|] =: do
         Particle p <- here "p" >>= findParticle

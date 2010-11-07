@@ -147,7 +147,7 @@
       otherwise -> `(~(`{ ~e } evaluate-in: env) call)
   }
 
-  (a: Block) bind: (bs: Block) :=
+  (a: Block) bind: (bs: Block) in: context :=
     { h = Handler clone
 
       bs contents map:
@@ -157,16 +157,18 @@
               `(~c -> ~e) -> [c as: Pattern, e]
 
               `(~c => ~e) ->
-                [ `(s: ~(c evaluate-in: sender)) as: Pattern
-                  expr-for: e in: sender
+                [ `(s: ~(c evaluate-in: context)) as: Pattern
+                  expr-for: e in: context
                 ]
 
               unknown -> error: @(invalid-branch-syntax: unknown)
             }
 
-          @handle: define-on: h with: [arg] as: expr in: sender
+          @handle: define-on: h with: [arg] as: expr in: context
         }
 
       modify: *handlers* as: { hs | h . hs } do: a
     } call
 } call
+
+macro a bind: b := `(~a bind: ~b in: this)

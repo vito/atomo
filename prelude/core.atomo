@@ -40,14 +40,18 @@
 macro x match: (ts: Block) :=
   { obj = Object clone
 
-    @match-on: define-on: obj with: [`x as: Pattern] as:
-      `(error: @(no-matches-for: x))
+    @match-on:in: define-on: obj with: ['x as: Pattern, '_ as: Pattern] as:
+      `(error: @(no-matches-for: x)) in: Lobby
 
     ts contents map:
       { `(~p -> ~e) |
-        @match-on: define-on: obj with: [p as: Pattern] as:
-          `('~e evaluate-in: (this with-delegates: [sender])) in: Lobby
+        @match-on:in: define-on: obj with: [p as: Pattern, 'context as: Pattern] as:
+          `('~e evaluate-in: (this with-delegates: [context])) in: Lobby
       }
 
-    `(~obj match-on: ~x)
+    `(~obj match-on: ~x in: this)
   } call
+
+macro x evaluate := `(~x evaluate-in: this)
+
+macro p set-to: v := `(~p set-to: ~v in: this)

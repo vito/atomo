@@ -7,12 +7,6 @@ import Atomo
 
 load :: VM ()
 load = do
-    [$p|Block new: (es: List)|] =:::
-        [$e|Block new: es arguments: [] in: sender|]
-
-    [$p|Block new: (es: List) arguments: (as: List)|] =:::
-        [$e|Block new: es arguments: as in: sender|]
-
     [$p|Block new: (es: List) in: t|] =:::
         [$e|Block new: es arguments: [] in: t|]
 

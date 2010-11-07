@@ -36,8 +36,11 @@ pExpr = choice
     <?> "expression"
 
 pLiteral :: Parser Expr
-pLiteral = pBlock <|> pList <|> pParticle <|> pQuoted <|> pQuasiQuoted <|> pUnquoted <|> pPrimitive
+pLiteral = pThis <|> pBlock <|> pList <|> pParticle <|> pQuoted <|> pQuasiQuoted <|> pUnquoted <|> pPrimitive
     <?> "literal"
+
+pThis :: Parser Expr
+pThis = tagged $ reserved "this" >> return (ETop Nothing)
 
 pQuoted :: Parser Expr
 pQuoted = tagged $ do
@@ -205,7 +208,7 @@ pdCascade = do
     pos <- getPosition
 
     chain <- wsManyStart
-        (liftM DNormal (try pLiteral <|> parens pExpr) <|> cascaded)
+        (liftM DNormal (try pLiteral <|> pThis <|> parens pExpr) <|> cascaded)
         cascaded
 
     return $ dispatches pos chain

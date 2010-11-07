@@ -1,3 +1,6 @@
+macro `Block new: es := `(Block new: ~es arguments: [] in: this)
+macro `Block new: es arguments: as := `(Block new: ~es arguments: ~as in: this)
+
 (b: Block) repeat :=
   { b in-context call
     b repeat
@@ -8,9 +11,6 @@
     { call := b context join: b
       call: vs := b context join: b with: vs
     }
-
-(a: Block) .. (b: Block) :=
-  Block new: (a contents .. b contents) in: sender
 
 (start: Integer) to: (end: Integer) by: (diff: Integer) do: b :=
   (start to: end by: diff) each: b

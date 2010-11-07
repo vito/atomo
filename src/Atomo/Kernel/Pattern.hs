@@ -60,10 +60,10 @@ load = do
                 return (keyParticle ["yes"] [Nothing, Just o])
             else return (particle "no")
 
-    [$p|(p: Pattern) set-to: v|] =: do
+    [$p|(p: Pattern) set-to: v in: s|] =: do
         Pattern p <- here "p" >>= findPattern
         v <- here "v"
-        s <- eval [$e|sender|]
+        s <- here "s"
 
         let isMethod (PSingle {}) = True
             isMethod (PKeyword {}) = True

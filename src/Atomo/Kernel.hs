@@ -29,8 +29,6 @@ import qualified Atomo.Kernel.Char as Char
 
 load :: VM ()
 load = do
-    [$p|this|] =::: [$e|sender|]
-
     [$p|(x: Object) clone|] =: do
         x <- here "x"
         newObject $ \o -> o

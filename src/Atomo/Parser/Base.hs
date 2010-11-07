@@ -30,7 +30,7 @@ def = P.LanguageDef
     , P.opStart = satisfy (\c -> isSymbol c && c /= '$') <|> oneOf (opLetters \\ "@~")
     , P.opLetter = satisfy isSymbol <|> oneOf opLetters
     , P.reservedOpNames = ["=", ":=", ",", "|"]
-    , P.reservedNames = ["operator", "macro", "for-macro", "True", "False"]
+    , P.reservedNames = ["operator", "macro", "for-macro", "this", "True", "False"]
     , P.caseSensitive = True
     }
 
