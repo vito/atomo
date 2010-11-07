@@ -28,7 +28,7 @@
 
             { basic-repl } bind: {
               @prompt ->
-                restart: @use-prompt with: ["[!]> "]
+                restart: 'use-prompt with: ["[!]> "]
 
               @(special: n) ->
                 when: (n all?: @digit?) do: {
@@ -42,7 +42,7 @@
   (env: Object) basic-repl :=
     { prompt =
         { signal: @prompt; "> " } with-restarts: {
-          @use-prompt -> { p | p }
+          use-prompt -> { p | p }
         }
 
       in =
@@ -58,8 +58,8 @@
         source ->
           { try :=
               { do-input: source in: env } with-restarts: {
-                @retry -> try
-                @abort -> @ok
+                retry -> try
+                abort -> @ok
               }
 
             try
@@ -76,7 +76,7 @@
 
         { env basic-repl } bind: {
           @prompt ->
-            restart: @use-prompt with: ["[" .. frame show .. "]> "]
+            restart: 'use-prompt with: ["[" .. frame show .. "]> "]
 
           @loop -> (super frame = frame + 1)
 

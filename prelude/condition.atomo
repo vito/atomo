@@ -55,7 +55,7 @@
       *restarts* _? (zip: (0 .. *restarts* _? length)) map:
         { choice |
           [index, name] = [choice to, choice from from]
-          ("  " .. index show .. ": " .. name show) print
+          ("  " .. index show .. ": " .. name name) print
         }
     } call
 
@@ -77,8 +77,8 @@
     { rs = restarts contents map:
         { `(~n -> ~e) |
           e type match: {
-            @block -> `(~n -> ~e)
-            _ -> `(~n -> { ~e })
+            @block -> `('~n -> ~e)
+            _ -> `('~n -> { ~e })
           }
         }
 
@@ -118,7 +118,7 @@
 
       @ok
     } with-restarts: {
-      @muffle-warning -> @ok
+      muffle-warning -> @ok
     }
 
   (super) restart: name := restart: name with: []
