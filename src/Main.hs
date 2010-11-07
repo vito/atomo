@@ -16,8 +16,7 @@ main = do
     args <- getArgs
 
     case args of
-        r | null r || r == ["-d"] ->
-            exec repl
+        [] -> exec repl
 
         ("-e":expr:_) -> exec $ do
             ast <- continuedParse expr "<input>"
@@ -41,7 +40,6 @@ main = do
         _ -> putStrLn . unlines $
             [ "usage:"
             , "\tatomo\t\tstart the REPL"
-            , "\tatomo -d\tstart the REPL in quiet mode"
             , "\tatomo -e EXPR\tevaluate EXPR and output the result"
             , "\tatomo -s EXPR\tevaluate EXPR and start the REPL"
             , "\tatomo -l FILE\tload FILENAME and start the REPL"
