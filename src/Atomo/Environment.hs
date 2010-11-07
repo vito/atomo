@@ -463,10 +463,18 @@ runMethod (Slot { mValue = v }) _ = return v
 runMethod (Responder { mPattern = p, mContext = c, mExpr = e }) m = do
     t <- gets top
 
-    nt <- newObject $ \o -> o
+    s <- newObject $ \o -> o
         { oDelegates = [c]
         , oMethods =
-            ( insertMap (Slot (psingle "sender" PThis) t) $ bindings p m
+            ( toMethods [(psingle "sender" PThis, t)]
+            , emptyMap
+            )
+        }
+
+    nt <- newObject $ \o -> o
+        { oDelegates = [s]
+        , oMethods =
+            ( bindings p m
             , emptyMap
             )
         }
