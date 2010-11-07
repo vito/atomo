@@ -10,7 +10,7 @@ Strings are immutable, efficient, Unicode sequences of characters.
     Creates a #atomo:String containing a single character.
 
     #example:({
-        'a' singleton
+        $a singleton
     })
 }
 

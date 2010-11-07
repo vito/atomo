@@ -7,7 +7,7 @@
     Lists are immutable, growable vectors of arbitrary values.
 
     #example-segment:({
-        [1, '2', "three", 4]
+        [1, $2, "three", 4]
         []
     })
 }
@@ -411,8 +411,8 @@
     Check if all values in the list are #atomo:True.
 
     #example:({
-        [1 == 1, 'a' == 'a'] and
-        [1 == 1, 'a' == 'b'] and
+        [1 == 1, $a == $a] and
+        [1 == 1, $a == $b] and
         [] and
     })
 }
@@ -425,9 +425,9 @@
     Check if any values in the list are #atomo:True.
 
     #example:({
-        [1 == 1, 'a' == 'a'] or
-        [1 == 1, 'a' == 'b'] or
-        [1 == 2, 'a' == 'c'] or
+        [1 == 1, $a == $a] or
+        [1 == 1, $a == $b] or
+        [1 == 2, $a == $c] or
         [] or
     })
 }
@@ -440,8 +440,8 @@
     Check if #atomo:v is a member of the list #atomo:l.
 
     #example:({
-        "abc" contains?: 'a'
-        "abc" contains?: 'd'
+        "abc" contains?: $a
+        "abc" contains?: $d
     })
 }
 
@@ -579,7 +579,7 @@
 
     #example:({
         [1, 6, 3, 0, 10] sort
-        ['z', 'f', 'x'] sort
+        [$z, $f, $x] sort
     })
 }
 

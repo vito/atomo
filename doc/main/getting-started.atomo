@@ -85,16 +85,7 @@ As you can see, first we set #atomo:b to #atomo:[1, 2], and then we immediately 
 
 #section:{Lexical Scoping via Delegation}
 
-You'll notice earlier I used the term #italic:{top-level object} for describing the scope of the #atomo:a definition. This is the entirety of Atomo's scoping system. It's objects all the way down. The nearest lexical scope to a point in your code (henceforth called the #italic:{top-level} or #italic:{top}) is simply an object that delegates down the chain to the surrounding scope, and so on and son on until it hits rock #italic:{bottom} - #atomo:Object. You can jump back to the context of your method dispatch via #atomo:sender.
-
-
-#interaction:({
-    x = 1
-    foo := ("x is: " .. sender x show) print
-    foo
-    { x = 42; foo } call
-    x
-})
+You'll notice earlier I used the term #italic:{top-level object} for describing the scope of the #atomo:a definition. This is the entirety of Atomo's scoping system. It's objects all the way down. The nearest lexical scope to a point in your code (henceforth called the #italic:{top-level} or #italic:{top}) is simply an object that delegates down the chain to the surrounding scope, and so on and son on until it hits rock #italic:{bottom} - #atomo:Object. You can grab this object via the keyword #atomo:this.
 
 #atomo:(Block)s provide a #atomo:context method for grabbing the scope in which they were defined. Putting the pieces together, #atomo:in-context is easily defined - which converts a block into one that is evalulated in its original scope:
 

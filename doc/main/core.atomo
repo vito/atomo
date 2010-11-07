@@ -43,7 +43,7 @@
 
     #example:({
         x foo: [y, z] bar: _ := this
-        1 foo: [2, '3'] bar: 4
+        1 foo: [2, $3] bar: 4
         a = 2
         foo := [1, a]
         foo
@@ -74,19 +74,6 @@
         X = Object clone
         X b = a + 2
         X b
-    })
-}
-
-#define:{
-    this
-    > Object
-}body:{
-    Returns the object representing the current scope. For example, typing in #atomo:this in the REPL will return the current object:
-
-    #example:({
-        this
-        a = 1
-        this
     })
 }
 

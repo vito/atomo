@@ -9,8 +9,8 @@
     For example, #atomo:(lookup:) uses them to indicate whether it was able to find a given key in a list of #atomo:(Association)s. If it finds the association, it returns the associated value wrapped in #atomo:@ok:. If it doesn't find it, it returns #atomo:@none. It is the dispatcher's job to decide what they want to do from there.
 
     #example:({
-        [1 -> 'a', 2 -> 'b'] lookup: 1
-        [1 -> 'a', 2 -> 'b'] lookup: 3
+        [1 -> $a, 2 -> $b] lookup: 1
+        [1 -> $a, 2 -> $b] lookup: 3
     })
 
     Many errors are also encoded as simple "structured error messages" using particles. For example, when indexing a list out of bounds:
@@ -107,7 +107,7 @@
     #example:({
         @+ values
         @(+ 2) values
-        @(foo: _ bar: 'a') values
+        @(foo: _ bar: $a) values
     })
 }
 
