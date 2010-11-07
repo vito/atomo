@@ -21,7 +21,7 @@ roundtrip: id next: pid :=
             main <- @done
         } call
 
-        (token: Integer) -> {
+        token -> {
             pid <- (token - 1)
             roundtrip: id next: pid
         } call
