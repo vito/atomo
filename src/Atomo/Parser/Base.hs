@@ -27,7 +27,7 @@ def = P.LanguageDef
     , P.nestedComments = True
     , P.identStart = letter <|> P.opStart def <|> oneOf "_"
     , P.identLetter = alphaNum <|> P.opLetter def
-    , P.opStart = satisfy isSymbol <|> oneOf (opLetters \\ "@~")
+    , P.opStart = satisfy (\c -> isSymbol c && c /= '$') <|> oneOf (opLetters \\ "@~")
     , P.opLetter = satisfy isSymbol <|> oneOf opLetters
     , P.reservedOpNames = ["=", ":=", ",", "|"]
     , P.reservedNames = ["operator", "macro", "for-macro", "True", "False"]
@@ -288,16 +288,14 @@ makeTokenParser languageDef
     -----------------------------------------------------------
     -- Chars & Strings
     -----------------------------------------------------------
-    charLiteral     = lexeme (between (char '\'')
-                                      (char '\'' <?> "end of character")
-                                      characterChar )
+    charLiteral     = lexeme (char '$' >> characterChar)
                     <?> "character"
 
     characterChar   = charLetter <|> charEscape
                     <?> "literal character"
 
     charEscape      = do{ char '\\'; escapeCode }
-    charLetter      = satisfy (\c -> (c /= '\'') && (c /= '\\') && (c > '\026'))
+    charLetter      = satisfy (\c -> (c /= '\\') && (c > '\026'))
 
 
 

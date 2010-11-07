@@ -44,7 +44,7 @@ ppMacro = try ppMacroKeywords <|> ppMacroSingle
 
 ppExpr :: Parser Pattern
 ppExpr = do
-    q <- pQuoted
+    q <- pQuasiQuoted
     return (PExpr (eExpr q))
 
 ppMacroSingle :: Parser Pattern

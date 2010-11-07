@@ -1,7 +1,7 @@
 { @empty-string describe-error := "string is empty"
 
   (s: String) indent: (n: Integer) :=
-    s lines (map: { l | ' ' (repeat: n) .. l }) (join: "\n")
+    s lines (map: { l | $  (repeat: n) .. l }) (join: "\n")
 
   (s: String) word-wrap: (length: Integer) :=
     s lines

@@ -144,6 +144,9 @@ eval (EQuote { eExpr = qe }) = do
     unquote n q@(EQuote { eExpr = e }) = do
         ne <- unquote (n + 1) e
         return q { eExpr = ne }
+    unquote n p@(Primitive { eValue = Expression e }) = do
+        ne <- unquote n e
+        return p { eValue = Expression ne }
     unquote _ p@(Primitive {}) = return p
     unquote _ t@(ETop {}) = return t
     unquote _ v@(EVM {}) = return v

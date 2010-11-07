@@ -40,7 +40,7 @@
   (e: Simple-Warning) show := "<warning " .. e value show .. ">"
 
   Restart show-options-for: e :=
-    { '-' (repeat: 78) print
+    { $- (repeat: 78) print
       e describe-error
         (word-wrap: 74)
         lines

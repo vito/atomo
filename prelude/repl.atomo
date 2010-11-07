@@ -54,7 +54,7 @@
         }
 
       in match: {
-        ':' . name ->
+        $: . name ->
           signal: @(special: name)
 
         source ->
@@ -89,8 +89,8 @@
             { ask :=
                 { "really quit? (y/n) " display
                   { read-char } (after: { "" print }) match: {
-                    'y' -> stop yield
-                    'n' -> @ok
+                    $y -> stop yield
+                    $n -> @ok
                     _ -> ask
                   }
                 } call

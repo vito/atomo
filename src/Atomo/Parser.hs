@@ -36,11 +36,17 @@ pExpr = choice
     <?> "expression"
 
 pLiteral :: Parser Expr
-pLiteral = pBlock <|> pList <|> pParticle <|> pQuoted <|> pUnquoted <|> pPrimitive
+pLiteral = pBlock <|> pList <|> pParticle <|> pQuoted <|> pQuasiQuoted <|> pUnquoted <|> pPrimitive
     <?> "literal"
 
 pQuoted :: Parser Expr
 pQuoted = tagged $ do
+    char '\''
+    e <- pSpacedExpr
+    return (Primitive Nothing (Expression e))
+
+pQuasiQuoted :: Parser Expr
+pQuasiQuoted = tagged $ do
     char '`'
     e <- pSpacedExpr
     return (EQuote Nothing e)
