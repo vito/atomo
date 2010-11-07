@@ -303,7 +303,7 @@ load = do
         history <- getString [$e|*history-file* _?|]
         line <-
             liftIO $ Haskeline.catch
-                (liftM Just $ runInput history (withInterrupt (getInputLine prompt)))
+                (liftM Just $ runInput history (getInputLine prompt))
                 (\Interrupt -> return Nothing)
 
         case line of
@@ -312,9 +312,9 @@ load = do
             Nothing -> raise' "interrupt"
 
   where
-    runInput history = runInputT defaultSettings
-        { historyFile = Just history
-        }
+    runInput h
+        = runInputT (defaultSettings { historyFile = Just h })
+        . withInterrupt
 
     portObj hdl = newScope $ do
         port <- eval [$e|Port clone|]
