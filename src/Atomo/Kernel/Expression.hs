@@ -22,13 +22,14 @@ load = do
         return (Expression (EList Nothing (map fromExpression es)))
 
     [$p|`Match new: (branches: List) on: (value: Expression)|] =: do
-        pats <- liftM (map fromPattern) $ getList [$e|branches map: @from|]
+        pats <- liftM (map fromExpression) $ getList [$e|branches map: @from|]
         exprs <- liftM (map fromExpression) $ getList [$e|branches map: @to|]
-        Expression value <- here "value"
-        ids <- gets primitives
+        Expression value <- here "value" >>= findExpression
 
+        ps <- mapM toPattern pats
+        ids <- gets primitives
         return . Expression . EVM Nothing (Just $ prettyMatch value (zip pats exprs)) $
-            eval value >>= matchBranches ids (zip pats exprs)
+            eval value >>= matchBranches ids (zip ps exprs)
 
     [$p|(s: String) parse-expressions|] =:
         getString [$e|s|] >>= liftM (list . map Expression) . parseInput
@@ -154,11 +155,10 @@ matchBranches ids ((p, e):ps) v = do
         then newScope $ set p' v >> eval e
         else matchBranches ids ps v
 
-prettyMatch :: Expr -> [(Pattern, Expr)] -> Doc
+prettyMatch :: Expr -> [(Expr, Expr)] -> Doc
 prettyMatch t bs =
     pretty . Dispatch Nothing $
         ekeyword ["match"] [t, EBlock Nothing [] branches]
   where
     branches = flip map bs $ \(p, e) ->
-        Dispatch Nothing $
-            ekeyword ["->"] [Primitive Nothing (Pattern p), e]
+        Dispatch Nothing $ ekeyword ["->"] [p, e]

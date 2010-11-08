@@ -38,4 +38,4 @@
 
 
 macro x match: (ts: Block) :=
-  `Match new: (ts contents map: { `(~p -> ~e) | (p as: Pattern) -> e }) on: x
+  `Match new: (ts contents map: { `(~p -> ~e) | p -> e }) on: x

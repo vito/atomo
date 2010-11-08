@@ -584,4 +584,3 @@ fromHaskell' t (Haskell d) =
     fromMaybe (error ("needed Haskell value of type " ++ t))
         (fromDynamic d)
 fromHaskell' t _ = error ("needed haskell value of type " ++ t)
-

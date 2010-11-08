@@ -3,6 +3,7 @@ module Atomo.Environment where
 
 import "monads-fd" Control.Monad.Cont
 import "monads-fd" Control.Monad.State
+import Data.Char (isUpper)
 import Data.Dynamic
 import Data.IORef
 import Data.List (nub)
@@ -820,3 +821,39 @@ throwError e = gets top >>= \t ->
         (error ("panic: " ++ show e))
   where
     msg t = keyword ["error"] [t, asValue e]
+
+-- convert an expression to the pattern match it represents
+toPattern :: Expr -> VM Pattern
+toPattern (Dispatch { eMessage = EKeyword { emNames = ["."], emTargets = [h, t] } }) = do
+    hp <- toPattern h
+    tp <- toPattern t
+    return (PHeadTail hp tp)
+toPattern (Dispatch { eMessage = EKeyword { emNames = [n], emTargets = [ETop {}, x] } }) = do
+    p <- toPattern x
+    return (PNamed n p)
+toPattern (Dispatch { eMessage = EKeyword { emNames = ns, emTargets = ts } }) = do
+    ps <- mapM toPattern ts
+    return (pkeyword ns ps)
+toPattern (Dispatch { eMessage = ESingle { emName = "_" } }) =
+    return PAny
+toPattern d@(Dispatch { eMessage = ESingle { emTarget = ETop {}, emName = n } })
+    | isUpper (head n) = return (PObject d)
+    | otherwise = return (PNamed n PAny)
+toPattern (Dispatch { eMessage = ESingle { emTarget = d@(Dispatch {}), emName = n } }) =
+    return (psingle n (PObject d))
+toPattern (EList { eContents = es }) = do
+    ps <- mapM toPattern es
+    return (PList ps)
+toPattern (EParticle { eParticle = EPMSingle n }) =
+    return (PMatch (Particle (PMSingle n)))
+toPattern (EParticle { eParticle = EPMKeyword ns mes }) = do
+    ps <- forM mes $ \me ->
+        case me of
+            Nothing -> return PAny
+            Just e -> toPattern e
+
+    return (PPMKeyword ns ps)
+toPattern (EQuote { eExpr = e }) = return (PExpr e)
+toPattern (Primitive { eValue = v }) =
+    return (PMatch v)
+toPattern e = raise ["unknown-pattern"] [Expression e]
