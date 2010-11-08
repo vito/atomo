@@ -3,3 +3,62 @@
 * Pattern docs
 * String docs
 * File/Directory docs
+* Method docs
+* documentation:
+  * Message -- rename @send to @dispatch
+  * Pattern
+  * String
+  * File
+  * Directory
+  * Method
+  * Char
+  * Expression
+    * @(`Match new: List on: Expression)
+    * @(`Block new: List) and `(@Block new: List arguments: List)
+    * @(`List new: List)
+    * @(String parse-expressions) -- rename?
+    * @(evaluate: Expression)
+    * expression meta-stuff
+
+  * @(Block: List) and @(Block: List arguments: List)
+
+  * condition/restart
+    * Condition
+      * Error
+        * Simple-Error
+      * Warning
+        * Simple-Warning
+    * Restart
+
+    * @(Block with-restarts: Block)
+    * @(Block bind: Block)
+
+    * @signal:
+    * @error:
+    * @warning:
+
+    * @restart:
+    * @find-restart:
+
+  * @(Object repl)
+  * @(Object basic-repl)
+
+  * @when:
+  * @unless:do:
+  * @unless:
+
+  * @define:on:with:as:
+  * @define:on:as:
+
+  * @match:on:
+
+  * @from:take:
+
+  * @interaction:
+
+  * @indent:
+  * @word-wrap:
+
+  * @describe-error
+
+  * @(- Number)
