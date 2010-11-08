@@ -163,7 +163,8 @@ instance Pretty Expr where
       where
         exprs = sep . punctuate (text ";") $ map pretty es
     prettyFrom CDefine (EVM {}) = text "..."
-    prettyFrom _ (EVM {}) = text "<vm>"
+    prettyFrom _ (EVM { ePretty = Nothing }) = text "<vm>"
+    prettyFrom _ (EVM { ePretty = Just d }) = d
     prettyFrom _ (EList _ es) =
         brackets . sep . punctuate comma $ map (prettyFrom CList) es
     prettyFrom _ (EMacro _ p v) = text "macro" <+> prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v

@@ -2,7 +2,10 @@
 {-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.Kernel.Expression (load) where
 
+import Text.PrettyPrint (Doc)
+
 import Atomo
+import Atomo.Pretty (pretty)
 import Atomo.Parser (macroExpand, parseInput, withParser)
 
 
@@ -24,7 +27,7 @@ load = do
         Expression value <- here "value"
         ids <- gets primitives
 
-        return . Expression . EVM Nothing $
+        return . Expression . EVM Nothing (Just $ prettyMatch value (zip pats exprs)) $
             eval value >>= matchBranches ids (zip pats exprs)
 
     [$p|(s: String) parse-expressions|] =:
@@ -150,3 +153,12 @@ matchBranches ids ((p, e):ps) v = do
     if match ids p' v
         then newScope $ set p' v >> eval e
         else matchBranches ids ps v
+
+prettyMatch :: Expr -> [(Pattern, Expr)] -> Doc
+prettyMatch t bs =
+    pretty . Dispatch Nothing $
+        ekeyword ["match"] [t, EBlock Nothing [] branches]
+  where
+    branches = flip map bs $ \(p, e) ->
+        Dispatch Nothing $
+            ekeyword ["->"] [Primitive Nothing (Pattern p), e]

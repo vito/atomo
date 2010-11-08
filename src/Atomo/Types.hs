@@ -11,6 +11,7 @@ import Data.List (nub)
 import Data.Maybe (fromMaybe)
 import Data.IORef
 import Text.Parsec (ParseError, SourcePos)
+import Text.PrettyPrint (Doc)
 import qualified Data.IntMap as M
 import qualified Data.Text as T
 import qualified Data.Vector as V
@@ -182,6 +183,7 @@ data Expr
         }
     | EVM
         { eLocation :: Maybe SourcePos
+        , ePretty :: Maybe Doc
         , eAction :: VM Value
         }
     | EQuote
@@ -331,7 +333,7 @@ instance Eq Expr where
     (==) (EList _ aes) (EList _ bes) = aes == bes
     (==) (EParticle _ ap') (EParticle _ bp) = ap' == bp
     (==) (ETop _) (ETop _) = True
-    (==) (EVM _ _) (EVM _ _) = False
+    (==) (EVM {}) (EVM {}) = False
     (==) _ _ = False
 
 
