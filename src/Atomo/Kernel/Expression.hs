@@ -18,6 +18,15 @@ load = do
         es <- getList [$e|es|]
         return (Expression (EList Nothing (map fromExpression es)))
 
+    [$p|`Match new: (branches: List) on: (value: Expression)|] =: do
+        pats <- liftM (map fromPattern) $ getList [$e|branches map: @from|]
+        exprs <- liftM (map fromExpression) $ getList [$e|branches map: @to|]
+        Expression value <- here "value"
+        ids <- gets primitives
+
+        return . Expression . EVM Nothing $
+            eval value >>= matchBranches ids (zip pats exprs)
+
     [$p|(s: String) parse-expressions|] =:
         getString [$e|s|] >>= liftM (list . map Expression) . parseInput
 
@@ -132,3 +141,12 @@ load = do
             Set { eExpr = e } -> return (Expression e)
             Define { eExpr = e } -> return (Expression e)
             _ -> raise ["no-expression-for"] [Expression e]
+
+
+matchBranches :: IDs -> [(Pattern, Expr)] -> Value -> VM Value
+matchBranches _ [] v = raise ["no-match-for"] [v]
+matchBranches ids ((p, e):ps) v = do
+    p' <- matchable p
+    if match ids p' v
+        then newScope $ set p' v >> eval e
+        else matchBranches ids ps v

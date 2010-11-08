@@ -38,26 +38,4 @@
 
 
 macro x match: (ts: Block) :=
-  { obj = Object clone
-
-    Lobby
-      define: @match-on:in:
-        on: obj
-        with: ['x as: Pattern, '_ as: Pattern]
-        as: `(error: @(no-matches-for: x))
-
-    ts contents map:
-      { `(~p -> ~e) |
-        Lobby
-          define: @match-on:in:
-            on: obj
-            with: [`(value: ~p) as: Pattern, 'context as: Pattern]
-            as: `(
-              { match: ~(p as: Pattern) on: value
-                (with-delegates: [context]) evaluate: '~e
-              } call
-            )
-      }
-
-    `(~obj match-on: ~x in: this)
-  } call
+  `Match new: (ts contents map: { `(~p -> ~e) | (p as: Pattern) -> e }) on: x
