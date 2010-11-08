@@ -5,7 +5,6 @@ module Atomo.Kernel.Pattern (load) where
 import Data.Char (isUpper)
 
 import Atomo
-import Atomo.Method
 
 
 load :: VM ()
@@ -51,13 +50,9 @@ load = do
 
         if match ids p v
             then do
-                obj <- eval [$e|Object clone|]
-                o <- newObject $ \o -> o
-                    { oDelegates = [obj]
-                    , oMethods = (toMethods (bindings' p v), snd (oMethods o))
-                    }
-
-                return (keyParticle ["yes"] [Nothing, Just o])
+                bs <- eval [$e|Object clone|]
+                withTop bs (set p v)
+                return (keyParticle ["yes"] [Nothing, Just bs])
             else return (particle "no")
 
     [$p|top match: (p: Pattern) on: v|] =: do
