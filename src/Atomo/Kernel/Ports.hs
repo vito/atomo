@@ -52,7 +52,11 @@ load = do
 
     [$p|(p: Port) print: x|] =: do
         x <- here "x"
+        port <- here "p"
         hdl <- getHandle [$e|p handle|]
+
+        c <- liftIO (hIsClosed hdl)
+        when c (raise ["port-closed", "for"] [port, x])
 
         String s <- eval [$e|x as: String|] >>= findString
 
@@ -62,7 +66,11 @@ load = do
 
     [$p|(p: Port) display: x|] =: do
         x <- here "x"
+        port <- here "p"
         hdl <- getHandle [$e|p handle|]
+
+        c <- liftIO (hIsClosed hdl)
+        when c (raise ["port-closed", "for"] [port, x])
 
         String s <- eval [$e|x as: String|] >>= findString
 
