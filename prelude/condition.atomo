@@ -12,8 +12,8 @@
           } call
       }
 
-    define: current-debugger as: Default-Debugger
-    define: error-output as: Port standard-error
+    define: *debugger* as: Default-Debugger
+    define: *error-output* as: Port standard-error
 
     Condition = Object clone
 
@@ -103,8 +103,8 @@
   (super) error: (e: Error) :=
     { signal: e
 
-      with-output-to: error-output _? do: {
-        current-debugger _? run: e
+      with-output-to: *error-output* _? do: {
+        *debugger* _? run: e
       }
     } call
 
@@ -112,7 +112,7 @@
   (super) warning: (w: Warning) :=
     { signal: w
 
-      with-output-to: error-output _? do: {
+      with-output-to: *error-output* _? do: {
         ("WARNING: " .. w describe-error) print
       }
 

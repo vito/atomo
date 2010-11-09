@@ -71,7 +71,7 @@
 
   (env: Object) repl :=
     { stop |
-      with: current-debugger as: repl-debugger do: {
+      with: *debugger* as: repl-debugger do: {
         frame = 0
 
         { env basic-repl } bind: {

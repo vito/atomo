@@ -1,17 +1,17 @@
 *history-file* = Parameter new: (Directory home </> ".atomo_history")
-current-output-port = Parameter new: Port standard-output
-current-input-port = Parameter new: Port standard-input
+*output-port* = Parameter new: Port standard-output
+*input-port* = Parameter new: Port standard-input
 
-(x: Object) print := current-output-port _? print: x
-(x: Object) display := current-output-port _? display: x
+(x: Object) print := *output-port* _? print: x
+(x: Object) display := *output-port* _? display: x
 
-read := current-input-port _? read
-read-line := current-input-port _? read-line
-read-char := current-input-port _? read-char
+read := *input-port* _? read
+read-line := *input-port* _? read-line
+read-char := *input-port* _? read-char
 
-contents := current-input-port _? contents
-ready? := current-input-port _? ready?
-eof? := current-input-port _? eof?
+contents := *input-port* _? contents
+ready? := *input-port* _? ready?
+eof? := *input-port* _? eof?
 
 
 with-output-to: (fn: String) do: b :=
@@ -21,7 +21,7 @@ with-output-to: (fn: String) do: b :=
     }
 
 with-output-to: (p: Port) do: b :=
-  with: current-output-port as: p do: b
+  with: *output-port* as: p do: b
 
 with-input-from: (fn: String) do: (b: Block) :=
   { Port (new: fn mode: @read) } wrap: @close do:
@@ -30,7 +30,7 @@ with-input-from: (fn: String) do: (b: Block) :=
     }
 
 with-input-from: (p: Port) do: (b: Block) :=
-  with: current-input-port as: p do: b
+  with: *input-port* as: p do: b
 
 
 with-all-output-to: (fn: String) do: b :=
@@ -40,7 +40,7 @@ with-all-output-to: (fn: String) do: b :=
     }
 
 with-all-output-to: (p: Port) do: b :=
-    with-default: current-output-port as: p do: b
+    with-default: *output-port* as: p do: b
 
 with-all-input-from: (fn: String) do: (b: Block) :=
   { Port (new: fn mode: @read) } wrap: @close do:
@@ -49,7 +49,7 @@ with-all-input-from: (fn: String) do: (b: Block) :=
     }
 
 with-all-input-from: (p: Port) do: (b: Block) :=
-  with-default: current-input-port as: p do: b
+  with-default: *input-port* as: p do: b
 
 
 Directory copy: (from: String) to: (to: String) :=
