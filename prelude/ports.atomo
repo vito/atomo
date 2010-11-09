@@ -23,10 +23,14 @@ String-Port new: (c: String) :=
   String-Port clone do: { contents = c }
 
 (b: String-Port) print: x :=
-  b display: (x (as: String) .. "\n")
+  { b display: ((x as: String) .. "\n")
+    x
+  } call
 
 (b: String-Port) display: x :=
-  b contents = b contents .. (x as: String)
+  { b contents = b contents .. (x as: String)
+    x
+  } call
 
 (b: String-Port) read-line :=
   { b contents take-while: @(/= $\n) } after: {

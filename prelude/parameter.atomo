@@ -29,11 +29,8 @@ with: (p: Parameter) as: new do: (action: Block) :=
 with-default: (p: Parameter) as: new do: (action: Block) :=
   { old-default = p default
     old = p _?
-    action before: { p set-default: new } after: {
+    action before: { p set-default: new; p =! new } after: {
       p set-default: old-default
-
-      -- re-set the old per-thread value, since any nested @with:as:do:'s
-      -- would have it set to this new default
       p =! old
     }
   } call
