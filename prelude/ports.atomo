@@ -14,6 +14,33 @@ ready? := *input-port* _? ready?
 eof? := *input-port* _? eof?
 
 
+String-Port = Port clone
+
+String-Port show := "<port {string}>"
+
+String-Port new := String-Port new: ""
+String-Port new: (c: String) :=
+  String-Port clone do: { contents = c }
+
+(b: String-Port) print: x :=
+  b display: (x (as: String) .. "\n")
+
+(b: String-Port) display: x :=
+  b contents = b contents .. (x as: String)
+
+(b: String-Port) read-line :=
+  { b contents take-while: @(/= $\n) } after: {
+    b contents = b contents (drop-while: @(/= $\n)) tail
+  }
+
+(b: String-Port) read-char :=
+  { b contents head } after: { b contents = b contents tail }
+
+(b: String-Port) eof? := b contents empty?
+
+(b: String-Port) ready? := b contents empty? not
+
+
 with-output-to: (fn: String) do: b :=
   { Port (new: fn mode: @write) } wrap: @close do:
     { file |
