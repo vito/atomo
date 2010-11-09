@@ -5,7 +5,7 @@
 * File/Directory docs
 * Method docs
 * documentation:
-  * Message -- rename @send to @dispatch
+  * Message
   * Pattern
   * String
   * File

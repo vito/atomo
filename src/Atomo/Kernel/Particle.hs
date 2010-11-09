@@ -8,7 +8,7 @@ import Atomo
 load :: VM ()
 load = do
     [$p|(p: Particle) call: (targets: List)|] =:::
-        [$e|(p complete: targets) send|]
+        [$e|(p complete: targets) dispatch|]
 
     [$p|(p: Particle) name|] =: do
         Particle (PMSingle n) <- here "p" >>= findParticle

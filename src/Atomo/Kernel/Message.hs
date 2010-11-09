@@ -12,9 +12,8 @@ load = do
             Single {} -> return (particle "single")
             Keyword {} -> return (particle "keyword")
 
-    [$p|(m: Message) send|] =: do
-        Message m <- here "m" >>= findMessage
-        dispatch m
+    [$p|(m: Message) dispatch|] =:
+        here "m" >>= findMessage >>= dispatch . fromMessage
 
     [$p|(m: Message) particle|] =: do
         Message m <- here "m" >>= findMessage
