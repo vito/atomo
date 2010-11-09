@@ -13,6 +13,7 @@ contents := current-input-port _? contents
 ready? := current-input-port _? ready?
 eof? := current-input-port _? eof?
 
+
 with-output-to: (fn: String) do: b :=
   { Port (new: fn mode: @write) } wrap: @close do:
     { file |
@@ -29,7 +30,7 @@ with-input-from: (fn: String) do: (b: Block) :=
     }
 
 with-input-from: (p: Port) do: (b: Block) :=
-    with: current-input-port as: p do: b
+  with: current-input-port as: p do: b
 
 
 with-all-output-to: (fn: String) do: b :=
@@ -49,6 +50,7 @@ with-all-input-from: (fn: String) do: (b: Block) :=
 
 with-all-input-from: (p: Port) do: (b: Block) :=
   with-default: current-input-port as: p do: b
+
 
 Directory copy: (from: String) to: (to: String) :=
   { Directory create-tree-if-missing: to

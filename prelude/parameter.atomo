@@ -2,8 +2,10 @@ operator right 0 =!
 
 Parameter = Object clone
 Parameter new: v := Parameter clone do:
-  { set-default: v
+  { default = v
   }
+
+(p: Parameter) value: _ := p default
 
 macro define: (x: Dispatch) as: root :=
   `(match: ~(x as: Pattern) on: (Parameter new: ~root))
@@ -17,7 +19,7 @@ macro define: (x: Dispatch) as: root :=
   (p) value: (self) = v
 
 (p: Parameter) set-default: v :=
-  (p) value: _ = v
+  (p) default = v
 
 with: (p: Parameter) as: new do: (action: Block) :=
   { old = p _?
@@ -25,8 +27,15 @@ with: (p: Parameter) as: new do: (action: Block) :=
   } call
 
 with-default: (p: Parameter) as: new do: (action: Block) :=
-  { old = p _?
-    action before: { p set-default: new } after: { p set-default: old }
+  { old-default = p default
+    old = p _?
+    action before: { p set-default: new } after: {
+      p set-default: old-default
+
+      -- re-set the old per-thread value, since any nested @with:as:do:'s
+      -- would have it set to this new default
+      p =! old
+    }
   } call
 
 macro with: (bs: List) do: action :=
