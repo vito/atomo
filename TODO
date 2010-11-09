@@ -33,10 +33,6 @@
     * @(Block with-restarts: Block)
     * @(Block bind: Block)
 
-    * @signal:
-    * @error:
-    * @warning:
-
     * @restart:
     * @find-restart:
 
