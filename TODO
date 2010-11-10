@@ -17,20 +17,6 @@
 
   * @(Block: List) and @(Block: List arguments: List)
 
-  * condition/restart
-    * Condition
-      * Error
-        * Simple-Error
-      * Warning
-        * Simple-Warning
-    * Restart
-
-    * @(Block with-restarts: Block)
-    * @(Block bind: Block)
-
-    * @restart:
-    * @find-restart:
-
   * @(Object repl)
   * @(Object basic-repl)
 

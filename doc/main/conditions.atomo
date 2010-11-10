@@ -2,6 +2,8 @@
 
 Atomo uses a condition system very similar to Common Lisp's.
 
+#section:{Signals}
+
 #define:{
   signal: v
   > @ok
@@ -34,6 +36,92 @@ Atomo uses a condition system very similar to Common Lisp's.
     { "x" print; warning: 2; "y" print } call
   })
 }
+
+#define:{
+  restart: name
+  | name is-a?: Expression
+  > any
+}body:{
+  Finds restart #atomo:name and jumps to it.
+
+  #example:({
+    action := { signal: @foo; "hi" print } with-restarts: { skip -> @skipped }
+    { action } bind: { @foo -> restart: 'skip }
+  })
+}
+
+#section:{Handlers}
+
+#define:{
+  action bind: handlers
+  | action is-a?: Block
+  | handlers is-a?: Block
+  > any
+}body:{
+  Performs #atomo:action, with a handler for all signals matched in #atomo:handlers block. Returns the result of #atomo:action.
+
+  The contents of #atomo:handlers should be #atomo:Association expressions, e.g. #atomo:(pattern -> responder), where #atomo:pattern is a match on the signal value, and #atomo:responder is either a #atomo:Block (which will be called with the signal value itself as an argument) or an expression to be evaluated in response to the signal.
+
+  #example:({
+    { signal: @foo } bind: { @foo -> "fooed!" print }
+    { signal: @(bar: 42) } bind: { @(bar: x) -> @(fooed: x) print }
+    { error: @uh-oh } bind: { Error -> { e | @(got-error: e) print } }
+  })
+
+  A #atomo:responder may often invoke #atomo:(restart:) or #atomo:(restart:with:), which is the only way they can affect the return value of #atomo:action.
+
+  After a handler responds to a signal, the signal continues outward to the next recently bound handler:
+
+  #example:({
+    { { signal: @foo } bind: { @foo -> "me first!" print } } bind: { @foo -> "no me!" print }
+  })
+}
+
+#define:{
+  action with-restarts: restarts
+  | action is-a?: Block
+  | restarts is-a?: Block
+  > any
+}body:{
+  Call #atomo:action, binding the restarts described by #atomo:restarts. These restarts, when invoked, will replace the result of #atomo:action.
+
+  The contents of #atomo:restarts should be #atomo:Association expressions, e.g. #atomo:(name -> expression), where #atomo:name is the name for the restart, and #atomo:expression is the action to be performed when the restart is invoked.
+
+  #example:({
+    { { x } with-restarts: { ignore -> @ok } } bind: { Error -> restart: 'ignore }
+  })
+}
+
+#define:{
+  restart: name with: arguments
+  | name is-a?: Expression
+  | arguments is-a?: List
+  > any
+}body:{
+  Invokes restart #atomo:name with #atomo:arguments passed to the block.
+
+  #example:({
+    action := { signal: @foo; "hi" print } with-restarts: { use-value -> { v | v } }
+    { action } bind: { @foo -> restart: 'use-value with: [42] }
+  })
+}
+
+#define:{
+  find-restart: name
+  | name is-a?: Expression
+  > in?: [@(ok: Restart), @none]
+}body:{
+  Looks for a restart named #atomo:name.
+
+  #example:({
+    action := { signal: @foo; "hi" print } with-restarts: { skip -> @skipped }
+    { action } bind: { @foo -> [find-restart: 'skip, find-restart: 'bar] print }
+  })
+}
+
+#section:{Traditional Exceptions}
+
+These methods are specific to errors, and provide a system similar to that of traditional exception handling. They are defined in terms of the more general condition system.
 
 #define:{
   action catch: recover
