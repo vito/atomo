@@ -291,3 +291,19 @@
         X y
     })
 }
+
+#define:{
+  v match: branches
+  | branches is-a?: Block
+  > any
+}body:{
+  Pattern-match #atomo:v on the patterns described by #atomo:branches, evaluating the first branch that matches the value.
+
+  Errors with #atomo:@(no-match-for: v) if none of the branches match the value.
+
+  #example:({
+    1 match: { 2 -> @nope; 1 -> @yep }
+    1 match: { 2 -> @nope }
+    [1, 2] match: { [1, b] -> @(got: b) }
+  })
+}
