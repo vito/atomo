@@ -169,7 +169,7 @@ instance Pretty Expr where
         brackets . sep . punctuate comma $ map (prettyFrom CList) es
     prettyFrom _ (EMacro _ p v) = text "macro" <+> prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v
     prettyFrom c (EParticle _ p) = char '@' <> prettyFrom c p
-    prettyFrom _ (ETop {}) = text "<top>"
+    prettyFrom _ (ETop {}) = text "this"
     prettyFrom _ (EQuote _ e) = char '`' <> parens (pretty e)
     prettyFrom _ (EUnquote _ e) = char '~' <> parens (pretty e)
 
