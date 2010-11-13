@@ -455,7 +455,7 @@ ekeyword ns = EKeyword (hash ns) ns
 -- | Fill in the empty values of a particle. The number of values missing
 -- is expected to be equal to the number of values provided.
 completeKP :: [Maybe Value] -> [Value] -> [Value]
-completeKP [] [] = []
+completeKP [] _ = []
 completeKP (Nothing:mvs') (v:vs') = v : completeKP mvs' vs'
 completeKP (Just v:mvs') vs' = v : completeKP mvs' vs'
 completeKP mvs' vs' = error $ "impossible: completeKP on " ++ show (mvs', vs')
