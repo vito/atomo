@@ -37,11 +37,6 @@ source-repository   head
     type:           darcs
     location:       http://darcsden.com/alex/atomo
 
-source-repository   this
-    type:           darcs
-    location:       http://darcsden.com/alex/atomo
-    tag:            0.1.1
-
 library
   hs-source-dirs:    src
 
