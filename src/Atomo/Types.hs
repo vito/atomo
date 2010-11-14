@@ -575,7 +575,7 @@ asValue (BlockArity e' g) =
         [Integer (fromIntegral e'), Integer (fromIntegral g)]
 asValue NoExpressions = particle "no-expressions"
 asValue (ValueNotFound d v) =
-    keyParticleN ["could-not-found", "in"] [string d, v]
+    keyParticleN ["could-not-find", "in"] [string d, v]
 asValue (DynamicNeeded t) =
     keyParticleN ["dynamic-needed"] [string t]
 
