@@ -6,7 +6,6 @@ module Atomo.QuasiQuotes
     ) where
 
 import "monads-fd" Control.Monad.State
-import Data.IORef
 import Data.Typeable
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
@@ -21,10 +20,9 @@ import Atomo.Parser.Pattern
 import Atomo.Parser.Base
 import Atomo.Types
 
-qqEnv :: IORef Env
-qqEnv = unsafePerformIO $ do
-    (_, e) <- runVM (initCore >> return (particle "ok")) startEnv
-    newIORef e
+qqEnv :: Env
+qqEnv = snd $ unsafePerformIO $
+    runVM (initCore >> return (particle "ok")) startEnv
 
 p :: QuasiQuoter
 p = QuasiQuoter quotePatternExp undefined
@@ -35,28 +33,21 @@ e = QuasiQuoter quoteExprExp undefined
 es :: QuasiQuoter
 es = QuasiQuoter quoteExprsExp undefined
 
-withLocation :: (String -> (String, Int, Int) -> Q a) -> (a -> Exp) -> String -> TH.ExpQ
+withLocation :: (String -> (String, Int, Int) -> a) -> (a -> Exp) -> String -> TH.ExpQ
 withLocation p c s = do
     l <- TH.location
-    r <- p s
+    return . c $ p s
         ( TH.loc_filename l
         , fst $ TH.loc_start l
         , snd $ TH.loc_start l
         )
-    return (c r)
 
-parsing :: (Monad m, Typeable a) => Parser a -> String -> (String, Int, Int) -> m a
+parsing :: Typeable a => Parser a -> String -> (String, Int, Int) -> a
 parsing p s (file, line, col) =
-    -- OH GOD!
-    -- OH GOD! NO!
-    -- WHYYYYYYYYYYYYYYYYYYYYYY
-    case unsafePerformIO (runWith go (unsafePerformIO (readIORef qqEnv))) of
-        x -> return (fromHaskell' "a" x)
+    -- here be dragons
+    fromHaskell' "a" $ unsafePerformIO (runWith go (qqEnv))
   where
-    go = do
-        r <- liftM haskell $ continue pp "<qq>" s
-        get >>= liftIO . writeIORef qqEnv
-        return r
+    go = liftM haskell $ continue pp "<qq>" s
 
     pp = do
         pos <- getPosition
