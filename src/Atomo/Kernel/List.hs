@@ -11,9 +11,6 @@ load :: VM ()
 load = do
     eval [$e|operator right .|]
 
-    [$p|(l: List) show|] =:::
-        [$e|"[" .. l (map: @show) (join: ", ") .. "]"|]
-
     [$p|(l: List) length|] =:
         liftM (Integer . fromIntegral . V.length) (getVector [$e|l|])
 

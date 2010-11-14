@@ -1,5 +1,8 @@
 @empty-list describe-error := "list is empty"
 
+(l: -> List) show :=
+  "[" .. l (map: @show) (join: ", ") .. "]"
+
 (l: List) each: (b: Block) :=
   { l map: b in-context
     l

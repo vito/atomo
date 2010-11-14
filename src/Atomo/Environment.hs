@@ -233,6 +233,8 @@ setSelf v (PNamed n p') =
     PNamed n (setSelf v p')
 setSelf v (PSingle i n t) =
     PSingle i n (setSelf v t)
+setSelf v (PInstance p) = PInstance (setSelf v p)
+setSelf v (PStrict p) = PStrict (setSelf v p)
 setSelf _ p' = p'
 
 
@@ -258,6 +260,8 @@ matchable p'@(PKeyword { ppTargets = ts }) = do
     return p' { ppTargets = ts' }
 matchable PThis = liftM PMatch (gets top)
 matchable (PObject oe) = liftM PMatch (eval oe)
+matchable (PInstance p) = liftM PInstance (matchable p)
+matchable (PStrict p) = liftM PStrict (matchable p)
 matchable (PNamed n p') = liftM (PNamed n) (matchable p')
 matchable p' = return p'
 
@@ -280,6 +284,8 @@ targets is (PHeadTail h t) = do
         else return [idList is]
 targets is (PPMKeyword {}) = return [idParticle is]
 targets is (PExpr _) = return [idExpression is]
+targets is (PInstance p) = targets is p
+targets is (PStrict p) = targets is p
 targets _ p = error $ "no targets for " ++ show p
 
 
@@ -379,6 +385,10 @@ match ids
     (PKeyword { ppTargets = ps })
     (Message (Keyword { mTargets = ts })) =
     matchAll ids ps ts
+match ids (PInstance p) (Reference o) = delegatesMatch ids p o
+match ids (PInstance p) v = match ids p v
+match ids (PStrict (PMatch x)) v = x == v
+match ids (PStrict p) v = match ids p v
 match ids (PNamed _ p) v = match ids p v
 match _ PAny _ = True
 match ids (PList ps) (List v) = matchAll ids ps (V.toList v)
@@ -828,6 +838,10 @@ toPattern (Dispatch { eMessage = EKeyword { emNames = ["."], emTargets = [h, t] 
     hp <- toPattern h
     tp <- toPattern t
     return (PHeadTail hp tp)
+toPattern (Dispatch { eMessage = EKeyword { emNames = ["->"], emTargets = [ETop {}, o] } }) = do
+    return (PInstance (PObject o))
+toPattern (Dispatch { eMessage = EKeyword { emNames = ["=="], emTargets = [ETop {}, o] } }) = do
+    return (PStrict (PObject o))
 toPattern (Dispatch { eMessage = EKeyword { emNames = [n], emTargets = [ETop {}, x] } }) = do
     p <- toPattern x
     return (PNamed n p)

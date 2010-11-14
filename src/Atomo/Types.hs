@@ -107,6 +107,8 @@ data Pattern
         }
     | PList [Pattern]
     | PMatch Value
+    | PInstance Pattern
+    | PStrict Pattern
     | PNamed String Pattern
     | PObject Expr
     | PPMKeyword [String] [Pattern]

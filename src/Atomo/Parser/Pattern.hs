@@ -26,6 +26,8 @@ pObjectPattern :: Parser Pattern
 pObjectPattern = choice
     [ try ppNamedSensitive
     , try ppHeadTail
+    , try ppInstance
+    , try ppStrict
     , try ppObject
     , try ppMatch
     , ppList
@@ -41,6 +43,18 @@ ppSet = try ppDefine <|> pPattern
 
 ppMacro :: Parser Pattern
 ppMacro = try ppMacroKeywords <|> ppMacroSingle
+
+ppInstance :: Parser Pattern
+ppInstance = do
+    symbol "->"
+    pat <- pObjectPattern
+    return (PInstance pat)
+
+ppStrict :: Parser Pattern
+ppStrict = do
+    symbol "=="
+    pat <- pObjectPattern
+    return (PStrict pat)
 
 ppExpr :: Parser Pattern
 ppExpr = do

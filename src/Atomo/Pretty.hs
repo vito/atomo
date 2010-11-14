@@ -116,6 +116,8 @@ instance Pretty Pattern where
     prettyFrom _ (PNamed n PAny) = text n
     prettyFrom _ (PNamed n p) = parens $ text n <> colon <+> pretty p
     prettyFrom _ (PObject e) = pretty e
+    prettyFrom _ (PInstance p) = parens $ text "->" <+> pretty p
+    prettyFrom _ (PStrict p) = parens $ text "==" <+> pretty p
     prettyFrom _ (PPMKeyword ns ps)
         | all isAny ps = char '@' <> text (concatMap keyword ns)
         | isAny (head ps) =

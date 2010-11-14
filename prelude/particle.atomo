@@ -1,4 +1,4 @@
-(p: Particle) show :=
+(p: -> Particle) show :=
   p type match: {
     @keyword ->
       { operator?: str := str all?: @(in?: "~!@#$%^&*-_=+./\\|<>?:")
