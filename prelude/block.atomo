@@ -11,7 +11,7 @@ context Block: (es: List) arguments: (as: List) :=
 
 (b: Block) in-context :=
   b clone do:
-    { call := b context join: b
+    { call := b call-in: b context
       call: vs := b context join: b with: vs
     }
 

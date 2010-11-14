@@ -26,6 +26,11 @@ load = do
         vs <- getList [$e|l|]
         callBlock b vs
 
+    [$p|(b: Block) call-in: c|] =: do
+        Block _ _ es <- here "b" >>= findBlock
+        c <- here "c"
+        withTop c (evalAll es)
+
     [$p|(b: Block) context|] =: do
         Block s _ _ <- here "b" >>= findBlock
         return s
