@@ -187,12 +187,42 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
     }
   }
 
-  #item:{particles}is:{...}
+  #item:{particles}is:{
+    Particles begin with an at-sign (#code:{@}), followed by a "partial message."
+
+    For single-messages, a particle always looks like this:
+
+    #atomo-segment:({
+      @foo
+      @fizz-buzz
+    })
+
+    Keyword particles are more complex, and may contain placeholders (#code:{_}):
+
+    #atomo-segment:({
+      @(print: "hi!")
+      @(+ 2)
+      @(from: _ to: 3)
+    })
+
+    Additionally, the value parts may be omitted entirely, leaving only selector names:
+
+    #atomo-segment:({
+      @from:to:
+      @+
+    })
+
+    These are equivalent to #code:{@(from: _ to: _)} and #code:{@(+ _)}, respectively.
+
+    Particles represent messages that are missing the initial role; hence, when you say #atomo:(@(+ 2)), you're representing a message like #atomo:(_ + 2), where #atomo:_ is filled in with a value to form a message like #atomo:(1 + 2).
+
+    Note that, at the moment, all particles are missing an initial role. Hence, they are always partial. There is no such thing as #code:{@(2 foo)} or #code:{@(1 + 2)}. While support for that would be trivial (the parser would just need to be updated), there are other implications that need to be considered - for example, when you have a completed #atomo:Particle, it's essentially a #atomo:Message, but having the parser determine what you mean when you write #code:{@(2 + 2)} is tricky.
+  }
 
   #item:{blocks}is:{
-    Blocks are surrounded by curly braces (#code:{{ }}) and contain 0 or more expressions and, optionally, any number of arguments.
+    Blocks are surrounded by curly braces (#code:{{ }}) and contain 0 or more expressions separated by semicolons or whitespace.
     
-    A block's arguments are patterns, and come before a pipe (#code:{|}), followed by the block's expressions.
+    A block may have arguments, which are pattern-matches separated by spaces. The arguments are placed after the opening brace, and are terminated by a pipe (#code:{|}), followed by the block's contents (if any).
 
     #example-segment:({
       { 1 + 1 }
@@ -207,8 +237,8 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
     Block parsing is whitespace-aware; see #reference:{General Rules}.
   }
 
-  #item:{this}is:{
-    Always refers to the current toplevel object.
+  #item:{scope}is:{
+    #atomo:this always refers to the current toplevel object.
 
     #example:({
       { a = 1; this } call
