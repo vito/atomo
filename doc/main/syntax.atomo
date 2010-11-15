@@ -189,7 +189,31 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
 
   #item:{particles}is:{...}
 
-  #item:{blocks}is:{...}
+  #item:{blocks}is:{
+    Blocks are surrounded by curly braces (#code:{{ }}) and contain 0 or more expressions and, optionally, any number of arguments.
+    
+    A block's arguments are patterns, and come before a pipe (#code:{|}), followed by the block's expressions.
 
-  #item:{this}is:{...}
+    #example-segment:({
+      { 1 + 1 }
+      { a | a * 2 }
+      { }
+      { a b | a + b }
+      { a b | }
+      { "hi" print; another; 6 * 7 }
+      { a (b . c) | x; y; z }
+    })
+
+    Block parsing is whitespace-aware; see #reference:{General Rules}.
+  }
+
+  #item:{this}is:{
+    Always refers to the current toplevel object.
+
+    #example:({
+      { a = 1; this } call
+      x = this
+      { a = 1; @(them: x me: this) } call
+    })
+  }
 }
