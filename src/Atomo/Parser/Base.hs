@@ -352,7 +352,7 @@ makeTokenParser languageDef
 
 
     -- escape code tables
-    escMap          = zip "abfnrtv\\\"\'" "\a\b\f\n\r\t\v\\\"\'"
+    escMap          = zip "abfnrtv\\\"" "\a\b\f\n\r\t\v\\\""
     asciiMap        = zip (ascii3codes ++ ascii2codes) (ascii3 ++ ascii2)
 
     ascii2codes     = ["BS","HT","LF","VT","FF","CR","SO","SI","EM",
