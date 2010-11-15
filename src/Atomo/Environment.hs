@@ -241,7 +241,7 @@ setSelf _ p' = p'
 set :: Pattern -> Value -> VM Value
 set p v = do
     is <- gets primitives
-    if match is p v
+    if match is Nothing p v
         then do
             forM_ (bindings' p v) $ \(p', v') ->
                 define p' (Primitive Nothing v')
@@ -337,7 +337,7 @@ findMethod v m = do
     is <- gets primitives
     r <- orefFor v
     o <- liftIO (readIORef r)
-    case relevant (is { idMatch = r }) o m of
+    case relevant is r o m of
         Nothing -> findFirstMethod m (oDelegates o)
         mt -> return mt
 
@@ -351,84 +351,84 @@ findFirstMethod m (v:vs) = do
         _ -> return r
 
 -- | find a relevant method for message `m' on object `o'
-relevant :: IDs -> Object -> Message -> Maybe Method
-relevant ids o m =
-    lookupMap (mID m) (methods m) >>= firstMatch ids m
+relevant :: IDs -> ORef -> Object -> Message -> Maybe Method
+relevant ids r o m =
+    lookupMap (mID m) (methods m) >>= firstMatch ids (Just r) m
   where
     methods (Single {}) = fst (oMethods o)
     methods (Keyword {}) = snd (oMethods o)
 
-    firstMatch _ _ [] = Nothing
-    firstMatch ids' m' (mt:mts)
-        | match ids' (mPattern mt) (Message m') = Just mt
-        | otherwise = firstMatch ids' m' mts
+    firstMatch _ _ _ [] = Nothing
+    firstMatch ids' r' m' (mt:mts)
+        | match ids' r' (mPattern mt) (Message m') = Just mt
+        | otherwise = firstMatch ids' r' m' mts
 
 -- | check if a value matches a given pattern
 -- note that this is much faster when pure, so it uses unsafePerformIO
 -- to check things like delegation matches.
-match :: IDs -> Pattern -> Value -> Bool
+match :: IDs -> Maybe ORef -> Pattern -> Value -> Bool
 {-# NOINLINE match #-}
-match ids PThis (Reference y) =
-    refMatch ids (idMatch ids) y
-match ids PThis y =
-    match ids (PMatch (Reference (idMatch ids))) (Reference (orefFrom ids y))
-match _ (PMatch x) y | x == y = True
-match ids (PMatch x) (Reference y) =
-    delegatesMatch ids (PMatch x) y
-match ids (PMatch (Reference x)) y =
-    match ids (PMatch (Reference x)) (Reference (orefFrom ids y))
-match ids
+match ids (Just r) PThis (Reference y) =
+    refMatch ids (Just r) r y
+match ids (Just r) PThis y =
+    match ids (Just r) (PMatch (Reference r)) (Reference (orefFrom ids y))
+match _ _ (PMatch x) y | x == y = True
+match ids r (PMatch x) (Reference y) =
+    delegatesMatch ids r (PMatch x) y
+match ids r (PMatch (Reference x)) y =
+    match ids r (PMatch (Reference x)) (Reference (orefFrom ids y))
+match ids r
     (PSingle { ppTarget = p })
     (Message (Single { mTarget = t })) =
-    match ids p t
-match ids
+    match ids r p t
+match ids r
     (PKeyword { ppTargets = ps })
     (Message (Keyword { mTargets = ts })) =
-    matchAll ids ps ts
-match ids (PInstance p) (Reference o) = delegatesMatch ids p o
-match ids (PInstance p) v = match ids p v
-match ids (PStrict (PMatch x)) v = x == v
-match ids (PStrict p) v = match ids p v
-match ids (PNamed _ p) v = match ids p v
-match _ PAny _ = True
-match ids (PList ps) (List v) = matchAll ids ps (V.toList v)
-match ids (PHeadTail hp tp) (List vs) =
-    V.length vs > 0 && match ids hp h && match ids tp t
+    matchAll ids r ps ts
+match ids r (PInstance p) (Reference o) = delegatesMatch ids r p o
+match ids r (PInstance p) v = match ids r p v
+match ids _ (PStrict (PMatch x)) v = x == v
+match ids r (PStrict p) v = match ids r p v
+match ids r (PNamed _ p) v = match ids r p v
+match _ _ PAny _ = True
+match ids r (PList ps) (List v) = matchAll ids r ps (V.toList v)
+match ids r (PHeadTail hp tp) (List vs) =
+    V.length vs > 0 && match ids r hp h && match ids r tp t
   where
     h = V.head vs
     t = List (V.tail vs)
-match ids (PHeadTail hp tp) (String t) | not (T.null t) =
-    match ids hp (Char (T.head t)) && match ids tp (String (T.tail t))
-match ids (PPMKeyword ans aps) (Particle (PMKeyword bns mvs)) =
-    ans == bns && matchParticle ids aps mvs
-match _ PEDefine (Expression (Define {})) = True
-match _ PESet (Expression (Set {})) = True
-match _ PEDispatch (Expression (Dispatch {})) = True
-match _ PEOperator (Expression (Operator {})) = True
-match _ PEPrimitive (Expression (Primitive {})) = True
-match _ PEBlock (Expression (EBlock {})) = True
-match _ PEList (Expression (EList {})) = True
-match _ PEMacro (Expression (EMacro {})) = True
-match _ PEParticle (Expression (EParticle {})) = True
-match _ PETop (Expression (ETop {})) = True
-match _ PEQuote (Expression (EQuote {})) = True
-match _ PEUnquote (Expression (EUnquote {})) = True
-match _ (PExpr a) (Expression b) = matchExpr 0 a b
-match ids p (Reference y) = delegatesMatch ids p y
-match _ _ _ = False
+match ids r (PHeadTail hp tp) (String t) | not (T.null t) =
+    match ids r hp (Char (T.head t)) && match ids r tp (String (T.tail t))
+match ids r (PPMKeyword ans aps) (Particle (PMKeyword bns mvs)) =
+    ans == bns && matchParticle ids r aps mvs
+match _ _ PEDefine (Expression (Define {})) = True
+match _ _ PESet (Expression (Set {})) = True
+match _ _ PEDispatch (Expression (Dispatch {})) = True
+match _ _ PEOperator (Expression (Operator {})) = True
+match _ _ PEPrimitive (Expression (Primitive {})) = True
+match _ _ PEBlock (Expression (EBlock {})) = True
+match _ _ PEList (Expression (EList {})) = True
+match _ _ PEMacro (Expression (EMacro {})) = True
+match _ _ PEParticle (Expression (EParticle {})) = True
+match _ _ PETop (Expression (ETop {})) = True
+match _ _ PEQuote (Expression (EQuote {})) = True
+match _ _ PEUnquote (Expression (EUnquote {})) = True
+match _ _ (PExpr a) (Expression b) = matchExpr 0 a b
+match ids r p (Reference y) = delegatesMatch ids r p y
+match _ _ _ _ = False
 
-refMatch :: IDs -> ORef -> ORef -> Bool
-refMatch ids x y = x == y || delegatesMatch ids (PMatch (Reference x)) y
+refMatch :: IDs -> Maybe ORef -> ORef -> ORef -> Bool
+refMatch ids r x y = x == y || delegatesMatch ids r (PMatch (Reference x)) y
 
-delegatesMatch :: IDs -> Pattern -> ORef -> Bool
-delegatesMatch ids p x =
-    any (match ids p) (oDelegates (unsafePerformIO (readIORef x)))
+delegatesMatch :: IDs -> Maybe ORef -> Pattern -> ORef -> Bool
+delegatesMatch ids mr p x =
+    any (match ids mr p) (oDelegates (unsafePerformIO (readIORef x)))
 
 -- | match multiple patterns with multiple values
-matchAll :: IDs -> [Pattern] -> [Value] -> Bool
-matchAll _ [] [] = True
-matchAll ids (p:ps) (v:vs) = match ids p v && matchAll ids ps vs
-matchAll _ _ _ = False
+matchAll :: IDs -> Maybe ORef -> [Pattern] -> [Value] -> Bool
+matchAll _ _ [] [] = True
+matchAll ids mr (p:ps) (v:vs) = match ids mr p v && matchAll ids mr ps vs
+matchAll _ _ _ _ = False
 
 matchEParticle :: Int -> [Maybe Expr] -> [Maybe Expr] -> Bool
 matchEParticle _ [] [] = True
@@ -464,13 +464,13 @@ matchExpr n (EQuote { eExpr = a }) (EQuote { eExpr = b }) =
     matchExpr (n + 1) a b
 matchExpr _ a b = a == b
 
-matchParticle :: IDs -> [Pattern] -> [Maybe Value] -> Bool
-matchParticle _ [] [] = True
-matchParticle ids (PAny:ps) (Nothing:mvs) = matchParticle ids ps mvs
-matchParticle ids (PNamed _ p:ps) mvs = matchParticle ids (p:ps) mvs
-matchParticle ids (p:ps) (Just v:mvs) =
-    match ids p v && matchParticle ids ps mvs
-matchParticle _ _ _ = False
+matchParticle :: IDs -> Maybe ORef -> [Pattern] -> [Maybe Value] -> Bool
+matchParticle _ _ [] [] = True
+matchParticle ids mr (PAny:ps) (Nothing:mvs) = matchParticle ids mr ps mvs
+matchParticle ids mr (PNamed _ p:ps) mvs = matchParticle ids mr (p:ps) mvs
+matchParticle ids mr (p:ps) (Just v:mvs) =
+    match ids mr p v && matchParticle ids mr ps mvs
+matchParticle _ _ _ _ = False
 
 -- | evaluate a method in a scope with the pattern's bindings, delegating to
 -- the method's context and setting the "dispatch" object
@@ -734,7 +734,7 @@ callBlock (Block s ps es) vs = do
     checkArgs _ [] _ = return (particle "ok")
     checkArgs _ _ [] = throwError (BlockArity (length ps) (length vs))
     checkArgs is (p:ps') (v:vs')
-        | match is p v = checkArgs is ps' vs'
+        | match is Nothing p v = checkArgs is ps' vs'
         | otherwise = throwError (Mismatch p v)
 callBlock x _ = raise ["not-a-block"] [x]
 

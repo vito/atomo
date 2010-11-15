@@ -46,7 +46,7 @@ load = do
         v <- here "v"
         ids <- gets primitives
 
-        if match ids p v
+        if match ids Nothing p v
             then do
                 bs <- eval [$e|Object clone|]
                 withTop bs (set p v)

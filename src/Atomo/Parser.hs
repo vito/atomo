@@ -461,5 +461,5 @@ findMacro m = do
 
     firstMatch _ _ [] = return Nothing
     firstMatch ids' m' (mt:mts)
-        | match ids' (mPattern mt) (Message m') = return (Just mt)
+        | match ids' Nothing (mPattern mt) (Message m') = return (Just mt)
         | otherwise = firstMatch ids' m' mts

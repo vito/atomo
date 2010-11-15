@@ -237,8 +237,7 @@ data Assoc = ALeft | ARight
 -- a giant record of the objects for each primitive value
 data IDs =
     IDs
-        { idMatch :: ORef -- used in dispatch to refer to the object currently being searched
-        , idObject :: ORef -- root object
+        { idObject :: ORef -- root object
         , idBlock :: ORef
         , idBoolean :: ORef
         , idChar :: ORef
@@ -360,8 +359,7 @@ startEnv = Env
     { top = error "top object not set"
     , primitives =
         IDs
-            { idMatch = error "idMatch not set"
-            , idObject = error "idObject not set"
+            { idObject = error "idObject not set"
             , idBlock = error "idBlock not set"
             , idBoolean = error "idBoolean not set"
             , idChar = error "idChar not set"

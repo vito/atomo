@@ -153,7 +153,7 @@ matchBranches :: IDs -> [(Pattern, Expr)] -> Value -> VM Value
 matchBranches _ [] v = raise ["no-match-for"] [v]
 matchBranches ids ((p, e):ps) v = do
     p' <- matchable p
-    if match ids p' v
+    if match ids Nothing p' v
         then newScope $ set p' v >> eval e
         else matchBranches ids ps v
 
