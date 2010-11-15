@@ -1,0 +1,199 @@
+#title:{Syntax}tag:"syntax"
+
+Atomo has a rather simple-to-use syntax, enabled by the powerful Parsec library it uses for parsing.
+
+#section:{General Rules}
+
+Atomo is whitespace-sensitive. Operators and keywords must be surrounded by whitespace, and indentation provides hints to the parser when you don't want to use semicolons. For example; #atomo:(1/2) is a #atomo:Rational, while #atomo:(1 / 2) is integral division. #atomo:(foo-bar) is an identifier, while #atomo:(foo - bar) is subtraction.
+
+Requiring whitespace around operators enables the use of more symbols in identifier names, allowing pleasant conventions like questions marks (e.g. #atomo:(empty?)) and exclamation points (e.g. #atomo:(do-something-destructive!)) for indicating the behaviour of a method.
+
+Atomo's whitespace indentation rules are similar to Haskell's - they are not as strict as Python's, you just increase the spacing amount to indicate continuing the previous line, and continue that indentation amount to indicate continuing the current "block" of code.
+
+Using significant whitespace, this block:
+
+#verbatim:{
+  { "hi" print
+    goodbye
+    2 + 2
+  } call
+}
+
+is equivalent to:
+
+#atomo-segment:({
+  { "hi" print
+    goodbye
+    2 + 2
+  } call
+})
+
+Two spaces for indentation is highly recommended, as it commonly aligns things perfectly on one column. For example, a block's arguments, its contents, and the message sent to the block all end up on the same column:
+
+#verbatim:{
+  { foo |
+    do-something: foo
+    foo * 2
+    [ foo
+      foo + 1
+      foo * 2
+    ] length
+  } call: [2]
+}
+
+Using this convention you also avoid stray closing braces, which would be common with the common alternative indentation style.
+
+Don't do this:
+
+#verbatim:{
+  foo := [1, 2, 3] map: { n |
+    -- ...
+  }
+}
+
+as it indicates the final closing brace is somehow related to #atomo:foo, when really it's just the ending delimiter for the block passed to #atomo:(map:).
+
+Whitespace can also be used for cascaded message sends:
+
+#verbatim:{
+  something
+    foo
+    (+ 2)
+    sqrt
+}
+
+Which is parsed as:
+
+#atomo-segment:({
+  something
+    foo
+    (+ 2)
+    sqrt
+})
+
+Multiple-keyword messages can also be continued via indentation:
+
+#verbatim:{
+  if: x
+    then: { y }
+    else: { z }
+}
+
+Note that to continue the keyword message the next keywords must be indented more than the initial keyword.
+
+#verbatim:{
+  0 up-to: 5
+      do: { n | n print } -- OK; "do:" is indented more than "up-to:"
+
+  something up-to: 5
+      do: { n | n print } -- NOT OK; "do:" is deindented
+
+  something up-to: 5
+              do: { n | n print } -- OK
+
+  something
+    up-to: 5
+      do: { n | n print } -- OK
+}
+
+Any whitespace following #atomo:(:=) or #atomo:(=) is skipped, so you can start a new line and indent from there if you like:
+
+Blah #atomo:$a, #atomo:$b, #atomo:$\n, #atomo:$\10000...
+
+Blah blah.
+
+#verbatim:{
+  x foo =
+    { a = 1
+      a + 1
+    } call
+}
+
+Which is parsed as:
+
+#atomo-segment:({
+  x foo =
+    { a = 1
+      a + 1
+    } call
+})
+
+#section:{Comments}
+
+Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments, #code:{{- -}} for block comments (which can be nested).
+
+#section:{Literals}
+
+#definitions:{
+  #item:{integers}is:{
+    #atomo:1, #atomo:2, #atomo:-1, ..., plus hexadecimal notation (e.g. #code:{0xdeadbeef})
+  }
+
+  #item:{doubles}is:{#atomo:1.0, #atomo:2.0, #atomo:-1.5, ..., plus scientific notation (e.g. #code:{1.5e10})}
+
+  #item:{characters}is:{
+    #atomo:$a, #atomo:$b, #atomo:$\n, #atomo:$\1234 (unicode number)...
+
+    Escape codes supported:
+    
+    #verbatim:{
+      ascii-2:
+        \b \t \n \v \f \r \SO \SI \EM \FS \GS \RS \US ␣ (space)
+        \BS \HT \LF \VT \FF \CR \SO \SI \EM \BS \GS \RS \US \SP
+
+      ascii-3:
+        \NUL \SOH \STX \ETX \EOT \ENQ \ACK \a \DLE \DC1 \DC2
+        \DC3 \DC4 \NAK \SYN \ETB \CAN \SUB \ESC \DEL
+    }
+  }
+
+  #item:{rationals}is:{#atomo:1/2, #atomo:30/500, #atomo:-1/2, ...}
+
+  #item:{strings}is:{#atomo:"", #atomo:"foo", #atomo:"fizz \"buzz\"", containing the above-mentioned escape codes}
+
+  #item:{boolean}is:{#atomo:True and #atomo:False}
+
+  #item:{lists}is:{#atomo:[], #atomo:[1, 2], #atomo:[1, $2, "three"], ...}
+
+  #item:{expressions}is:{
+    #definitions:{
+      #item:{quoted}is:{
+        An apostrophe (#code:{'}) before an expression "quotes" it, turning it into an expression literal:
+        
+        #example-segment:({
+          '1
+          'a
+          '(1 + 1)
+          ''(1 + b)
+          '{ a = 1; a + 1 }
+        })
+      }
+
+      #item:{quasiquoted}is:{
+        Atomo supports quasiquotation as seen in most Lisps, most similarly Clojure. A backquote (#code:{`}) begins a quasiquote, inside of which you can use tilde (#code:{~}) to "unquote".
+
+        These can be nested infinitely; unquoting works inside of aggregate expressions such as lists, blocks, and definitions.
+
+        #example:({
+          `1
+          `(1 + ~(2 + 2))
+          ``(1 + ~~(2 + 2))
+          `{ a = ~(2 + 2) }
+          `[1, 2, ~(1 + 2)]
+        })
+
+        Note that unquoting too far throws an #atomo:(@out-of-quote:) error.
+
+        #example:({
+          `~~(2 + 2)
+        })
+      }
+    }
+  }
+
+  #item:{particles}is:{...}
+
+  #item:{blocks}is:{...}
+
+  #item:{this}is:{...}
+}

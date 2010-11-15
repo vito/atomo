@@ -3,6 +3,7 @@
 #table-of-contents
 
 #include-section:"getting-started.atomo"
+#include-section:"syntax.atomo"
 #include-section:"ecosystem.atomo"
 #include-section:"core.atomo"
 #include-section:"lists.atomo"
