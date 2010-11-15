@@ -144,6 +144,8 @@ load = do
         case e of
             Set { eExpr = e } -> return (Expression e)
             Define { eExpr = e } -> return (Expression e)
+            EQuote { eExpr = e } -> return (Expression e)
+            EUnquote { eExpr = e } -> return (Expression e)
             _ -> raise ["no-expression-for"] [Expression e]
 
 
