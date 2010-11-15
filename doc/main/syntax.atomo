@@ -98,10 +98,6 @@ Note that to continue the keyword message the next keywords must be indented mor
 
 Any whitespace following #atomo:(:=) or #atomo:(=) is skipped, so you can start a new line and indent from there if you like:
 
-Blah #atomo:$a, #atomo:$b, #atomo:$\n, #atomo:$\10000...
-
-Blah blah.
-
 #verbatim:{
   x foo =
     { a = 1
