@@ -247,3 +247,90 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
     })
   }
 }
+
+#section:{Patterns}
+
+Atomo's pattern-match syntax shares the same syntax as Expressions in the language. In many cases these are recursive.
+
+The #atomo:(=) operator performs pattern-matching; the left-hand side is the pattern and the right-hand side is an expression whose value should match the pattern.
+
+#definitions:{
+  #item:{#atomo:_, #atomo:foo, ...}is:{
+    Possibly-named wildcard matches.
+
+    #example:({
+      _ = 1
+      a = 2
+      a
+    })
+  }
+
+  #item:{#atomo:1, #atomo:2/3, #atomo:4.0, #atomo:$a, #atomo:True, #atomo:False, #atomo:"foo", ...}is:{
+    Primitive literal values match only on themselves.
+
+    #example:({
+      1 = 1
+      1 = 2
+      $a = $a
+      2/3 = 2/3
+      4.0 = 4.0
+      4.0 = 4.000000000001
+      "foo" = "foo"
+    })
+  }
+
+  #item:{#code:{(name: pattern)}}is:{
+    A named pattern-match. Matches #atomo:pattern, binding the value it matches to #atomo:name.
+
+    #example:({
+      (foo: 2) = 2
+      foo
+      (foo: 2) = 1
+    })
+  }
+
+  #item:{#code:{(head . tail)}}is:{
+    Matches a non-empty list, matching its first value on #atomo:head and the rest of it on #atomo:tail.
+
+    #example:({
+      (x . xs) = [1, 2, 3]
+      x
+      xs
+    })
+  }
+
+  #item:{#code:{[]}, #code:{[pattern]}, #code:{[pattern-1, pattern-2]}...}is:{
+    Matches a list of fixed length, recursively matching each #atomo:pattern on each of its values.
+
+    #example:({
+      [a, b] = [1, 2]
+      [c, 4] = [3, 4]
+      [a, b, c]
+    })
+  }
+
+  #item:{#code:{@foo}, #code:{@(foo: x)}, #code:{@(foo: x bar: _)}, ...}is:{
+    Matches a particle value. If it's a single particle, it does regular equality checking; if it's a keyword particle, it recursively pattern-matches the particle's values. A wildcard in a particle pattern matches placeholders, but no other pattern will.
+
+    #example:({
+      @foo = @foo
+      @foo = @bar
+      @(foo: x) = @(foo: 2)
+      x
+      @(foo: _) = @(foo: _)
+      @(foo: _) = @(foo: 2)
+      @(foo: 2) = @(foo: _)
+    })
+  }
+
+  #item:{#code:{`a}, #code:{`(1 + ~b)}, ...}is:{
+    Matches expression values recursively. Unquotes serve as named wildcard patterns, with the same recursive semantics as quasiquotation.
+
+    #example:({
+      `a = `a
+      `(1 + ~b) = '(1 + 2)
+      ``(1 + ~~c) = ``(1 + ~3)
+      [b, c]
+    })
+  }
+}
