@@ -1,7 +1,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Atomo.Kernel.List (load) where
 
-import Data.List.Split
+import Data.List (isPrefixOf)
 import qualified Data.Vector as V
 
 import Atomo
@@ -347,4 +347,20 @@ merge cmp (x:xs) (y:ys) = do
         else do
             rest <- merge cmp xs (y:ys)
             return (x:rest)
+
+splitWhen :: (a -> Bool) -> [a] -> [[a]]
+splitWhen f vs = splitWhen' f vs []
+  where
+    splitWhen' f [] acc = [acc]
+    splitWhen' f (v:vs) acc
+        | f v = acc : splitWhen' f vs []
+        | otherwise = splitWhen' f vs (acc ++ [v])
+
+splitOn :: Eq a => [a] -> [a] -> [[a]]
+splitOn d vs = splitOn' d vs []
+  where
+    splitOn' _ [] acc = [acc]
+    splitOn' d vs acc
+        | d `isPrefixOf` vs = acc : splitOn' d (drop (length d) vs) []
+        | otherwise = splitOn' d (tail vs) (acc ++ [head vs])
 
