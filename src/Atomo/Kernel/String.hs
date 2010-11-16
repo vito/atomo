@@ -2,7 +2,6 @@
 module Atomo.Kernel.String where
 
 import Data.List (sort)
-import Data.Ratio ((%))
 import qualified Data.Text as T
 
 import Atomo
@@ -12,27 +11,6 @@ load :: VM ()
 load = do
     [$p|(s: String) as: List|] =:
         liftM (list . map Char) (getString [$e|s|])
-
-    [$p|(s: String) to: Char|] =: do
-        s <- getString [$e|s|]
-        case s of
-            "$'" -> return (Char '\'')
-            '$':rest -> return (Char (read $ "'" ++ rest ++ "'"))
-            otherwise -> raise ["invalid-string"] [string s]
-
-    [$p|(s: String) to: Integer|] =: do
-        s <- getString [$e|s|]
-        return (Integer (read s))
-
-    [$p|(s: String) to: Double|] =: do
-        s <- getString [$e|s|]
-        return (Double (read s))
-
-    [$p|(s: String) to: Rational|] =: do
-        s <- getString [$e|s|]
-        let num = read $ takeWhile (/= '/') s
-            denom = read . tail $ dropWhile (/= '/') s
-        return (Rational (num % denom))
 
     [$p|(l: List) to-string|] =: do
         vs <- getList [$e|l|]
@@ -68,18 +46,11 @@ load = do
         liftM (Char . T.last) (getText [$e|s|])
 
     [$p|(s: String) from: (n: Integer) to: (m: Integer)|] =: do
-            Integer n <- here "n" >>= findInteger
-            Integer m <- here "m" >>= findInteger
-            t <- getText [$e|s|]
-
-            let start = fromIntegral n
-                count = (fromIntegral m) - start
-
-            if count > T.length t || start < 0 || count < 0
-                then raise
-                    ["invalid-slice", "for-string"]
-                    [keyParticleN ["from", "to"] [Integer n, Integer m], String t]
-                else return (String . T.take count . T.drop start $ t)
+        Integer n <- here "n" >>= findInteger
+        Integer m <- here "m" >>= findInteger
+        let start = fromIntegral n
+            count = (fromIntegral m) - start
+            in liftM (String . T.take count . T.drop start) (getText [$e|s|])
 
     [$p|"" init|] =::: [$e|error: @empty-string|]
     [$p|(s: String) init|] =:
