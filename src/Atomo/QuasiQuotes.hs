@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.QuasiQuotes
     ( p
@@ -5,7 +6,7 @@ module Atomo.QuasiQuotes
     , es
     ) where
 
-import "monads-fd" Control.Monad.State
+import "monads-fd" Control.Monad.State hiding (lift)
 import Data.Typeable
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
@@ -33,10 +34,10 @@ e = QuasiQuoter quoteExprExp undefined
 es :: QuasiQuoter
 es = QuasiQuoter quoteExprsExp undefined
 
-withLocation :: (String -> (String, Int, Int) -> a) -> (a -> Exp) -> String -> TH.ExpQ
+withLocation :: (String -> (String, Int, Int) -> a) -> (a -> Q Exp) -> String -> TH.ExpQ
 withLocation p c s = do
     l <- TH.location
-    return . c $ p s
+    c $ p s
         ( TH.loc_filename l
         , fst $ TH.loc_start l
         , snd $ TH.loc_start l
@@ -62,117 +63,85 @@ parsing p s (file, line, col) =
         return e
 
 quotePatternExp :: String -> TH.ExpQ
-quotePatternExp = withLocation (parsing ppDefine) patternToExp
+quotePatternExp = withLocation (parsing ppDefine) lift
 
 quoteExprExp :: String -> TH.ExpQ
-quoteExprExp = withLocation (parsing pExpr) exprToExp
+quoteExprExp = withLocation (parsing pExpr) lift
 
 quoteExprsExp :: String -> TH.ExpQ
-quoteExprsExp = withLocation (parsing (wsBlock pExpr)) (ListE . map exprToExp)
+quoteExprsExp = withLocation (parsing (wsBlock pExpr)) (fmap ListE . mapM lift)
 
-exprToExp :: Expr -> Exp
-exprToExp (Define l p e) = AppE (AppE (expr "Define" l) (patternToExp p)) (exprToExp e)
-exprToExp (Set l p e) = AppE (AppE (expr "Set" l) (patternToExp p)) (exprToExp e)
-exprToExp (Dispatch l m) = AppE (expr "Dispatch" l) (emessageToExp m)
-exprToExp (Operator l ns a p) = AppE (AppE (AppE (expr "Operator" l) (ListE (map (LitE . StringL) ns))) (assocToExp a)) (LitE (IntegerL p))
-exprToExp (Primitive l v) = AppE (expr "Primitive" l) (valueToExp v)
-exprToExp (EBlock l as es) =
-    AppE (AppE (expr "EBlock" l) (ListE (map patternToExp as))) (ListE (map exprToExp es))
-exprToExp (EVM {}) = error "cannot exprToExp EVM"
-exprToExp (EList l es) =
-    AppE (expr "EList" l) (ListE (map exprToExp es))
-exprToExp (ETop l) =
-    expr "ETop" l
-exprToExp (EParticle l p) =
-    AppE (expr "EParticle" l) (eparticleToExp p)
-exprToExp (EMacro l p e) =
-    AppE (AppE (expr "EMacro" l) (patternToExp p)) (exprToExp e)
-exprToExp (EQuote l e) =
-    AppE (expr "EQuote" l) (exprToExp e)
-exprToExp (EUnquote l e) =
-    AppE (expr "EUnquote" l) (exprToExp e)
+instance Lift Expr where
+    lift (Define _ p e) = [| Define Nothing p e |]
+    lift (Set _ p e) = [| Set Nothing p e |]
+    lift (Dispatch _ m) = [| Dispatch Nothing m |]
+    lift (Operator _ ns a p) = [| Operator Nothing ns a p |]
+    lift (Primitive _ v) = [| Primitive Nothing v |]
+    lift (EBlock _ as es) = [| EBlock Nothing as es |]
+    lift (EVM {}) = error "cannot lift EVM"
+    lift (EList _ es) = [| EList Nothing es |]
+    lift (ETop _) = [| ETop Nothing |]
+    lift (EParticle _ p) = [| EParticle Nothing p |]
+    lift (EMacro _ p e) = [| EMacro Nothing p e |]
+    lift (EQuote _ e) = [| EQuote Nothing e |]
+    lift (EUnquote _ e) = [| EUnquote Nothing e |]
 
-assocToExp :: Assoc -> Exp
-assocToExp ALeft = ConE (mkName "ALeft")
-assocToExp ARight = ConE (mkName "ARight")
+instance Lift Assoc where
+    lift ALeft = [| ALeft |]
+    lift ARight = [| ARight |]
 
-messageToExp :: Message -> Exp
-messageToExp (Keyword i ns vs) =
-    AppE (AppE (AppE (ConE (mkName "Keyword")) (LitE (IntegerL (fromIntegral i)))) (ListE (map (LitE . StringL) ns))) (ListE (map valueToExp vs))
-messageToExp (Single i n v) =
-    AppE (AppE (AppE (ConE (mkName "Single")) (LitE (IntegerL (fromIntegral i)))) (LitE (StringL n))) (valueToExp v)
+instance Lift Message where
+    lift (Keyword i ns vs) = [| Keyword i ns vs |]
+    lift (Single i n v) = [| Single i n v |]
 
-particleToExp :: Particle -> Exp
-particleToExp (PMSingle n) =
-    AppE (ConE (mkName "PMSingle")) (LitE (StringL n))
-particleToExp (PMKeyword ns vs) =
-    AppE (AppE (ConE (mkName "PMKeyword")) (ListE (map (LitE . StringL) ns))) (ListE (map maybeValue vs))
-  where
-    maybeValue Nothing = ConE (mkName "Nothing")
-    maybeValue (Just v) = AppE (ConE (mkName "Just")) (valueToExp v)
+instance Lift Particle where
+    lift (PMSingle n) = [| PMSingle n |]
+    lift (PMKeyword ns vs) = [| PMKeyword ns vs |]
 
-emessageToExp :: EMessage -> Exp
-emessageToExp (EKeyword i ns es) =
-    AppE (AppE (AppE (ConE (mkName "EKeyword")) (LitE (IntegerL (fromIntegral i)))) (ListE (map (LitE . StringL) ns))) (ListE (map exprToExp es))
-emessageToExp (ESingle i n e) =
-    AppE (AppE (AppE (ConE (mkName "ESingle")) (LitE (IntegerL (fromIntegral i)))) (LitE (StringL n))) (exprToExp e)
+instance Lift EMessage where
+    lift (EKeyword i ns es) = [| EKeyword i ns es |]
+    lift (ESingle i n e) = [| ESingle i n e |]
 
-eparticleToExp :: EParticle -> Exp
-eparticleToExp (EPMSingle n) =
-    AppE (ConE (mkName "EPMSingle")) (LitE (StringL n))
-eparticleToExp (EPMKeyword ns es) =
-    AppE (AppE (ConE (mkName "EPMKeyword")) (ListE (map (LitE . StringL) ns))) (ListE (map maybeExpr es))
-  where
-    maybeExpr Nothing = ConE (mkName "Nothing")
-    maybeExpr (Just e) = AppE (ConE (mkName "Just")) (exprToExp e)
+instance Lift EParticle where
+    lift (EPMSingle n) = [| EPMSingle n |]
+    lift (EPMKeyword ns es) = [| EPMKeyword ns es |]
 
-expr :: String -> Maybe SourcePos -> Exp
-expr n _ = AppE (ConE (mkName n)) (ConE (mkName "Nothing"))
+instance Lift Value where
+    lift (Block s as es) = [| Block s as es |]
+    lift (Boolean b) = [| Boolean b |]
+    lift (Char c) = [| Char c |]
+    lift (Double d) = [| Double $(return $ LitE (RationalL (toRational d))) |]
+    lift (Expression e) = [| Expression e |]
+    lift (Integer i) = [| Integer i |]
+    lift (Message m) = [| Message m |]
+    lift (Particle p) = [| Particle p |]
+    lift (Pattern p) = [| Pattern p |]
+    lift (String s) = [| String (T.pack $(return $ LitE (StringL (T.unpack s)))) |]
+    lift v = error $ "no lift for: " ++ show v
 
-valueToExp :: Value -> Exp
-valueToExp (Block s as es) =
-    AppE (AppE (AppE (ConE (mkName "Block")) (valueToExp s)) (ListE (map patternToExp as))) (ListE (map exprToExp es))
-valueToExp (Boolean b) = AppE (ConE (mkName "Boolean")) (ConE (mkName (show b)))
-valueToExp (Char c) = AppE (ConE (mkName "Char")) (LitE (CharL c))
-valueToExp (Double d) = AppE (ConE (mkName "Double")) (LitE (RationalL (toRational d)))
-valueToExp (Expression e) = AppE (ConE (mkName "Expression")) (exprToExp e)
-valueToExp (Integer i) = AppE (ConE (mkName "Integer")) (LitE (IntegerL i))
-valueToExp (Message m) = AppE (ConE (mkName "Message")) (messageToExp m)
-valueToExp (Particle p) = AppE (ConE (mkName "Particle")) (particleToExp p)
-valueToExp (Pattern p) = AppE (ConE (mkName "Pattern")) (patternToExp p)
-valueToExp (String s) = AppE (VarE (mkName "string")) (LitE (StringL (T.unpack s)))
-valueToExp v = error $ "no valueToExp for: " ++ show v
-
-patternToExp :: Pattern -> Exp
-patternToExp PAny = ConE (mkName "PAny")
-patternToExp (PHeadTail h t) = AppE (AppE (ConE (mkName "PHeadTail")) (patternToExp h)) (patternToExp t)
-patternToExp (PKeyword i ns ts) =
-    AppE (AppE (AppE (ConE (mkName "PKeyword")) (LitE (IntegerL (fromIntegral i)))) (ListE (map (LitE . StringL) ns))) (ListE (map patternToExp ts))
-patternToExp (PList ps) =
-    AppE (ConE (mkName "PList")) (ListE (map patternToExp ps))
-patternToExp (PMatch v) =
-    AppE (ConE (mkName "PMatch")) (valueToExp v)
-patternToExp (PNamed n p) =
-    AppE (AppE (ConE (mkName "PNamed")) (LitE (StringL n))) (patternToExp p)
-patternToExp (PObject e) =
-    AppE (ConE (mkName "PObject")) (exprToExp e)
-patternToExp (PPMKeyword ns ts) =
-    AppE (AppE (ConE (mkName "PPMKeyword")) (ListE (map (LitE . StringL) ns))) (ListE (map patternToExp ts))
-patternToExp (PSingle i n t) =
-    AppE (AppE (AppE (ConE (mkName "PSingle")) (LitE (IntegerL (fromIntegral i)))) (LitE (StringL n))) (patternToExp t)
-patternToExp PThis = ConE (mkName "PThis")
-patternToExp PEDefine = ConE (mkName "PEDefine")
-patternToExp PESet = ConE (mkName "PESet")
-patternToExp PEDispatch = ConE (mkName "PEDispatch")
-patternToExp PEOperator = ConE (mkName "PEOperator")
-patternToExp PEPrimitive = ConE (mkName "PEPrimitive")
-patternToExp PEBlock = ConE (mkName "PEBlock")
-patternToExp PEList = ConE (mkName "PEList")
-patternToExp PEMacro = ConE (mkName "PEMacro")
-patternToExp PEParticle = ConE (mkName "PEParticle")
-patternToExp PETop = ConE (mkName "PETop")
-patternToExp PEQuote = ConE (mkName "PEQuote")
-patternToExp PEUnquote = ConE (mkName "PEUnquote")
-patternToExp (PExpr e) = AppE (ConE (mkName "PExpr")) (exprToExp e)
-patternToExp (PInstance p) = AppE (ConE (mkName "PInstance")) (patternToExp p)
-patternToExp (PStrict p) = AppE (ConE (mkName "PStrict")) (patternToExp p)
+instance Lift Pattern where
+    lift PAny = [| PAny |]
+    lift (PHeadTail h t) = [| PHeadTail h t |]
+    lift (PKeyword i ns ts) = [| PKeyword i ns ts |]
+    lift (PList ps) = [| PList ps |]
+    lift (PMatch v) = [| PMatch v |]
+    lift (PNamed n p) = [| PNamed n p |]
+    lift (PObject e) = [| PObject e |]
+    lift (PPMKeyword ns ts) = [| PPMKeyword ns ts |]
+    lift (PSingle i n t) = [| PSingle i n t |]
+    lift PThis = [| PThis |]
+    lift PEDefine = [| PEDefine |]
+    lift PESet = [| PESet |]
+    lift PEDispatch = [| PEDispatch |]
+    lift PEOperator = [| PEOperator |]
+    lift PEPrimitive = [| PEPrimitive |]
+    lift PEBlock = [| PEBlock |]
+    lift PEList = [| PEList |]
+    lift PEMacro = [| PEMacro |]
+    lift PEParticle = [| PEParticle |]
+    lift PETop = [| PETop |]
+    lift PEQuote = [| PEQuote |]
+    lift PEUnquote = [| PEUnquote |]
+    lift (PExpr e) = [| PExpr e |]
+    lift (PInstance p) = [| PInstance p |]
+    lift (PStrict p) = [| PStrict p |]
