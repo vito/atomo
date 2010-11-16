@@ -26,7 +26,7 @@ describe: "blocks" as: {
 
         it: "does not leak new bindings into the block's context" so: {
             { a = 1 } call
-            { a } should-raise: @did-not-understand:
+            { a } should-error: @did-not-understand:
         }
 
         it: "is lexically scoped" so: {
@@ -50,7 +50,7 @@ describe: "blocks" as: {
 
         it: "does not leak new bindings into the block's context" so: {
             { x | a = x } call: [0]
-            { a } should-raise: @did-not-understand:
+            { a } should-error: @did-not-understand:
         }
 
         it: "does not leak argument bindings into the block's context" so: {
@@ -76,7 +76,7 @@ describe: "blocks" as: {
         it: "accepts arguments" so: {
             { x | a = x } in-context call: [1]
             a should-be: 1
-            { x } should-raise: @did-not-understand:
+            { x } should-error: @did-not-understand:
         }
 
         it: "does not leak argument bindings" so: {

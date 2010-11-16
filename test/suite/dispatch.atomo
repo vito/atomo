@@ -67,12 +67,12 @@ describe: "dispatch" as: {
             should-be: a to
         }
 
-      { X fizz } should-raise: @did-not-understand:
+      { X fizz } should-error: @did-not-understand:
       Y fizz should-be: @y
       Z fizz should-be: @y
 
-      { X buzz } should-raise: @did-not-understand:
-      { Y buzz } should-raise: @did-not-understand:
+      { X buzz } should-error: @did-not-understand:
+      { Y buzz } should-error: @did-not-understand:
       Z buzz should-be: @z
     }
 
