@@ -48,9 +48,14 @@ load = do
     [$p|(s: String) from: (n: Integer) to: (m: Integer)|] =: do
         Integer n <- here "n" >>= findInteger
         Integer m <- here "m" >>= findInteger
+        t <- getText [$e|s|]
+        
         let start = fromIntegral n
             count = (fromIntegral m) - start
-            in liftM (String . T.take count . T.drop start) (getText [$e|s|])
+        
+        if count > T.length t
+            then raise ["out-of-bounds", "for-string"] [Integer m, String t]
+            else return (String . T.take count . T.drop start $ t)
 
     [$p|"" init|] =::: [$e|error: @empty-string|]
     [$p|(s: String) init|] =:
