@@ -45,7 +45,12 @@ load = do
     [$p|(s: String) last|] =:
         liftM (Char . T.last) (getText [$e|s|])
 
-    -- TODO: @from:to:
+    [$p|(s: String) from: (n: Integer) to: (m: Integer)|] =: do
+        Integer n <- here "n" >>= findInteger
+        Integer m <- here "m" >>= findInteger
+        let start = fromIntegral n
+            count = (fromIntegral m) - start
+            in liftM (String . T.take count . T.drop start) (getText [$e|s|])
 
     [$p|"" init|] =::: [$e|error: @empty-string|]
     [$p|(s: String) init|] =:
