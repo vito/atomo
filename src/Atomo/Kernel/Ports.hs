@@ -326,9 +326,11 @@ load = do
 
     portObj hdl = newScope $ do
         port <- eval [$e|Port clone|]
-        [$p|p|] =:: port
-        [$p|p handle|] =:: haskell hdl
-        here "p"
+
+        define (psingle "handle" (PMatch port))
+            (Primitive Nothing $ haskell hdl)
+
+        return port
 
     getHandle ex = eval ex >>= fromHaskell "Handle"
 

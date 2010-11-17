@@ -91,8 +91,8 @@ load = do
         let (ss, ks) = oMethods o
 
         ([$p|ms|] =::) =<< eval [$e|Object clone|]
-        [$p|ms singles|] =:: list (map (list . map Method) (elemsMap ss))
-        [$p|ms keywords|] =:: list (map (list . map Method) (elemsMap ks))
+        [$p|(ms) singles|] =:: list (map (list . map Method) (elemsMap ss))
+        [$p|(ms) keywords|] =:: list (map (list . map Method) (elemsMap ks))
         here "ms"
 
     [$p|(x: Object) dump|] =: do
@@ -105,6 +105,18 @@ load = do
     [$p|(s: String) as: String|] =::: [$e|s|]
 
     [$p|(x: Object) as: String|] =::: [$e|x show|]
+
+    [$p|(s: String) as: Integer|] =: do
+        s <- getString [$e|s|]
+        return (Integer (read s))
+
+    [$p|(s: String) as: Double|] =: do
+        s <- getString [$e|s|]
+        return (Double (read s))
+
+    [$p|(s: String) as: Char|] =: do
+        s <- getString [$e|s|]
+        return (Char (read s))
 
     [$p|(x: Object) show|] =:
         liftM (string . show . pretty) (here "x")
