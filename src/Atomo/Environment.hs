@@ -387,7 +387,7 @@ match ids r
     matchAll ids r ps ts
 match ids r (PInstance p) (Reference o) = delegatesMatch ids r p o
 match ids r (PInstance p) v = match ids r p v
-match ids _ (PStrict (PMatch x)) v = x == v
+match _ _ (PStrict (PMatch x)) v = x == v
 match ids r (PStrict p) v = match ids r p v
 match ids r (PNamed _ p) v = match ids r p v
 match _ _ PAny _ = True
@@ -529,6 +529,10 @@ bindings' (PHeadTail hp tp) (List vs) =
 bindings' (PHeadTail hp tp) (String t) | not (T.null t) =
     bindings' hp (Char (T.head t)) ++ bindings' tp (String (T.tail t))
 bindings' (PExpr a) (Expression b) = exprBindings 0 a b
+bindings' (PInstance p) (Reference r) =
+    concatMap (bindings' p) $ oDelegates (unsafePerformIO (readIORef r))
+bindings' (PInstance p) v = bindings' p v
+bindings' (PStrict p) v = bindings' p v
 bindings' p (Reference r) =
     concatMap (bindings' p) $ oDelegates (unsafePerformIO (readIORef r))
 bindings' _ _ = []
@@ -839,9 +843,9 @@ toPattern (Dispatch { eMessage = EKeyword { emNames = ["."], emTargets = [h, t] 
     tp <- toPattern t
     return (PHeadTail hp tp)
 toPattern (Dispatch { eMessage = EKeyword { emNames = ["->"], emTargets = [ETop {}, o] } }) = do
-    return (PInstance (PObject o))
+    liftM PInstance (toPattern o)
 toPattern (Dispatch { eMessage = EKeyword { emNames = ["=="], emTargets = [ETop {}, o] } }) = do
-    return (PStrict (PObject o))
+    liftM PStrict (toPattern o)
 toPattern (Dispatch { eMessage = EKeyword { emNames = [n], emTargets = [ETop {}, x] } }) = do
     p <- toPattern x
     return (PNamed n p)
