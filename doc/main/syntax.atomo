@@ -299,7 +299,7 @@ The #atomo:(=) operator performs pattern-matching; the left-hand side is the pat
     })
   }
 
-  #item:{#code:{[]}, #code:{[pattern]}, #code:{[pattern-1, pattern-2]}...}is:{
+  #item:{#code:{[]}, #code:{[pattern, ...]}, ...}is:{
     Matches a list of fixed length, recursively matching each #atomo:pattern on each of its values.
 
     #example:({
@@ -351,8 +351,9 @@ The #atomo:(=) operator performs pattern-matching; the left-hand side is the pat
     Matches with strict equality only. This is different from regular matching as it doesn't follow delegates to see if objects match.
 
     #example:({
-      List match: { (== List) -> @yep }
-      List clone match: { (== List) -> @yep; _ -> @nope }
+      X = Object clone
+      X match: { (== X) -> @yep }
+      X clone match: { (== X) -> @yep; _ -> @nope }
     })
   }
 }
@@ -378,3 +379,21 @@ To define on a particular object, you may wrap an arbitrary expression in parent
 })
 
 As in the first example, #code:{foo bar} matches any object, while #code:{(foo) bar} is only defined on #atomo:foo.
+
+Aside from these subtle rules regarding the targets of a definition, you may use all of the patterns described in #reference:{Patterns} for a message pattern's roles. The targets for each pattern are as follows:
+
+#definitions:{
+  #item:{#code:{_}, #code:{foo}, #code:{bar}, ...}is:{#atomo:Object}
+  #item:{#atomo:1, #atomo:2, ...}is:{#atomo:Integer}
+  #item:{#atomo:$a, #atomo:$b, ...}is:{#atomo:Char}
+  #item:{#atomo:True, #atomo:False}is:{#atomo:Boolean}
+  #item:{#atomo:1.0, #atomo:2.0, ...}is:{#atomo:Double}
+  #item:{#atomo:1/2, #atomo:3/4, ...}is:{#atomo:Rational}
+  #item:{#atomo:"", #atomo:"foo", ...}is:{#atomo:String}
+  #item:{#code:{(head . tail)}, #code:{[]}, #code:{[pattern, ...]}, ...}}is:{#atomo:List}
+  #item:{#code:{(foo: pattern)}}is:{target of #code:{pattern}}
+  #item:{#atomo:@foo, #atomo:@(bar: 2 baz: _), ...}is:{#atomo:Particle}
+  #item:{#atomo:`x, #atomo:`(1 + ~y), ...}is:{#atomo:Expression}
+  #item:{#code:{(-> pattern)}}is:{target of #code:{pattern}}
+  #item:{#code:{(== pattern)}}is:{target of #code:{pattern}}
+}
