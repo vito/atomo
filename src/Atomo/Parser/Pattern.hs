@@ -114,8 +114,14 @@ ppSingle = do
             mo <- pObjectPattern
 
             case mo of
-                PObject (Dispatch _ (ESingle _ n t)) ->
-                    return (PObject t, n)
+                PObject (Dispatch _ (ESingle _ n t)) -> do
+                    done <- option False . try $ do
+                        lookAhead (reservedOp ":=")
+                        return True
+
+                    if done
+                        then return (PObject t, n)
+                        else getName mo
 
                 _ -> getName mo
 
@@ -142,7 +148,12 @@ ppSetSingle = do
         -- Foo Bar baz buzz = ...
         , try $ do
             ds <- pdCascade
-            return (PObject (emTarget (eMessage ds)), emName (eMessage ds))
+
+            case ds of
+                Dispatch { eMessage = ESingle { emTarget = o, emName = n } } ->
+                    return (PObject o, n)
+
+                _ -> fail ("not a single message pattern: " ++ show ds)
         ]
 
     dump ("single", t, v)
@@ -187,7 +198,7 @@ ppNamedSensitive = parens $ do
 
 ppObject :: Parser Pattern
 ppObject = do
-    p <- capitalizedCascade <|> parens pExpr
+    p <- parens pExpr <|> capitalizedCascade
     return $ PObject p
   where
     capitalizedCascade = do
@@ -219,21 +230,11 @@ ppMatch = do
     return $ PMatch v
 
 ppHeadTail :: Parser Pattern
-ppHeadTail = parens subHT
-  where
-    subHT = do
-        h <- pHead
-        dot
-        t <- try subHT <|> pPattern
-        return $ PHeadTail h t
-    pHead = choice
-        [ try ppNamed
-        , try ppMatch
-        , ppList
-        , ppParticle
-        , ppAny
-        , parens pHead
-        ]
+ppHeadTail = parens $ do
+    h <- pPattern
+    dot
+    t <- pPattern
+    return $ PHeadTail h t
 
 ppList :: Parser Pattern
 ppList = brackets $ do
