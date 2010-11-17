@@ -27,6 +27,6 @@ roundtrip: id next: pid :=
         } call
     }
 
-{ start: 1000 } time print
+{ start: 500000 } time print
 
 halt
