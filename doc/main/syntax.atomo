@@ -333,4 +333,48 @@ The #atomo:(=) operator performs pattern-matching; the left-hand side is the pat
       [b, c]
     })
   }
+
+  #item:{#code:{(-> pattern)}}is:{
+    Matches any object delegating to something matching #code:{pattern}. Often used to check if something is an "instance" of some object.
+
+    For primitive values, it checks if the value itself matches the pattern, so #atomo:([1, 2]) will match #code:{(-> List)}.
+
+    NOTE: This is only really useful in #atomo:(match:) and in message patterns; when used with #atomo:(=) the objects aren't evaluated.
+
+    #example:({
+      1 match: { (-> Double) -> @nope; (-> Integer) -> @yep }
+      [1, 2] match: { (-> [a, b]) -> @(yep: [b, a]) }
+    })
+  }
+
+  #item:{#code:{(== pattern)}}is:{
+    Matches with strict equality only. This is different from regular matching as it doesn't follow delegates to see if objects match.
+
+    #example:({
+      List match: { (== List) -> @yep }
+      List clone match: { (== List) -> @yep; _ -> @nope }
+    })
+  }
 }
+
+#section:{Definitions}
+
+Method definitions use the reserved #atomo:(:=) operator; the left-hand side is a "message pattern," which matches on messages sent to any of the roles involved in it. The right-hand side is the expression to be evaluated when the message pattern is matched.
+
+Capitalized identifiers in the message pattern are assumed to be objects, while lowercase identifiers are assumed to be named patterns that match any value.
+
+#example-segment:({
+  Foo bar := 1
+  foo bar := 2
+})
+
+Above, the first definition is placed on the particular object Foo (assuming it's defined), while the second one matches any object, binding the object the method was found on as #atomo:foo.
+
+To define on a particular object, you may wrap an arbitrary expression in parentheses.
+
+#example-segment:({
+  foo bar := 1
+  (foo) bar := 2
+})
+
+As in the first example, #code:{foo bar} matches any object, while #code:{(foo) bar} is only defined on #atomo:foo.
