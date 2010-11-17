@@ -390,7 +390,7 @@ Aside from these subtle rules regarding the targets of a definition, you may use
   #item:{#atomo:1.0, #atomo:2.0, ...}is:{#atomo:Double}
   #item:{#atomo:1/2, #atomo:3/4, ...}is:{#atomo:Rational}
   #item:{#atomo:"", #atomo:"foo", ...}is:{#atomo:String}
-  #item:{#code:{(head . tail)}, #code:{[]}, #code:{[pattern, ...]}, ...}}is:{#atomo:List}
+  #item:{#code:{(head . tail)}, #code:{[]}, #code:{[pattern, ...]}, ...}is:{#atomo:List}
   #item:{#code:{(foo: pattern)}}is:{target of #code:{pattern}}
   #item:{#atomo:@foo, #atomo:@(bar: 2 baz: _), ...}is:{#atomo:Particle}
   #item:{#atomo:`x, #atomo:`(1 + ~y), ...}is:{#atomo:Expression}
