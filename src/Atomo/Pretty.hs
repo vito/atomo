@@ -1,6 +1,7 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 module Atomo.Pretty (Pretty(..), prettyStack) where
 
+import Data.Char (isUpper)
 import Data.IORef
 import Data.Maybe (isNothing)
 import Data.Ratio
@@ -115,7 +116,15 @@ instance Pretty Pattern where
     prettyFrom _ (PMatch v) = prettyFrom CPattern v
     prettyFrom _ (PNamed n PAny) = text n
     prettyFrom _ (PNamed n p) = parens $ text n <> colon <+> pretty p
-    prettyFrom _ (PObject e) = pretty e
+    prettyFrom _ (PObject e@(Dispatch { eMessage = msg }))
+        | capitalized msg = pretty e
+      where
+        capitalized (ESingle { emName = n, emTarget = ETop {} }) =
+            isUpper (head n)
+        capitalized (ESingle { emTarget = Dispatch { eMessage = t@(ESingle {}) } }) =
+            capitalized t
+        capitalized _ = False
+    prettyFrom _ (PObject e) = parens $ pretty e
     prettyFrom _ (PInstance p) = parens $ text "->" <+> pretty p
     prettyFrom _ (PStrict p) = parens $ text "==" <+> pretty p
     prettyFrom _ (PPMKeyword ns ps)
