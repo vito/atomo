@@ -13,6 +13,8 @@ pPattern :: Parser Pattern
 pPattern = choice
     [ try ppNamed
     , try ppHeadTail
+    , try ppInstance
+    , try ppStrict
     , try ppMatch
     , ppList
     , ppParticle
@@ -27,8 +29,8 @@ pObjectPattern = choice
     , try ppHeadTail
     , try ppInstance
     , try ppStrict
-    , try ppObject
     , try ppMatch
+    , try ppObject
     , ppList
     , ppParticle
     , ppExpr
@@ -37,7 +39,10 @@ pObjectPattern = choice
     ]
 
 ppSet :: Parser Pattern
-ppSet = try ppDefine <|> pPattern
+ppSet = try ppKeywords <|> try ppSetSingle <|> pPattern
+
+ppDefine :: Parser Pattern
+ppDefine = try ppKeywords <|> ppSingle
 
 ppMacro :: Parser Pattern
 ppMacro = try ppMacroKeywords <|> ppMacroSingle
@@ -102,43 +107,56 @@ ppMacroRole = choice
         p <- ppMacroRole
         return $ PNamed n p
 
-ppDefine :: Parser Pattern
-ppDefine = try ppKeywords <|> ppSingle
-
 ppSingle :: Parser Pattern
 ppSingle = do
+    (t, n) <- choice
+        [ try $ do
+            mo <- pObjectPattern
+
+            case mo of
+                PObject (Dispatch _ (ESingle _ n t)) ->
+                    return (PObject t, n)
+
+                _ -> getName mo
+
+        , getName (PObject (ETop Nothing))
+        ]
+
+    return (psingle n t)
+  where
+    getName :: Pattern -> Parser (Pattern, String)
+    getName t = do
+        n <- identifier
+        return (t, n)
+
+ppSetSingle :: Parser Pattern
+ppSetSingle = do
     (t, v) <- choice
+        -- (pattern) fizz = ...
         [ try $ do
             t <- pNonExpr
             dump ("got pNonExpr", t)
             v <- identifier
             return (t, v)
+
+        -- Foo Bar baz buzz = ...
         , try $ do
             ds <- pdCascade
-            dump ("got pdCascade", ds)
-            p <- cInit ds
-            v <- cLast ds
-            return (PObject p, v)
-        , do
-            v <- identifier
-            return (PObject (ETop Nothing), v)
+            return (PObject (emTarget (eMessage ds)), emName (eMessage ds))
         ]
 
     dump ("single", t, v)
 
     return $ psingle v t
   where
-    cLast (Dispatch _ (ESingle _ n _)) = return n
-    cLast _ = fail "last target of dispatch chain is not a single messsage"
-
-    cInit (Dispatch _ (ESingle _ _ x)) = return x
-    cInit _ = fail "last target of dispatch chain is not a single messsage"
-
     -- patterns that would otherwise be mistaken for expressions
     -- if the pdCascade pattern were to grab them
+    -- TODO: this looks a bit fishy.
     pNonExpr = choice
         [ try ppNamedSensitive
         , try ppHeadTail
+        , try ppInstance
+        , try ppStrict
         , try ppMatch
         , ppList
         , ppParticle
@@ -168,14 +186,11 @@ ppNamedSensitive = parens $ do
     return $ PNamed name p
 
 ppObject :: Parser Pattern
-ppObject = choice
-    [ try $ parens ppHeadTail
-    , do
-        p <- name <|> parens pExpr
-        return $ PObject p
-    ]
+ppObject = do
+    p <- capitalizedCascade <|> parens pExpr
+    return $ PObject p
   where
-    name = do
+    capitalizedCascade = do
         lookAhead capIdentifier
         pdCascade
 
