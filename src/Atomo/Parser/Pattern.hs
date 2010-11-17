@@ -116,7 +116,7 @@ ppSingle = do
             case mo of
                 PObject (Dispatch _ (ESingle _ n t)) -> do
                     done <- option False . try $ do
-                        lookAhead (reservedOp ":=")
+                        lookAhead (eof <|> reservedOp ":=")
                         return True
 
                     if done
