@@ -118,12 +118,19 @@ instance Pretty Pattern where
     prettyFrom _ (PNamed n p) = parens $ text n <> colon <+> pretty p
     prettyFrom _ (PObject e@(Dispatch { eMessage = msg }))
         | capitalized msg = pretty e
+        | isParticular msg = pretty block
       where
         capitalized (ESingle { emName = n, emTarget = ETop {} }) =
             isUpper (head n)
         capitalized (ESingle { emTarget = Dispatch { eMessage = t@(ESingle {}) } }) =
             capitalized t
         capitalized _ = False
+
+        isParticular (ESingle { emName = "call", emTarget = EBlock {} }) =
+            True
+        isParticular _ = False
+
+        block = emTarget msg
     prettyFrom _ (PObject e) = parens $ pretty e
     prettyFrom _ (PInstance p) = parens $ text "->" <+> pretty p
     prettyFrom _ (PStrict p) = parens $ text "==" <+> pretty p
