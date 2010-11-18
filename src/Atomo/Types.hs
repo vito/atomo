@@ -624,6 +624,8 @@ toPattern (Primitive { eValue = v }) =
     return (PMatch v)
 toPattern (ETop {}) =
     return (PObject (ETop Nothing))
+toPattern b@(EBlock {}) =
+    return (PObject (Dispatch Nothing (esingle "call" b)))
 toPattern e = Nothing
 
 toDefinePattern :: Expr -> Maybe Pattern
