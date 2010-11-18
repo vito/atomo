@@ -844,6 +844,9 @@ toDefinePattern' = tryPattern toDefinePattern
 toRolePattern' :: Expr -> VM Pattern
 toRolePattern' = tryPattern toRolePattern
 
+toMacroPattern' :: Expr -> VM Pattern
+toMacroPattern' = tryPattern toMacroPattern
+
 tryPattern :: (Expr -> Maybe Pattern) -> Expr -> VM Pattern
 tryPattern c e = 
     case c e of

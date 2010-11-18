@@ -644,3 +644,30 @@ toRolePattern d@(Dispatch { eMessage = ESingle { emTarget = ETop {}, emName = n 
 toRolePattern d@(Dispatch { eMessage = ESingle { emTarget = (Dispatch {}) } }) =
     return (PObject d)
 toRolePattern p = toPattern p
+
+toMacroPattern :: Expr -> Maybe Pattern
+toMacroPattern (Dispatch { eMessage = ESingle { emName = n, emTarget = t } }) = do
+    p <- toMacroRole t
+    return (psingle n p)
+toMacroPattern (Dispatch { eMessage = EKeyword { emNames = ns, emTargets = ts } }) = do
+    ps <- mapM toMacroRole ts
+    return (pkeyword ns ps)
+
+toMacroRole :: Expr -> Maybe Pattern
+toMacroRole (Dispatch _ (ESingle _ "Define" _)) = Just PEDefine
+toMacroRole (Dispatch _ (ESingle _ "Set" _)) = Just PESet
+toMacroRole (Dispatch _ (ESingle _ "Dispatch" _)) = Just PEDispatch
+toMacroRole (Dispatch _ (ESingle _ "Operator" _)) = Just PEOperator
+toMacroRole (Dispatch _ (ESingle _ "Primitive" _)) = Just PEPrimitive
+toMacroRole (Dispatch _ (ESingle _ "Block" _)) = Just PEBlock
+toMacroRole (Dispatch _ (ESingle _ "List" _)) = Just PEList
+toMacroRole (Dispatch _ (ESingle _ "Macro" _)) = Just PEMacro
+toMacroRole (Dispatch _ (ESingle _ "Particle" _)) = Just PEParticle
+toMacroRole (Dispatch _ (ESingle _ "Top" _)) = Just PETop
+toMacroRole (Dispatch _ (ESingle _ "Quote" _)) = Just PEQuote
+toMacroRole (Dispatch _ (ESingle _ "Unquote" _)) = Just PEUnquote
+toMacroRole (Dispatch { eMessage = EKeyword { emNames = [n], emTargets = [ETop {}, x] } }) = do
+    p <- toMacroRole x
+    return (PNamed n p)
+toMacroRole (ETop {}) = Just PAny
+toMacroRole p = toPattern p

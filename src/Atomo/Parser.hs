@@ -9,7 +9,6 @@ import qualified "mtl" Control.Monad.Trans as MTL
 import Atomo.Environment
 import Atomo.Method
 import Atomo.Parser.Base
-import {-# SOURCE #-} Atomo.Parser.Pattern
 import Atomo.Parser.Primitive
 import Atomo.Types hiding (keyword, string)
 
@@ -74,6 +73,9 @@ pForMacro = tagged (do
     macroExpand e >>= MTL.lift . eval
     return (Primitive Nothing (Expression e)))
     <?> "for-macro expression"
+
+ppMacro :: Parser Pattern
+ppMacro = pExpr >>= MTL.lift . toMacroPattern'
 
 pMacro :: Parser Expr
 pMacro = tagged (do
@@ -216,11 +218,11 @@ pList = (tagged . liftM (EList Nothing) $ brackets (wsDelim "," pExpr))
 pBlock :: Parser Expr
 pBlock = tagged (braces $ do
     arguments <- option [] . try $ do
-        ps <- many1 pPattern
+        ps <- many1 pSpacedExpr
         whiteSpace
         string "|"
         whiteSpace1
-        return ps
+        mapM (MTL.lift . toPattern') ps
 
     code <- wsBlock pExpr
 
