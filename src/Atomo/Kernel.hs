@@ -106,18 +106,6 @@ load = do
 
     [$p|(x: Object) as: String|] =::: [$e|x show|]
 
-    [$p|(s: String) as: Integer|] =: do
-        s <- getString [$e|s|]
-        return (Integer (read s))
-
-    [$p|(s: String) as: Double|] =: do
-        s <- getString [$e|s|]
-        return (Double (read s))
-
-    [$p|(s: String) as: Char|] =: do
-        s <- getString [$e|s|]
-        return (Char (read s))
-
     [$p|(x: Object) show|] =:
         liftM (string . show . pretty) (here "x")
 
