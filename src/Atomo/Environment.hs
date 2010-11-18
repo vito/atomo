@@ -836,13 +836,16 @@ throwError e = gets top >>= \t ->
     msg t = keyword ["error"] [t, asValue e]
 
 toPattern' :: Expr -> VM Pattern
-toPattern' e =
-    case toPattern e of
-        Nothing -> raise ["unknown-pattern"] [Expression e]
-        Just p -> return p
+toPattern' = tryPattern toPattern
 
 toDefinePattern' :: Expr -> VM Pattern
-toDefinePattern' e =
-    case toDefinePattern e of
+toDefinePattern' = tryPattern toDefinePattern
+
+toRolePattern' :: Expr -> VM Pattern
+toRolePattern' = tryPattern toRolePattern
+
+tryPattern :: (Expr -> Maybe Pattern) -> Expr -> VM Pattern
+tryPattern c e = 
+    case c e of
         Nothing -> raise ["unknown-pattern"] [Expression e]
         Just p -> return p

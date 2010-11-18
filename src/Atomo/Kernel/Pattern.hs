@@ -7,9 +7,22 @@ import Atomo
 
 load :: VM ()
 load = do
+    ([$p|Pattern Role|] =::) =<< eval [$e|Pattern clone|]
+    ([$p|Pattern Define|] =::) =<< eval [$e|Pattern clone|]
+
     [$p|(e: Expression) as: Pattern|] =: do
         Expression e <- here "e" >>= findExpression
         p <- toPattern' e
+        return (Pattern p)
+
+    [$p|(e: Expression) as: Pattern Role|] =: do
+        Expression e <- here "e" >>= findExpression
+        p <- toRolePattern' e
+        return (Pattern p)
+
+    [$p|(e: Expression) as: Pattern Define|] =: do
+        Expression e <- here "e" >>= findExpression
+        p <- toDefinePattern' e
         return (Pattern p)
 
     [$p|(p: Pattern) name|] =: do

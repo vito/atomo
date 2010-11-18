@@ -162,8 +162,8 @@
         { `(~pat -> ~expr) |
           Lobby
             define: @handle:
-              on: `(h: ~h) (as: Pattern)
-              with: [`(s: ~pat) as: Pattern]
+              on: `(h: ~h) (as: Pattern Role)
+              with: [`(s: ~pat) as: Pattern Role]
               as: `(
                 { match: ~(pat as: Pattern) on: s
                   (with-delegates: [h context])
