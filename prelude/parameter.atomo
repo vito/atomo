@@ -16,10 +16,10 @@ macro (define: (x: Dispatch) as: root)
 (p: Parameter) _? := p value: self
 
 ((p: Parameter) =! v) :=
-  (p) value: (self) = v
+  p value: self = v
 
 (p: Parameter) set-default: v :=
-  (p) default = v
+  p default = v
 
 with: (p: Parameter) as: new do: (action: Block) :=
   { old = p _?
