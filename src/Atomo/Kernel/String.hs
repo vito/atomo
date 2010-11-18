@@ -14,7 +14,10 @@ load = do
 
     [$p|(s: String) as: Char|] =: do
         s <- getString [$e|s|]
-        return (Char (head s))
+        case s of
+            "$'" -> return (Char '\'')
+            '$':rest -> return (Char (read $ "'" ++ rest ++ "'"))
+            otherwise -> raise ["invalid-string"] [String $ T.pack s]
     
     [$p|(s: String) as: Integer|] =: do
         s <- getString [$e|s|]
