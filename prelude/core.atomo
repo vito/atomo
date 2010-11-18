@@ -1,3 +1,14 @@
+macro (x match: (ts: Block))
+  `Match new: (ts contents map: { `(~p -> ~e) | p -> e }) on: x
+
+operator right 0 =, :=
+
+macro (p = e)
+  `Set new: p to: e
+
+macro (p := e)
+  `Define new: p as: e
+
 @(parse-error: d) describe-error :=
   "parse error:\n" .. (d indent: 2)
 
@@ -35,7 +46,3 @@
 
 @(dynamic-needed: t) describe-error :=
   "expecting Haskell value of type " .. t
-
-
-macro x match: (ts: Block) :=
-  `Match new: (ts contents map: { `(~p -> ~e) | p -> e }) on: x

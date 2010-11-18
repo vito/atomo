@@ -17,7 +17,7 @@
       es -> evaluate-all: es in: t
     }
 
-  get-n-values: 0 = []
+  get-n-values: 0 := []
   get-n-values: n :=
     (get-value: Lobby) . (get-n-values: (n - 1))
 
@@ -32,7 +32,7 @@
 
               @(special: n) ->
                 when: (n all?: @digit?) do: {
-                  r = Restart get: (n to: Integer)
+                  r = Restart get: (n as: Integer)
                   r jump: (get-n-values: r action arguments length)
                 }
             }

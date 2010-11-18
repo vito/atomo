@@ -26,10 +26,24 @@ load = do
         exprs <- liftM (map fromExpression) $ getList [$e|branches map: @to|]
         Expression value <- here "value" >>= findExpression
 
-        ps <- mapM toPattern pats
+        ps <- mapM toPattern' pats
         ids <- gets primitives
         return . Expression . EVM Nothing (Just $ prettyMatch value (zip pats exprs)) $
             eval value >>= matchBranches ids (zip ps exprs)
+
+    [$p|`Set new: (pattern: Expression) to: (value: Expression)|] =: do
+        Expression pat <- here "pattern" >>= findExpression
+        Expression e <- here "value" >>= findExpression
+
+        p <- toPattern' pat
+        return (Expression $ Set Nothing p e)
+
+    [$p|`Define new: (pattern: Expression) as: (expr: Expression)|] =: do
+        Expression pat <- here "pattern" >>= findExpression
+        Expression e <- here "expr" >>= findExpression
+
+        p <- toDefinePattern' pat
+        return (Expression $ Define Nothing p e)
 
     [$p|(s: String) parse-expressions|] =:
         getString [$e|s|] >>= liftM (list . map Expression) . parseInput

@@ -1,5 +1,5 @@
-macro x += y := `(match: ~(x as: Pattern) on: (~x + ~y))
-macro x -= y := `(match: ~(x as: Pattern) on: (~x - ~y))
+macro (x += y) `(match: ~(x as: Pattern) on: (~x + ~y))
+macro (x -= y) `(match: ~(x as: Pattern) on: (~x - ~y))
 
 - (n: Number) := -1 * n
 

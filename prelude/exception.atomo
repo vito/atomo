@@ -1,4 +1,4 @@
-macro action handle: (branches: Block) :=
+macro (action handle: (branches: Block))
   { handlers = branches contents map:
       { `(~c -> ~e) | `(~c -> escape-handle yield: ~e)
       }
@@ -6,7 +6,7 @@ macro action handle: (branches: Block) :=
     `({ escape-handle | ~action bind: ~(`Block new: handlers) } call/cc)
   } call
 
-macro a handle: (b: Block) ensuring: (c: Block) :=
+macro (a handle: (b: Block) ensuring: (c: Block))
   `({ ~a handle: ~b } ensuring: ~c)
 
 (action: Block) catch: (recover: Block) :=
@@ -16,7 +16,7 @@ macro a handle: (b: Block) ensuring: (c: Block) :=
     }
   } call/cc
 
-macro a catch: (b: Block) ensuring: (c: Block) :=
+macro (a catch: (b: Block) ensuring: (c: Block))
   `({ ~a catch: ~b } ensuring: ~c)
 
 (action: Block) ensuring: (cleanup: Block) :=

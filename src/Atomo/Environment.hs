@@ -3,7 +3,6 @@ module Atomo.Environment where
 
 import "monads-fd" Control.Monad.Cont
 import "monads-fd" Control.Monad.State
-import Data.Char (isUpper)
 import Data.Dynamic
 import Data.IORef
 import Data.List (nub)
@@ -836,42 +835,14 @@ throwError e = gets top >>= \t ->
   where
     msg t = keyword ["error"] [t, asValue e]
 
--- convert an expression to the pattern match it represents
-toPattern :: Expr -> VM Pattern
-toPattern (Dispatch { eMessage = EKeyword { emNames = ["."], emTargets = [h, t] } }) = do
-    hp <- toPattern h
-    tp <- toPattern t
-    return (PHeadTail hp tp)
-toPattern (Dispatch { eMessage = EKeyword { emNames = ["->"], emTargets = [ETop {}, o] } }) = do
-    liftM PInstance (toPattern o)
-toPattern (Dispatch { eMessage = EKeyword { emNames = ["=="], emTargets = [ETop {}, o] } }) = do
-    liftM PStrict (toPattern o)
-toPattern (Dispatch { eMessage = EKeyword { emNames = [n], emTargets = [ETop {}, x] } }) = do
-    p <- toPattern x
-    return (PNamed n p)
-toPattern (Dispatch { eMessage = EKeyword { emNames = ns, emTargets = ts } }) = do
-    ps <- mapM toPattern ts
-    return (pkeyword ns ps)
-toPattern (Dispatch { eMessage = ESingle { emName = "_" } }) =
-    return PAny
-toPattern d@(Dispatch { eMessage = ESingle { emTarget = ETop {}, emName = n } })
-    | isUpper (head n) = return (PObject d)
-    | otherwise = return (PNamed n PAny)
-toPattern (Dispatch { eMessage = ESingle { emTarget = d@(Dispatch {}), emName = n } }) =
-    return (psingle n (PObject d))
-toPattern (EList { eContents = es }) = do
-    ps <- mapM toPattern es
-    return (PList ps)
-toPattern (EParticle { eParticle = EPMSingle n }) =
-    return (PMatch (Particle (PMSingle n)))
-toPattern (EParticle { eParticle = EPMKeyword ns mes }) = do
-    ps <- forM mes $ \me ->
-        case me of
-            Nothing -> return PAny
-            Just e -> toPattern e
+toPattern' :: Expr -> VM Pattern
+toPattern' e =
+    case toPattern e of
+        Nothing -> raise ["unknown-pattern"] [Expression e]
+        Just p -> return p
 
-    return (PPMKeyword ns ps)
-toPattern (EQuote { eExpr = e }) = return (PExpr e)
-toPattern (Primitive { eValue = v }) =
-    return (PMatch v)
-toPattern e = raise ["unknown-pattern"] [Expression e]
+toDefinePattern' :: Expr -> VM Pattern
+toDefinePattern' e =
+    case toDefinePattern e of
+        Nothing -> raise ["unknown-pattern"] [Expression e]
+        Just p -> return p

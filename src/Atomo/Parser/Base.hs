@@ -14,7 +14,7 @@ type Parser = ParsecT String ParserState VM
 
 
 isOpLetter :: Char -> Bool
-isOpLetter c = c `elem` "!@#%&*-./\\?" || isSymbol c
+isOpLetter c = c `elem` "!@#%&*-./\\?:" || isSymbol c
 
 isOperator :: String -> Bool
 isOperator "" = False
@@ -26,11 +26,11 @@ def = P.LanguageDef
     , P.commentEnd = "-}"
     , P.commentLine = "--"
     , P.nestedComments = True
-    , P.identStart = letter <|> P.opStart def <|> oneOf "_"
-    , P.identLetter = alphaNum <|> P.opLetter def
+    , P.identStart = satisfy (\c -> c == '_' || isLetter c || (c `notElem` "@$~:" && isOpLetter c))
+    , P.identLetter = satisfy (\c -> c == '_' || isAlphaNum c || (c /= ':' && isOpLetter c))
     , P.opStart = satisfy (\c -> c `notElem` "@$~" && isOpLetter c)
     , P.opLetter = satisfy isOpLetter
-    , P.reservedOpNames = ["=", ":=", ",", "|"]
+    , P.reservedOpNames = [",", "|"]
     , P.reservedNames = ["operator", "macro", "for-macro", "this", "True", "False"]
     , P.caseSensitive = True
     }

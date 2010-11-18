@@ -38,12 +38,6 @@ pObjectPattern = choice
     , parens pObjectPattern
     ]
 
-ppSet :: Parser Pattern
-ppSet = try ppKeywords <|> try ppSetSingle <|> pPattern
-
-ppDefine :: Parser Pattern
-ppDefine = try ppKeywords <|> ppSingle
-
 ppMacro :: Parser Pattern
 ppMacro = try ppMacroKeywords <|> ppMacroSingle
 
@@ -106,79 +100,6 @@ ppMacroRole = choice
         delimit ":"
         p <- ppMacroRole
         return $ PNamed n p
-
-ppSingle :: Parser Pattern
-ppSingle = do
-    (t, n) <- choice
-        [ try $ do
-            mo <- pObjectPattern
-
-            case mo of
-                PObject (Dispatch _ (ESingle _ n t)) -> do
-                    done <- option False . try $ do
-                        lookAhead (eof <|> reservedOp ":=")
-                        return True
-
-                    if done
-                        then return (PObject t, n)
-                        else getName mo
-
-                _ -> getName mo
-
-        , getName (PObject (ETop Nothing))
-        ]
-
-    return (psingle n t)
-  where
-    getName :: Pattern -> Parser (Pattern, String)
-    getName t = do
-        n <- identifier
-        return (t, n)
-
-ppSetSingle :: Parser Pattern
-ppSetSingle = do
-    (t, v) <- choice
-        -- (pattern) fizz = ...
-        [ try $ do
-            t <- pNonExpr
-            dump ("got pNonExpr", t)
-            v <- identifier
-            return (t, v)
-
-        -- Foo Bar baz buzz = ...
-        , try $ do
-            ds <- pdCascade
-
-            case ds of
-                Dispatch { eMessage = ESingle { emTarget = o, emName = n } } ->
-                    return (PObject o, n)
-
-                _ -> fail ("not a single message pattern: " ++ show ds)
-        ]
-
-    dump ("single", t, v)
-
-    return $ psingle v t
-  where
-    -- patterns that would otherwise be mistaken for expressions
-    -- if the pdCascade pattern were to grab them
-    -- TODO: this looks a bit fishy.
-    pNonExpr = choice
-        [ try ppNamedSensitive
-        , try ppHeadTail
-        , try ppInstance
-        , try ppStrict
-        , try ppMatch
-        , ppList
-        , ppParticle
-        , ppExpr
-        , ppWildcard
-        , parens pNonExpr
-        ]
-
-
-ppKeywords :: Parser Pattern
-ppKeywords = keywords pkeyword (PObject (ETop Nothing)) pObjectPattern
 
 ppNamed :: Parser Pattern
 ppNamed = parens $ do

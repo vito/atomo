@@ -1,13 +1,13 @@
 @no-true-branches describe-error := "no tests in condition: block were true"
 
-False and: _ = False
+False and: _ := False
 True and: (b: Block) := b call
 
-True or: _ = True
+True or: _ := True
 False or: (b: Block) := b call
 
-macro a && b := `(~a and: { ~b })
-macro a || b := `(~a or: { ~b })
+macro (a && b) `(~a and: { ~b })
+macro (a || b) `(~a or: { ~b })
 
 True not := False
 False not := True
@@ -24,7 +24,7 @@ unless: False do: (action: Block) :=
     @ok
   } call
 
-macro e unless: b := `(unless: ~b do: { ~e })
+macro (e unless: b) `(unless: ~b do: { ~e })
 
 when: False do: Block = @ok
 when: True do: (action: Block) :=
@@ -32,7 +32,7 @@ when: True do: (action: Block) :=
     @ok
   } call
 
-macro e when: b := `(when: ~b do: { ~e })
+macro (e when: b) `(when: ~b do: { ~e })
 
 while: (test: Block) do: (action: Block) :=
   when: test call do:
@@ -45,7 +45,7 @@ False show := "False"
 
 otherwise := True
 
-macro condition: (bs: Block) :=
+macro (condition: (bs: Block))
   bs contents reduce-right:
     { `(~test -> ~branch) x |
       `(if: ~test then: { ~branch } else: { ~x })

@@ -28,8 +28,6 @@ pExpr = choice
     , pMacro
     , pForMacro
     , try pDispatch
-    , pDefine
-    , pSet
     , pLiteral
     , parens pExpr
     ]
@@ -145,32 +143,6 @@ pParticle = tagged (do
         names <- many1 (anyIdent >>= \n -> char ':' >> return n)
         spacing
         return $ EPMKeyword names (replicate (length names + 1) Nothing)
-
-pDefine :: Parser Expr
-pDefine = tagged (do
-    pattern <- try $ do
-        p <- ppDefine
-        reservedOp ":="
-        return p
-
-    whiteSpace
-    expr <- pExpr
-
-    return $ Define Nothing pattern expr)
-    <?> "definition"
-
-pSet :: Parser Expr
-pSet = tagged (do
-    pattern <- try $ do
-        p <- ppSet
-        reservedOp "="
-        return p
-
-    whiteSpace
-    expr <- pExpr
-
-    return $ Set Nothing pattern expr)
-    <?> "set"
 
 pDispatch :: Parser Expr
 pDispatch = do
@@ -334,16 +306,11 @@ toBinaryOps ops (EKeyword h (n:ns) (v:vs))
                 toBinaryOps ops (ekeyword (tail ns) (tail vs))
             ]
     | otherwise =
-        ekeyword
-            (n : nonOperators)
-            (concat
-                [ [v]
-                , take numNonOps vs
-                , [ Dispatch (eLocation v) $ toBinaryOps ops
-                        (ekeyword
-                            (drop numNonOps ns)
-                            (drop numNonOps vs)) ]
-                ])
+        toBinaryOps ops . ekeyword (drop numNonOps ns) $
+            (Dispatch (eLocation v) $
+                ekeyword (n : nonOperators)
+                (v : take (numNonOps + 1) vs)) :
+                drop (numNonOps + 1) vs
   where
     numNonOps = length nonOperators
     nonOperators = takeWhile (not . isOperator) ns

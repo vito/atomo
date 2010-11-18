@@ -9,7 +9,7 @@ load :: VM ()
 load = do
     [$p|(e: Expression) as: Pattern|] =: do
         Expression e <- here "e" >>= findExpression
-        p <- toPattern e
+        p <- toPattern' e
         return (Pattern p)
 
     [$p|(p: Pattern) name|] =: do

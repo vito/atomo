@@ -202,10 +202,10 @@ context use: (name: String) :=
 context use: (name: String) version: (v: Version) :=
   context use: name version: (evaluate: `({ == ~v }))
 
-macro context use: name version: (v: Primitive) :=
+macro (context use: name version: (v: Primitive))
   `(~context use: ~name version: { == ~v })
 
-macro context use: name version: (v: `(~_ . ~_)) :=
+macro (context use: name version: (v: `(~_ . ~_)))
   `(~context use: ~name version: { == ~v })
 
 context use: (name: String) version: (check: Block) :=

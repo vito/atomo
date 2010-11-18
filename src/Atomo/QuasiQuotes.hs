@@ -7,6 +7,7 @@ module Atomo.QuasiQuotes
     ) where
 
 import "monads-fd" Control.Monad.State hiding (lift)
+import Data.Maybe (fromJust)
 import Data.Typeable
 import Language.Haskell.TH.Quote
 import Language.Haskell.TH.Syntax
@@ -63,7 +64,7 @@ parsing p s (file, line, col) =
         return e
 
 quotePatternExp :: String -> TH.ExpQ
-quotePatternExp = withLocation (parsing ppDefine) lift
+quotePatternExp = withLocation (parsing (liftM (fromJust . toDefinePattern) pExpr)) lift
 
 quoteExprExp :: String -> TH.ExpQ
 quoteExprExp = withLocation (parsing pExpr) lift

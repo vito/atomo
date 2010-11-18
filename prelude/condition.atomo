@@ -27,6 +27,11 @@
   for-macro Handler = Object clone do: { handle: _ := @ok }
   for-macro Restart = Object clone
 
+  (h: Handler) in: c :=
+    { h context = c
+      h
+    } call
+
   (e: Simple-Error) describe-error := e value describe-error
   (w: Simple-Warning) describe-error := w value describe-error
 
@@ -73,7 +78,7 @@
 
   (r: Restart) show := "<restart " .. r action show .. ">"
 
-  macro action with-restarts: (restarts: Block) :=
+  macro (action with-restarts: (restarts: Block))
     { rs = restarts contents map:
         { `(~n -> ~e) |
           e type match: {
@@ -138,13 +143,8 @@
   (super) with-handler: (h: Handler) do: (action: Block) :=
     modify: *handlers* as: { hs | h . hs } do: action
 
-  macro a bind: (bs: Block) :=
+  macro (a bind: (bs: Block))
     { h = Handler clone
-
-      (h) in: c :=
-        { h context = c
-          h
-        } call
 
       -- yield a hygienic expr to define on the handler
       expr-for: e :=

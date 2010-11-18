@@ -5,6 +5,7 @@ import Control.Concurrent (ThreadId)
 import Control.Concurrent.Chan
 import "monads-fd" Control.Monad.Cont
 import "monads-fd" Control.Monad.State
+import Data.Char (isUpper)
 import Data.Dynamic
 import Data.Hashable (hash)
 import Data.List (nub)
@@ -584,3 +585,62 @@ fromHaskell' t (Haskell d) =
     fromMaybe (error ("needed Haskell value of type " ++ t))
         (fromDynamic d)
 fromHaskell' t _ = error ("needed haskell value of type " ++ t)
+
+-- convert an expression to the pattern match it represents
+toPattern :: Expr -> Maybe Pattern
+toPattern (Dispatch { eMessage = EKeyword { emNames = ["."], emTargets = [h, t] } }) = do
+    hp <- toPattern h
+    tp <- toPattern t
+    return (PHeadTail hp tp)
+toPattern (Dispatch { eMessage = EKeyword { emNames = ["->"], emTargets = [ETop {}, o] } }) = do
+    liftM PInstance (toPattern o)
+toPattern (Dispatch { eMessage = EKeyword { emNames = ["=="], emTargets = [ETop {}, o] } }) = do
+    liftM PStrict (toPattern o)
+toPattern (Dispatch { eMessage = EKeyword { emNames = [n], emTargets = [ETop {}, x] } }) = do
+    p <- toPattern x
+    return (PNamed n p)
+toPattern (Dispatch { eMessage = EKeyword { emNames = ns, emTargets = ts } }) =
+    return (pkeyword ns (map PObject ts))
+toPattern (Dispatch { eMessage = ESingle { emName = "_" } }) =
+    return PAny
+toPattern (Dispatch { eMessage = ESingle { emName = n, emTarget = ETop {} } }) =
+    return (PNamed n PAny)
+toPattern (Dispatch { eMessage = ESingle { emTarget = d@(Dispatch {}), emName = n } }) =
+    return (psingle n (PObject d))
+toPattern (EList { eContents = es }) = do
+    ps <- mapM toPattern es
+    return (PList ps)
+toPattern (EParticle { eParticle = EPMSingle n }) =
+    return (PMatch (Particle (PMSingle n)))
+toPattern (EParticle { eParticle = EPMKeyword ns mes }) = do
+    ps <- forM mes $ \me ->
+        case me of
+            Nothing -> return PAny
+            Just e -> toPattern e
+
+    return (PPMKeyword ns ps)
+toPattern (EQuote { eExpr = e }) = return (PExpr e)
+toPattern (Primitive { eValue = v }) =
+    return (PMatch v)
+toPattern (ETop {}) =
+    return (PObject (ETop Nothing))
+toPattern e = Nothing
+
+toDefinePattern :: Expr -> Maybe Pattern
+toDefinePattern (Dispatch { eMessage = ESingle { emName = n, emTarget = t } }) = do
+    p <- toRolePattern t
+    return (psingle n p)
+toDefinePattern (Dispatch { eMessage = EKeyword { emNames = ns, emTargets = ts } }) = do
+    ps <- mapM toRolePattern ts
+    return (pkeyword ns ps)
+
+toRolePattern :: Expr -> Maybe Pattern
+toRolePattern (Dispatch { eMessage = EKeyword { emNames = [n], emTargets = [ETop {}, x] } }) = do
+    p <- toRolePattern x
+    return (PNamed n p)
+toRolePattern d@(Dispatch { eMessage = ESingle { emTarget = ETop {}, emName = n } })
+    | isUpper (head n) = return (PObject d)
+    | otherwise = return (PNamed n PAny)
+toRolePattern d@(Dispatch { eMessage = ESingle { emTarget = (Dispatch {}) } }) =
+    return (PObject d)
+toRolePattern p = toPattern p
