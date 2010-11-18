@@ -248,11 +248,11 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
   }
 }
 
-#section:{Patterns}
+#section:{Pattern-Matching & Inserting Slots}tag:"pattern-syntax"
 
 Atomo's pattern-match syntax shares the same syntax as Expressions in the language. In many cases these are recursive.
 
-The #atomo:(=) operator performs pattern-matching; the left-hand side is the pattern and the right-hand side is an expression whose value should match the pattern.
+The #atomo:(=) operator macro performs pattern-matching; the left-hand side is the pattern and the right-hand side is an expression whose resulting value should match the pattern.
 
 #definitions:{
   #item:{#atomo:_, #atomo:foo, ...}is:{
@@ -356,31 +356,43 @@ The #atomo:(=) operator performs pattern-matching; the left-hand side is the pat
       X clone match: { (== X) -> @yep; _ -> @nope }
     })
   }
+
+  The #atomo:(=) operator can also be used to define methods, but its use is more limited than #atomo:(:=) in that it can only insert slots on objects; it cannot pattern-match message roles, and the right-hand side is always pre-evaluated.
+
+  #example:({
+    a = Object clone
+    a foo: self = 10
+    a foo: self
+    a foo: { @ok } spawn
+    a foo: self = "Hello, world!" print
+    a foo: self
+  })
 }
 
-#section:{Definitions}
+#section:{Definitions}tag:"definition-syntax"
 
-Method definitions use the reserved #atomo:(:=) operator; the left-hand side is a "message pattern," which matches on messages sent to any of the roles involved in it. The right-hand side is the expression to be evaluated when the message pattern is matched.
+Method definitions use the #atomo:(:=) operator macro; the left-hand side is a "message pattern," which matches on messages sent to any of the roles involved in it. The right-hand side is the expression to be evaluated when the message pattern is matched.
 
-Capitalized identifiers in the message pattern are assumed to be objects, while lowercase identifiers are assumed to be named patterns that match any value.
+Message patterns can contain the patterns listed above as their roles, with the sole exception that capitalized identifiers in role patterns are assumed to be objects.
 
 #example-segment:({
   Foo bar := 1
-  foo bar := 2
+  Foo bar: baz := 1
 })
 
-Above, the first definition is placed on the particular object Foo (assuming it's defined), while the second one matches any object, binding the object the method was found on as #atomo:foo.
+Above, the first definition is placed on the particular object #atomo:Foo (assuming it's defined), while the second definition is placed on the #atomo:Foo object as well as #atomo:Object (the second role, a named wildcard), binding the second role value as #atomo:baz.
 
-To define on a particular object, you may wrap an arbitrary expression in parentheses.
+To define on a particular object that isn't capitalized, wrap it in a block:
 
 #example-segment:({
   foo bar := 1
-  (foo) bar := 2
+  { foo } bar := 2
+  { "hi" print; 1 + 1 } bar: Foo := 3
 })
 
-As in the first example, #code:{foo bar} matches any object, while #code:{(foo) bar} is only defined on #atomo:foo.
+As in the first example, #atomo:(foo bar) matches any object, while #atomo:({ foo } bar) is only defined on #atomo:foo (the result of the block's execution). #atomo:({ 1 + 1 } bar: Foo) is defined on #atomo:2 and #atomo:Foo.
 
-Aside from these subtle rules regarding the targets of a definition, you may use all of the patterns described in #reference:{Patterns} for a message pattern's roles. The targets for each pattern are as follows:
+The targets implied by the respective patterns in a definition are as follows:
 
 #definitions:{
   #item:{#code:{_}, #code:{foo}, #code:{bar}, ...}is:{#atomo:Object}
@@ -391,9 +403,45 @@ Aside from these subtle rules regarding the targets of a definition, you may use
   #item:{#atomo:1/2, #atomo:3/4, ...}is:{#atomo:Rational}
   #item:{#atomo:"", #atomo:"foo", ...}is:{#atomo:String}
   #item:{#code:{(head . tail)}, #code:{[]}, #code:{[pattern, ...]}, ...}is:{#atomo:List}
-  #item:{#code:{(foo: pattern)}}is:{target of #code:{pattern}}
-  #item:{#atomo:@foo, #atomo:@(bar: 2 baz: _), ...}is:{#atomo:Particle}
   #item:{#atomo:`x, #atomo:`(1 + ~y), ...}is:{#atomo:Expression}
+  #item:{#atomo:@foo, #atomo:@(bar: 2 baz: _), ...}is:{#atomo:Particle}
+  #item:{#code:{(foo: pattern)}}is:{target of #code:{pattern}}
   #item:{#code:{(-> pattern)}}is:{target of #code:{pattern}}
   #item:{#code:{(== pattern)}}is:{target of #code:{pattern}}
+  #item:{#code:{Foo}, #code:{Foo bar}, #code:{{ expr; ... }}, ...}is:{the object itself, or the object yielded by #code:{expr}}
+}
+
+Thus, #atomo:(1 foo: $a := x) is a definition placed on #atomo:Integer and #atomo:Char.
+
+#section:{Dispatch}
+
+Atomo's dispatch syntax is similar to the Smalltalk family, naming conventions aside. There are two types of messages to dispatch: single messages and keyword messages.
+
+To dispatch a single message to some target, the message name is placed after the target value, separated by whitespace.
+
+#example-segment:({
+  1 foo
+  { 1 + 1 } call
+})
+
+If there is no "target" for the message, the implied target is #atomo:this (the toplevel object representing the current scope).
+
+Keyword messages are slightly different in that they have more than one target, each separated by a "keyword" which is part of one whole message. Like single messages, if there is no initial role, #atomo:this is assumed.
+
+#example:({
+  3 divides?: 12
+  1 + 2
+  (0 .. 10) from: 3 to: 5
+})
+
+Keyword message dispatch normally requires parentheses to chain multiple message sends, starting from the start of the chain to the end of the current dispatch. This leads to a lot of jumping around whenever you want to add another keyword dispatch:
+
+#verbatim:{
+  (((1 x: a) y: b) z: c) foo
+}
+
+Atomo remedies this by allowing parentheses to be used inside the cascade of sends itself, effectively turning keyword message dispatch into something that's as easily chained as single messages:
+
+#verbatim:{
+  1 (x: a) (y: b) (z: c) foo
 }

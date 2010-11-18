@@ -22,11 +22,11 @@
 
 #define:{
     p := e
-    | p is-a?: Pattern
+    | p is-a?: Expression
     | e is-a?: Expression
     > @ok
 }body:{
-    Defines #atomo:e to be evaluated when the message described by #atomo:p is dispatched to any of its targets. Returns #atomo:(@ok).
+    Defines #atomo:e to be evaluated when the message described by #atomo:p is dispatched to any of its targets. Returns #atomo:(@ok). See #reference:{definition-syntax}.
 
     When defining a method of the same name as an existing one, it will be inserted with the most precise first. If two patterns are equivalent, the new method replaces the old.
 
@@ -55,10 +55,10 @@
 
 #define:{
     p = v
-    | p is-a?: Pattern
+    | p is-a?: Expression
     > v
 }body:{
-    Pattern-match #atomo:p on #atomo:v, inserting the bindings from the match into the current scope. Returns the value it's matching on (#atomo:v).
+    Pattern-match #atomo:p on #atomo:v, inserting the bindings from the match into the current scope. Returns the value it's matching on (#atomo:v). See #reference:{pattern-syntax}.
 
     #example:({
         a = 1
@@ -67,7 +67,7 @@
         [a, x, y, foo]
     })
 
-    In addition to simple pattern-matching, #atomo:(=) can also define methods, however it always evaluates the right-hand side before insertion, unlike its brethren #atomo:(:=).
+    In addition to simple pattern-matching, #atomo:(=) can also define methods. However, it always evaluates the right-hand side before insertion, and roles in a message pattern are all objects (not patterns), unlike its brethren #atomo:(:=).
 
     #example:({
         a = 1
