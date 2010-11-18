@@ -12,6 +12,24 @@ load = do
     [$p|(s: String) as: List|] =:
         liftM (list . map Char) (getString [$e|s|])
 
+    [$p|(s: String) as: Char|] =: do
+        s <- getString [$e|s|]
+        return (Char (head s))
+    
+    [$p|(s: String) as: Integer|] =: do
+        s <- getString [$e|s|]
+        return (Integer (read s))
+        
+    [$p|(s: String) as: Double|] =: do
+        s <- getString [$e|s|]
+        return (Double (read s))
+    
+    [$p|(s: String) as: Rational|] =: do
+        s <- getString [$e|s|]
+        let num = read $ takeWhile (/= '/') s
+            denom = read . tail $ dropWhile (/= '/') s
+        return (Rational (num % denom))
+
     [$p|(l: List) to-string|] =: do
         vs <- getList [$e|l|]
 
