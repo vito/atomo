@@ -5,10 +5,12 @@ import "monads-fd" Control.Monad.Cont
 import System.Environment (getArgs)
 
 import Atomo
+import Atomo.Core
 import Atomo.Load
 import Atomo.Parser
 import Atomo.PrettyVM
 import Atomo.Run
+import qualified Atomo.Kernel as Kernel
 
 
 main :: IO ()
@@ -18,15 +20,18 @@ main = do
     case args of
         [] -> exec repl
 
+        ["-x"] -> noPrelude primRepl
+        ("-x":fn:_) -> noPrelude (parseFile fn >>= liftIO . mapM_ print >> liftIO (putStrLn "result:") >> loadFile fn)
+
         ("-e":expr:_) -> exec $ do
-            ast <- continuedParse expr "<input>"
+            ast <- parseInput expr
             r <- evalAll ast
             d <- prettyVM r
             liftIO (putStrLn d)
             return (particle "ok")
 
         ("-s":expr:_) -> exec $ do
-            ast <- continuedParse expr "<input>"
+            ast <- parseInput expr
             evalAll ast
             repl
 
@@ -46,5 +51,20 @@ main = do
             , "\tatomo FILE\texecute FILE"
             ]
 
+noPrelude :: VM Value -> IO ()
+noPrelude x = do
+    runWith (initCore >> Kernel.load >> x) startEnv
+    return ()
+
 repl :: VM Value
 repl = eval [$e|Lobby clone repl|]
+
+primRepl :: VM Value
+primRepl = do
+    liftIO (putStrLn "next:")
+    expr <- liftIO getLine
+    ast <- parseInput expr
+    r <- evalAll ast
+    d <- prettyVM r
+    liftIO (putStrLn d)
+    primRepl
