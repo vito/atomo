@@ -73,15 +73,14 @@ pForMacro :: Parser Expr
 pForMacro = tagged (do
     reserved "for-macro"
     e <- pExpr
-    MTL.lift (eval e)
-    return (Primitive Nothing (Expression e))) --e)
+    macroExpand e >>= MTL.lift . eval
+    return (Primitive Nothing (Expression e)))
     <?> "for-macro expression"
 
 pMacro :: Parser Expr
 pMacro = tagged (do
     reserved "macro"
-    p <- ppMacro
-    reserved ":="
+    p <- parens ppMacro
     whiteSpace
     e <- pExpr
     macroExpand e >>= addMacro p
