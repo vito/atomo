@@ -17,7 +17,7 @@ load = do
         case s of
             "$'" -> return (Char '\'')
             '$':rest -> return (Char (read $ "'" ++ rest ++ "'"))
-            otherwise -> raise ["invalid-string"] [String $ T.pack s]
+            otherwise -> raise ["invalid-string"] [string s]
     
     [$p|(s: String) as: Integer|] =: do
         s <- getString [$e|s|]
