@@ -111,8 +111,7 @@ What with the scoping system being objects and all, this means you can go beyond
 
 #interaction:({
     foo: x := ("fooing: " .. x show) print
-    foo: 42
-    foo: "hello"
+    foo: @hi
 })
 
 Which brings me to...
@@ -127,7 +126,7 @@ In Atomo, you're either dispatching #italic:{single messages}, such as #atomo:ma
     [1, 2, 3, 4] at: 3 put: 5
 })
 
-The syntax for keyword dispatch is very flexible, to ease the flow of writing code that uses chains of them. For example, this syntax is perfectly valid, and is called #italic:{cascading}:
+The syntax for keyword dispatch is very flexible, to ease the flow of writing code that uses chains of them. For example, this syntax is perfectly valid, and is called #italic:{chaining}:
 
 #verbatim:{
     1 (+ 2) (divides?: 6) not
@@ -139,7 +138,7 @@ This gets parsed as regular ol' dispatching, as in:
   1 (+ 2) (divides?: 6) not
 })
 
-Those parentheses at the front come at a huge cost to the flow of your writing - every time you want to add a dispatch, you would have to go back to the beginning, add a #code:{(}, and find where you were. Keyword cascades remedy that by allowing you to use parentheses wherever you are to effectively turn them into a single-dispatch syntax.
+Those parentheses at the front come at a huge cost to the flow of your writing - every time you want to add a dispatch, you would have to go back to the beginning, add a #code:{(}, and find where you were. Keyword chains remedy that by allowing you to use parentheses wherever you are to effectively turn them into a single-dispatch syntax.
 
 
 #section:{Messages & Multiple Dispatch}
@@ -156,30 +155,36 @@ If no roles understand the message, it sends either #atomo:(did-not-understand:)
     X make-me-a-sandwich
 })
 
-That's a lot to swallow right now, so let's just dive in and play around with this thing. Let's write a small Rock-Paper-Scissors game. First we'll define the three different objects involved in the game:
+That's a lot to take in at once, so let's just dive in and play around with this thing. We'll write a small Rock-Paper-Scissors game. First we'll define the three different objects involved in the game:
 
 #(rps = Lobby clone)
 
-#interaction:({
-    Rock = Object clone
-    Paper = Object clone
-    Scissors = Object clone
-})on:rps
+#(def-objs = {
+  Rock = Object clone
+  Paper = Object clone
+  Scissors = Object clone
+})
+
+#(def-methods = {
+  Rock beats?: Scissors := True
+  Paper beats?: Rock := True
+  Scissors beats?: Paper := True
+  _ beats?: _ := False
+})
+
+#atomo-segment:def-objs
+#(_ = rps join: def-objs)
 
 Pretty simple - to make a new object just clone #atomo:Object. Here we have #atomo:Rock, #atomo:Paper, and #atomo:Scissors defined and ready for action. Now comes the fun part - defining how the game works!
 
-#interaction:({
-    Rock beats?: Scissors = True
-    Paper beats?: Rock = True
-    Scissors beats?: Paper = True
-    _ beats?: _ = False
-})on:rps
+#atomo-segment:def-methods
+#(_ = rps join: def-methods)
 
-The #atomo:(beats?:) method has two #italic:{roles} - the first one is being checked to see if it "beats" the second one. In this case, the standard rules apply - rock beats scissors, paper beats rock, and scissors beats paper. Let's try it out!
+The #atomo:(beats?:) method has two #italic:{roles} - the first one is being checked to see if it "beats" the second one in our game. In this case, the standard rules apply - rock beats scissors, paper beats rock, and scissors beats paper. Let's try it out!
 
 #interaction:({
-    Rock beats?: Paper
-    Rock beats?: Scissors
+  Rock beats?: Paper
+  Rock beats?: Scissors
 })on:rps
 
 Hooray! It works! Above we defined the three winning cases, and left all the other cases to fall into the catch-all - the one defined with #atomo:_ in place of both roles. This method is the least precise out of all of them, so it only gets chosen if none of the other, more specific, definitions match the dispatch. Hence, all losing combinations yield #atomo:False.
@@ -187,9 +192,14 @@ Hooray! It works! Above we defined the three winning cases, and left all the oth
 Just for fun, let's take a peek at what the objects themselves look like now.
 
 #interaction:({
-    Rock
-    Paper
-    Scissors
+  Rock
+  Paper
+  Scissors
 })on:rps
 
 As you can see, the #atomo:(beats?:) method is placed on all roles involved.
+
+
+#section:{Wrapping Up}
+
+That's about all there is to it; Atomo is a simple language, so once you know everything here you can go quite far. I recommend moving on to #reference:{Syntax} so you know what you're typing, and then perhaps to #reference:{The Ecosystem} if you plan on sharing your code or using other libraries. The other sections are mostly references for the various systems and types of values in Atomo; you should check those out too!
