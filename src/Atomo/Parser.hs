@@ -33,7 +33,16 @@ pExpr = choice
     <?> "expression"
 
 pLiteral :: Parser Expr
-pLiteral = pThis <|> pBlock <|> pList <|> pParticle <|> pQuoted <|> pQuasiQuoted <|> pUnquoted <|> pPrimitive
+pLiteral = choice
+    [ pThis
+    , pBlock
+    , pList
+    , pParticle
+    , pQuoted
+    , pQuasiQuoted
+    , pUnquoted
+    , pPrimitive
+    ]
     <?> "literal"
 
 pThis :: Parser Expr
