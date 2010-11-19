@@ -13,10 +13,10 @@ Atomo may be installed through the #link:{Cabal}to:{http://www.haskell.org/cabal
 
 #verbatim:{cabal install atomo}
 
-Alternatively, you can install it from the repository at #link:{darcsden}to:{http://darcsden.com/alex/atomo}:
+Alternatively, you can install it from the repository at #link:{github}to:{http://github.com/vito/atomo}:
 
 #verbatim:{
-    darcs get http://darcsden.com/alex/atomo
+    git clone git://github.com/vito/atomo.git
     cd atomo
     cabal install
 }
@@ -41,7 +41,8 @@ Now you're in the Atomo #italic:{read-evaluate-print loop}, which - as you may h
     20 sqrt
 })
 
-The REPL is readline-style, with history navigation. To exit the REPL, hit Ctrl+D.
+The REPL is readline-style, with history navigation. To exit the REPL, hit Ctrl+D or Ctrl+C, and hit #code:{y}. It asks before you leave, because running servers from the REPL is a common task, and it shouldn't be too easy to just shut down everything by accident.
+
 
 #section:{Define & Dispatch}
 
@@ -54,11 +55,11 @@ Defining sets a value or expression to respond to some message. Dispatching is s
     a
 })
 
-Here we're defining a method on the top-level object that responds to the message #atomo:a by yielding the integer #atomo:1. We then dispatch the message #atomo:a and get that integer back.
+Here we're inserting a slot - a kind of method - on the toplevel object, which responds to the message #atomo:a by yielding the integet #atomo:1. We then dispatch that message and get the value back.
 
-There are two operators for defining methods: #atomo:(=) and #atomo:(:=). The #atomo:(=) operator sets a value to respond to a message, while #atomo:(:=) defines a method that responds to a message by evaluating the expression. Generally you'll use #atomo:(:=) for defining methods, and #atomo:(=) for setting values.
+There are two operators for defining methods: #atomo:(=) and #atomo:(:=). The #atomo:(=) operator performs pattern-matching and slot insertion, while #atomo:(:=) defines a method that responds to a message by evaluating an expression. Generally you'll use #atomo:(:=) for defining methods, and #atomo:(=) for setting values.
 
-To illustrate this example, we'll define a method that simply prints #atomo:"Hello, world!", but using both operators. Note that #atomo:print outputs the value and yields the same value.
+To illustrate this distinction, we'll define a method that simply prints #atomo:"Hello, world!", using both operators. Note that #atomo:print outputs the value and yields the same value.
 
 #interaction:({
     y := "Hello, world!" print
@@ -69,7 +70,7 @@ To illustrate this example, we'll define a method that simply prints #atomo:"Hel
 
 As you can see, #italic:{Goodbye, world!} was printed immediately after defining #atomo:x, with subsequent dispatches for #atomo:x simply returning the value that was printed. Conversely, #atomo:y dutifully prints #italic:{Hello, world!} with every dispatch.
 
-But #atomo:(=) has a few more tricks up its sleeve. It can also do pattern-matching. And since it returns the same value, it can be used to set multiple values at once:
+But #atomo:(=) has a few more tricks up its sleeve. As mentioned before, it can also do pattern-matching. And since it returns the same value, it can be used to set multiple values at once:
 
 #interaction:({
     [a, _] = b = [1, 2]
@@ -82,12 +83,21 @@ But #atomo:(=) has a few more tricks up its sleeve. It can also do pattern-match
 As you can see, first we set #atomo:b to #atomo:[1, 2], and then we immediately pattern-match #atomo:[a, _] on #atomo:b, which sets #atomo:a to #atomo:1, the first element of the list. We then re-assign #atomo:a as #atomo:(a + 1), increasing #atomo:(a)'s vlaue by 1.
 
 
-
 #section:{Lexical Scoping via Delegation}
 
-You'll notice earlier I used the term #italic:{top-level object} for describing the scope of the #atomo:a definition. This is the entirety of Atomo's scoping system. It's objects all the way down. The nearest lexical scope to a point in your code (henceforth called the #italic:{top-level} or #italic:{top}) is simply an object that delegates down the chain to the surrounding scope, and so on and son on until it hits rock #italic:{bottom} - #atomo:Object. You can grab this object via the keyword #atomo:this.
+You'll notice earlier I used the term #italic:{top-level object} for describing the target of the #atomo:a definition. This is the entirety of Atomo's scoping system; it's objects all the way down. The nearest lexical scope to a point in your code (henceforth called the #italic:{top-level object} or #italic:{top}) is simply an object that delegates down the chain to the surrounding scope, and so on and son on until it hits rock #italic:{bottom} (#atomo:Object). You can grab the current top-level object via the keyword #atomo:this.
 
-#atomo:(Block)s provide a #atomo:context method for grabbing the scope in which they were defined. Putting the pieces together, #atomo:in-context is easily defined - which converts a block into one that is evalulated in its original scope:
+To illustrate the power of this sytem, let's try putting scope objects to use. #atomo:(Block)s provide a #atomo:context method for grabbing the context in which they were written. Putting the pieces together, #atomo:in-context is easily defined - which converts a block into one that is evalulated in its original scope:
+
+#atomo-block:({
+  (b: Block) in-context :=
+    b clone do:
+      { call := b context join: b
+        call: vs := b context join: b with: vs
+      }
+})
+
+Now let's give it a shot:
 
 #interaction:({
     a = 1
@@ -95,7 +105,9 @@ You'll notice earlier I used the term #italic:{top-level object} for describing 
     a
 })
 
-What with the scoping system being objects and all, this means you can go beyond just defining "variables". When you see #atomo:(x = 1), it's not saying "set the variable #atomo:x to #atomo:1", it's saying "define a method on the top-level object that responds to #atomo:x by yielding #atomo:1". But you aren't limited to single messages like #atomo:x. Oh, no. Feel free to define a keyword method if you want, it works just fine:
+Ta-da! Rather than setting #atomo:a to #atomo:2 inside of the block, it was actually executed in the block's context, thus redefining #atomo:a.
+
+What with the scoping system being objects and all, this means you can go beyond just defining "variables". When you see #atomo:(x = 1), it's not saying "set the variable #atomo:x to #atomo:1", it's saying "insert a slot on the top-level object that responds to #atomo:x by yielding #atomo:1." But you aren't limited to single messages like #atomo:x. Oh, no. Feel free to define a keyword method if you want, it works just fine:
 
 #interaction:({
     foo: x := ("fooing: " .. x show) print
@@ -123,7 +135,9 @@ The syntax for keyword dispatch is very flexible, to ease the flow of writing co
 
 This gets parsed as regular ol' dispatching, as in:
 
-#atomo-block:(1 (+ 2) (divides?: 6) not)
+#atomo-block:({
+  1 (+ 2) (divides?: 6) not
+})
 
 Those parentheses at the front come at a huge cost to the flow of your writing - every time you want to add a dispatch, you would have to go back to the beginning, add a #code:{(}, and find where you were. Keyword cascades remedy that by allowing you to use parentheses wherever you are to effectively turn them into a single-dispatch syntax.
 
