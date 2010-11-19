@@ -204,7 +204,7 @@ keyword p = do
 
 keywordName :: Parser String
 keywordName = do
-    n <- operator <|> (ident >>= \name -> char ':' >> return name)
+    n <- try (ident >>= \name -> char ':' >> return name) <|> operator
     whiteSpace1
     return n
 
