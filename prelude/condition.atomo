@@ -24,13 +24,7 @@
     Simple-Warning = Warning clone
   }
 
-  for-macro Handler = Object clone do: { handle: _ := @ok }
   for-macro Restart = Object clone
-
-  (h: Handler) in: c :=
-    { h context = c
-      h
-    } call
 
   (e: Simple-Error) describe-error := e value describe-error
   (w: Simple-Warning) describe-error := w value describe-error
@@ -100,7 +94,7 @@
     modify: *restarts* as: { rs | restarts .. rs } do: action
 
   (super) signal: v :=
-    { *handlers* _? map: @(handle: v)
+    { *handlers* _? map: { h | h (call: [v]) (call: [v]) }
       @ok
     } call
 
@@ -140,38 +134,21 @@
   (super) find-restart: name :=
     *restarts* _? lookup: name
 
-  (super) with-handler: (h: Handler) do: (action: Block) :=
+  (super) with-handler: (h: Block) do: (action: Block) :=
     modify: *handlers* as: { hs | h . hs } do: action
 
   macro (a bind: (bs: Block))
-    { h = Handler clone
-
-      -- yield a hygienic expr to define on the handler
-      expr-for: e :=
-        condition: {
-          e type == @block && e arguments empty? not ->
-            ``(~'~e call: [~s]) -- wow
-
-          e type == @block ->
-            `'(~e call)
-
-          otherwise -> `'~e
+    { branches = bs contents map:
+        { `(~p -> ~e) |
+          if: (e type == @block)
+            then: { `(~p -> ~e) }
+            else: { `(~p -> { ~e }) }
         }
 
-      signals = bs contents map:
-        { `(~pat -> ~expr) |
-          Lobby
-            define: @handle:
-              on: `(h: ~h) (as: Pattern Role)
-              with: [`(s: ~pat) as: Pattern Role]
-              as: `(
-                { match: ~(pat as: Pattern) on: s
-                  (with-delegates: [h context])
-                    evaluate: ~(expr-for: expr)
-                } call
-              )
-        }
+      handler = `Block new: (branches .. ['(_ -> { @ok })])
 
-      `(with-handler: (~h in: this) do: ~a)
+      `({ h a |
+          with-handler: h do: a
+        } call: [{ c | c match: ~handler }, ~a])
     } call
 } call
