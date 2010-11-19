@@ -149,6 +149,6 @@
 
       `({ h a |
           with-handler: h do: a
-        } call: [{ c | c match: ~handler }, ~a])
+        } call: [{ #c | #c match: ~handler }, ~a])
     } call
 } call

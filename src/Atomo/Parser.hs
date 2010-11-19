@@ -57,13 +57,18 @@ pQuoted = tagged $ do
 pQuasiQuoted :: Parser Expr
 pQuasiQuoted = tagged $ do
     char '`'
+    modifyState $ \ps -> ps { psInQuote = True }
     e <- pSpacedExpr
+    modifyState $ \ps -> ps { psInQuote = False }
     return (EQuote Nothing e)
 
 pUnquoted :: Parser Expr
 pUnquoted = tagged $ do
     char '~'
+    iq <- fmap psInQuote getState
+    modifyState $ \ps -> ps { psInQuote = False }
     e <- pSpacedExpr
+    modifyState $ \ps -> ps { psInQuote = iq }
     return (EUnquote Nothing e)
 
 pSpacedExpr :: Parser Expr
@@ -391,6 +396,8 @@ macroExpand d@(Dispatch { eMessage = em }) = do
     mm <- findMacro msg
     case mm of
         Just m -> do
+            modifyState $ \ps -> ps { psClock = psClock ps + 1 }
+
             Expression e <-
                 MTL.lift (runMethod m msg >>= findExpression)
 

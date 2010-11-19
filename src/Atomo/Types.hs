@@ -263,11 +263,13 @@ data ParserState =
     ParserState
         { psOperators :: Operators
         , psMacros :: (MethodMap, MethodMap)
+        , psInQuote :: Bool
+        , psClock :: Integer
         }
     deriving (Show, Typeable)
 
 startParserState :: ParserState
-startParserState = ParserState [] (M.empty, M.empty)
+startParserState = ParserState [] (M.empty, M.empty) False 0
 
 -- helper synonyms
 type Operators = [(String, (Assoc, Integer))] -- name -> assoc, precedence

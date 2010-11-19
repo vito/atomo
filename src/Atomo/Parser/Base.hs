@@ -7,7 +7,7 @@ import Data.List (nub, sort)
 import Text.Parsec
 import qualified Text.Parsec.Token as P
 
-import Atomo.Types (Expr(..), ParserState, VM)
+import Atomo.Types (Expr(..), ParserState(..), VM)
 
 
 type Parser = ParsecT String ParserState VM
@@ -44,34 +44,31 @@ eol = newline >> return ()
 lexeme :: Parser a -> Parser a
 lexeme = P.lexeme tp
 
-capIdent :: Parser String
-capIdent = do
-    c <- satisfy isUpper
-    cs <- many (P.identLetter def)
-    return (c:cs)
-
-lowIdent :: Parser String
-lowIdent = do
-    c <- satisfy isLower
-    cs <- many (P.identLetter def)
-    return (c:cs)
-
-capIdentifier :: Parser String
-capIdentifier = lexeme capIdent
-
-lowIdentifier :: Parser String
-lowIdentifier = lexeme lowIdent
-
 anyIdent :: Parser String
 anyIdent = try $ do
     c <- P.identStart def
     cs <- many (P.identLetter def)
     if isOperator (c:cs)
         then unexpected "operator"
+        else do
+
+    ps <- getState
+    if c == '#' && psInQuote ps
+        then return ((c:cs) ++ ":" ++ show (psClock ps))
         else return (c:cs)
 
 anyIdentifier :: Parser String
 anyIdentifier = lexeme anyIdent
+
+identifier :: Parser String
+identifier = lexeme ident
+
+ident :: Parser String
+ident = do
+    name <- anyIdent
+    if isReservedName name
+        then unexpected ("reserved word " ++ show name)
+        else return name
 
 parens :: Parser a -> Parser a
 parens = P.parens tp
@@ -93,12 +90,6 @@ commaSep1 = P.commaSep1 tp
 
 dot :: Parser String
 dot = P.dot tp
-
-identifier :: Parser String
-identifier = lexeme $ P.identifier tp
-
-ident :: Parser String
-ident = P.identifier tp
 
 operator :: Parser String
 operator = try $ do
@@ -524,28 +515,6 @@ makeTokenParser languageDef
             else return (c:cs))
         <?> "identifier"
 
-    isReservedName name
-        = isReserved theReservedNames caseName
-        where
-          caseName      | P.caseSensitive languageDef  = name
-                        | otherwise               = map toLower name
-
-
-    isReserved names name
-        = scan names
-        where
-          scan []       = False
-          scan (r:rs)   = case compare r name of
-                            LT  -> scan rs
-                            EQ  -> True
-                            GT  -> False
-
-    theReservedNames
-        | P.caseSensitive languageDef  = sortedNames
-        | otherwise               = map (map toLower) sortedNames
-        where
-          sortedNames   = sort (P.reservedNames languageDef)
-
 
 
     -----------------------------------------------------------
@@ -570,6 +539,31 @@ makeTokenParser languageDef
         spacing
         skipMany (try $ spacing >> newline)
         spacing
+
+isReservedName :: String -> Bool
+isReservedName name = isReserved reservedNames caseName
+  where
+    caseName
+        | P.caseSensitive def  = name
+        | otherwise = map toLower name
+
+    reservedNames
+        | P.caseSensitive def = sortedNames
+        | otherwise = map (map toLower) sortedNames
+      where
+        sortedNames = sort (P.reservedNames def)
+
+isReserved :: [String] -> String -> Bool
+isReserved names name
+    = scan names
+    where
+        scan [] = False
+        scan (r:rs) =
+            case compare r name of
+                LT  -> scan rs
+                EQ  -> True
+                GT  -> False
+
 
 whiteSpace :: Parser ()
 whiteSpace = P.whiteSpace tp
