@@ -13,17 +13,17 @@ load :: VM ()
 load = do
     [$p|`Block new: (es: List)|] =::: [$e|`Block new: es arguments: []|]
     [$p|`Block new: (es: List) arguments: (as: List)|] =: do
-        es <- getList [$e|es|]
-        as <- getList [$e|as|]
+        es <- getList [$e|es|] >>= mapM findExpression
+        as <- getList [$e|as|] >>= mapM findExpression
         return (Expression (EBlock Nothing (map fromPattern as) (map fromExpression es)))
 
     [$p|`List new: (es: List)|] =: do
-        es <- getList [$e|es|]
+        es <- getList [$e|es|] >>= mapM findExpression
         return (Expression (EList Nothing (map fromExpression es)))
 
     [$p|`Match new: (branches: List) on: (value: Expression)|] =: do
-        pats <- liftM (map fromExpression) $ getList [$e|branches map: @from|]
-        exprs <- liftM (map fromExpression) $ getList [$e|branches map: @to|]
+        pats <- liftM (map fromExpression) $ getList [$e|branches map: @from|] >>= mapM findExpression
+        exprs <- liftM (map fromExpression) $ getList [$e|branches map: @to|] >>= mapM findExpression
         Expression value <- here "value" >>= findExpression
 
         ps <- mapM toRolePattern' pats
