@@ -388,22 +388,29 @@ macroExpand s@(Set { eExpr = e }) = do
     e' <- macroExpand e
     return s { eExpr = e' }
 macroExpand d@(Dispatch { eMessage = em }) = do
-    (msg, nem) <- expandMsg em
-
     mm <- findMacro msg
     case mm of
         Just m -> do
-            Expression e <- MTL.lift $ runMethod m msg
+            Expression e <-
+                MTL.lift (runMethod m msg >>= findExpression)
+
             macroExpand e
 
-        _ -> return d { eMessage = nem }
+        Nothing -> do
+            nem <- expanded em
+            return d { eMessage = nem }
   where
-    expandMsg (ESingle i n t) = do
+    expanded (ESingle i n t) = do
         nt <- macroExpand t
-        return (Single i n (Expression nt), ESingle i n nt)
-    expandMsg (EKeyword i ns ts) = do
+        return (ESingle i n nt)
+    expanded (EKeyword i ns ts) = do
         nts <- mapM macroExpand ts
-        return (Keyword i ns (map Expression nts), EKeyword i ns nts)
+        return (EKeyword i ns nts)
+
+    msg =
+        case em of
+            ESingle i n t -> Single i n (Expression t)
+            EKeyword i ns ts -> Keyword i ns (map Expression ts)
 macroExpand b@(EBlock { eContents = es }) = do
     nes <- mapM macroExpand es
     return b { eContents = nes }
@@ -424,6 +431,7 @@ macroExpand p@(EParticle { eParticle = ep }) =
             return p { eParticle = EPMKeyword ns nmes }
 
         _ -> return p
+-- TODO: EUnquote?
 macroExpand e = return e
 
 -- | find a findMacro method for message `m' on object `o'
