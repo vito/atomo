@@ -26,7 +26,7 @@ load = do
         exprs <- liftM (map fromExpression) $ getList [$e|branches map: @to|]
         Expression value <- here "value" >>= findExpression
 
-        ps <- mapM toPattern' pats
+        ps <- mapM toRolePattern' pats
         ids <- gets primitives
         return . Expression . EVM Nothing (Just $ prettyMatch value (zip pats exprs)) $
             eval value >>= matchBranches ids (zip ps exprs)
