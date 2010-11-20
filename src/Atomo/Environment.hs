@@ -400,8 +400,6 @@ match ids r (PHeadTail hp tp) (String t) | not (T.null t) =
     match ids r hp (Char (T.head t)) && match ids r tp (String (T.tail t))
 match ids r (PPMKeyword ans aps) (Particle (PMKeyword bns mvs)) =
     ans == bns && matchParticle ids r aps mvs
-match _ _ PEDefine (Expression (Define {})) = True
-match _ _ PESet (Expression (Set {})) = True
 match _ _ PEDispatch (Expression (Dispatch {})) = True
 match _ _ PEOperator (Expression (Operator {})) = True
 match _ _ PEPrimitive (Expression (Primitive {})) = True

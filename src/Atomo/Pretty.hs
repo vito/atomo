@@ -147,8 +147,6 @@ instance Pretty Pattern where
     prettyFrom _ (PSingle _ n p) = pretty p <+> text n
     prettyFrom _ PThis = text "<this>"
 
-    prettyFrom _ PEDefine = text "Define"
-    prettyFrom _ PESet = text "Set"
     prettyFrom _ PEDispatch = text "Dispatch"
     prettyFrom _ PEOperator = text "Operator"
     prettyFrom _ PEPrimitive = text "Primitive"

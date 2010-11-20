@@ -121,8 +121,6 @@ data Pattern
     | PThis
 
     -- expression types, used in macros
-    | PEDefine
-    | PESet
     | PEDispatch
     | PEOperator
     | PEPrimitive
@@ -658,8 +656,6 @@ toMacroPattern (Dispatch { eMessage = EKeyword { emNames = ns, emTargets = ts } 
     return (pkeyword ns ps)
 
 toMacroRole :: Expr -> Maybe Pattern
-toMacroRole (Dispatch _ (ESingle _ "Define" _)) = Just PEDefine
-toMacroRole (Dispatch _ (ESingle _ "Set" _)) = Just PESet
 toMacroRole (Dispatch _ (ESingle _ "Dispatch" _)) = Just PEDispatch
 toMacroRole (Dispatch _ (ESingle _ "Operator" _)) = Just PEOperator
 toMacroRole (Dispatch _ (ESingle _ "Primitive" _)) = Just PEPrimitive

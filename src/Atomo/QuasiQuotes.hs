@@ -130,8 +130,6 @@ instance Lift Pattern where
     lift (PPMKeyword ns ts) = [| PPMKeyword ns ts |]
     lift (PSingle i n t) = [| PSingle i n t |]
     lift PThis = [| PThis |]
-    lift PEDefine = [| PEDefine |]
-    lift PESet = [| PESet |]
     lift PEDispatch = [| PEDispatch |]
     lift PEOperator = [| PEOperator |]
     lift PEPrimitive = [| PEPrimitive |]
