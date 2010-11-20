@@ -1,3 +1,5 @@
+for-macro Restart = Object clone
+
 { define: *handlers* as: []
   define: *restarts* as: []
 
@@ -23,8 +25,6 @@
     Warning = Condition clone
     Simple-Warning = Warning clone
   }
-
-  for-macro Restart = Object clone
 
   (e: Simple-Error) describe-error := e value describe-error
   (w: Simple-Warning) describe-error := w value describe-error
