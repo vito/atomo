@@ -1,29 +1,5 @@
 {-# LANGUAGE BangPatterns #-}
-module Atomo.Environment
-    ( eval
-    , evalAll
-
-    , define
-    , defineOn
-    , dispatch
-    , set
-    , targets
-
-    , newObject
-    , newScope
-    , withTop
-
-    , orefFor
-
-    , matchable
-    , findMethod
-    , findFirstMethod
-    , runMethod
-
-    , raise
-    , raise'
-    , throwError
-    ) where
+module Atomo.Environment where
 
 import "monads-fd" Control.Monad.Cont
 import "monads-fd" Control.Monad.State
@@ -199,6 +175,16 @@ withTop t x = do
     modify (\e -> e { top = o })
 
     return res
+
+-- | Execute an action with a new toplevel delegating to the old one.
+newScope :: VM a -> VM a
+newScope x = do
+    t <- gets top
+    nt <- newObject $ \o -> o
+        { oDelegates = [t]
+        }
+
+    withTop nt x
 
 
 -----------------------------------------------------------------------------
@@ -419,16 +405,6 @@ runMethod (Macro { mPattern = p, mExpr = e }) m = do
         }
 
     withTop nt $ eval e
-
--- | Execute an action with a new toplevel delegating to the old one.
-newScope :: VM a -> VM a
-newScope x = do
-    t <- gets top
-    nt <- newObject $ \o -> o
-        { oDelegates = [t]
-        }
-
-    withTop nt x
 
 -- | Get the object reference for a value.
 orefFor :: Value -> VM ORef
