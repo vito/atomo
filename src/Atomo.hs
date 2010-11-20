@@ -1,5 +1,6 @@
 module Atomo
     ( module Atomo.Environment
+    , module Atomo.Helpers
     , module Atomo.QuasiQuotes
     , module Atomo.Types
 
@@ -17,5 +18,6 @@ import "monads-fd" Control.Monad.State (MonadState(..), StateT(..), evalStateT, 
 import "monads-fd" Control.Monad.Trans
 
 import Atomo.Environment
+import Atomo.Helpers
 import Atomo.QuasiQuotes
 import Atomo.Types

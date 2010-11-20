@@ -5,6 +5,7 @@ import "monads-fd" Control.Monad.State
 
 import Atomo.Core
 import Atomo.Environment
+import Atomo.Helpers (here)
 import Atomo.Load
 import Atomo.Types
 import qualified Atomo.Kernel as Kernel

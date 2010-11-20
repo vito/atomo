@@ -7,6 +7,7 @@ import Text.Parsec
 import qualified "mtl" Control.Monad.Trans as MTL
 
 import Atomo.Environment
+import Atomo.Helpers (toPattern', toMacroPattern')
 import Atomo.Method (addMethod)
 import Atomo.Parser.Base
 import Atomo.Parser.Expand

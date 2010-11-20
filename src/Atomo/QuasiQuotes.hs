@@ -20,6 +20,7 @@ import Atomo.Core
 import Atomo.Parser
 import Atomo.Parser.Base
 import Atomo.Parser.Expr
+import Atomo.Pattern (toDefinePattern)
 import Atomo.Types
 
 

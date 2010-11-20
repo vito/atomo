@@ -5,8 +5,10 @@ import Text.Parsec
 import qualified "mtl" Control.Monad.Trans as MTL
 
 import Atomo.Environment
+import Atomo.Helpers
 import Atomo.Method (lookupMap)
 import Atomo.Parser.Base
+import Atomo.Pattern (match)
 import Atomo.Types
 
 

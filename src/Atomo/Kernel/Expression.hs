@@ -5,9 +5,10 @@ module Atomo.Kernel.Expression (load) where
 import Text.PrettyPrint (Doc)
 
 import Atomo
-import Atomo.Pretty (pretty)
 import Atomo.Parser (parseInput, withParser)
 import Atomo.Parser.Expand
+import Atomo.Pattern (match)
+import Atomo.Pretty (pretty)
 
 
 load :: VM ()

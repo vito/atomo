@@ -8,6 +8,7 @@ import Data.Maybe (isJust)
 import Atomo
 import Atomo.Load
 import Atomo.Method
+import Atomo.Pattern (bindings')
 import Atomo.Pretty
 
 import qualified Atomo.Kernel.Numeric as Numeric

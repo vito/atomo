@@ -3,6 +3,7 @@
 module Atomo.Kernel.Pattern (load) where
 
 import Atomo
+import Atomo.Pattern (match)
 
 
 load :: VM ()
