@@ -133,7 +133,7 @@ pOperator = tagged (do
         , liftM ((,) ALeft) integer
         ]
 
-    ops <- commaSep1 operator
+    ops <- operator `sepBy1` spacing
 
     forM_ ops $ \name ->
         modifyState (\ps -> ps { psOperators = (name, info) : psOperators ps })

@@ -9,7 +9,7 @@ import Atomo
 load :: VM ()
 load = do
     mapM_ eval
-        [ [$e|operator 4 ==, /=, <, <=, >=, >|]
+        [ [$e|operator 4 == /= < <= >= >|]
         , [$e|operator right 3 &&|]
         , [$e|operator right 2 |||]
         ]

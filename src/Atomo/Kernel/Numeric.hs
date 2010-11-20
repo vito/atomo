@@ -10,8 +10,8 @@ load :: VM ()
 load = do
     mapM_ eval
         [ [$e|operator right 8 ^|]
-        , [$e|operator 7 %, *, /|]
-        , [$e|operator 6 +, -|]
+        , [$e|operator 7 % * /|]
+        , [$e|operator 6 + -|]
         ]
 
     eval [$e|Object clone|] >>= ([$p|Number|] =::)
