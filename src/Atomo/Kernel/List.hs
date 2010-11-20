@@ -349,18 +349,18 @@ merge cmp (x:xs) (y:ys) = do
             return (x:rest)
 
 splitWhen :: (a -> Bool) -> [a] -> [[a]]
-splitWhen f vs = splitWhen' f vs []
+splitWhen f vs' = splitWhen' vs' []
   where
-    splitWhen' f [] acc = [acc]
-    splitWhen' f (v:vs) acc
-        | f v = acc : splitWhen' f vs []
-        | otherwise = splitWhen' f vs (acc ++ [v])
+    splitWhen' [] acc = [acc]
+    splitWhen' (v:vs) acc
+        | f v = acc : splitWhen' vs []
+        | otherwise = splitWhen' vs (acc ++ [v])
 
 splitOn :: Eq a => [a] -> [a] -> [[a]]
-splitOn d vs = splitOn' d vs []
+splitOn d vs' = splitOn' vs' []
   where
-    splitOn' _ [] acc = [acc]
-    splitOn' d vs acc
-        | d `isPrefixOf` vs = acc : splitOn' d (drop (length d) vs) []
-        | otherwise = splitOn' d (tail vs) (acc ++ [head vs])
+    splitOn' [] acc = [acc]
+    splitOn' vs acc
+        | d `isPrefixOf` vs = acc : splitOn' (drop (length d) vs) []
+        | otherwise = splitOn' (tail vs) (acc ++ [head vs])
 

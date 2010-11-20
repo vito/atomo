@@ -245,6 +245,7 @@ toDefinePattern (Dispatch { eMessage = ESingle { emName = n, emTarget = t } }) =
 toDefinePattern (Dispatch { eMessage = EKeyword { emNames = ns, emTargets = ts } }) = do
     ps <- mapM toRolePattern ts
     return (pkeyword ns ps)
+toDefinePattern _ = Nothing
 
 -- | Convert an expression into a pattern-match for use as a message's role.
 toRolePattern :: Expr -> Maybe Pattern
@@ -270,6 +271,7 @@ toMacroPattern (Dispatch { eMessage = ESingle { emName = n, emTarget = t } }) = 
 toMacroPattern (Dispatch { eMessage = EKeyword { emNames = ns, emTargets = ts } }) = do
     ps <- mapM toMacroRole ts
     return (pkeyword ns ps)
+toMacroPattern _ = Nothing
 
 -- | Convert an expression into a pattern-match for use as a macro's role.
 toMacroRole :: Expr -> Maybe Pattern

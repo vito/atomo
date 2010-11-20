@@ -34,8 +34,8 @@ extra-source-files: bin/eco
 data-files:         prelude/*.atomo
 
 source-repository   head
-    type:           darcs
-    location:       http://darcsden.com/alex/atomo
+    type:           hg
+    location:       http://bitbucket.org/alex/atomo
 
 library
   hs-source-dirs:    src

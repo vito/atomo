@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable, TypeSynonymInstances #-}
+{-# LANGUAGE DeriveDataTypeable, TemplateHaskell, TypeSynonymInstances #-}
 module Atomo.Types where
 
 import Control.Concurrent (ThreadId)
@@ -15,6 +15,7 @@ import qualified Data.IntMap as M
 import qualified Data.Text as T
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
+import qualified Language.Haskell.TH.Syntax as S
 
 
 -- | The Atomo VM. A Continuation monad wrapping a State monad.
@@ -444,6 +445,81 @@ instance Show (VM a) where
 
 instance Typeable (VM a) where
     typeOf _ = mkTyConApp (mkTyCon "VM") [typeOf ()]
+
+
+instance S.Lift Expr where
+    lift (Define _ p e) = [| Define Nothing p e |]
+    lift (Set _ p e) = [| Set Nothing p e |]
+    lift (Dispatch _ m) = [| Dispatch Nothing m |]
+    lift (Operator _ ns a p) = [| Operator Nothing ns a p |]
+    lift (Primitive _ v) = [| Primitive Nothing v |]
+    lift (EBlock _ as es) = [| EBlock Nothing as es |]
+    lift (EVM {}) = error "cannot lift EVM"
+    lift (EList _ es) = [| EList Nothing es |]
+    lift (ETop _) = [| ETop Nothing |]
+    lift (EParticle _ p) = [| EParticle Nothing p |]
+    lift (EMacro _ p e) = [| EMacro Nothing p e |]
+    lift (EForMacro _ e) = [| EForMacro Nothing e |]
+    lift (EQuote _ e) = [| EQuote Nothing e |]
+    lift (EUnquote _ e) = [| EUnquote Nothing e |]
+
+instance S.Lift Assoc where
+    lift ALeft = [| ALeft |]
+    lift ARight = [| ARight |]
+
+instance S.Lift Message where
+    lift (Keyword i ns vs) = [| Keyword i ns vs |]
+    lift (Single i n v) = [| Single i n v |]
+
+instance S.Lift Particle where
+    lift (PMSingle n) = [| PMSingle n |]
+    lift (PMKeyword ns vs) = [| PMKeyword ns vs |]
+
+instance S.Lift EMessage where
+    lift (EKeyword i ns es) = [| EKeyword i ns es |]
+    lift (ESingle i n e) = [| ESingle i n e |]
+
+instance S.Lift EParticle where
+    lift (EPMSingle n) = [| EPMSingle n |]
+    lift (EPMKeyword ns es) = [| EPMKeyword ns es |]
+
+instance S.Lift Value where
+    lift (Block s as es) = [| Block s as es |]
+    lift (Boolean b) = [| Boolean b |]
+    lift (Char c) = [| Char c |]
+    lift (Double d) = [| Double $(return $ S.LitE (S.RationalL (toRational d))) |]
+    lift (Expression e) = [| Expression e |]
+    lift (Integer i) = [| Integer i |]
+    lift (Message m) = [| Message m |]
+    lift (Particle p) = [| Particle p |]
+    lift (Pattern p) = [| Pattern p |]
+    lift (String s) = [| String (T.pack $(return $ S.LitE (S.StringL (T.unpack s)))) |]
+    lift v = error $ "no lift for: " ++ show v
+
+instance S.Lift Pattern where
+    lift PAny = [| PAny |]
+    lift (PHeadTail h t) = [| PHeadTail h t |]
+    lift (PKeyword i ns ts) = [| PKeyword i ns ts |]
+    lift (PList ps) = [| PList ps |]
+    lift (PMatch v) = [| PMatch v |]
+    lift (PNamed n p) = [| PNamed n p |]
+    lift (PObject e) = [| PObject e |]
+    lift (PPMKeyword ns ts) = [| PPMKeyword ns ts |]
+    lift (PSingle i n t) = [| PSingle i n t |]
+    lift PThis = [| PThis |]
+    lift PEDispatch = [| PEDispatch |]
+    lift PEOperator = [| PEOperator |]
+    lift PEPrimitive = [| PEPrimitive |]
+    lift PEBlock = [| PEBlock |]
+    lift PEList = [| PEList |]
+    lift PEMacro = [| PEMacro |]
+    lift PEParticle = [| PEParticle |]
+    lift PETop = [| PETop |]
+    lift PEQuote = [| PEQuote |]
+    lift PEUnquote = [| PEUnquote |]
+    lift (PExpr e) = [| PExpr e |]
+    lift (PInstance p) = [| PInstance p |]
+    lift (PStrict p) = [| PStrict p |]
 
 
 -- | Initial "empty" parser state.
