@@ -10,7 +10,10 @@ import Atomo.Types
 
 
 class Valuable a where
+    -- | Convert to an Atomo value.
     toValue :: a -> VM Value
+
+    -- | Convert from an Atomo value.
     fromValue :: Value -> VM a
 
 instance Valuable Value where

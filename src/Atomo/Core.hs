@@ -7,6 +7,7 @@ import Atomo.Types
 import Atomo.Environment
 
 
+-- | Defines all primitive objects, including the Lobby.
 initCore :: VM ()
 initCore = do
     -- the very root object

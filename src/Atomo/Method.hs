@@ -85,14 +85,15 @@ unsafeDelegatesTo (Reference f) t =
     ds = oDelegates (unsafePerformIO (readIORef f))
 unsafeDelegatesTo _ _ = False
 
+-- | Insert a method into a MethodMap based on its pattern's ID and precision.
 addMethod :: Method -> MethodMap -> MethodMap
 addMethod m mm =
     M.insertWith (\[m'] ms -> insertMethod m' ms) key [m] mm
   where
     key = ppID (mPattern m)
 
--- insert a method into a list of existing methods
--- most precise goes first, equivalent patterns are replaced
+-- | Insert a method into a list of existing methods most precise goes first,
+-- equivalent patterns are replaced.
 insertMethod :: Method -> [Method] -> [Method]
 insertMethod x [] = [x]
 insertMethod x ys@(y:ys') =
@@ -106,24 +107,33 @@ insertMethod x ys@(y:ys') =
         -- keep looking if we're EQ or GT
         _ -> y : insertMethod x ys'
 
+-- | Convert a list of slots to a MethodMap.
 toMethods :: [(Pattern, Value)] -> MethodMap
 toMethods = foldl (\ss (p, v) -> addMethod (Slot p v) ss) emptyMap
 
+-- | A pair of two empty MethodMaps; one for single methods and one for keyword
+-- methods.
 noMethods :: (MethodMap, MethodMap)
 noMethods = (M.empty, M.empty)
 
+-- | An empty MethodMap.
 emptyMap :: MethodMap
 emptyMap = M.empty
 
+-- | Find methods in a MethodMap by the pattern ID.
 lookupMap :: Int -> MethodMap -> Maybe [Method]
 lookupMap = M.lookup
 
+-- | Is a MethodMap empty?.
 nullMap :: MethodMap -> Bool
 nullMap = M.null
 
+-- | All of the methods in a MethodMap.
 elemsMap :: MethodMap -> [[Method]]
 elemsMap = M.elems
 
+-- | Insert a method into a MethodMap, replacing all other methods with the
+-- same ID.
 insertMap :: Method -> MethodMap -> MethodMap
 insertMap m mm = M.insert key [m] mm
   where

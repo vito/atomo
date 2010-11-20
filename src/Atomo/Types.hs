@@ -18,59 +18,109 @@ import qualified Data.Text as T
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
 
+
+-- | The Atomo VM. A Continuation monad wrapping a State monad.
 type VM = ContT Value (StateT Env IO)
 
+-- | All values usable in Atomo.
 data Value
+    -- | A block of expressions, bound to a context and with optional arguments.
     = Block !Value [Pattern] [Expr]
+
+    -- | A boolean value.
     | Boolean { fromBoolean :: {-# UNPACK #-} !Bool }
+
+    -- | A character value.
     | Char { fromChar :: {-# UNPACK #-} !Char }
+
+    -- | A continuation reference.
     | Continuation { fromContinuation :: Continuation }
+
+    -- | A double value.
     | Double { fromDouble :: {-# UNPACK #-} !Double }
+
+    -- | An expression value.
     | Expression { fromExpression :: Expr }
+
+    -- | A dynamically-typed Haskell value.
     | Haskell Dynamic
+
+    -- | An Integer value.
     | Integer { fromInteger :: !Integer }
+
+    -- | A vector of Values.
     | List VVector
+
+    -- | A message value.
     | Message { fromMessage :: Message }
+
+    -- | A method value.
     | Method { fromMethod :: Method }
+
+    -- | A particle value.
     | Particle { fromParticle :: Particle }
+
+    -- | A process; a communications channel and the thread's ID.
     | Process Channel ThreadId
+
+    -- | A pattern value.
     | Pattern { fromPattern :: Pattern }
+
+    -- | A rational value.
     | Rational Rational
+
+    -- | An object reference.
     | Reference
         { rORef :: {-# UNPACK #-} !ORef
         }
+
+    -- | A string value; Data.Text.Text.
     | String { fromString :: !T.Text }
     deriving (Show, Typeable)
 
+-- | A pure object.
 data Object =
     Object
-        { oDelegates :: !Delegates
-        , oMethods :: !(MethodMap, MethodMap) -- singles, keywords
+        { -- | The object's delegates list.
+          oDelegates :: !Delegates
+
+          -- | A pair of (single, keyword) methods.
+        , oMethods :: !(MethodMap, MethodMap)
         }
     deriving (Show, Typeable)
 
+-- | Methods, slot, and macro methods.
 data Method
+    -- | Responds to a message by evaluating an expression in the given context.
     = Responder
         { mPattern :: !Pattern
         , mContext :: !Value
         , mExpr :: !Expr
         }
+
+    -- | Responds to a macro message by evaluating an expression.
     | Macro
         { mPattern :: !Pattern
         , mExpr :: !Expr
         }
+
+    -- | Responds to a message by returning a value.
     | Slot
         { mPattern :: !Pattern
         , mValue :: !Value
         }
     deriving (Eq, Show, Typeable)
 
+-- | Messages sent to objects.
 data Message
+    -- | A keyword-delimited message with multiple targets.
     = Keyword
         { mID :: !Int
         , mNames :: [String]
         , mTargets :: [Value]
         }
+
+    -- | A single message sent to one target.
     | Single
         { mID :: !Int
         , mName :: String
@@ -78,11 +128,16 @@ data Message
         }
     deriving (Eq, Show, Typeable)
 
+-- | Partial messages.
 data Particle
+    -- | A single message with no target.
     = PMSingle String
+
+    -- | A keyword message with many optional targets.
     | PMKeyword [String] [Maybe Value]
     deriving (Eq, Show, Typeable)
 
+-- | Shortcut error values.
 data AtomoError
     = Error Value
     | ParseError ParseError
@@ -97,7 +152,7 @@ data AtomoError
     | DynamicNeeded String
     deriving (Show, Typeable)
 
--- pattern-matches
+-- | Pattern-matching.
 data Pattern
     = PAny
     | PHeadTail Pattern Pattern
@@ -135,7 +190,7 @@ data Pattern
     | PExpr Expr
     deriving (Show, Typeable)
 
--- expressions
+-- | Expressions; the nodes in a syntax tree.
 data Expr
     = Define
         { eLocation :: Maybe SourcePos
@@ -201,6 +256,7 @@ data Expr
         }
     deriving (Show, Typeable)
 
+-- | An unevaluated message dispatch.
 data EMessage
     = EKeyword
         { emID :: !Int
@@ -214,33 +270,51 @@ data EMessage
         }
     deriving (Eq, Show, Typeable)
 
+-- | An unevaluated particle.
 data EParticle
     = EPMSingle String
     | EPMKeyword [String] [Maybe Expr]
     deriving (Eq, Show, Typeable)
 
--- the evaluation environment
+-- | Atomo's VM state.
 data Env =
     Env
-        { top :: Value
+        { -- | The current toplevel object.
+          top :: Value
+
+          -- | A record of objects representing the primitive values.
         , primitives :: IDs
+
+          -- | This process's communications channel.
         , channel :: Channel
+
+          -- | Function to call which will shut down the entire VM when called
+          -- from any thread.
         , halt :: IO ()
+
+          -- | Paths to search for files.
         , loadPath :: [FilePath]
+
+          -- | Files aready loaded.
         , loaded :: [FilePath]
+
+          -- | The last N expressions evaluated up to the current error.
         , stack :: [Expr]
+
+          -- | The parser's state, passed around when a parser action needs to
+          -- be run.
         , parserState :: ParserState
         }
     deriving Typeable
 
--- operator associativity
+-- | Operator associativity.
 data Assoc = ALeft | ARight
     deriving (Eq, Show, Typeable)
 
--- a giant record of the objects for each primitive value
+-- | A giant record of the objects for each primitive value.
 data IDs =
     IDs
-        { idObject :: ORef -- root object
+        { idObject :: ORef
         , idBlock :: ORef
         , idBoolean :: ORef
         , idChar :: ORef
@@ -260,30 +334,45 @@ data IDs =
         }
     deriving (Show, Typeable)
 
-
+-- | State underlying the parser, and saved in the VM.
 data ParserState =
     ParserState
-        { psOperators :: Operators
+        { -- | Operator precedence and associativity.
+          psOperators :: Operators
+
+          -- | All defined macros; (single macros, keyword macros).
         , psMacros :: (MethodMap, MethodMap)
+
+          -- | Are we parsing in a quasiquote?
         , psInQuote :: Bool
+
+          -- | The number of macros we've expanded.
         , psClock :: Integer
         }
     deriving (Show, Typeable)
 
-startParserState :: ParserState
-startParserState = ParserState [] (M.empty, M.empty) False 0
+-- | A map of operators to their associativity and precedence.
+type Operators = [(String, (Assoc, Integer))]
 
--- helper synonyms
-type Operators = [(String, (Assoc, Integer))] -- name -> assoc, precedence
+-- | The list of values an object delegates to.
 type Delegates = [Value]
+
+-- | A channel for sending values through to processes.
 type Channel = Chan Value
+
+-- | A selector-indexed and precision-sorted map of methods.
 type MethodMap = M.IntMap [Method]
+
+-- | A reference to an object.
 type ORef = IORef Object
+
+-- | A vector containing values.
 type VVector = V.Vector Value
+
+-- | A reference to a continuation function.
 type Continuation = IORef (Value -> VM Value)
 
 
--- a basic Eq instance
 instance Eq Value where
     (==) (Block at aps aes) (Block bt bps bes) =
         at == bt && aps == bps && aes == bes
@@ -359,6 +448,11 @@ instance Typeable (VM a) where
     typeOf _ = mkTyConApp (mkTyCon "VM") [typeOf ()]
 
 
+-- | Initial "empty" parser state.
+startParserState :: ParserState
+startParserState = ParserState [] (M.empty, M.empty) False 0
+
+-- | Initial "empty" environment state.
 startEnv :: Env
 startEnv = Env
     { top = error "top object not set"
@@ -390,11 +484,11 @@ startEnv = Env
     , parserState = startParserState
     }
 
--- | evaluate x with e as the environment
+-- | Evaluate x with e as the environment.
 runWith :: VM Value -> Env -> IO Value
 runWith x = evalStateT (runContT x return)
 
--- | evaluate x with e as the environment
+-- | Evaluate x with e as the environment.
 runVM :: VM Value -> Env -> IO (Value, Env)
 runVM x = runStateT (runContT x return)
 
@@ -403,56 +497,72 @@ runVM x = runStateT (runContT x return)
 -- Helpers ------------------------------------------------------------------
 -----------------------------------------------------------------------------
 
+-- | Create a single particle with a given name.
 particle :: String -> Value
 {-# INLINE particle #-}
 particle = Particle . PMSingle
 
+-- | Create a keyword particle with a given name and optional values.
 keyParticle :: [String] -> [Maybe Value] -> Value
 {-# INLINE keyParticle #-}
 keyParticle ns vs = Particle $ PMKeyword ns vs
 
+-- | Create a keyword particle with no first role and the given values.
 keyParticleN :: [String] -> [Value] -> Value
 {-# INLINE keyParticleN #-}
 keyParticleN ns vs = keyParticle ns (Nothing:map Just vs)
 
+-- | Convert a String into a Value.
 string :: String -> Value
 {-# INLINE string #-}
 string = String . T.pack
 
+-- | Convert a Typeable value into a Haskell Value.
 haskell :: Typeable a => a -> Value
 {-# INLINE haskell #-}
 haskell = Haskell . toDyn
 
+-- | Convert a list of values into a List Value.
 list :: [Value] -> Value
+{-# INLINE list #-}
 list = List . V.fromList
 
+-- | Convert a Text string into a String.
 fromText :: T.Text -> String
+{-# INLINE fromText #-}
 fromText = T.unpack
 
+-- | Convert a List Value into a list of Values.
 fromList :: Value -> [Value]
 fromList (List vr) = V.toList vr
 fromList v = error $ "no fromList for: " ++ show v
 
+-- | Create a single message with a given name and target.
 single :: String -> Value -> Message
 {-# INLINE single #-}
 single n = Single (hash n) n
 
+-- | Create a keyword message with a given name and targets.
 keyword :: [String] -> [Value] -> Message
 {-# INLINE keyword #-}
 keyword ns = Keyword (hash ns) ns
 
+-- | Create a single message pattern with a given name and target pattern.
 psingle :: String -> Pattern -> Pattern
 {-# INLINE psingle #-}
 psingle n = PSingle (hash n) n
 
+-- | Create a keyword message pattern with a given name and target patterns.
 pkeyword :: [String] -> [Pattern] -> Pattern
 {-# INLINE pkeyword #-}
 pkeyword ns = PKeyword (hash ns) ns
 
+-- | Create a single message expression with a given name and target expression.
 esingle :: String -> Expr -> EMessage
 {-# INLINE esingle #-}
 esingle n = ESingle (hash n) n
 
+-- | Create a keyword message expression with a given name and target expressions.
 ekeyword :: [String] -> [Expr] -> EMessage
 {-# INLINE ekeyword #-}
 ekeyword ns = EKeyword (hash ns) ns
@@ -550,6 +660,7 @@ isString :: Value -> Bool
 isString (String _) = True
 isString _ = False
 
+-- | Convert an AtomoError into the Value we want to error with.
 asValue :: AtomoError -> Value
 asValue (Error v) = v
 asValue (ParseError pe) =
@@ -584,13 +695,15 @@ asValue (ValueNotFound d v) =
 asValue (DynamicNeeded t) =
     keyParticleN ["dynamic-needed"] [string t]
 
+-- | Convert an Atomo Haskell dynamic value into its value, erroring on
+-- failure.
 fromHaskell' :: Typeable a => String -> Value -> a
 fromHaskell' t (Haskell d) =
     fromMaybe (error ("needed Haskell value of type " ++ t))
         (fromDynamic d)
 fromHaskell' t _ = error ("needed haskell value of type " ++ t)
 
--- convert an expression to the pattern match it represents
+-- | Convert an expression to the pattern match it represents.
 toPattern :: Expr -> Maybe Pattern
 toPattern (Dispatch { eMessage = EKeyword { emNames = ["."], emTargets = [h, t] } }) = do
     hp <- toPattern h
@@ -632,6 +745,7 @@ toPattern b@(EBlock {}) =
     return (PObject (Dispatch Nothing (esingle "call" b)))
 toPattern _ = Nothing
 
+-- | Convert an expression into a definition's message pattern.
 toDefinePattern :: Expr -> Maybe Pattern
 toDefinePattern (Dispatch { eMessage = ESingle { emName = n, emTarget = t } }) = do
     p <- toRolePattern t
@@ -640,6 +754,7 @@ toDefinePattern (Dispatch { eMessage = EKeyword { emNames = ns, emTargets = ts }
     ps <- mapM toRolePattern ts
     return (pkeyword ns ps)
 
+-- | Convert an expression into a pattern-match for use as a message's role.
 toRolePattern :: Expr -> Maybe Pattern
 toRolePattern (Dispatch { eMessage = EKeyword { emNames = ["->"], emTargets = [ETop {}, o] } }) = do
     liftM PInstance (toRolePattern o)
@@ -655,6 +770,7 @@ toRolePattern d@(Dispatch { eMessage = ESingle { emTarget = (Dispatch {}) } }) =
     return (PObject d)
 toRolePattern p = toPattern p
 
+-- | Convert an expression into a macro's message pattern.
 toMacroPattern :: Expr -> Maybe Pattern
 toMacroPattern (Dispatch { eMessage = ESingle { emName = n, emTarget = t } }) = do
     p <- toMacroRole t
@@ -663,6 +779,7 @@ toMacroPattern (Dispatch { eMessage = EKeyword { emNames = ns, emTargets = ts } 
     ps <- mapM toMacroRole ts
     return (pkeyword ns ps)
 
+-- | Convert an expression into a pattern-match for use as a macro's role.
 toMacroRole :: Expr -> Maybe Pattern
 toMacroRole (Dispatch _ (ESingle _ "Dispatch" _)) = Just PEDispatch
 toMacroRole (Dispatch _ (ESingle _ "Operator" _)) = Just PEOperator

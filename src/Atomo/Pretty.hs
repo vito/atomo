@@ -1,5 +1,5 @@
 {-# LANGUAGE TypeSynonymInstances #-}
-module Atomo.Pretty (Pretty(..), prettyStack) where
+module Atomo.Pretty (Pretty(pretty)) where
 
 import Data.Char (isUpper)
 import Data.IORef
@@ -24,6 +24,8 @@ data Context
     | CList
 
 class Pretty a where
+    -- | Pretty-print a value into a Doc. Typically this should be parseable
+    -- back into the original value, or just a nice user-friendly output form.
     pretty :: a -> Doc
     prettyFrom :: Context -> a -> Doc
 
@@ -33,7 +35,8 @@ class Pretty a where
 instance Pretty Value where
     prettyFrom _ (Block _ ps es)
         | null ps = braces exprs
-        | otherwise = braces $ sep (map (prettyFrom CArgs) ps) <+> char '|' <+> exprs
+        | otherwise = braces $
+            sep (map (prettyFrom CArgs) ps) <+> char '|' <+> exprs
       where
         exprs = sep . punctuate (text ";") $ map pretty es
     prettyFrom _ (Boolean b) = text $ show b
@@ -48,14 +51,16 @@ instance Pretty Value where
       where vs = V.toList l
     prettyFrom _ (Message m) = internal "message" $ pretty m
     prettyFrom _ (Method (Slot p _)) = internal "slot" $ parens (pretty p)
-    prettyFrom _ (Method (Responder p _ _)) = internal "responder" $ parens (pretty p)
+    prettyFrom _ (Method (Responder p _ _)) =
+        internal "responder" $ parens (pretty p)
     prettyFrom _ (Method (Macro p _)) = internal "macro" $ parens (pretty p)
     prettyFrom _ (Particle p) = char '@' <> pretty p
     prettyFrom _ (Pattern p) = internal "pattern" $ pretty p
     prettyFrom _ (Process _ tid) =
         internal "process" $ text (words (show tid) !! 1)
     prettyFrom CNone (Reference r) = pretty (unsafePerformIO (readIORef r))
-    prettyFrom _ (Rational r) = integer (numerator r) <> char '/' <> integer (denominator r)
+    prettyFrom _ (Rational r) =
+        integer (numerator r) <> char '/' <> integer (denominator r)
     prettyFrom _ (Reference _) = internal "object" empty
     prettyFrom _ (String s) = text (show s)
 
@@ -81,7 +86,7 @@ instance Pretty Object where
         prettyMethod (Responder { mPattern = p, mExpr = e }) =
             prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine e
         prettyMethod (Macro { mPattern = p, mExpr = e }) =
-            text "macro" <+> prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine e
+            text "macro" <+> parens (pretty p) <++> prettyFrom CDefine e
 
 instance Pretty Message where
     prettyFrom _ (Single _ n t) = prettyFrom CSingle t <+> text n
@@ -162,8 +167,10 @@ instance Pretty Pattern where
 
 
 instance Pretty Expr where
-    prettyFrom _ (Define _ p v) = prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v
-    prettyFrom _ (Set _ p v)    = prettyFrom CDefine p <+> text "=" <++> prettyFrom CDefine v
+    prettyFrom _ (Define _ p v) =
+        prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v
+    prettyFrom _ (Set _ p v)    =
+        prettyFrom CDefine p <+> text "=" <++> prettyFrom CDefine v
     prettyFrom CKeyword (Dispatch _ m@(EKeyword {})) = parens $ pretty m
     prettyFrom CSingle (Dispatch _ m@(EKeyword {})) = parens $ pretty m
     prettyFrom c (Dispatch _ m) = prettyFrom c m
@@ -219,13 +226,6 @@ instance Pretty Delegates where
     prettyFrom _ ds = text $ show (length ds) ++ " objects"
 
 
-
-prettyStack :: Expr -> Doc
-prettyStack (EVM {}) = text "... internal ..."
-prettyStack e =
-    case eLocation e of
-        Nothing -> text "(...)" $$ nest 2 (pretty e)
-        Just s -> text (show s) $$ nest 2 (pretty e)
 
 internal :: String -> Doc -> Doc
 internal n d = char '<' <> text n <+> d <> char '>'

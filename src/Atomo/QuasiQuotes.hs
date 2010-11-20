@@ -19,18 +19,23 @@ import qualified Language.Haskell.TH as TH
 import Atomo.Core
 import Atomo.Parser
 import Atomo.Parser.Base
+import Atomo.Parser.Expr
 import Atomo.Types
+
 
 qqEnv :: Env
 qqEnv = snd $ unsafePerformIO $
     runVM (initCore >> return (particle "ok")) startEnv
 
+-- | Pattern quasi-quoter.
 p :: QuasiQuoter
 p = QuasiQuoter quotePatternExp undefined
 
+-- | Single expression quasi-quoter.
 e :: QuasiQuoter
 e = QuasiQuoter quoteExprExp undefined
 
+-- | Quasi-quoter for multiple expressions (a block of code).
 es :: QuasiQuoter
 es = QuasiQuoter quoteExprsExp undefined
 

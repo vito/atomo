@@ -5,7 +5,7 @@ import Atomo.Environment
 import Atomo.Types
 
 
--- | pretty-print by sending \@show to the object
+-- | Pretty-print a value by sending \@show to it.
 prettyVM :: Value -> VM String
 prettyVM = liftM (fromText . fromString) . dispatch . single "show"
 

@@ -6,7 +6,8 @@ import Text.PrettyPrint (Doc)
 
 import Atomo
 import Atomo.Pretty (pretty)
-import Atomo.Parser (macroExpand, parseInput, withParser)
+import Atomo.Parser (parseInput, withParser)
+import Atomo.Parser.Expand
 
 
 load :: VM ()

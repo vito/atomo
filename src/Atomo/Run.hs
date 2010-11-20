@@ -6,7 +6,6 @@ import "monads-fd" Control.Monad.State
 import Atomo.Core
 import Atomo.Environment
 import Atomo.Load
-import Atomo.Spawn (go)
 import Atomo.Types
 import qualified Atomo.Kernel as Kernel
 
@@ -17,18 +16,17 @@ import Paths_atomo
 -- Execution ----------------------------------------------------------------
 -----------------------------------------------------------------------------
 
--- | execute an action in a new thread, initializing the environment and
--- printing a traceback on error
+-- | Execute an action in a new thread, initializing the environment first.
 exec :: VM Value -> IO ()
 exec x = execWith (initEnv >> x) startEnv
 
--- | execute an action in a new thread, printing a traceback on error
+-- | Execute an action in a new thread.
 execWith :: VM Value -> Env -> IO ()
 execWith x e = do
     haltChan <- newChan
 
     forkIO $ do
-        runWith (go x >> gets halt >>= liftIO >> return (particle "ok")) e
+        runWith (x >> gets halt >>= liftIO >> return (particle "ok")) e
             { halt = writeChan haltChan () >> myThreadId >>= killThread
             }
 
@@ -36,15 +34,16 @@ execWith x e = do
 
     readChan haltChan
 
--- | execute x, initializing the environment with initEnv
+-- | Execute x, initializing the environment first.
 run :: VM Value -> IO Value
 run x = runWith (initEnv >> x) startEnv
 
--- | set up the primitive objects, etc.
+-- | Set up the primitive objects, and load up the kernel and prelude.
 initEnv :: VM ()
 {-# INLINE initEnv #-}
 initEnv = initCore >> Kernel.load >> loadPrelude
 
+-- | Load all of the prelude and load the ecosystem.
 loadPrelude :: VM ()
 loadPrelude = do
     forM_ preludes $ \p ->

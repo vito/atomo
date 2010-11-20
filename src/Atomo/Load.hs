@@ -10,8 +10,8 @@ import Atomo.Parser
 import Atomo.Types
 
 
--- load a file, remembering it to prevent repeated loading
--- searches with cwd as lowest priority
+-- | Load a file, remembering its absolute path to prevent repeated loading.
+-- Searches with cwd as lowest priority
 requireFile :: FilePath -> VM Value
 requireFile fn = do
     initialPath <- gets loadPath
@@ -26,14 +26,14 @@ requireFile fn = do
 
     doLoad file
 
--- load a file
--- searches with cwd as highest priority
+-- | Load a file. Searches with cwd as highest priority.
 loadFile :: FilePath -> VM Value
 loadFile fn = do
     initialPath <- gets loadPath
     findFile ("":initialPath) fn >>= doLoad
 
--- execute a file
+-- | Execute a file; for .hs filenames, interprets its `load' function and
+-- calls it. for anything else, it interprets it as Atomo source.
 doLoad :: FilePath -> VM Value
 doLoad file =
     case takeExtension file of
@@ -64,8 +64,10 @@ doLoad file =
 
             return r
 
--- | given a list of paths to search, find the file to load
--- attempts to find the filename with .atomo and .hs extensions
+-- | Given a list of paths to search, find the file to load. Attempts to find
+-- the filename with .atomo and .hs extensions.
+--
+-- If no file is found, throws a FileNotFound error.
 findFile :: [FilePath] -> FilePath -> VM FilePath
 findFile [] fn = throwError (FileNotFound fn)
 findFile (p:ps) fn = do
