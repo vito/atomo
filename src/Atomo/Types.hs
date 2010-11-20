@@ -8,7 +8,6 @@ import "monads-fd" Control.Monad.State
 import Data.Dynamic
 import Data.Hashable (hash)
 import Data.List (nub)
-import Data.Maybe (fromMaybe)
 import Data.IORef
 import Text.Parsec (ParseError, SourcePos)
 import Text.PrettyPrint (Doc)
@@ -566,95 +565,87 @@ ekeyword :: [String] -> [Expr] -> EMessage
 {-# INLINE ekeyword #-}
 ekeyword ns = EKeyword (hash ns) ns
 
--- | Fill in the empty values of a particle. The number of values missing
--- is expected to be equal to the number of values provided.
-completeKP :: [Maybe Value] -> [Value] -> [Value]
-completeKP [] _ = []
-completeKP (Nothing:mvs') (v:vs') = v : completeKP mvs' vs'
-completeKP (Just v:mvs') vs' = v : completeKP mvs' vs'
-completeKP mvs' vs' = error $ "impossible: completeKP on " ++ show (mvs', vs')
-
--- | Is a value a Block?
+-- | Is a value a `Block'?
 isBlock :: Value -> Bool
 isBlock (Block _ _ _) = True
 isBlock _ = False
 
--- | Is a value a Boolean?
+-- | Is a value a `Boolean'?
 isBoolean :: Value -> Bool
 isBoolean (Boolean _) = True
 isBoolean _ = False
 
--- | Is a value a Char?
+-- | Is a value a `Char'?
 isChar :: Value -> Bool
 isChar (Char _) = True
 isChar _ = False
 
--- | Is a value a Continuation?
+-- | Is a value a `Continuation'?
 isContinuation :: Value -> Bool
 isContinuation (Continuation _) = True
 isContinuation _ = False
 
--- | Is a value a Double?
+-- | Is a value a `Double'?
 isDouble :: Value -> Bool
 isDouble (Double _) = True
 isDouble _ = False
 
--- | Is a value an Expression?
+-- | Is a value an `Expression'?
 isExpression :: Value -> Bool
 isExpression (Expression _) = True
 isExpression _ = False
 
--- | Is a value a Haskell value?
+-- | Is a value a `Haskell'?
 isHaskell :: Value -> Bool
 isHaskell (Haskell _) = True
 isHaskell _ = False
 
--- | Is a value an Integer?
+-- | Is a value an `Integer'?
 isInteger :: Value -> Bool
 isInteger (Integer _) = True
 isInteger _ = False
 
--- | Is a value a List?
+-- | Is a value a `List'?
 isList :: Value -> Bool
 isList (List _) = True
 isList _ = False
 
--- | Is a value a Message?
+-- | Is a value a `Message'?
 isMessage :: Value -> Bool
 isMessage (Message _) = True
 isMessage _ = False
 
--- | Is a value a Method?
+-- | Is a value a `Method'?
 isMethod :: Value -> Bool
 isMethod (Method _) = True
 isMethod _ = False
 
--- | Is a value a Particle?
+-- | Is a value a `Particle'?
 isParticle :: Value -> Bool
 isParticle (Particle _) = True
 isParticle _ = False
 
--- | Is a value a Pattern?
+-- | Is a value a `Pattern'?
 isPattern :: Value -> Bool
 isPattern (Pattern _) = True
 isPattern _ = False
 
--- | Is a value a Process?
+-- | Is a value a `Process'?
 isProcess :: Value -> Bool
 isProcess (Process _ _) = True
 isProcess _ = False
 
--- | Is a value a Rational?
+-- | Is a value a `Rational'?
 isRational :: Value -> Bool
 isRational (Rational _) = True
 isRational _ = False
 
--- | Is a value a Reference?
+-- | Is a value a `Reference'?
 isReference :: Value -> Bool
 isReference (Reference _) = True
 isReference _ = False
 
--- | Is a value a String?
+-- | Is a value a `String'?
 isString :: Value -> Bool
 isString (String _) = True
 isString _ = False
@@ -694,14 +685,7 @@ asValue (ValueNotFound d v) =
 asValue (DynamicNeeded t) =
     keyParticleN ["dynamic-needed"] [string t]
 
--- | Convert an Atomo Haskell dynamic value into its value, erroring on
--- failure.
-fromHaskell' :: Typeable a => String -> Value -> a
-fromHaskell' t (Haskell d) =
-    fromMaybe (error ("needed Haskell value of type " ++ t))
-        (fromDynamic d)
-fromHaskell' t _ = error ("needed haskell value of type " ++ t)
-
+-- | Given a record of primitive IDs, get the object reference backing a value.
 orefFrom :: IDs -> Value -> ORef
 {-# INLINE orefFrom #-}
 orefFrom _ (Reference r) = r

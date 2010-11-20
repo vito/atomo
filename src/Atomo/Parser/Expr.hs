@@ -53,17 +53,17 @@ pLiteral = choice
 
 -- | Parses a primitive value.
 --
--- Examples: 1, 2.0, 3/4, $d, "foo", True, False
+-- Examples: @1@, @2.0@, @3\/4@, @$d@, @\"foo\"@, @True@, @False@
 pPrimitive :: Parser Expr
 pPrimitive = tagged $ liftM (Primitive Nothing) pPrim
 
--- | The "this" keyword, i.e. the toplevel object literal.
+-- | The @this@ keyword, i.e. the toplevel object literal.
 pThis :: Parser Expr
 pThis = tagged $ reserved "this" >> return (ETop Nothing)
 
 -- | An expression literal.
 --
--- Example: '1, '(2 + 2)
+-- Example: @'1@, @'(2 + 2)@
 pQuoted :: Parser Expr
 pQuoted = tagged $ do
     char '\''
@@ -73,7 +73,7 @@ pQuoted = tagged $ do
 -- | An expression literal that may contain "unquotes" - expressions to splice
 -- in to yield a different expression.
 --
--- Examples: `a, `(1 + ~(2 + 2))
+-- Examples: @`a@, @`(1 + ~(2 + 2))@
 pQuasiQuoted :: Parser Expr
 pQuasiQuoted = tagged $ do
     char '`'
@@ -84,7 +84,7 @@ pQuasiQuoted = tagged $ do
 
 -- | An unquote expression, used inside a quasiquote.
 -- 
--- Examples: ~1, ~(2 + 2)
+-- Examples: @~1@, @~(2 + 2)@
 pUnquoted :: Parser Expr
 pUnquoted = tagged $ do
     char '~'
@@ -98,7 +98,7 @@ pUnquoted = tagged $ do
 -- literal value, a single dispatch to the toplevel object, or an expression in
 -- parentheses.
 --
--- Examples: 1, [1, 2], a, (2 + 2)
+-- Examples: @1@, @[1, 2]@, @a@, @(2 + 2)@
 pSpacedExpr :: Parser Expr
 pSpacedExpr = pLiteral <|> simpleDispatch <|> parens pExpr
   where
@@ -110,7 +110,7 @@ pSpacedExpr = pLiteral <|> simpleDispatch <|> parens pExpr
 
 -- | The for-macro "pragma."
 --
--- Example: for-macro 1 print
+-- Example: @for-macro 1 print@
 pForMacro :: Parser Expr
 pForMacro = tagged (do
     reserved "for-macro"
@@ -122,7 +122,7 @@ pForMacro = tagged (do
 
 -- | A macro definition.
 --
--- Example: macro (n squared) `(~n * ~n)
+-- Example: @macro (n squared) `(~n * ~n)@
 pMacro :: Parser Expr
 pMacro = tagged (do
     reserved "macro"
@@ -136,7 +136,7 @@ pMacro = tagged (do
 -- | An operator "pragma" - tells the parser about precedence and associativity
 -- for the given operator(s).
 --
--- Examples: operator right 0 ->, operator 7 * /
+-- Examples: @operator right 0 ->@, @operator 7 * /@
 pOperator :: Parser Expr
 pOperator = tagged (do
     reserved "operator"
@@ -162,7 +162,7 @@ pOperator = tagged (do
 
 -- | A particle literal.
 --
--- Examples: @foo, @(bar: 2), @bar:, @(foo: 2 bar: _)
+-- Examples: @\@foo@, @\@(bar: 2)@, @\@bar:@, @\@(foo: 2 bar: _)@
 pParticle :: Parser Expr
 pParticle = tagged (do
     char '@'
@@ -191,7 +191,7 @@ pDispatch = try pdKeys <|> pdChain
 
 -- | A keyword dispatch.
 --
--- Examples: 1 foo: 2, 1 + 2
+-- Examples: @1 foo: 2@, @1 + 2@
 pdKeys :: Parser Expr
 pdKeys = do
     pos <- getPosition
@@ -214,7 +214,7 @@ pdKeys = do
 
 -- | A chain of message sends, both single and chained keywords.
 --
--- Example: 1 sqrt (* 2) floor
+-- Example: @1 sqrt (* 2) floor@
 pdChain :: Parser Expr
 pdChain = do
     pos <- getPosition
@@ -250,13 +250,18 @@ pdChain = do
         dispatches' p ps (Dispatch (Just p) $ esingle n acc)
     dispatches' _ x y = error $ "impossible: dispatches' on " ++ show (x, y)
 
--- | a comma-separated list of zero or more expressions, surrounded by square brackets
+-- | A comma-separated list of zero or more expressions, surrounded by square
+-- brackets.
+--
+-- Examples: @[]@, @[1, $a]@
 pList :: Parser Expr
 pList = (tagged . liftM (EList Nothing) $ brackets (wsDelim "," pExpr))
     <?> "list"
 
--- | a block of expressions, surrounded by braces and optionally having
--- arguments
+-- | A block of expressions, surrounded by braces and optionally having
+-- arguments.
+--
+-- Examples: @{ }@, @{ a b | a + b }@, @{ a = 1; a + 1 }@
 pBlock :: Parser Expr
 pBlock = tagged (braces $ do
     arguments <- option [] . try $ do
@@ -335,7 +340,7 @@ cKeyword wc = do
 -- | Work out precadence, associativity, etc. for a keyword dispatch.
 --
 -- The input is a keyword EMessage with a mix of operators and identifiers as
--- its name, e.g. EKeyword { emNames = ["+", "*", "remainder"] }.
+-- its name, e.g. @EKeyword { emNames = ["+", "*", "remainder"] }@.
 toBinaryOps :: Operators -> EMessage -> EMessage
 toBinaryOps _ done@(EKeyword _ [_] [_, _]) = done
 toBinaryOps ops (EKeyword h (n:ns) (v:vs))

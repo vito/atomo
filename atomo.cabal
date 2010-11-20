@@ -1,5 +1,5 @@
 name:                atomo
-version:             0.2.1
+version:             0.2.2
 synopsis:            A highly dynamic, extremely simple, very fun programming
                      language.
 description:
@@ -13,9 +13,9 @@ description:
     Neat stuff: first-class continuations, very metaprogramming and DSL
     -friendly, message-passing concurrency, pattern-matching.
     .
-    Documentation (WIP): <http://atomo-lang.org/docs/>
+    Documentation: <http://atomo-lang.org/docs/>
     .
-    Examples: <http://darcsden.com/alex/atomo/browse/examples>
+    Examples: <http://bitbucket.org/alex/atomo/src/tip/examples/>
     .
     IRC Channel: <irc://irc.freenode.net/atomo>
 homepage:            http://atomo-lang.org/

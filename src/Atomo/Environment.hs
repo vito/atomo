@@ -1,5 +1,29 @@
 {-# LANGUAGE BangPatterns #-}
-module Atomo.Environment where
+module Atomo.Environment
+    ( eval
+    , evalAll
+
+    , define
+    , defineOn
+    , dispatch
+    , set
+    , targets
+
+    , newObject
+    , newScope
+    , withTop
+
+    , orefFor
+
+    , matchable
+    , findMethod
+    , findFirstMethod
+    , runMethod
+
+    , raise
+    , raise'
+    , throwError
+    ) where
 
 import "monads-fd" Control.Monad.Cont
 import "monads-fd" Control.Monad.State
@@ -295,9 +319,9 @@ targets _ p = error $ "no targets for " ++ show p
 
 -- | Dispatch a message to all roles and return a value.
 --
--- If the message is not understood, @did-not-understand:(at:) is sent to all
+-- If the message is not understood, @\@did-not-understand:(at:)@ is sent to all
 -- roles until one responds to it. If none of them handle it, a
--- @did-not-understand: error is raised.
+-- @\@did-not-understand:@ error is raised.
 dispatch :: Message -> VM Value
 dispatch !m = do
     find <- findFirstMethod m (vs m)

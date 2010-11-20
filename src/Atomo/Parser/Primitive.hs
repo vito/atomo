@@ -21,31 +21,31 @@ pPrim = choice
 
 -- | Character literal.
 --
--- Examples: $a, $ , $\\EOT, $\\n
+-- Examples: @$a@, @$ @, @$\\EOT@, @$\\n@
 pvChar :: Parser Value
 pvChar = liftM Char charLiteral
 
 -- | String literal.
 --
--- Examples: \"\", \"foo\", \"foo\\nbar\"
+-- Examples: @\"\"@, @\"foo\"@, @\"foo\\nbar\"@
 pvString :: Parser Value
 pvString = liftM T.string stringLiteral
 
 -- | Double literal.
 --
--- Examples: 1.0, 4.6e10, -1.0
+-- Examples: @1.0@, @4.6e10@, @-1.0@
 pvDouble :: Parser Value
 pvDouble = liftM Double float
 
 -- | Integer literal.
 --
--- Examples: 1, 2, -1, -2
+-- Examples: @1@, @2@, @-1@, @-2@
 pvInteger :: Parser Value
 pvInteger = liftM Integer integer
 
 -- | Boolean literal.
 --
--- Examples: True, False
+-- Examples: @True@, @False@
 pvBoolean :: Parser Value
 pvBoolean = liftM Boolean $ true <|> false
   where
@@ -54,7 +54,7 @@ pvBoolean = liftM Boolean $ true <|> false
 
 -- | Rational literal.
 --
--- Examples: 1\/2, -1\/2, 1\/-2
+-- Examples: @1\/2@, @-1\/2@, @1\/-2@
 pvRational :: Parser Value
 pvRational = do
     n <- integer

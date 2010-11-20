@@ -17,6 +17,7 @@ import qualified Data.Text as T
 import qualified Language.Haskell.TH as TH
 
 import Atomo.Core
+import Atomo.Helpers (fromHaskell')
 import Atomo.Parser
 import Atomo.Parser.Base
 import Atomo.Parser.Expr

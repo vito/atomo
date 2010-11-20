@@ -132,7 +132,7 @@ matchParticle ids mr (p:ps) (Just v:mvs) =
     match ids mr p v && matchParticle ids mr ps mvs
 matchParticle _ _ _ _ = False
 
--- | given a pattern and a message, return the bindings from the pattern
+-- | Given a pattern and a message, return the bindings from the pattern.
 bindings :: Pattern -> Message -> MethodMap
 bindings (PSingle { ppTarget = p }) (Single { mTarget = t }) =
     toMethods (bindings' p t)
@@ -140,7 +140,7 @@ bindings (PKeyword { ppTargets = ps }) (Keyword { mTargets = ts }) =
     toMethods $ concat (zipWith bindings' ps ts)
 bindings p m = error $ "impossible: bindings on " ++ show (p, m)
 
--- | given a pattern and avalue, return the bindings as a list of pairs
+-- | Given a pattern and avalue, return the bindings as a list of pairs.
 bindings' :: Pattern -> Value -> [(Pattern, Value)]
 bindings' (PNamed n p) v = (psingle n PThis, v) : bindings' p v
 bindings' (PPMKeyword _ ps) (Particle (PMKeyword _ mvs)) =
