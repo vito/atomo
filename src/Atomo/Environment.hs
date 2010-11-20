@@ -398,7 +398,7 @@ runMethod (Responder { mPattern = p, mContext = c, mExpr = e }) m = do
 
     withTop nt $ eval e
 runMethod (Macro { mPattern = p, mExpr = e }) m = do
-    t <- gets top
+    t <- gets top >>= dispatch . single "Lobby"
     nt <- newObject $ \o -> o
         { oDelegates = [t]
         , oMethods = (bindings p m, emptyMap)

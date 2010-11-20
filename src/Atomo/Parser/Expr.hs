@@ -115,8 +115,11 @@ pForMacro :: Parser Expr
 pForMacro = tagged (do
     reserved "for-macro"
     e <- pExpr
-    -- TODO: evaluate this with a specific toplevel, probably Lobby
-    macroExpand e >>= MTL.lift . eval
+
+    macroExpand e >>= MTL.lift . \e' -> do
+        t <- gets top >>= dispatch . single "Lobby"
+        withTop t (eval e')
+
     return (EForMacro Nothing e))
     <?> "for-macro expression"
 
