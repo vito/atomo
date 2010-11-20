@@ -641,6 +641,10 @@ toDefinePattern (Dispatch { eMessage = EKeyword { emNames = ns, emTargets = ts }
     return (pkeyword ns ps)
 
 toRolePattern :: Expr -> Maybe Pattern
+toRolePattern (Dispatch { eMessage = EKeyword { emNames = ["->"], emTargets = [ETop {}, o] } }) = do
+    liftM PInstance (toRolePattern o)
+toRolePattern (Dispatch { eMessage = EKeyword { emNames = ["=="], emTargets = [ETop {}, o] } }) = do
+    liftM PStrict (toRolePattern o)
 toRolePattern (Dispatch { eMessage = EKeyword { emNames = [n], emTargets = [ETop {}, x] } }) = do
     p <- toRolePattern x
     return (PNamed n p)
