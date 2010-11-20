@@ -2,6 +2,7 @@
 
 Atomo has a rather simple-to-use syntax, enabled by the powerful Parsec library it uses for parsing.
 
+
 #section:{General Rules}
 
 Atomo is whitespace-sensitive. Operators and keywords must be surrounded by whitespace, and indentation provides hints to the parser when you don't want to use semicolons. For example; #atomo:(1/2) is a #atomo:Rational, while #atomo:(1 / 2) is integral division. #atomo:(foo-bar) is an identifier, while #atomo:(foo - bar) is subtraction.
@@ -114,11 +115,13 @@ Which is parsed as:
     } call
 })
 
+
 #section:{Comments}
 
 Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments, #code:{{- -}} for block comments (which can be nested).
 
-#section:{Literals}
+
+#section:{Literals}tag:"literals-syntax"
 
 #definitions:{
   #item:{integers}is:{
@@ -248,6 +251,7 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
   }
 }
 
+
 #section:{Pattern-Matching & Inserting Slots}tag:"pattern-syntax"
 
 Atomo's pattern-match syntax shares the same syntax as Expressions in the language. In many cases these are recursive.
@@ -279,8 +283,8 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
     })
   }
 
-  #item:{#code:{(name: pattern)}}is:{
-    A named pattern-match. Matches #atomo:pattern, binding the value it matches to #atomo:name.
+  #item:{#atomo:(foo: pattern)}is:{
+    A named pattern-match. Matches #atomo:pattern, binding the value it matches to #atomo:foo.
 
     #example:({
       (foo: 2) = 2
@@ -289,7 +293,7 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
     })
   }
 
-  #item:{#code:{(head . tail)}}is:{
+  #item:{#atomo:(head . tail)}is:{
     Matches a non-empty list, matching its first value on #atomo:head and the rest of it on #atomo:tail.
 
     #example:({
@@ -299,7 +303,7 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
     })
   }
 
-  #item:{#code:{[]}, #code:{[pattern, ...]}, ...}is:{
+  #item:{#atomo:[], #atomo:[pattern, pattern-2], ...}is:{
     Matches a list of fixed length, recursively matching each #atomo:pattern on each of its values.
 
     #example:({
@@ -309,7 +313,7 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
     })
   }
 
-  #item:{#code:{@foo}, #code:{@(foo: x)}, #code:{@(foo: x bar: _)}, ...}is:{
+  #item:{#atomo:@foo, #atomo:@(foo: x), #atomo:@(foo: x bar: _), ...}is:{
     Matches a particle value. If it's a single particle, it does regular equality checking; if it's a keyword particle, it recursively pattern-matches the particle's values. A wildcard in a particle pattern matches placeholders, but no other pattern will.
 
     #example:({
@@ -323,7 +327,7 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
     })
   }
 
-  #item:{#code:{`a}, #code:{`(1 + ~b)}, ...}is:{
+  #item:{#atomo:`a, #atomo:`(1 + ~b), ...}is:{
     Matches expression values recursively. Unquotes serve as named wildcard patterns, with the same recursive semantics as quasiquotation.
 
     #example:({
@@ -334,7 +338,7 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
     })
   }
 
-  #item:{#code:{(-> pattern)}}is:{
+  #item:{#atomo:(-> pattern)}is:{
     Matches any object delegating to something matching #code:{pattern}. Often used to check if something is an "instance" of some object.
 
     For primitive values, it checks if the value itself matches the pattern, so #atomo:([1, 2]) will match #code:{(-> List)}.
@@ -347,7 +351,7 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
     })
   }
 
-  #item:{#code:{(== pattern)}}is:{
+  #item:{#atomo:(== pattern)}is:{
     Matches with strict equality only. This is different from regular matching as it doesn't follow delegates to see if objects match.
 
     #example:({
@@ -368,6 +372,7 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
     a foo: self
   })
 }
+
 
 #section:{Definitions}tag:"definition-syntax"
 
@@ -395,25 +400,26 @@ As in the first example, #atomo:(foo bar) matches any object, while #atomo:({ fo
 The targets implied by the respective patterns in a definition are as follows:
 
 #definitions:{
-  #item:{#code:{_}, #code:{foo}, #code:{bar}, ...}is:{#atomo:Object}
+  #item:{#atomo:_, #atomo:foo, #atomo:bar, ...}is:{#atomo:Object}
   #item:{#atomo:1, #atomo:2, ...}is:{#atomo:Integer}
   #item:{#atomo:$a, #atomo:$b, ...}is:{#atomo:Char}
   #item:{#atomo:True, #atomo:False}is:{#atomo:Boolean}
   #item:{#atomo:1.0, #atomo:2.0, ...}is:{#atomo:Double}
   #item:{#atomo:1/2, #atomo:3/4, ...}is:{#atomo:Rational}
   #item:{#atomo:"", #atomo:"foo", ...}is:{#atomo:String}
-  #item:{#code:{(head . tail)}, #code:{[]}, #code:{[pattern, ...]}, ...}is:{#atomo:List}
+  #item:{#atomo:(head . tail), #atomo:[], #atomo:[pattern, pattern-2], ...}is:{#atomo:List}
   #item:{#atomo:`x, #atomo:`(1 + ~y), ...}is:{#atomo:Expression}
   #item:{#atomo:@foo, #atomo:@(bar: 2 baz: _), ...}is:{#atomo:Particle}
-  #item:{#code:{(foo: pattern)}}is:{target of #code:{pattern}}
-  #item:{#code:{(-> pattern)}}is:{target of #code:{pattern}}
-  #item:{#code:{(== pattern)}}is:{target of #code:{pattern}}
-  #item:{#code:{Foo}, #code:{Foo bar}, #code:{{ expr; ... }}, ...}is:{the object itself, or the object yielded by #code:{expr}}
+  #item:{#atomo:(foo: pattern)}is:{target of #code:{pattern}}
+  #item:{#atomo:(-> pattern)}is:{target of #code:{pattern}}
+  #item:{#atomo:(== pattern)}is:{target of #code:{pattern}}
+  #item:{#atomo:Foo, #atomo:(Foo bar), #atomo:({ expr; expr-2 }), ...}is:{the object itself, or the object yielded by the block's execution}
 }
 
 Thus, #atomo:(1 foo: $a := x) is a definition placed on #atomo:Integer and #atomo:Char.
 
-#section:{Dispatch}
+
+#section:{Dispatch}tag:"dispatch-syntax"
 
 Atomo's dispatch syntax is similar to the Smalltalk family, naming conventions aside. There are two types of messages to dispatch: single messages and keyword messages.
 
@@ -445,3 +451,89 @@ Atomo remedies this by allowing parentheses to be used inside the cascade of sen
 #verbatim:{
   1 (x: a) (y: b) (z: c) foo
 }
+
+
+#section:{Defining Macros}tag:"macro-syntax"
+
+To define macros, use the #code:{macro} keyword, followed by the macro's dispatch pattern wrapped in parentheses, and then the expression to evaluate to yield the replacement expression.
+
+A macro's dispatch pattern is very similar to definition message patterns, except (and perhaps obviously) it can only match expressions. If a macro's role patterns do not match the expressions, it simply isn't called; the macro isn't found, so nothing happens.
+
+A macro's role patterns are as follows:
+
+#definitions:{
+  #item:{#atomo:_, #atomo:foo, ...}is:{
+    Possibly-named wildcard matches.
+
+    #example:({
+      macro (x squared) `(~x * ~x)
+      '(42 squared) expand
+      42 squared
+    })
+  }
+
+  #item:{#atomo:(foo: pattern)}is:{
+    A named pattern-match. Matches #atomo:pattern, binding the expression it matches to #atomo:foo.
+
+    #interaction:({
+      macro ((x: Primitive) square-root) `(~x ^ (1.0 / 2.0))
+      2 square-root
+      [1] square-root
+    })
+  }
+
+  #item:{#atomo:Dispatch, #atomo:Operator, #atomo:Primitive, #atomo:Block, #atomo:List, #atomo:Macro, #atomo:Particle, #atomo:Top, #atomo:Quote, #atomo:Unquote}is:{
+    Match on the type of the expression.
+
+    #interaction:({
+      macro (Top foo) `10
+      foo
+      $a foo
+    })
+  }
+
+  #item:{#atomo:(`a), #atomo:(`(1 + ~b)), ...}is:{
+    Matches expression recursively. Unquotes serve as named wildcard patterns, with the same recursive semantics as quasiquotation.
+
+    #example:({
+      macro (`(~a -> ~b) from) a
+      (1 -> $a) from
+      (1 + 2) from
+    })
+  }
+
+  The entire Atomo runtime is usable during macro expansion; you can do whatever you want in a macro defintion, so long as the macro's result is an #atomo:Expression value.
+
+  Another keyword is provided, which evaluates an expression as soon as the parser runs into it; often for use with macros. It is aptly named #code:{for-macro}.
+
+  #example-segment:({
+    for-macro 1 print
+    for-macro Foo = Object clone
+  })
+
+  You should only use #code:{for-macro} at the very top of your parse tree - if it's in a block or some other expression, it will likely get evaluated more than once.
+}
+
+
+#section:{Operator Precedence & Associativity}tag:"operator-syntax"
+
+You can control how Atomo parses binary operators like #atomo:(+) and #atomo:(->) via the #code:{operator} keyword. The basic syntax is as follows (square brackets indicating an optional segment, ellipses indicating 1 or more):
+
+#verbatim:{
+  operator [associativity] [precedence] operators
+    where
+      associativity = right | left
+      precedence = integer
+      operators = operator ...
+}
+
+An omitted associativity implies left, and an omitted precedence implies 5 (the default). One of the two must be provided.
+
+#example-segment:({
+  operator right 0 ->
+  operator right 8 ^
+  operator 7 % * /
+  operator 6 + -
+})
+
+Operator expressions, when evaluated, just return #atomo:@ok.
