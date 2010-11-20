@@ -67,6 +67,8 @@ library
     Atomo.Method,
     Atomo.Parser,
     Atomo.Parser.Base,
+    Atomo.Parser.Expr,
+    Atomo.Parser.Expand,
     Atomo.Parser.Primitive,
     Atomo.Pattern,
     Atomo.Pretty,
