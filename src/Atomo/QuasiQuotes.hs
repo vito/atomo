@@ -83,6 +83,7 @@ instance Lift Expr where
     lift (ETop _) = [| ETop Nothing |]
     lift (EParticle _ p) = [| EParticle Nothing p |]
     lift (EMacro _ p e) = [| EMacro Nothing p e |]
+    lift (EForMacro _ e) = [| EForMacro Nothing e |]
     lift (EQuote _ e) = [| EQuote Nothing e |]
     lift (EUnquote _ e) = [| EUnquote Nothing e |]
 

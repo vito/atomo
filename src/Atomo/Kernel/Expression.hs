@@ -73,6 +73,7 @@ load = do
             EVM {} -> return (particle "vm")
             EList {} -> return (particle "list")
             EMacro {} -> return (particle "macro")
+            EForMacro {} -> return (particle "for-macro")
             ETop {} -> return (particle "top")
             EQuote {} -> return (particle "quote")
             EUnquote {} -> return (particle "unquote")
@@ -151,6 +152,7 @@ load = do
         case e of
             Set { ePattern = p } -> return (Pattern p)
             Define { ePattern = p } -> return (Pattern p)
+            EMacro { ePattern = p } -> return (Pattern p)
             _ -> raise ["no-pattern-for"] [Expression e]
 
     [$p|(e: Expression) expression|] =: do
@@ -158,9 +160,38 @@ load = do
         case e of
             Set { eExpr = e } -> return (Expression e)
             Define { eExpr = e } -> return (Expression e)
+            EMacro { eExpr = e } -> return (Expression e)
+            EForMacro { eExpr = e } -> return (Expression e)
             EQuote { eExpr = e } -> return (Expression e)
             EUnquote { eExpr = e } -> return (Expression e)
             _ -> raise ["no-expression-for"] [Expression e]
+
+    [$p|(e: Expression) associativity|] =: do
+        Expression e <- here "e" >>= findExpression
+        case e of
+            Operator { eAssoc = ALeft } ->
+                return (particle "left")
+
+            Operator { eAssoc = ARight } ->
+                return (particle "right")
+
+            _ -> raise ["no-associativity-for"] [Expression e]
+
+    [$p|(e: Expression) precedence|] =: do
+        Expression e <- here "e" >>= findExpression
+        case e of
+            Operator { ePrec = p } ->
+                return (Integer p)
+
+            _ -> raise ["no-precedence-for"] [Expression e]
+
+    [$p|(e: Expression) operators|] =: do
+        Expression e <- here "e" >>= findExpression
+        case e of
+            Operator { eNames = ns } ->
+                return (list (map (\n -> keyParticle [n] [Nothing, Nothing]) ns))
+
+            _ -> raise ["no-operators-for"] [Expression e]
 
 
 matchBranches :: IDs -> [(Pattern, Expr)] -> Value -> VM Value

@@ -175,6 +175,10 @@ data Expr
         , ePattern :: Pattern
         , eExpr :: Expr
         }
+    | EForMacro
+        { eLocation :: Maybe SourcePos
+        , eExpr :: Expr
+        }
     | EParticle
         { eLocation :: Maybe SourcePos
         , eParticle :: EParticle
@@ -626,7 +630,7 @@ toPattern (ETop {}) =
     return (PObject (ETop Nothing))
 toPattern b@(EBlock {}) =
     return (PObject (Dispatch Nothing (esingle "call" b)))
-toPattern e = Nothing
+toPattern _ = Nothing
 
 toDefinePattern :: Expr -> Maybe Pattern
 toDefinePattern (Dispatch { eMessage = ESingle { emName = n, emTarget = t } }) = do

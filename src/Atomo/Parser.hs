@@ -12,6 +12,7 @@ import Atomo.Parser.Base
 import Atomo.Parser.Primitive
 import Atomo.Types hiding (keyword, string)
 
+
 -- the types of values in Dispatch syntax
 data Dispatch
     = DParticle EParticle
@@ -84,8 +85,9 @@ pForMacro :: Parser Expr
 pForMacro = tagged (do
     reserved "for-macro"
     e <- pExpr
+    -- TODO: evaluate this with a specific toplevel, probably Lobby
     macroExpand e >>= MTL.lift . eval
-    return (Primitive Nothing (Expression e)))
+    return (EForMacro Nothing e))
     <?> "for-macro expression"
 
 ppMacro :: Parser Pattern

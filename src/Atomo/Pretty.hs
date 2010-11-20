@@ -183,11 +183,13 @@ instance Pretty Expr where
     prettyFrom _ (EVM { ePretty = Just d }) = d
     prettyFrom _ (EList _ es) =
         brackets . sep . punctuate comma $ map (prettyFrom CList) es
-    prettyFrom _ (EMacro _ p v) = text "macro" <+> prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v
+    prettyFrom _ (EMacro _ p e) =
+        text "macro" <+> parens (pretty p) <++> pretty e
+    prettyFrom _ (EForMacro { eExpr = e }) = text "for-macro" <+> pretty e
     prettyFrom c (EParticle _ p) = char '@' <> prettyFrom c p
     prettyFrom _ (ETop {}) = text "this"
-    prettyFrom _ (EQuote _ e) = char '`' <> parens (pretty e)
-    prettyFrom _ (EUnquote _ e) = char '~' <> parens (pretty e)
+    prettyFrom c (EQuote _ e) = char '`' <> prettySpacedExpr c e
+    prettyFrom c (EUnquote _ e) = char '~' <> prettySpacedExpr c e
 
 
 instance Pretty EMessage where
@@ -256,6 +258,19 @@ keyword :: String -> String
 keyword k
     | isOperator k = k
     | otherwise    = k ++ ":"
+
+prettySpacedExpr :: Context -> Expr -> Doc
+prettySpacedExpr c e
+    | needsParens e = parens (prettyFrom c e)
+    | otherwise = prettyFrom c e
+  where
+    needsParens (Define {}) = True
+    needsParens (Set {}) = True
+    needsParens (Dispatch { eMessage = EKeyword {} }) = True
+    needsParens (Dispatch { eMessage = ESingle { emTarget = ETop {} } }) = False
+    needsParens (Dispatch { eMessage = ESingle {} }) = True
+    needsParens _ = False
+
 
 infixr 4 <++>, <+++>
 

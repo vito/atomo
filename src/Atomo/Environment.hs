@@ -84,6 +84,7 @@ eval (EMacro { ePattern = p, eExpr = e }) = do
         }
 
     return (particle "ok")
+eval (EForMacro {}) = return (particle "ok")
 eval (EParticle { eParticle = EPMSingle n }) =
     return (Particle $ PMSingle n)
 eval (EParticle { eParticle = EPMKeyword ns mes }) = do
@@ -151,6 +152,7 @@ eval (EQuote { eExpr = qe }) = do
     unquote _ t@(ETop {}) = return t
     unquote _ v@(EVM {}) = return v
     unquote _ o@(Operator {}) = return o
+    unquote _ f@(EForMacro {}) = return f
 
 -- | evaluating multiple expressions, returning the last result
 evalAll :: [Expr] -> VM Value
