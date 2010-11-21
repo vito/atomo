@@ -16,8 +16,10 @@ load = do
     [$p|`Block new: (es: List)|] =::: [$e|`Block new: es arguments: []|]
     [$p|`Block new: (es: List) arguments: (as: List)|] =: do
         es <- getList [$e|es|] >>= mapM findExpression
-        as <- getList [$e|as|] >>= mapM findExpression
-        return (Expression (EBlock Nothing (map fromPattern as) (map fromExpression es)))
+        as <- getList [$e|as|] >>=
+            mapM (\e -> findExpression e >>= toPattern' . fromExpression)
+
+        return (Expression (EBlock Nothing as (map fromExpression es)))
 
     [$p|`List new: (es: List)|] =: do
         es <- getList [$e|es|] >>= mapM findExpression
