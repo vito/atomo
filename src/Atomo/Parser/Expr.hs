@@ -114,6 +114,9 @@ pSpacedExpr = pLiteral <|> simpleDispatch <|> parens pExpr
 pForMacro :: Parser Expr
 pForMacro = tagged (do
     reserved "for-macro"
+
+    whiteSpace
+
     e <- pExpr
 
     macroExpand e >>= MTL.lift . \e' -> do
@@ -129,10 +132,17 @@ pForMacro = tagged (do
 pMacro :: Parser Expr
 pMacro = tagged (do
     reserved "macro"
-    p <- parens (pExpr >>= MTL.lift . toMacroPattern')
+
     whiteSpace
+
+    p <- parens (pExpr >>= MTL.lift . toMacroPattern')
+
+    whiteSpace
+
     e <- pExpr
+
     macroExpand e >>= addMacro p
+
     return (EMacro Nothing p e))
     <?> "macro definition"
 
@@ -143,6 +153,8 @@ pMacro = tagged (do
 pOperator :: Parser Expr
 pOperator = tagged (do
     reserved "operator"
+
+    whiteSpace
 
     info <- choice
         [ do
