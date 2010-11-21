@@ -27,7 +27,7 @@ data Value
     = Block !Value [Pattern] [Expr]
 
     -- | A boolean value.
-    | Boolean { fromBoolean :: {-# UNPACK #-} !Bool }
+    | Boolean { fromBoolean :: !Bool }
 
     -- | A character value.
     | Char { fromChar :: {-# UNPACK #-} !Char }
