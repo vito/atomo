@@ -135,6 +135,18 @@ load = do
                 return (list (map string ns))
             _ -> raise ["no-names-for"] [Expression e]
 
+    [$p|(e: Expression) particle|] =: do
+        Expression e <- here "e" >>= findExpression
+
+        case e of
+            Dispatch { eMessage = EKeyword { emNames = ns } } ->
+                return (keyParticle ns (replicate (fromIntegral $ length ns + 1) Nothing))
+
+            Dispatch { eMessage = ESingle { emName = n } } ->
+                return (particle n)
+
+            _ -> raise ["no-particle-for"] [Expression e]
+
     [$p|(e: Expression) values|] =: do
         Expression e <- here "e" >>= findExpression
 
