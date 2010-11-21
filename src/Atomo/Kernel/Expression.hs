@@ -112,6 +112,8 @@ load = do
         case e of
             Dispatch { eMessage = EKeyword { emTargets = ts } } ->
                 return (list (map Expression ts))
+            Dispatch { eMessage = ESingle { emTarget = t } } ->
+                return $ list [Expression t]
             _ -> raise ["no-targets-for"] [Expression e]
 
     [$p|(e: Expression) name|] =: do
