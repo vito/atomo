@@ -119,9 +119,8 @@ pForMacro = tagged (do
 
     e <- pExpr
 
-    macroExpand e >>= MTL.lift . \e' -> do
-        t <- gets top >>= dispatch . single "Lobby"
-        withTop t (eval e')
+    env <- fmap psEnvironment getState
+    macroExpand e >>= MTL.lift . withTop env . eval
 
     return (EForMacro Nothing e))
     <?> "for-macro expression"
