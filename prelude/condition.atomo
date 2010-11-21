@@ -1,4 +1,4 @@
-for-macro Restart = Object clone
+for-macro super Restart = Object clone
 
 { define: *handlers* as: []
   define: *restarts* as: []

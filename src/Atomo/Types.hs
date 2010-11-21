@@ -347,6 +347,9 @@ data ParserState =
 
           -- | The number of macros we've expanded.
         , psClock :: Integer
+
+          -- | Environment that for-macro and macro methods are evaluated in.
+        , psEnvironment :: Value
         }
     deriving (Show, Typeable)
 
@@ -524,7 +527,7 @@ instance S.Lift Pattern where
 
 -- | Initial "empty" parser state.
 startParserState :: ParserState
-startParserState = ParserState [] (M.empty, M.empty) False 0
+startParserState = ParserState [] (M.empty, M.empty) False 0 (error "no parser environment")
 
 -- | Initial "empty" environment state.
 startEnv :: Env

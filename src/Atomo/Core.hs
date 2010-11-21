@@ -22,8 +22,13 @@ initCore = do
 
     -- define Object as the root object
     define (psingle "Object" PThis) (Primitive Nothing object)
+
+    -- create parser environment
+    parserEnv <- newObject $ \o -> o { oDelegates = [topObj] }
+
     modify $ \e -> e
         { primitives = (primitives e) { idObject = rORef object }
+        , parserState = (parserState e) { psEnvironment = parserEnv }
         }
 
     -- this thread's channel
