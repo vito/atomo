@@ -1,4 +1,4 @@
-operator right 1 =!
+operator right 0 =!
 
 Parameter = Object clone
 Parameter new: v := Parameter clone do:
