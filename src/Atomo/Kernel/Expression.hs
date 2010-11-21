@@ -49,6 +49,17 @@ load = do
         p <- toDefinePattern' pat
         return (Expression $ Define Nothing p e)
 
+    [$p|`Dispatch new: (name: Particle) to: (targets: List)|] =: do
+        Particle name <- here "name" >>= findParticle
+        ts <- getList [$e|targets|] >>= mapM findExpression
+
+        case name of
+            PMSingle n ->
+                return $ Expression (Dispatch Nothing (esingle n (fromExpression (head ts))))
+
+            PMKeyword ns _ ->
+                return $ Expression (Dispatch Nothing (ekeyword ns (map fromExpression ts)))
+
     [$p|(s: String) parse-expressions|] =:
         getString [$e|s|] >>= liftM (list . map Expression) . parseInput
 
