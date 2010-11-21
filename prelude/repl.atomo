@@ -72,13 +72,13 @@
   (env: Object) repl :=
     { stop |
       with: *debugger* as: repl-debugger do: {
-        frame = 0
+        define: frame as: 0
 
         { env basic-repl } bind: {
           @prompt ->
-            restart: 'use-prompt with: ["[" .. frame show .. "]> "]
+            restart: 'use-prompt with: ["[" .. frame _? show .. "]> "]
 
-          @loop -> (super frame = frame + 1)
+          @loop -> (frame =! frame _? + 1)
 
           @(special: "h") ->
             ":h\thelp" print
