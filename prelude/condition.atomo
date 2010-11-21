@@ -149,6 +149,6 @@ for-macro super Restart = Object clone
 
       `({ h a |
           with-handler: h do: a
-        } call: [{ #c | #c match: ~handler }, ~a])
+        } call: [{ #c | super = super; #c match: ~handler }, ~a])
     } call
 } call
