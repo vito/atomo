@@ -62,7 +62,7 @@ Eco Package new :=
             pkgs = versions map:
               { v |
                 Eco Package load-from:
-                    (eco </> c </> v </> "package.eco")
+                  (eco </> c </> v </> "package.eco")
               }
 
             c -> pkgs (sort-by: { a b | a version < b version })
@@ -164,7 +164,7 @@ Eco Package load-from: (file: String) :=
     { d |
       if: (d is-a?: Association)
         then: { d }
-        else: { d -> { True } }
+        else: { d -> { any } }
     }
 
 (p: Eco Package) executables: (es: List) :=
@@ -197,7 +197,7 @@ Eco load: name version: check in: env :=
   }
 
 context use: (name: String) :=
-  context use: name version: { True }
+  context use: name version: { any }
 
 context use: (name: String) version: (v: Version) :=
   context use: name version: (evaluate: `({ == ~v }))
@@ -226,6 +226,9 @@ context use: (name: String) version: (check: Block) :=
 
 @(package-unavailable: name) describe-error :=
   "package unavailable: " .. name
+
+@(package-unavailable: name needed: constraint) describe-error :=
+  "package unavailable: " .. name .. " (needed " .. constraint show .. ")"
 
 @(no-versions-of: pkg satisfy: check for: needer) describe-error :=
   "no versions of '" .. pkg .. "' satisfy version constraint " .. check show .. " needed by " .. needer

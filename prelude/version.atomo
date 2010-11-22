@@ -23,6 +23,9 @@ Version = Object clone
 
 (n: Integer) as: Version := n . 0
 
+-- used for checking version satisfying constraint { any }
+Version any = True
+
 (a: Version) == (b: Version) :=
   a major == b major && a minor == b minor
 
