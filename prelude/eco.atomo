@@ -135,7 +135,7 @@ Eco uninstall: (name: String) version: (version: Version) :=
 Eco uninstall: (name: String) :=
   { Directory (contents: (Eco path-to: name)) each:
       { v |
-        Eco uninstall: name version: (v as: Version)
+        Eco uninstall: name version: (v to: Version)
       }
 
     @ok

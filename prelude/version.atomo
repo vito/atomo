@@ -18,7 +18,7 @@ Version = Object clone
 (v: Version) as: String :=
   v major show .. "." .. v minor (as: String)
 
-(s: String) as: Version :=
+(s: String) to: Version :=
   s (split-on: $.) (map: @(to: Integer)) reduce-right: @.
 
 (n: Integer) as: Version := n . 0
