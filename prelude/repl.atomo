@@ -32,7 +32,7 @@
 
               @(special: n) ->
                 when: (n all?: @digit?) do: {
-                  r = Restart get: (n read: Integer)
+                  r = Restart get: (n to: Integer)
                   r jump: (get-n-values: r action arguments length)
                 }
             }

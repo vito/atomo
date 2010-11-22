@@ -2,6 +2,7 @@
 module Atomo.Kernel.String where
 
 import Data.List (sort)
+import Data.Ratio ((%))
 import qualified Data.Text as T
 
 import Atomo
@@ -12,22 +13,22 @@ load = do
     [$p|(s: String) as: List|] =:
         liftM (list . map Char) (getString [$e|s|])
 
-    [$p|(s: String) read: Char|] =: do
+    [$p|(s: String) to: Char|] =: do
         s <- getString [$e|s|]
         case s of
             "$'" -> return (Char '\'')
             '$':rest -> return (Char (read $ "'" ++ rest ++ "'"))
             otherwise -> raise ["invalid-string"] [string s]
 
-    [$p|(s: String) read: Integer|] =: do
+    [$p|(s: String) to: Integer|] =: do
         s <- getString [$e|s|]
         return (Integer (read s))
 
-    [$p|(s: String) read: Double|] =: do
+    [$p|(s: String) to: Double|] =: do
         s <- getString [$e|s|]
         return (Double (read s))
 
-    [$p|(s: String) read: Rational|] =: do
+    [$p|(s: String) to: Rational|] =: do
         s <- getString [$e|s|]
         let num = read $ takeWhile (/= '/') s
             denom = read . tail $ dropWhile (/= '/') s
