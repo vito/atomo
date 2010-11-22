@@ -44,5 +44,8 @@ macro (p := e)
 @(could-not-find: t in: v) describe-error :=
   "could not find a " .. t .. " in: " .. v show
 
-@(dynamic-needed: t) describe-error :=
-  "expecting Haskell value of type " .. t
+@(dynamic-needed: e got: g) describe-error :=
+  "expected Haskell value of type:\n" .. (e indent: 2) .. "\nbut got value of type:\n" .. (g indent: 2)
+
+@(dynamic-needed: e given: v) describe-error :=
+  "expected Haskell value of type:\n" .. (e indent: 2) .. "\nbut given value:\n" .. (v show indent: 2)

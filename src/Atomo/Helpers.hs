@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 module Atomo.Helpers where
 
 import "monads-fd" Control.Monad.State
@@ -264,21 +265,39 @@ isA x y = do
 -- a string.
 --
 -- If conversion fails, raises @\@dynamic-needed:@ with the given string.
-fromHaskell :: Typeable a => String -> Value -> VM a
-fromHaskell t (Haskell d) =
+fromHaskell :: forall a. Typeable a => Value -> VM a
+fromHaskell (Haskell d) =
     case fromDynamic d of
         Just a -> return a
-        Nothing -> raise ["dynamic-needed"] [string t]
-fromHaskell t _ = raise ["dynamic-needed"] [string t]
+        Nothing ->
+            raise ["dynamic-needed", "got"]
+                [ string (show (typeOf (undefined :: a)))
+                , string (show (dynTypeRep d))
+                ]
+fromHaskell u =
+    raise ["dynamic-needed", "given"]
+        [string (show (typeOf (undefined :: a))), u]
 
 -- | Convert an Atomo Haskell dynamic value into its value, erroring on
 -- failure.
-fromHaskell' :: Typeable a => String -> Value -> a
-fromHaskell' t (Haskell d) =
+fromHaskell' :: forall a. Typeable a => Value -> a
+fromHaskell' (Haskell d) =
     case fromDynamic d of
         Just a -> a
-        Nothing -> error ("needed Haskell value of type " ++ t)
-fromHaskell' t _ = error ("needed haskell value of type " ++ t)
+        Nothing ->
+            error $ unwords
+                [ "needed Haskell value of type"
+                , show (typeOf (undefined :: a))
+                , "but got"
+                , show (dynTypeRep d)
+                ]
+fromHaskell' v =
+    error $ unwords
+        [ "needed Haskell value of type"
+        , show (typeOf (undefined :: a))
+        , "but given value"
+        , show v
+        ]
 
 -- | `toPattern', raising @\@unknown-pattern:@ if conversion fails.
 toPattern' :: Expr -> VM Pattern

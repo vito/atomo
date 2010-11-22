@@ -52,7 +52,7 @@ withLocation p c s = do
 parsing :: Typeable a => Parser a -> String -> (String, Int, Int) -> a
 parsing p s (file, line, col) =
     -- here be dragons
-    fromHaskell' "a" $ unsafePerformIO (runWith go (qqEnv))
+    fromHaskell' $ unsafePerformIO (runWith go (qqEnv))
   where
     go = liftM haskell $ continue pp "<qq>" s
 

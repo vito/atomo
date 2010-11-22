@@ -332,7 +332,7 @@ load = do
 
         return port
 
-    getHandle ex = eval ex >>= fromHaskell "Handle"
+    getHandle ex = eval ex >>= fromHaskell
 
     hGetSegment :: Handle -> IO String
     hGetSegment h = dropSpaces >> hGetSegment' Nothing
