@@ -13,23 +13,22 @@ load = do
     [$p|(s: String) as: List|] =:
         liftM (list . map Char) (getString [$e|s|])
 
-    -- TODO: rename these to @read: or @to:
-    [$p|(s: String) as: Char|] =: do
+    [$p|(s: String) to: Char|] =: do
         s <- getString [$e|s|]
         case s of
             "$'" -> return (Char '\'')
             '$':rest -> return (Char (read $ "'" ++ rest ++ "'"))
-            _ -> raise ["invalid-string"] [String $ T.pack s]
-    
-    [$p|(s: String) as: Integer|] =: do
+            _ -> raise ["invalid-string"] [string s]
+
+    [$p|(s: String) to: Integer|] =: do
         s <- getString [$e|s|]
         return (Integer (read s))
-        
-    [$p|(s: String) as: Double|] =: do
+
+    [$p|(s: String) to: Double|] =: do
         s <- getString [$e|s|]
         return (Double (read s))
-    
-    [$p|(s: String) as: Rational|] =: do
+
+    [$p|(s: String) to: Rational|] =: do
         s <- getString [$e|s|]
         let num = read $ takeWhile (/= '/') s
             denom = read . tail $ dropWhile (/= '/') s
