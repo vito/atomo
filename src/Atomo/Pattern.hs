@@ -138,7 +138,7 @@ bindings (Single { mTarget = p }) (Single { mTarget = t }) =
     toMethods (bindings' p t)
 bindings (Keyword { mTargets = ps }) (Keyword { mTargets = ts }) =
     toMethods $ concat (zipWith bindings' ps ts)
-bindings p m = error $ "impossible: bindings on " ++ show (p, m)
+bindings _ _ = []
 
 -- | Given a pattern and avalue, return the bindings as a list of pairs.
 bindings' :: Pattern -> Value -> [(Message Pattern, Value)]
