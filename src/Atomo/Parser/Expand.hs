@@ -35,17 +35,17 @@ macroExpand d@(Dispatch { eMessage = em }) = do
             nem <- expanded em
             return d { eMessage = nem }
   where
-    expanded (ESingle i n t) = do
+    expanded (Single i n t) = do
         nt <- macroExpand t
-        return (ESingle i n nt)
-    expanded (EKeyword i ns ts) = do
+        return (Single i n nt)
+    expanded (Keyword i ns ts) = do
         nts <- mapM macroExpand ts
-        return (EKeyword i ns nts)
+        return (Keyword i ns nts)
 
     msg =
         case em of
-            ESingle i n t -> Single i n (Expression t)
-            EKeyword i ns ts -> Keyword i ns (map Expression ts)
+            Single i n t -> Single i n (Expression t)
+            Keyword i ns ts -> Keyword i ns (map Expression ts)
 macroExpand d@(Define { eExpr = e }) = do
     e' <- macroExpand e
     return d { eExpr = e' }
@@ -63,20 +63,20 @@ macroExpand m@(EMacro { eExpr = e }) = do -- TODO: is this sane?
     return m { eExpr = e' }
 macroExpand p@(EParticle { eParticle = ep }) =
     case ep of
-        EPMKeyword ns mes -> do
+        PMKeyword ns mes -> do
             nmes <- forM mes $ \me ->
                 case me of
                     Nothing -> return Nothing
                     Just e -> liftM Just (macroExpand e)
 
-            return p { eParticle = EPMKeyword ns nmes }
+            return p { eParticle = PMKeyword ns nmes }
 
         _ -> return p
 -- TODO: EUnquote?
 macroExpand e = return e
 
 -- | find a findMacro method for message `m' on object `o'
-findMacro :: Message -> Parser (Maybe Method)
+findMacro :: Message Value -> Parser (Maybe Method)
 findMacro m = do
     ids <- MTL.lift (gets primitives)
     ms <- methods m
@@ -87,5 +87,5 @@ findMacro m = do
 
     firstMatch _ _ [] = return Nothing
     firstMatch ids' m' (mt:mts)
-        | match ids' Nothing (mPattern mt) (Message m') = return (Just mt)
+        | match ids' Nothing (PMessage (mPattern mt)) (Message m') = return (Just mt)
         | otherwise = firstMatch ids' m' mts

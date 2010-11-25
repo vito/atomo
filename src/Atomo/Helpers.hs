@@ -16,15 +16,15 @@ import Atomo.Types
 infixr 0 =:, =::
 
 -- | Define a method as an action returning a value.
-(=:) :: Pattern -> VM Value -> VM ()
+(=:) :: Message Pattern -> VM Value -> VM ()
 pat =: vm = define pat (EVM Nothing Nothing vm)
 
 -- | Set a slot to a given value.
-(=::) :: Pattern -> Value -> VM ()
+(=::) :: Message Pattern -> Value -> VM ()
 pat =:: v = define pat (Primitive Nothing v)
 
 -- | Define a method that evaluates e.
-(=:::) :: Pattern -> Expr -> VM ()
+(=:::) :: Message Pattern -> Expr -> VM ()
 pat =::: e = define pat e
 
 -- | Find a value, searching through an object's delegates, and throwing
@@ -304,7 +304,7 @@ toPattern' :: Expr -> VM Pattern
 toPattern' = tryPattern toPattern
 
 -- | `toDefinePattern', raising @\@unknown-pattern:@ if conversion fails.
-toDefinePattern' :: Expr -> VM Pattern
+toDefinePattern' :: Expr -> VM (Message Pattern)
 toDefinePattern' = tryPattern toDefinePattern
 
 -- | `toRolePattern', raising @\@unknown-pattern:@ if conversion fails.
@@ -312,12 +312,12 @@ toRolePattern' :: Expr -> VM Pattern
 toRolePattern' = tryPattern toRolePattern
 
 -- | `toMacroPattern', raising @\@unknown-pattern:@ if conversion fails.
-toMacroPattern' :: Expr -> VM Pattern
+toMacroPattern' :: Expr -> VM (Message Pattern)
 toMacroPattern' = tryPattern toMacroPattern
 
 -- | Try a given pattern conversion, raising @\@unknown-pattern:@ if conversion
 -- fails.
-tryPattern :: (Expr -> Maybe Pattern) -> Expr -> VM Pattern
+tryPattern :: (Expr -> Maybe p) -> Expr -> VM p
 tryPattern c e = 
     case c e of
         Nothing -> raise ["unknown-pattern"] [Expression e]

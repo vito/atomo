@@ -1,4 +1,4 @@
-{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
 module Atomo.Pretty (Pretty(pretty)) where
 
 import Data.Char (isUpper)
@@ -88,34 +88,11 @@ instance Pretty Object where
         prettyMethod (Macro { mPattern = p, mExpr = e }) =
             text "macro" <+> parens (pretty p) <++> prettyFrom CDefine e
 
-instance Pretty Message where
-    prettyFrom _ (Single _ n t) = prettyFrom CSingle t <+> text n
-    prettyFrom _ (Keyword _ ns vs) = keywords ns vs
-
-
-instance Pretty Particle where
-    prettyFrom _ (PMSingle e) = text e
-    prettyFrom _ (PMKeyword ns vs)
-        | all isNothing vs = text . concat $ map keyword ns
-        | isNothing (head vs) =
-            parens $ headlessKeywords' prettyVal ns (tail vs)
-        | otherwise = parens (keywords' prettyVal ns vs)
-      where
-        prettyVal me =
-            case me of
-                Nothing -> text "_"
-                Just e -> prettyFrom CKeyword e
-
-
 instance Pretty Pattern where
     prettyFrom _ PAny = text "_"
     prettyFrom _ (PHeadTail h t) =
         parens $ pretty h <+> text "." <+> pretty t
-    prettyFrom _ (PKeyword _ ns (PObject ETop {}:vs)) =
-        headlessKeywords ns vs
-    prettyFrom _ (PKeyword _ ns (PThis:vs)) =
-        headlessKeywords ns vs
-    prettyFrom _ (PKeyword _ ns vs) = keywords ns vs
+    prettyFrom c (PMessage m) = prettyFrom c m
     prettyFrom _ (PList ps) =
         brackets . sep $ punctuate comma (map pretty ps)
     prettyFrom _ (PMatch v) = prettyFrom CPattern v
@@ -125,17 +102,17 @@ instance Pretty Pattern where
         | capitalized msg = pretty e
         | isParticular msg = pretty block
       where
-        capitalized (ESingle { emName = n, emTarget = ETop {} }) =
+        capitalized (Single { mName = n, mTarget = ETop {} }) =
             isUpper (head n)
-        capitalized (ESingle { emTarget = Dispatch { eMessage = t@(ESingle {}) } }) =
+        capitalized (Single { mTarget = Dispatch { eMessage = t@(Single {}) } }) =
             capitalized t
         capitalized _ = False
 
-        isParticular (ESingle { emName = "call", emTarget = EBlock {} }) =
+        isParticular (Single { mName = "call", mTarget = EBlock {} }) =
             True
         isParticular _ = False
 
-        block = emTarget msg
+        block = mTarget msg
     prettyFrom _ (PObject e) = parens $ pretty e
     prettyFrom _ (PInstance p) = parens $ text "->" <+> pretty p
     prettyFrom _ (PStrict p) = parens $ text "==" <+> pretty p
@@ -147,9 +124,6 @@ instance Pretty Pattern where
       where
         isAny PAny = True
         isAny _ = False
-    prettyFrom _ (PSingle _ n (PObject ETop {})) = text n
-    prettyFrom _ (PSingle _ n PThis) = text n
-    prettyFrom _ (PSingle _ n p) = pretty p <+> text n
     prettyFrom _ PThis = text "<this>"
 
     prettyFrom _ PEDispatch = text "Dispatch"
@@ -171,8 +145,8 @@ instance Pretty Expr where
         prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v
     prettyFrom _ (Set _ p v)    =
         prettyFrom CDefine p <+> text "=" <++> prettyFrom CDefine v
-    prettyFrom CKeyword (Dispatch _ m@(EKeyword {})) = parens $ pretty m
-    prettyFrom CSingle (Dispatch _ m@(EKeyword {})) = parens $ pretty m
+    prettyFrom CKeyword (Dispatch _ m@(Keyword {})) = parens $ pretty m
+    prettyFrom CSingle (Dispatch _ m@(Keyword {})) = parens $ pretty m
     prettyFrom c (Dispatch _ m) = prettyFrom c m
     prettyFrom _ (Operator _ ns a i) =
         text "operator" <+> assoc a <+> integer i <+> sep (map text ns)
@@ -199,16 +173,43 @@ instance Pretty Expr where
     prettyFrom c (EUnquote _ e) = char '~' <> prettySpacedExpr c e
 
 
-instance Pretty EMessage where
-    prettyFrom _ (ESingle _ n (ETop {})) = text n
-    prettyFrom _ (ESingle _ n t) = prettyFrom CSingle t <+> text n
-    prettyFrom _ (EKeyword _ ns (ETop {}:es)) = headlessKeywords ns es
-    prettyFrom _ (EKeyword _ ns es) = keywords ns es
+instance Pretty (Message Pattern) where
+    prettyFrom _ (Single _ n (PObject ETop {})) = text n
+    prettyFrom _ (Single _ n PThis) = text n
+    prettyFrom _ (Single _ n p) = pretty p <+> text n
+    prettyFrom _ (Keyword _ ns (PObject ETop {}:vs)) =
+        headlessKeywords ns vs
+    prettyFrom _ (Keyword _ ns (PThis:vs)) =
+        headlessKeywords ns vs
+    prettyFrom _ (Keyword _ ns vs) = keywords ns vs
+
+instance Pretty (Message Value) where
+    prettyFrom _ (Single _ n t) = prettyFrom CSingle t <+> text n
+    prettyFrom _ (Keyword _ ns vs) = keywords ns vs
 
 
-instance Pretty EParticle where
-    prettyFrom _ (EPMSingle e) = text e
-    prettyFrom _ (EPMKeyword ns es)
+instance Pretty (Message Expr) where
+    prettyFrom _ (Single _ n (ETop {})) = text n
+    prettyFrom _ (Single _ n t) = prettyFrom CSingle t <+> text n
+    prettyFrom _ (Keyword _ ns (ETop {}:es)) = headlessKeywords ns es
+    prettyFrom _ (Keyword _ ns es) = keywords ns es
+
+instance Pretty (Particle Value) where
+    prettyFrom _ (PMSingle e) = text e
+    prettyFrom _ (PMKeyword ns vs)
+        | all isNothing vs = text . concat $ map keyword ns
+        | isNothing (head vs) =
+            parens $ headlessKeywords' prettyVal ns (tail vs)
+        | otherwise = parens (keywords' prettyVal ns vs)
+      where
+        prettyVal me =
+            case me of
+                Nothing -> text "_"
+                Just e -> prettyFrom CKeyword e
+
+instance Pretty (Particle Expr) where
+    prettyFrom _ (PMSingle e) = text e
+    prettyFrom _ (PMKeyword ns es)
         | all isNothing es = text . concat $ map keyword ns
         | isNothing (head es) =
             parens $ headlessKeywords' prettyVal ns (tail es)
@@ -266,9 +267,9 @@ prettySpacedExpr c e
   where
     needsParens (Define {}) = True
     needsParens (Set {}) = True
-    needsParens (Dispatch { eMessage = EKeyword {} }) = True
-    needsParens (Dispatch { eMessage = ESingle { emTarget = ETop {} } }) = False
-    needsParens (Dispatch { eMessage = ESingle {} }) = True
+    needsParens (Dispatch { eMessage = Keyword {} }) = True
+    needsParens (Dispatch { eMessage = Single { mTarget = ETop {} } }) = False
+    needsParens (Dispatch { eMessage = Single {} }) = True
     needsParens _ = False
 
 

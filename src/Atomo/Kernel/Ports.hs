@@ -85,8 +85,8 @@ load = do
         parsed <- continuedParse segment "<read>"
 
         let isPrimitive (Primitive {}) = True
-            isPrimitive (EParticle { eParticle = EPMSingle _ }) = True
-            isPrimitive (EParticle { eParticle = EPMKeyword _ ts }) =
+            isPrimitive (EParticle { eParticle = PMSingle _ }) = True
+            isPrimitive (EParticle { eParticle = PMKeyword _ ts }) =
                 all isPrimitive (catMaybes ts)
             isPrimitive (EList { eContents = ts }) = all isPrimitive ts
             isPrimitive _ = False
@@ -327,7 +327,7 @@ load = do
     portObj hdl = newScope $ do
         port <- eval [$e|Port clone|]
 
-        define (psingle "handle" (PMatch port))
+        define (single "handle" (PMatch port))
             (Primitive Nothing $ haskell hdl)
 
         return port

@@ -51,13 +51,13 @@ data Value
     | List VVector
 
     -- | A message value.
-    | Message { fromMessage :: Message }
+    | Message { fromMessage :: Message Value }
 
     -- | A method value.
     | Method { fromMethod :: Method }
 
     -- | A particle value.
-    | Particle { fromParticle :: Particle }
+    | Particle { fromParticle :: Particle Value }
 
     -- | A process; a communications channel and the thread's ID.
     | Process Channel ThreadId
@@ -92,55 +92,55 @@ data Object =
 data Method
     -- | Responds to a message by evaluating an expression in the given context.
     = Responder
-        { mPattern :: !Pattern
+        { mPattern :: !(Message Pattern)
         , mContext :: !Value
         , mExpr :: !Expr
         }
 
     -- | Responds to a macro message by evaluating an expression.
     | Macro
-        { mPattern :: !Pattern
+        { mPattern :: !(Message Pattern)
         , mExpr :: !Expr
         }
 
     -- | Responds to a message by returning a value.
     | Slot
-        { mPattern :: !Pattern
+        { mPattern :: !(Message Pattern)
         , mValue :: !Value
         }
     deriving (Eq, Show, Typeable)
 
 -- | Messages sent to objects.
-data Message
+data Message v
     -- | A keyword-delimited message with multiple targets.
     = Keyword
         { mID :: !Int
         , mNames :: [String]
-        , mTargets :: [Value]
+        , mTargets :: [v]
         }
 
     -- | A single message sent to one target.
     | Single
         { mID :: !Int
         , mName :: String
-        , mTarget :: Value
+        , mTarget :: v
         }
     deriving (Eq, Show, Typeable)
 
 -- | Partial messages.
-data Particle
+data Particle v
     -- | A single message with no target.
     = PMSingle String
 
     -- | A keyword message with many optional targets.
-    | PMKeyword [String] [Maybe Value]
+    | PMKeyword [String] [Maybe v]
     deriving (Eq, Show, Typeable)
 
 -- | Shortcut error values.
 data AtomoError
     = Error Value
     | ParseError ParseError
-    | DidNotUnderstand Message
+    | DidNotUnderstand (Message Value)
     | Mismatch Pattern Value
     | ImportError H.InterpreterError
     | FileNotFound String
@@ -155,23 +155,14 @@ data AtomoError
 data Pattern
     = PAny
     | PHeadTail Pattern Pattern
-    | PKeyword
-        { ppID :: !Int
-        , ppNames :: [String]
-        , ppTargets :: [Pattern]
-        }
     | PList [Pattern]
     | PMatch Value
+    | PMessage (Message Pattern)
     | PInstance Pattern
     | PStrict Pattern
     | PNamed String Pattern
     | PObject Expr
     | PPMKeyword [String] [Pattern]
-    | PSingle
-        { ppID :: !Int
-        , ppName :: String
-        , ppTarget :: Pattern
-        }
     | PThis
 
     -- expression types, used in macros
@@ -193,7 +184,7 @@ data Pattern
 data Expr
     = Define
         { eLocation :: Maybe SourcePos
-        , ePattern :: Pattern
+        , emPattern :: Message Pattern
         , eExpr :: Expr
         }
     | Set
@@ -203,7 +194,7 @@ data Expr
         }
     | Dispatch
         { eLocation :: Maybe SourcePos
-        , eMessage :: EMessage
+        , eMessage :: Message Expr
         }
     | Operator
         { eLocation :: Maybe SourcePos
@@ -226,7 +217,7 @@ data Expr
         }
     | EMacro
         { eLocation :: Maybe SourcePos
-        , ePattern :: Pattern
+        , emPattern :: Message Pattern
         , eExpr :: Expr
         }
     | EForMacro
@@ -235,7 +226,7 @@ data Expr
         }
     | EParticle
         { eLocation :: Maybe SourcePos
-        , eParticle :: EParticle
+        , eParticle :: Particle Expr
         }
     | ETop
         { eLocation :: Maybe SourcePos
@@ -254,26 +245,6 @@ data Expr
         , eExpr :: Expr
         }
     deriving (Show, Typeable)
-
--- | An unevaluated message dispatch.
-data EMessage
-    = EKeyword
-        { emID :: !Int
-        , emNames :: [String]
-        , emTargets :: [Expr]
-        }
-    | ESingle
-        { emID :: !Int
-        , emName :: String
-        , emTarget :: Expr
-        }
-    deriving (Eq, Show, Typeable)
-
--- | An unevaluated particle.
-data EParticle
-    = EPMSingle String
-    | EPMKeyword [String] [Maybe Expr]
-    deriving (Eq, Show, Typeable)
 
 -- | Atomo's VM state.
 data Env =
@@ -395,15 +366,13 @@ instance Eq Value where
     (==) (String a) (String b) = a == b
     (==) _ _ = False
 
-
 instance Eq Pattern where
     -- check if two patterns are "equivalent", ignoring names for patterns
     -- and other things that mean the same thing
     (==) PAny PAny = True
     (==) (PHeadTail ah at) (PHeadTail bh bt) =
         (==) ah bh && (==) at bt
-    (==) (PKeyword _ ans aps) (PKeyword _ bns bps) =
-        ans == bns && and (zipWith (==) aps bps)
+    (==) (PMessage a) (PMessage b) = (==) a b
     (==) (PList aps) (PList bps) =
         length aps == length bps && and (zipWith (==) aps bps)
     (==) (PMatch a) (PMatch b) = a == b
@@ -412,8 +381,6 @@ instance Eq Pattern where
     (==) a (PNamed _ b) = (==) a b
     (==) (PPMKeyword ans aps) (PPMKeyword bns bps) =
         ans == bns && and (zipWith (==) aps bps)
-    (==) (PSingle ai _ at) (PSingle bi _ bt) =
-        ai == bi && (==) at bt
     (==) PThis PThis = True
     (==) _ _ = False
 
@@ -470,21 +437,13 @@ instance S.Lift Assoc where
     lift ALeft = [| ALeft |]
     lift ARight = [| ARight |]
 
-instance S.Lift Message where
+instance (S.Lift v) => S.Lift (Message v) where
     lift (Keyword i ns vs) = [| Keyword i ns vs |]
     lift (Single i n v) = [| Single i n v |]
 
-instance S.Lift Particle where
+instance (S.Lift v) => S.Lift (Particle v) where
     lift (PMSingle n) = [| PMSingle n |]
     lift (PMKeyword ns vs) = [| PMKeyword ns vs |]
-
-instance S.Lift EMessage where
-    lift (EKeyword i ns es) = [| EKeyword i ns es |]
-    lift (ESingle i n e) = [| ESingle i n e |]
-
-instance S.Lift EParticle where
-    lift (EPMSingle n) = [| EPMSingle n |]
-    lift (EPMKeyword ns es) = [| EPMKeyword ns es |]
 
 instance S.Lift Value where
     lift (Block s as es) = [| Block s as es |]
@@ -502,13 +461,12 @@ instance S.Lift Value where
 instance S.Lift Pattern where
     lift PAny = [| PAny |]
     lift (PHeadTail h t) = [| PHeadTail h t |]
-    lift (PKeyword i ns ts) = [| PKeyword i ns ts |]
+    lift (PMessage m) = [| PMessage m |]
     lift (PList ps) = [| PList ps |]
     lift (PMatch v) = [| PMatch v |]
     lift (PNamed n p) = [| PNamed n p |]
     lift (PObject e) = [| PObject e |]
     lift (PPMKeyword ns ts) = [| PPMKeyword ns ts |]
-    lift (PSingle i n t) = [| PSingle i n t |]
     lift PThis = [| PThis |]
     lift PEDispatch = [| PEDispatch |]
     lift PEOperator = [| PEOperator |]
@@ -615,34 +573,24 @@ fromList (List vr) = V.toList vr
 fromList v = error $ "no fromList for: " ++ show v
 
 -- | Create a single message with a given name and target.
-single :: String -> Value -> Message
+single :: String -> v -> Message v
 {-# INLINE single #-}
 single n = Single (hash n) n
 
 -- | Create a keyword message with a given name and targets.
-keyword :: [String] -> [Value] -> Message
+keyword :: [String] -> [v] -> Message v
 {-# INLINE keyword #-}
 keyword ns = Keyword (hash ns) ns
 
 -- | Create a single message pattern with a given name and target pattern.
 psingle :: String -> Pattern -> Pattern
 {-# INLINE psingle #-}
-psingle n = PSingle (hash n) n
+psingle n = PMessage . single n
 
 -- | Create a keyword message pattern with a given name and target patterns.
 pkeyword :: [String] -> [Pattern] -> Pattern
 {-# INLINE pkeyword #-}
-pkeyword ns = PKeyword (hash ns) ns
-
--- | Create a single message expression with a given name and target expression.
-esingle :: String -> Expr -> EMessage
-{-# INLINE esingle #-}
-esingle n = ESingle (hash n) n
-
--- | Create a keyword message expression with a given name and target expressions.
-ekeyword :: [String] -> [Expr] -> EMessage
-{-# INLINE ekeyword #-}
-ekeyword ns = EKeyword (hash ns) ns
+pkeyword ns = PMessage . keyword ns
 
 -- | Is a value a `Block'?
 isBlock :: Value -> Bool

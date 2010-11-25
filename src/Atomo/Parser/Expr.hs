@@ -13,11 +13,12 @@ import Atomo.Parser.Base
 import Atomo.Parser.Expand
 import Atomo.Parser.Primitive
 import Atomo.Types hiding (keyword, string)
+import qualified Atomo.Types as T
 
 
 -- | The types of values in Dispatch syntax.
 data Dispatch
-    = DParticle EParticle
+    = DParticle (Particle Expr)
     | DNormal Expr
     deriving Show
 
@@ -106,7 +107,7 @@ pSpacedExpr = pLiteral <|> simpleDispatch <|> parens pExpr
         name <- ident
         notFollowedBy (char ':')
         spacing
-        return (Dispatch Nothing (esingle name (ETop Nothing)))
+        return (Dispatch Nothing (single name (ETop Nothing)))
 
 -- | The for-macro "pragma."
 --
@@ -191,12 +192,12 @@ pParticle = tagged (do
   where
     binary = do
         op <- operator
-        return $ EPMKeyword [op] [Nothing, Nothing]
+        return $ PMKeyword [op] [Nothing, Nothing]
 
     symbols = do
         names <- many1 (anyIdent >>= \n -> char ':' >> return n)
         spacing
-        return $ EPMKeyword names (replicate (length names + 1) Nothing)
+        return $ PMKeyword names (replicate (length names + 1) Nothing)
 
 -- | Any dispatch, both single and keyword.
 pDispatch :: Parser Expr
@@ -209,7 +210,7 @@ pDispatch = try pdKeys <|> pdChain
 pdKeys :: Parser Expr
 pdKeys = do
     pos <- getPosition
-    msg <- keywords ekeyword (ETop (Just pos)) (try pdChain <|> headless)
+    msg <- keywords T.keyword (ETop (Just pos)) (try pdChain <|> headless)
     ops <- liftM psOperators getState
     return $ Dispatch (Just pos) (toBinaryOps ops msg)
     <?> "keyword dispatch"
@@ -223,7 +224,7 @@ pdKeys = do
     ckeywd pos = do
         ks <- wsMany1 $ keyword pdChain
         let (ns, es) = unzip ks
-        return $ ekeyword ns (ETop (Just pos):es)
+        return $ T.keyword ns (ETop (Just pos):es)
         <?> "keyword segment"
 
 -- | A chain of message sends, both single and chained keywords.
@@ -249,19 +250,19 @@ pdChain = do
     dispatches :: SourcePos -> [Dispatch] -> Expr
     dispatches p (DNormal e:ps) =
         dispatches' p ps e
-    dispatches p (DParticle (EPMSingle n):ps) =
-        dispatches' p ps (Dispatch (Just p) $ esingle n (ETop (Just p)))
-    dispatches p (DParticle (EPMKeyword ns (Nothing:es)):ps) =
-        dispatches' p ps (Dispatch (Just p) $ ekeyword ns (ETop (Just p):map fromJust es))
+    dispatches p (DParticle (PMSingle n):ps) =
+        dispatches' p ps (Dispatch (Just p) $ single n (ETop (Just p)))
+    dispatches p (DParticle (PMKeyword ns (Nothing:es)):ps) =
+        dispatches' p ps (Dispatch (Just p) $ T.keyword ns (ETop (Just p):map fromJust es))
     dispatches _ ds = error $ "impossible: dispatches on " ++ show ds
 
     -- roll a list of partial messages into a bunch of dispatches
     dispatches' :: SourcePos -> [Dispatch] -> Expr -> Expr
     dispatches' _ [] acc = acc
-    dispatches' p (DParticle (EPMKeyword ns (Nothing:es)):ps) acc =
-        dispatches' p ps (Dispatch (Just p) $ ekeyword ns (acc : map fromJust es))
-    dispatches' p (DParticle (EPMSingle n):ps) acc =
-        dispatches' p ps (Dispatch (Just p) $ esingle n acc)
+    dispatches' p (DParticle (PMKeyword ns (Nothing:es)):ps) acc =
+        dispatches' p ps (Dispatch (Just p) $ T.keyword ns (acc : map fromJust es))
+    dispatches' p (DParticle (PMSingle n):ps) acc =
+        dispatches' p ps (Dispatch (Just p) $ single n acc)
     dispatches' _ x y = error $ "impossible: dispatches' on " ++ show (x, y)
 
 -- | A comma-separated list of zero or more expressions, surrounded by square
@@ -293,24 +294,24 @@ pBlock = tagged (braces $ do
 -- | A general "single dispatch" form, without a target.
 --
 -- Used for both chaines and particles.
-cSingle :: Bool -> Parser EParticle
+cSingle :: Bool -> Parser (Particle Expr)
 cSingle p = do
     n <- if p then anyIdent else ident
     notFollowedBy colon
     spacing
-    return (EPMSingle n)
+    return (PMSingle n)
     <?> "single segment"
 
 -- | A general "keyword dispatch" form, without a head.
 --
 -- Used for both chaines and particles.
-cKeyword :: Bool -> Parser EParticle
+cKeyword :: Bool -> Parser (Particle Expr)
 cKeyword wc = do
     ks <- parens $ many1 keyword'
     let (ns, mvs) = second (Nothing:) $ unzip ks
     if any isOperator (tail ns)
         then toDispatch ns mvs
-        else return $ EPMKeyword ns mvs
+        else return $ PMKeyword ns mvs
     <?> "keyword segment"
   where
     keywordVal
@@ -343,8 +344,8 @@ cKeyword wc = do
         | all isJust opVals = do
             os <- getState
             pos <- getPosition
-            let msg = toBinaryOps (psOperators os) $ ekeyword opers (map fromJust opVals)
-            return . EPMKeyword nonOpers $
+            let msg = toBinaryOps (psOperators os) $ T.keyword opers (map fromJust opVals)
+            return . PMKeyword nonOpers $
                 partVals ++ [Just $ Dispatch (Just pos) msg]
         | otherwise = fail "invalid particle; toplevel operator with wildcards as values"
       where
@@ -354,31 +355,31 @@ cKeyword wc = do
 -- | Work out precadence, associativity, etc. for a keyword dispatch.
 --
 -- The input is a keyword EMessage with a mix of operators and identifiers as
--- its name, e.g. @EKeyword { emNames = ["+", "*", "remainder"] }@.
-toBinaryOps :: Operators -> EMessage -> EMessage
-toBinaryOps _ done@(EKeyword _ [_] [_, _]) = done
-toBinaryOps ops (EKeyword h (n:ns) (v:vs))
+-- its name, e.g. @keyword { emNames = ["+", "*", "remainder"] }@.
+toBinaryOps :: Operators -> Message Expr -> Message Expr
+toBinaryOps _ done@(Keyword _ [_] [_, _]) = done
+toBinaryOps ops (Keyword h (n:ns) (v:vs))
     | nextFirst =
-         ekeyword [n]
+         T.keyword [n]
             [ v
             , Dispatch (eLocation v)
-                (toBinaryOps ops (ekeyword ns vs))
+                (toBinaryOps ops (T.keyword ns vs))
             ]
     | isOperator n =
-        toBinaryOps ops . ekeyword ns $
-            (Dispatch (eLocation v) (ekeyword [n] [v, head vs]):tail vs)
-    | nonOperators == ns = EKeyword h (n:ns) (v:vs)
+        toBinaryOps ops . T.keyword ns $
+            (Dispatch (eLocation v) (T.keyword [n] [v, head vs]):tail vs)
+    | nonOperators == ns = Keyword h (n:ns) (v:vs)
     | null nonOperators && length vs > 2 =
-        ekeyword [head ns]
+        T.keyword [head ns]
             [ Dispatch (eLocation v) $
-                ekeyword [n] [v, head vs]
+                T.keyword [n] [v, head vs]
             , Dispatch (eLocation v) $
-                toBinaryOps ops (ekeyword (tail ns) (tail vs))
+                toBinaryOps ops (T.keyword (tail ns) (tail vs))
             ]
     | otherwise =
-        toBinaryOps ops . ekeyword (drop numNonOps ns) $
+        toBinaryOps ops . T.keyword (drop numNonOps ns) $
             (Dispatch (eLocation v) $
-                ekeyword (n : nonOperators)
+                T.keyword (n : nonOperators)
                 (v : take (numNonOps + 1) vs)) :
                 drop (numNonOps + 1) vs
   where
@@ -404,10 +405,10 @@ toBinaryOps ops (EKeyword h (n:ns) (v:vs))
 toBinaryOps _ u = error $ "cannot toBinaryOps: " ++ show u
 
 -- | Defines a macro, given its pattern and expression.
-addMacro :: Pattern -> Expr -> Parser ()
+addMacro :: Message Pattern -> Expr -> Parser ()
 addMacro p e =
     case p of
-        PSingle {} ->
+        Single {} ->
             modifyState $ \ps -> ps
                 { psMacros =
                     ( addMethod (Macro p e) (fst (psMacros ps))
@@ -415,15 +416,13 @@ addMacro p e =
                     )
                 }
 
-        PKeyword {} ->
+        Keyword {} ->
             modifyState $ \ps -> ps
                 { psMacros =
                     ( fst (psMacros ps)
                     , addMethod (Macro p e) (snd (psMacros ps))
                     )
                 }
-
-        _ -> error $ "impossible: addMacro: p is " ++ show p
 
 -- | Parse a block of expressions from a given input string.
 parser :: Parser [Expr]

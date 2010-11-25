@@ -62,15 +62,15 @@ load = do
             main = toPattern v
 
         ids <- gets primitives
-        obj <- targets ids main
+        obj <- targets' ids main
 
         pat <-
             matchable $
                 case p of
                     PMKeyword ns _ ->
-                        pkeyword ns (main:others)
+                        keyword ns (main:others)
                     PMSingle n ->
-                        psingle n main
+                        single n main
 
         let m =
                 case e of
@@ -101,9 +101,9 @@ load = do
         withTop c $ do
             case p of
                 PMKeyword ns _ ->
-                    define (pkeyword ns targets) expr
+                    define (keyword ns targets) expr
 
                 PMSingle n ->
-                    define (psingle n (head targets)) expr
+                    define (single n (head targets)) expr
 
             return (particle "ok")

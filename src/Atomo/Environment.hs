@@ -13,14 +13,10 @@ import Atomo.Types
 
 -- | Evaluate an expression, yielding a value.
 eval :: Expr -> VM Value
-eval (Define { ePattern = p, eExpr = ev }) = do
+eval (Define { emPattern = p, eExpr = ev }) = do
     define p ev
     return (particle "ok")
-eval (Set { ePattern = p@(PSingle {}), eExpr = ev }) = do
-    v <- eval ev
-    define p (Primitive (eLocation ev) v)
-    return v
-eval (Set { ePattern = p@(PKeyword {}), eExpr = ev }) = do
+eval (Set { ePattern = PMessage p, eExpr = ev }) = do
     v <- eval ev
     define p (Primitive (eLocation ev) v)
     return v
@@ -28,19 +24,19 @@ eval (Set { ePattern = p, eExpr = ev }) = do
     v <- eval ev
     set p v
 eval (Dispatch
-        { eMessage = ESingle
-            { emID = i
-            , emName = n
-            , emTarget = t
+        { eMessage = Single
+            { mID = i
+            , mName = n
+            , mTarget = t
             }
         }) = do
     v <- eval t
     dispatch (Single i n v)
 eval (Dispatch
-        { eMessage = EKeyword
-            { emID = i
-            , emNames = ns
-            , emTargets = ts
+        { eMessage = Keyword
+            { mID = i
+            , mNames = ns
+            , mTargets = ts
             }
         }) = do
     vs <- mapM eval ts
@@ -63,27 +59,25 @@ eval (EBlock { eArguments = as, eContents = es }) = do
 eval (EList { eContents = es }) = do
     vs <- mapM eval es
     return (list vs)
-eval (EMacro { ePattern = p, eExpr = e }) = do
+eval (EMacro { emPattern = p, eExpr = e }) = do
     ps <- gets parserState
     modify $ \s -> s
         { parserState = ps
             { psMacros =
                 case p of
-                    PSingle {} ->
+                    Single {} ->
                         (addMethod (Macro p e) (fst (psMacros ps)), snd (psMacros ps))
 
-                    PKeyword {} ->
+                    Keyword {} ->
                         (fst (psMacros ps), addMethod (Macro p e) (snd (psMacros ps)))
-
-                    _ -> error $ "impossible: eval EMacro: p is " ++ show p
             }
         }
 
     return (particle "ok")
 eval (EForMacro {}) = return (particle "ok")
-eval (EParticle { eParticle = EPMSingle n }) =
+eval (EParticle { eParticle = PMSingle n }) =
     return (Particle $ PMSingle n)
-eval (EParticle { eParticle = EPMKeyword ns mes }) = do
+eval (EParticle { eParticle = PMKeyword ns mes }) = do
     mvs <- forM mes $
         maybe (return Nothing) (liftM Just . eval)
     return (Particle $ PMKeyword ns mvs)
@@ -111,13 +105,13 @@ eval (EQuote { eExpr = qe }) = do
         return (s { eExpr = ne })
     unquote n d@(Dispatch { eMessage = em }) =
         case em of
-            EKeyword { emTargets = ts } -> do
+            Keyword { mTargets = ts } -> do
                 nts <- mapM (unquote n) ts
-                return d { eMessage = em { emTargets = nts } }
+                return d { eMessage = em { mTargets = nts } }
 
-            ESingle { emTarget = t } -> do
+            Single { mTarget = t } -> do
                 nt <- unquote n t
-                return d { eMessage = em { emTarget = nt } }
+                return d { eMessage = em { mTarget = nt } }
     unquote n b@(EBlock { eContents = es }) = do
         nes <- mapM (unquote n) es
         return b { eContents = nes }
@@ -129,13 +123,13 @@ eval (EQuote { eExpr = qe }) = do
         return m { eExpr = ne }
     unquote n p@(EParticle { eParticle = ep }) =
         case ep of
-            EPMKeyword ns mes -> do
+            PMKeyword ns mes -> do
                 nmes <- forM mes $ \me ->
                     case me of
                         Nothing -> return Nothing
                         Just e -> liftM Just (unquote n e)
 
-                return p { eParticle = EPMKeyword ns nmes }
+                return p { eParticle = PMKeyword ns nmes }
 
             _ -> return p
     unquote n q@(EQuote { eExpr = e }) = do
@@ -198,9 +192,8 @@ defineOn v m' = do
     obj <- liftIO (readIORef o)
 
     let (oss, oks) = oMethods obj
-        ms (PSingle {}) = (addMethod m oss, oks)
-        ms (PKeyword {}) = (oss, addMethod m oks)
-        ms x = error $ "impossible: defining with pattern " ++ show x
+        ms (Single {}) = (addMethod m oss, oks)
+        ms (Keyword {}) = (oss, addMethod m oks)
 
     liftIO . writeIORef o $
         obj { oMethods = ms (mPattern m) }
@@ -208,7 +201,7 @@ defineOn v m' = do
     m = m' { mPattern = setSelf v (mPattern m') }
 
 -- | Define a method on all roles involved in its pattern.
-define :: Pattern -> Expr -> VM ()
+define :: Message Pattern -> Expr -> VM ()
 define !p !e = do
     is <- gets primitives
     newp <- matchable p
@@ -216,8 +209,8 @@ define !p !e = do
 
     os <-
         case p of
-            PKeyword { ppTargets = (t:_) } | isTop t ->
-                targets is (head (ppTargets newp))
+            Keyword { mTargets = (t:_) } | isTop t ->
+                targets' is (head (mTargets newp))
 
             _ -> targets is newp
 
@@ -233,18 +226,20 @@ define !p !e = do
 
 
 -- | Swap out a reference match with PThis, for inserting on an object.
-setSelf :: Value -> Pattern -> Pattern
-setSelf v (PKeyword i ns ps) =
-    PKeyword i ns (map (setSelf v) ps)
-setSelf v (PMatch x) | v == x = PThis
-setSelf v (PNamed n p') =
-    PNamed n (setSelf v p')
-setSelf v (PSingle i n t) =
-    PSingle i n (setSelf v t)
-setSelf v (PInstance p) = PInstance (setSelf v p)
-setSelf v (PStrict p) = PStrict (setSelf v p)
-setSelf _ p' = p'
+setSelf :: Value -> Message Pattern -> Message Pattern
+setSelf v (Keyword i ns ps) =
+    Keyword i ns (map (setSelf' v) ps)
+setSelf v (Single i n t) =
+    Single i n (setSelf' v t)
 
+setSelf' :: Value -> Pattern -> Pattern
+setSelf' v (PMatch x) | v == x = PThis
+setSelf' v (PMessage m) = PMessage $ setSelf v m
+setSelf' v (PNamed n p') =
+    PNamed n (setSelf' v p')
+setSelf' v (PInstance p) = PInstance (setSelf' v p)
+setSelf' v (PStrict p) = PStrict (setSelf' v p)
+setSelf' _ p' = p'
 
 -- | Pattern-match a value, inserting bindings into the current toplevel.
 set :: Pattern -> Value -> VM Value
@@ -260,42 +255,47 @@ set p v = do
 
 
 -- | Turn any PObject patterns into PMatches.
-matchable :: Pattern -> VM Pattern
-matchable p'@(PSingle { ppTarget = t }) = do
-    t' <- matchable t
-    return p' { ppTarget = t' }
-matchable p'@(PKeyword { ppTargets = ts }) = do
-    ts' <- mapM matchable ts
-    return p' { ppTargets = ts' }
-matchable PThis = liftM PMatch (gets top)
-matchable (PObject oe) = liftM PMatch (eval oe)
-matchable (PInstance p) = liftM PInstance (matchable p)
-matchable (PStrict p) = liftM PStrict (matchable p)
-matchable (PNamed n p') = liftM (PNamed n) (matchable p')
-matchable p' = return p'
+matchable :: Message Pattern -> VM (Message Pattern)
+matchable p'@(Single { mTarget = t }) = do
+    t' <- matchable' t
+    return p' { mTarget = t' }
+matchable p'@(Keyword { mTargets = ts }) = do
+    ts' <- mapM matchable' ts
+    return p' { mTargets = ts' }
 
+matchable' :: Pattern -> VM Pattern
+matchable' PThis = liftM PMatch (gets top)
+matchable' (PObject oe) = liftM PMatch (eval oe)
+matchable' (PInstance p) = liftM PInstance (matchable' p)
+matchable' (PStrict p) = liftM PStrict (matchable' p)
+matchable' (PNamed n p') = liftM (PNamed n) (matchable' p')
+matchable' (PMessage m) = liftM PMessage (matchable m)
+matchable' p' = return p'
 
 -- | Find the target objects for a pattern.
-targets :: IDs -> Pattern -> VM [ORef]
-targets _ (PMatch v) = liftM (: []) (orefFor v)
-targets is (PSingle _ _ p) = targets is p
-targets is (PKeyword _ _ ps) = do
-    ts <- mapM (targets is) ps
+targets :: IDs -> Message Pattern -> VM [ORef]
+targets is (Single _ _ p) = targets' is p
+targets is (Keyword _ _ ps) = do
+    ts <- mapM (targets' is) ps
     return (nub (concat ts))
-targets is (PNamed _ p) = targets is p
-targets is PAny = return [idObject is]
-targets is (PList _) = return [idList is]
-targets is (PHeadTail h t) = do
-    ht <- targets is h
-    tt <- targets is t
+
+targets' :: IDs -> Pattern -> VM [ORef]
+targets' _ (PMatch v) = liftM (: []) (orefFor v)
+targets' is (PNamed _ p) = targets' is p
+targets' is PAny = return [idObject is]
+targets' is (PList _) = return [idList is]
+targets' is (PHeadTail h t) = do
+    ht <- targets' is h
+    tt <- targets' is t
     if idChar is `elem` ht || idString is `elem` tt
         then return [idList is, idString is]
         else return [idList is]
-targets is (PPMKeyword {}) = return [idParticle is]
-targets is (PExpr _) = return [idExpression is]
-targets is (PInstance p) = targets is p
-targets is (PStrict p) = targets is p
-targets _ p = error $ "no targets for " ++ show p
+targets' is (PPMKeyword {}) = return [idParticle is]
+targets' is (PExpr _) = return [idExpression is]
+targets' is (PInstance p) = targets' is p
+targets' is (PStrict p) = targets' is p
+targets' is (PMessage m) = targets is m
+targets' _ p = error $ "no targets for " ++ show p
 
 
 
@@ -308,7 +308,7 @@ targets _ p = error $ "no targets for " ++ show p
 -- If the message is not understood, @\@did-not-understand:(at:)@ is sent to all
 -- roles until one responds to it. If none of them handle it, a
 -- @\@did-not-understand:@ error is raised.
-dispatch :: Message -> VM Value
+dispatch :: Message Value -> VM Value
 dispatch !m = do
     find <- findFirstMethod m (vs m)
     case find of
@@ -345,7 +345,7 @@ dispatch !m = do
 
 -- | Find a method on object `o' that responds to `m', searching its
 -- delegates if necessary.
-findMethod :: Value -> Message -> VM (Maybe Method)
+findMethod :: Value -> Message Value -> VM (Maybe Method)
 findMethod v m = do
     is <- gets primitives
     r <- orefFor v
@@ -355,7 +355,7 @@ findMethod v m = do
         mt -> return mt
 
 -- | Find the first value that has a method defiend for `m'.
-findFirstMethod :: Message -> [Value] -> VM (Maybe Method)
+findFirstMethod :: Message Value -> [Value] -> VM (Maybe Method)
 findFirstMethod _ [] = return Nothing
 findFirstMethod m (v:vs) = do
     r <- findMethod v m
@@ -364,7 +364,7 @@ findFirstMethod m (v:vs) = do
         _ -> return r
 
 -- | Find a relevant method for message `m' on object `o'.
-relevant :: IDs -> ORef -> Object -> Message -> Maybe Method
+relevant :: IDs -> ORef -> Object -> Message Value -> Maybe Method
 relevant ids r o m =
     lookupMap (mID m) (methods m) >>= firstMatch ids (Just r) m
   where
@@ -373,7 +373,7 @@ relevant ids r o m =
 
     firstMatch _ _ _ [] = Nothing
     firstMatch ids' r' m' (mt:mts)
-        | match ids' r' (mPattern mt) (Message m') = Just mt
+        | match ids' r' (PMessage (mPattern mt)) (Message m') = Just mt
         | otherwise = firstMatch ids' r' m' mts
 
 -- | Evaluate a method.
@@ -385,7 +385,7 @@ relevant ids r o m =
 --
 -- Macro methods: evaluates its expression in a scope with the pattern's
 -- bindings.
-runMethod :: Method -> Message -> VM Value
+runMethod :: Method -> Message Value -> VM Value
 runMethod (Slot { mValue = v }) _ = return v
 runMethod (Responder { mPattern = p, mContext = c, mExpr = e }) m = do
     nt <- newObject $ \o -> o

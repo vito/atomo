@@ -55,10 +55,10 @@ load = do
 
         case name of
             PMSingle n ->
-                return $ Expression (Dispatch Nothing (esingle n (fromExpression (head ts))))
+                return $ Expression (Dispatch Nothing (single n (fromExpression (head ts))))
 
             PMKeyword ns _ ->
-                return $ Expression (Dispatch Nothing (ekeyword ns (map fromExpression ts)))
+                return $ Expression (Dispatch Nothing (keyword ns (map fromExpression ts)))
 
     [$p|(s: String) parse-expressions|] =:
         getString [$e|s|] >>= liftM (list . map Expression) . parseInput
@@ -75,9 +75,9 @@ load = do
     [$p|(e: Expression) type|] =: do
         Expression e <- here "e" >>= findExpression
         case e of
-            Dispatch { eMessage = EKeyword {} } ->
+            Dispatch { eMessage = Keyword {} } ->
                 return (keyParticleN ["dispatch"] [particle "keyword"])
-            Dispatch { eMessage = ESingle {} } ->
+            Dispatch { eMessage = Single {} } ->
                 return (keyParticleN ["dispatch"] [particle "single"])
 
             Define {} -> return (particle "define")
@@ -93,16 +93,16 @@ load = do
             EQuote {} -> return (particle "quote")
             EUnquote {} -> return (particle "unquote")
 
-            EParticle { eParticle = EPMKeyword _ _ } ->
+            EParticle { eParticle = PMKeyword _ _ } ->
                 return (keyParticleN ["particle"] [particle "keyword"])
-            EParticle { eParticle = EPMSingle _ } ->
+            EParticle { eParticle = PMSingle _ } ->
                 return (keyParticleN ["particle"] [particle "single"])
 
     [$p|(e: Expression) target|] =: do
         Expression e <- here "e" >>= findExpression
 
         case e of
-            Dispatch { eMessage = ESingle { emTarget = t } } ->
+            Dispatch { eMessage = Single { mTarget = t } } ->
                 return (Expression t)
             _ -> raise ["no-target-for"] [Expression e]
 
@@ -110,9 +110,9 @@ load = do
         Expression e <- here "e" >>= findExpression
 
         case e of
-            Dispatch { eMessage = EKeyword { emTargets = ts } } ->
+            Dispatch { eMessage = Keyword { mTargets = ts } } ->
                 return (list (map Expression ts))
-            Dispatch { eMessage = ESingle { emTarget = t } } ->
+            Dispatch { eMessage = Single { mTarget = t } } ->
                 return $ list [Expression t]
             _ -> raise ["no-targets-for"] [Expression e]
 
@@ -120,8 +120,8 @@ load = do
         Expression e <- here "e" >>= findExpression
 
         case e of
-            EParticle _ (EPMSingle n) -> return (string n)
-            Dispatch { eMessage = ESingle { emName = n } } ->
+            EParticle _ (PMSingle n) -> return (string n)
+            Dispatch { eMessage = Single { mName = n } } ->
                 return (string n)
             _ -> raise ["no-name-for"] [Expression e]
 
@@ -129,9 +129,9 @@ load = do
         Expression e <- here "e" >>= findExpression
 
         case e of
-            EParticle _ (EPMKeyword ns _) ->
+            EParticle _ (PMKeyword ns _) ->
                 return (list (map string ns))
-            Dispatch { eMessage = EKeyword { emNames = ns } } ->
+            Dispatch { eMessage = Keyword { mNames = ns } } ->
                 return (list (map string ns))
             _ -> raise ["no-names-for"] [Expression e]
 
@@ -139,10 +139,10 @@ load = do
         Expression e <- here "e" >>= findExpression
 
         case e of
-            Dispatch { eMessage = EKeyword { emNames = ns } } ->
+            Dispatch { eMessage = Keyword { mNames = ns } } ->
                 return (keyParticle ns (replicate (fromIntegral $ length ns + 1) Nothing))
 
-            Dispatch { eMessage = ESingle { emName = n } } ->
+            Dispatch { eMessage = Single { mName = n } } ->
                 return (particle n)
 
             _ -> raise ["no-particle-for"] [Expression e]
@@ -151,7 +151,7 @@ load = do
         Expression e <- here "e" >>= findExpression
 
         case e of
-            EParticle { eParticle = EPMKeyword _ mes } ->
+            EParticle { eParticle = PMKeyword _ mes } ->
                 return . list $
                     map
                         (maybe (particle "none") (keyParticleN ["ok"] . (:[]) . Expression))
@@ -180,8 +180,8 @@ load = do
         Expression e <- here "e" >>= findExpression
         case e of
             Set { ePattern = p } -> return (Pattern p)
-            Define { ePattern = p } -> return (Pattern p)
-            EMacro { ePattern = p } -> return (Pattern p)
+            Define { emPattern = p } -> return (Pattern (PMessage p))
+            EMacro { emPattern = p } -> return (Pattern (PMessage p))
             _ -> raise ["no-pattern-for"] [Expression e]
 
     [$p|(e: Expression) expression|] =: do
@@ -226,7 +226,7 @@ load = do
 matchBranches :: IDs -> [(Pattern, Expr)] -> Value -> VM Value
 matchBranches _ [] v = raise ["no-match-for"] [v]
 matchBranches ids ((p, e):ps) v = do
-    p' <- matchable p
+    p' <- matchable' p
     if match ids Nothing p' v
         then newScope $ set p' v >> eval e
         else matchBranches ids ps v
@@ -234,7 +234,7 @@ matchBranches ids ((p, e):ps) v = do
 prettyMatch :: Expr -> [(Expr, Expr)] -> Doc
 prettyMatch t bs =
     pretty . Dispatch Nothing $
-        ekeyword ["match"] [t, EBlock Nothing [] branches]
+        keyword ["match"] [t, EBlock Nothing [] branches]
   where
     branches = flip map bs $ \(p, e) ->
-        Dispatch Nothing $ ekeyword ["->"] [p, e]
+        Dispatch Nothing $ keyword ["->"] [p, e]

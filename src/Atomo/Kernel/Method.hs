@@ -12,7 +12,7 @@ load = do
 
     [$p|(m: Method) pattern|] =: do
         Method m <- here "m" >>= findMethod'
-        return (Pattern (mPattern m))
+        return (Pattern (PMessage (mPattern m)))
 
     [$p|(m: Method) expression|] =: do
         Method m <- here "m" >>= findMethod'

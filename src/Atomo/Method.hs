@@ -39,9 +39,9 @@ comparePrecision (PPMKeyword _ as) (PPMKeyword _ bs) =
     comparePrecisions as bs
 comparePrecision (PHeadTail ah at) (PHeadTail bh bt) =
     comparePrecisions [ah, at] [bh, bt]
-comparePrecision (PSingle { ppTarget = at }) (PSingle { ppTarget = bt }) =
+comparePrecision (PMessage (Single { mTarget = at })) (PMessage (Single { mTarget = bt })) =
     comparePrecision at bt
-comparePrecision (PKeyword { ppTargets = as }) (PKeyword { ppTargets = bs }) =
+comparePrecision (PMessage (Keyword { mTargets = as })) (PMessage (Keyword { mTargets = bs })) =
     compareHeads as bs
 comparePrecision (PObject _) (PObject _) = EQ
 comparePrecision PAny _ = GT
@@ -90,14 +90,14 @@ addMethod :: Method -> MethodMap -> MethodMap
 addMethod m mm =
     M.insertWith (\[m'] ms -> insertMethod m' ms) key [m] mm
   where
-    key = ppID (mPattern m)
+    key = mID $ mPattern m
 
 -- | Insert a method into a list of existing methods most precise goes first,
 -- equivalent patterns are replaced.
 insertMethod :: Method -> [Method] -> [Method]
 insertMethod x [] = [x]
 insertMethod x ys@(y:ys') =
-    case comparePrecision (mPattern x) (mPattern y) of
+    case comparePrecision (PMessage (mPattern x)) (PMessage (mPattern y)) of
         -- stop at LT so it's after all of the definitons before this one
         LT -> x : ys
 
@@ -108,7 +108,7 @@ insertMethod x ys@(y:ys') =
         _ -> y : insertMethod x ys'
 
 -- | Convert a list of slots to a MethodMap.
-toMethods :: [(Pattern, Value)] -> MethodMap
+toMethods :: [(Message Pattern, Value)] -> MethodMap
 toMethods = foldl (\ss (p, v) -> addMethod (Slot p v) ss) emptyMap
 
 -- | A pair of two empty MethodMaps; one for single methods and one for keyword
@@ -137,4 +137,4 @@ elemsMap = M.elems
 insertMap :: Method -> MethodMap -> MethodMap
 insertMap m mm = M.insert key [m] mm
   where
-    key = ppID (mPattern m)
+    key = mID $ mPattern m
