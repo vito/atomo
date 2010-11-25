@@ -152,6 +152,9 @@ data AtomoError
     deriving (Show, Typeable)
 
 -- | Pattern-matching.
+--
+-- The Eq instance only checks equivalence. For example, named pattern matches
+-- only match their patterns, not the names.
 data Pattern
     = PAny
     | PHeadTail Pattern Pattern
@@ -371,14 +374,14 @@ instance Eq Pattern where
     -- and other things that mean the same thing
     (==) PAny PAny = True
     (==) (PHeadTail ah at) (PHeadTail bh bt) =
-        (==) ah bh && (==) at bt
-    (==) (PMessage a) (PMessage b) = (==) a b
+        ah == bh && at == bt
+    (==) (PMessage a) (PMessage b) = a == b
     (==) (PList aps) (PList bps) =
-        length aps == length bps && and (zipWith (==) aps bps)
+        length aps == length bps && and (zipWith aps == bps)
     (==) (PMatch a) (PMatch b) = a == b
-    (==) (PNamed _ a) (PNamed _ b) = (==) a b
-    (==) (PNamed _ a) b = (==) a b
-    (==) a (PNamed _ b) = (==) a b
+    (==) (PNamed _ a) (PNamed _ b) = a == b
+    (==) (PNamed _ a) b = a == b
+    (==) a (PNamed _ b) = a == b
     (==) (PPMKeyword ans aps) (PPMKeyword bns bps) =
         ans == bns && and (zipWith (==) aps bps)
     (==) PThis PThis = True
