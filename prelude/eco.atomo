@@ -108,7 +108,7 @@ Eco install: (path: String) :=
       { e |
         exe =
           [ "#!/usr/bin/env atomo"
-            "load: " .. (path </> e to) show
+            "require: " .. (".." </> "lib" </> pkg name </> pkg version (as: String) </> e to) show
           ] unlines
 
         with-output-to: (Eco executable: e from) do: { exe print }
