@@ -377,7 +377,7 @@ instance Eq Pattern where
         ah == bh && at == bt
     (==) (PMessage a) (PMessage b) = a == b
     (==) (PList aps) (PList bps) =
-        length aps == length bps && and (zipWith aps == bps)
+        length aps == length bps && and (zipWith (==) aps bps)
     (==) (PMatch a) (PMatch b) = a == b
     (==) (PNamed _ a) (PNamed _ b) = a == b
     (==) (PNamed _ a) b = a == b
