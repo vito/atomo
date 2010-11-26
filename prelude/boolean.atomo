@@ -35,10 +35,11 @@ when: True do: (action: Block) :=
 macro (e when: b) `(when: ~b do: { ~e })
 
 while: (test: Block) do: (action: Block) :=
-  when: test call do:
-    { action in-context call
-      while: test do: action
-    }
+  { cc a |
+    { (cc yield: @ok) unless: test call
+      a call
+    } repeat
+  } call/cc: [action in-context]
 
 True show := "True"
 False show := "False"
