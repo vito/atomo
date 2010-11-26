@@ -4,11 +4,6 @@ context Block: (es: List) :=
 context Block: (es: List) arguments: (as: List) :=
   Block new: es arguments: as in: context
 
-(b: Block) repeat :=
-  { b in-context call
-    b repeat
-  } call
-
 (b: Block) in-context :=
   b clone do:
     { call := b call-in: b context

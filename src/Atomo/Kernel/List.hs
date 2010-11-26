@@ -80,11 +80,10 @@ load = do
         Integer n <- here "n" >>= findInteger
         return . List $ V.replicate (fromIntegral n) v
 
-    [$p|b repeat: (n: Integer)|] =: do
-        b <- here "b"
+    [$p|(b: Block) repeat: (n: Integer)|] =: do
+        b <- here "b" >>= findBlock
         Integer n <- here "n" >>= findInteger
-        vs <- V.replicateM (fromIntegral n) $
-            dispatch (single "call" b)
+        vs <- V.replicateM (fromIntegral n) (callBlock b [])
         return $ List vs
 
     [$p|(a: List) .. (b: List)|] =: do

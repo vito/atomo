@@ -21,6 +21,10 @@ load = do
         b <- here "b" >>= findBlock
         callBlock b []
 
+    [$p|(b: Block) repeat|] =: do
+        b@(Block c _ _) <- here "b" >>= findBlock
+        withTop c (forever (callBlock b []))
+
     [$p|(b: Block) call: (l: List)|] =: do
         b <- here "b" >>= findBlock
         vs <- getList [$e|l|]
