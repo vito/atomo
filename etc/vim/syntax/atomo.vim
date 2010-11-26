@@ -13,21 +13,20 @@ syn match   atomoSpecialChar	contained "\\\([0-9]\+\|o[0-7]\+\|x[0-9a-fA-F]\+\|[
 syn match   atomoSpecialChar	contained "\\\(NUL\|SOH\|STX\|ETX\|EOT\|ENQ\|ACK\|BEL\|BS\|HT\|LF\|VT\|FF\|CR\|SO\|SI\|DLE\|DC1\|DC2\|DC3\|DC4\|NAK\|SYN\|ETB\|CAN\|EM\|SUB\|ESC\|FS\|GS\|RS\|US\|SP\|DEL\)"
 syn match   atomoSpecialCharError	contained "\\&\|'''\+"
 syn region  atomoString		start=+"+  skip=+\\\\\|\\"+  end=+"+  contains=atomoSpecialChar
-syn match   atomoCharacter		"[^a-zA-Z0-9_']'\([^\\]\|\\[^']\+\|\\'\)'"lc=1 contains=atomoSpecialChar,atomoSpecialCharError
-syn match   atomoCharacter		"^'\([^\\]\|\\[^']\+\|\\'\)'" contains=atomoSpecialChar,atomoSpecialCharError
+syn match   atomoCharacter		"$\([^\\]\|\\[^ ]\+\|\\\\\)" contains=atomoSpecialChar,atomoSpecialCharError
 syn match   atomoNumber		"\<[0-9]\+\>\|\<0[xX][0-9a-fA-F]\+\>\|\<0[oO][0-7]\+\>"
 syn match   atomoFloat		"\<[0-9]\+\.[0-9]\+\([eE][-+]\=[0-9]\+\)\=\>"
 
 syn match atomoSpecialIdent      "[A-Z][a-zA-Z0-9~!@#$%^&*\-_=+./\\|<>\?]*"
-syn match atomoIdentifier        "[a-zA-Z!#$%^&*\-_=+./\\|<>\?][a-zA-Z0-9~!@#$%^&*\-_=+./\\|<>\?]*"
-syn match atomoKeyword	         "[a-zA-Z0-9~!@#$%^&*\-_=+./\\|<>\?]*:"
+syn match atomoIdentifier        "[a-zA-Z!#%^&*\-_=+./\\|<>\?][a-zA-Z0-9~!@#$%^&*\-_=+./\\|<>\?]*"
+syn match atomoKeyword	         "[a-zA-Z0-9~!@#%^&*\-_=+./\\|<>\?]*:"
 
 syn match atomoBoolean          "\<\(True\|False\)\>"
 syn match atomoConditional		"\<\(if\|then\|else\)\>"
 syn match atomoSpecial	        "\<\(this\|self\|macro\|for-macro\|operator\)\>"
 
 " Operators, optionally with a : prefix (for :=)
-syn match atomoOperator ":\=[~!@#$%^&\*\-=\+./\\|<>\?]\+\( \|$\)"
+syn match atomoOperator ":\=[~!@#%^&\*\-=\+./\\|<>\?]\+\( \|$\)"
 
 syn match atomoParticle	       "@\([a-zA-Z:~!@#$%^&*\-_=+./\\|<>\?]\+\)"
 syn region atomoParticle	       start=+@(+ end=+)+ contains=atomoString,atomoCharacter,atomoNumber,atomoFloat,atomoKeyword,atomoSpecialIdent,atomoOperator,atomoQuote,atomoIdentifier
