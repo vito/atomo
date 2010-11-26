@@ -18,7 +18,7 @@ if: True then: (a: Block) else: Block :=
 if: False then: Block else: (b: Block) :=
   b call
 
-unless: True do: Block = @ok
+unless: True do: Block := @ok
 unless: False do: (action: Block) :=
   { action in-context call
     @ok
@@ -26,7 +26,7 @@ unless: False do: (action: Block) :=
 
 macro (e unless: b) `(unless: ~b do: { ~e })
 
-when: False do: Block = @ok
+when: False do: Block := @ok
 when: True do: (action: Block) :=
   { action in-context call
     @ok

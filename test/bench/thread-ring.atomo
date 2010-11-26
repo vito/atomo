@@ -1,31 +1,32 @@
 main = self
 
-start: token := {
-    "starting!" print
+start: token :=
+  { "starting!" print
 
-    h = (503 down-to: 2) reduce: { pid id |
+    h = (503 .. 2) reduce:
+      { pid id |
         { roundtrip: id next: pid } spawn
-    } with: self
+      } with: self
 
     h <- token
 
     roundtrip: 1 next: h
-} call
+  } call
 
 roundtrip: id next: pid :=
-    receive match: {
-        @done -> @done
+  receive match: {
+    @done -> @done
 
-        1 -> {
-            id print
-            main <- @done
-        } call
+    1 ->
+      { id print
+        main <- @done
+      } call
 
-        token -> {
-            pid <- (token - 1)
-            roundtrip: id next: pid
-        } call
-    }
+    token ->
+      { pid <- (token - 1)
+        roundtrip: id next: pid
+      } call
+  }
 
 { start: 500000 } time print
 
