@@ -1,7 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Atomo.Helpers where
 
-import "monads-fd" Control.Monad.State
+import Control.Monad.State
 import Data.Dynamic
 import Data.IORef
 import qualified Data.Text as T

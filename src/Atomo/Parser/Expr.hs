@@ -1,7 +1,7 @@
 module Atomo.Parser.Expr where
 
 import Control.Arrow (first, second)
-import "monads-fd" Control.Monad.State
+import Control.Monad.State
 import Data.Maybe (fromJust, isJust)
 import Text.Parsec
 import qualified "mtl" Control.Monad.Trans as MTL

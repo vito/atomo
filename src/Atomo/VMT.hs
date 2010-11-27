@@ -1,8 +1,8 @@
 module Atomo.VMT where
 
-import "monads-fd" Control.Monad.Cont
-import "monads-fd" Control.Monad.State
-import "monads-fd" Control.Monad.Trans
+import Control.Monad.Cont
+import Control.Monad.State
+import Control.Monad.Trans
 
 import Atomo.Types
 

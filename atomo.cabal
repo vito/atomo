@@ -47,7 +47,6 @@ library
     filepath,
     hashable,
     hint,
-    monads-fd,
     mtl,
     parsec >= 3.0.0,
     pretty,
@@ -55,8 +54,6 @@ library
     text,
     time,
     vector
-
-  extensions:        PackageImports
 
   exposed-modules:
     Atomo,
@@ -110,8 +107,6 @@ executable atomo
   ghc-options:       -Wall -threaded -fno-warn-unused-do-bind
                      -funfolding-use-threshold=9999
 
-  extensions:        PackageImports
-
   build-depends:
     base >= 4 && < 5,
     containers,
@@ -120,7 +115,6 @@ executable atomo
     hashable,
     haskeline,
     hint,
-    monads-fd,
     mtl,
     parsec >= 3.0.0,
     pretty,

@@ -1,6 +1,6 @@
 module Atomo.Load where
 
-import "monads-fd" Control.Monad.State
+import Control.Monad.State
 import System.Directory
 import System.FilePath
 import qualified Language.Haskell.Interpreter as H

@@ -1,7 +1,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 module Main where
 
-import "monads-fd" Control.Monad.Cont
+import Control.Monad.Cont
 import System.Environment (getArgs)
 
 import Atomo

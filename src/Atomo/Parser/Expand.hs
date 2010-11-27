@@ -1,6 +1,6 @@
 module Atomo.Parser.Expand (macroExpand) where
 
-import "monads-fd" Control.Monad.State
+import Control.Monad.State
 import Text.Parsec
 import qualified "mtl" Control.Monad.Trans as MTL
 

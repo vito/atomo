@@ -6,7 +6,7 @@ module Atomo.QuasiQuotes
     , es
     ) where
 
-import "monads-fd" Control.Monad.State hiding (lift)
+import Control.Monad.State hiding (lift)
 import Data.Maybe (fromJust)
 import Data.Typeable
 import Language.Haskell.TH.Quote

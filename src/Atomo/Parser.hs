@@ -1,6 +1,6 @@
 module Atomo.Parser where
 
-import "monads-fd" Control.Monad.State
+import Control.Monad.State
 import Text.Parsec
 
 import Atomo.Environment

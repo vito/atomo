@@ -1,8 +1,8 @@
 {-# LANGUAGE BangPatterns #-}
 module Atomo.Environment where
 
-import "monads-fd" Control.Monad.Cont
-import "monads-fd" Control.Monad.State
+import Control.Monad.Cont
+import Control.Monad.State
 import Data.IORef
 import Data.List (nub)
 

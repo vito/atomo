@@ -1,7 +1,7 @@
 module Atomo.Run where
 
 import Control.Concurrent
-import "monads-fd" Control.Monad.State
+import Control.Monad.State
 
 import Atomo.Core
 import Atomo.Environment
