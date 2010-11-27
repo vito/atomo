@@ -138,7 +138,7 @@ bindings (Single { mTarget = p }) (Single { mTarget = t }) =
     toMethods (bindings' p t)
 bindings (Keyword { mTargets = ps }) (Keyword { mTargets = ts }) =
     toMethods $ concat (zipWith bindings' ps ts)
-bindings _ _ = []
+bindings p m = error $ "impossible: bindings on " ++ show (p, m)
 
 -- | Given a pattern and avalue, return the bindings as a list of pairs.
 bindings' :: Pattern -> Value -> [(Message Pattern, Value)]
@@ -234,7 +234,7 @@ toPattern (Primitive { eValue = v }) =
 toPattern (ETop {}) =
     return (PObject (ETop Nothing))
 toPattern b@(EBlock {}) =
-    return (PObject (Dispatch Nothing (single "call" b)))
+    return (PObject (Dispatch Nothing (keyword ["call-in"] [b, ETop Nothing])))
 toPattern _ = Nothing
 
 -- | Convert an expression into a definition's message pattern.

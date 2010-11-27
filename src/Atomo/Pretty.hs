@@ -108,7 +108,7 @@ instance Pretty Pattern where
             capitalized t
         capitalized _ = False
 
-        isParticular (Single { mName = "call", mTarget = EBlock {} }) =
+        isParticular (Keyword { mNames = ["call"], mTargets = [EBlock {}, ETop {}] }) =
             True
         isParticular _ = False
 
