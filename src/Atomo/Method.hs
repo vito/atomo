@@ -96,16 +96,15 @@ addMethod m mm =
 -- equivalent patterns are replaced.
 insertMethod :: Method -> [Method] -> [Method]
 insertMethod x [] = [x]
-insertMethod x ys@(y:ys') =
-    case comparePrecision (PMessage (mPattern x)) (PMessage (mPattern y)) of
-        -- stop at LT so it's after all of the definitons before this one
-        LT -> x : ys
+insertMethod x (y:ys)
+    | mPattern x == mPattern y = x : ys
+    | otherwise =
+        case comparePrecision (PMessage (mPattern x)) (PMessage (mPattern y)) of
+            -- stop at LT so it's after all of the definitons before this one
+            LT -> x : y : ys
 
-        -- replace equivalent patterns
-        _ | mPattern x == mPattern y -> insertMethod x ys'
-
-        -- keep looking if we're EQ or GT
-        _ -> y : insertMethod x ys'
+            -- keep looking if we're EQ or GT
+            _ -> y : insertMethod x ys
 
 -- | Convert a list of slots to a MethodMap.
 toMethods :: [(Message Pattern, Value)] -> MethodMap
