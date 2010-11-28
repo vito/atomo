@@ -114,9 +114,7 @@ load = do
         t <- here "t"
         fn <- getString [$e|fn|]
 
-        modify $ \s -> s { top = t }
-
-        loadFile fn
+        withTop t (loadFile fn)
 
         return (particle "ok")
 
@@ -124,9 +122,7 @@ load = do
         t <- here "t"
         fn <- getString [$e|fn|]
 
-        modify $ \s -> s { top = t }
-
-        requireFile fn
+        withTop t (requireFile fn)
 
         return (particle "ok")
 
