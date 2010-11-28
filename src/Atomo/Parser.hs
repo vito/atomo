@@ -14,11 +14,11 @@ import Atomo.Types hiding (keyword, string)
 parseFile :: FilePath -> VM [Expr]
 parseFile fn =
     liftIO (readFile fn)
-        >>= continue (fileParser >>= mapM macroExpand) fn
+        >>= continue (fileParser >>= nextPhase) fn
 
 -- | Parses an input string, performs macro expansion, and returns an AST.
 parseInput :: String -> VM [Expr]
-parseInput = continue (parser >>= mapM macroExpand) "<input>"
+parseInput = continue (parser >>= nextPhase) "<input>"
 
 -- | Given a Parser action, a source, and the input, perform that action
 -- passing the parser state between VM and Parser.

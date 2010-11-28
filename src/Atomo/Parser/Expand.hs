@@ -1,15 +1,84 @@
-module Atomo.Parser.Expand (macroExpand) where
+module Atomo.Parser.Expand (doPragmas, macroExpand, nextPhase) where
 
 import Control.Monad.State
 import Text.Parsec
-import qualified Control.Monad.Trans as MTL
 
 import Atomo.Environment
 import Atomo.Helpers
-import Atomo.Method (lookupMap)
+import Atomo.Method (addMethod, lookupMap)
 import Atomo.Parser.Base
 import Atomo.Pattern (match)
 import Atomo.Types
+
+
+nextPhase :: [Expr] -> Parser [Expr]
+nextPhase es = do
+    mapM_ doPragmas es
+    ps <- getState
+    lift $ modify $ \e -> e { parserState = ps }
+    mapM macroExpand es
+
+
+doPragmas :: Expr -> Parser ()
+doPragmas (Dispatch { eMessage = em }) =
+    pragmas em
+  where
+    pragmas (Single _ _ t) =
+        doPragmas t
+    pragmas (Keyword _ _ ts) =
+        mapM_ doPragmas ts
+doPragmas (Define { eExpr = e }) = do
+    doPragmas e
+doPragmas (Set { eExpr = e }) = do
+    doPragmas e
+doPragmas (EBlock { eContents = es }) = do
+    mapM_ doPragmas es
+doPragmas (EList { eContents = es }) = do
+    mapM_ doPragmas es
+doPragmas (EMacro { emPattern = p, eExpr = e }) = do
+    {-e' <- doPragmas e-}
+    macroExpand e >>= addMacro p
+doPragmas (EParticle { eParticle = ep }) =
+    case ep of
+        PMKeyword _ mes ->
+            forM_ mes $ \me ->
+                case me of
+                    Nothing -> return ()
+                    Just e -> doPragmas e
+
+        _ -> return ()
+doPragmas (Operator {}) = return ()
+doPragmas (Primitive {}) = return ()
+doPragmas (EForMacro { eExpr = e }) = do
+    env <- fmap psEnvironment getState
+    macroExpand e >>= lift . withTop env . eval
+    return ()
+doPragmas (ETop {}) = return ()
+doPragmas (EVM {}) = return ()
+-- TODO: follow through EQuote into EUnquote
+doPragmas (EQuote {}) = return ()
+doPragmas (EUnquote {}) = return ()
+
+
+-- | Defines a macro, given its pattern and expression.
+addMacro :: Message Pattern -> Expr -> Parser ()
+addMacro p e = do
+    ms <- fmap psMacros getState
+    modifyState $ \ps -> ps
+        { psMacros = withMacro (psMacros ps)
+        }
+  where
+    withMacro ms =
+        case p of
+            Single {} ->
+                ( addMethod (Macro p e) (fst ms)
+                , snd ms
+                )
+
+            Keyword {} ->
+                ( fst ms
+                , addMethod (Macro p e) (snd ms)
+                )
 
 
 -- | Go through an expression recursively expanding macros. A dispatch
@@ -27,7 +96,8 @@ macroExpand d@(Dispatch { eMessage = em }) = do
             modifyState $ \ps -> ps { psClock = psClock ps + 1 }
 
             ps <- getState
-            Expression e <- MTL.lift $ do
+
+            Expression e <- lift $ do
                 modify $ \e -> e { parserState = ps }
                 runMethod m msg >>= findExpression
 
@@ -86,7 +156,7 @@ macroExpand e@(EUnquote {}) = return e
 -- | find a findMacro method for message `m' on object `o'
 findMacro :: Message Value -> Parser (Maybe Method)
 findMacro m = do
-    ids <- MTL.lift (gets primitives)
+    ids <- lift (gets primitives)
     ms <- methods m
     maybe (return Nothing) (firstMatch ids m) (lookupMap (mID m) ms)
   where

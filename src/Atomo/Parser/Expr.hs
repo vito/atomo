@@ -8,7 +8,6 @@ import qualified Control.Monad.Trans as MTL
 
 import Atomo.Environment
 import Atomo.Helpers (toPattern', toMacroPattern')
-import Atomo.Method (addMethod)
 import Atomo.Parser.Base
 import Atomo.Parser.Expand
 import Atomo.Parser.Primitive
@@ -120,9 +119,6 @@ pForMacro = tagged (do
 
     e <- pExpr
 
-    env <- fmap psEnvironment getState
-    macroExpand e >>= MTL.lift . withTop env . eval
-
     return (EForMacro Nothing e))
     <?> "for-macro expression"
 
@@ -140,8 +136,6 @@ pMacro = tagged (do
     whiteSpace
 
     e <- pExpr
-
-    macroExpand e >>= addMacro p
 
     return (EMacro Nothing p e))
     <?> "macro definition"
@@ -170,7 +164,10 @@ pOperator = tagged (do
     ops <- operator `sepBy1` spacing
 
     forM_ ops $ \name ->
-        modifyState (\ps -> ps { psOperators = (name, info) : psOperators ps })
+        modifyState $ \ps -> ps
+            { psOperators =
+                (name, info) : psOperators ps
+            }
 
     return (uncurry (Operator Nothing ops) info))
     <?> "operator pragma"
@@ -403,26 +400,6 @@ toBinaryOps ops (Keyword h (n:ns) (v:vs))
             Nothing -> defaultPrec
             Just (_, p) -> p
 toBinaryOps _ u = error $ "cannot toBinaryOps: " ++ show u
-
--- | Defines a macro, given its pattern and expression.
-addMacro :: Message Pattern -> Expr -> Parser ()
-addMacro p e =
-    case p of
-        Single {} ->
-            modifyState $ \ps -> ps
-                { psMacros =
-                    ( addMethod (Macro p e) (fst (psMacros ps))
-                    , snd (psMacros ps)
-                    )
-                }
-
-        Keyword {} ->
-            modifyState $ \ps -> ps
-                { psMacros =
-                    ( fst (psMacros ps)
-                    , addMethod (Macro p e) (snd (psMacros ps))
-                    )
-                }
 
 -- | Parse a block of expressions from a given input string.
 parser :: Parser [Expr]
