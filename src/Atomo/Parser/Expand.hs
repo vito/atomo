@@ -26,8 +26,10 @@ macroExpand d@(Dispatch { eMessage = em }) = do
         Just m -> do
             modifyState $ \ps -> ps { psClock = psClock ps + 1 }
 
-            Expression e <-
-                MTL.lift (runMethod m msg >>= findExpression)
+            ps <- getState
+            Expression e <- MTL.lift $ do
+                modify $ \e -> e { parserState = ps }
+                runMethod m msg >>= findExpression
 
             macroExpand e
 
