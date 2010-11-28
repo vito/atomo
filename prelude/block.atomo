@@ -11,7 +11,14 @@ context Block: (es: List) arguments: (as: List) :=
     }
 
 (start: Integer) to: (end: Integer) by: (diff: Integer) do: b :=
-  (start to: end by: diff) each: b
+  { cc |
+    n = start
+
+    while: { (n - diff - end) abs >= diff abs } do: {
+      b call: [n]
+      n = n + diff
+    }
+  } call/cc
 
 (start: Integer) up-to: (end: Integer) do: b :=
   start to: end by: 1 do: b
