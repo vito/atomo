@@ -1,6 +1,8 @@
-*history-file* = Parameter new: (Directory home </> ".atomo_history")
-*output-port* = Parameter new: Port standard-output
-*input-port* = Parameter new: Port standard-input
+define: *history-file* as: (Directory home </> ".atomo_history")
+define: *output-port* as: Port standard-output
+define: *input-port* as: Port standard-input
+
+current-history-file := *history-file* _?
 
 (x: Object) print := *output-port* _? print: x
 (x: Object) display := *output-port* _? display: x

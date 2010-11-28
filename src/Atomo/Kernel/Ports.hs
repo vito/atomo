@@ -308,7 +308,7 @@ load = do
 
     [$p|interaction: (prompt: String)|] =: do
         prompt <- getString [$e|prompt|]
-        history <- getString [$e|*history-file* _?|]
+        history <- getString [$e|current-history-file|]
         line <-
             liftIO $ Haskeline.catch
                 (liftM Just $ runInput history (getInputLine prompt))
