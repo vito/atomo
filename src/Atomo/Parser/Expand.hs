@@ -74,8 +74,14 @@ macroExpand p@(EParticle { eParticle = ep }) =
             return p { eParticle = PMKeyword ns nmes }
 
         _ -> return p
--- TODO: EUnquote?
-macroExpand e = return e
+macroExpand e@(Operator {}) = return e
+macroExpand e@(Primitive {}) = return e
+macroExpand e@(EForMacro {}) = return e
+macroExpand e@(ETop {}) = return e
+macroExpand e@(EVM {}) = return e
+-- TODO: follow through EQuote into EUnquote
+macroExpand e@(EQuote {}) = return e
+macroExpand e@(EUnquote {}) = return e
 
 -- | find a findMacro method for message `m' on object `o'
 findMacro :: Message Value -> Parser (Maybe Method)
