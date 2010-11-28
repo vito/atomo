@@ -11,3 +11,8 @@ macro (x -= y) `(~x = ~x - ~y)
 
 (x: Integer) divisible-by?: (y: Integer) :=
   y divides?: x
+
+(n: Number) abs :=
+  if: (n < 0)
+    then: { - n }
+    else: { n }
