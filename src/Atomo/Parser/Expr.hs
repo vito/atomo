@@ -4,7 +4,7 @@ import Control.Arrow (first, second)
 import Control.Monad.State
 import Data.Maybe (fromJust, isJust)
 import Text.Parsec
-import qualified "mtl" Control.Monad.Trans as MTL
+import qualified Control.Monad.Trans as MTL
 
 import Atomo.Environment
 import Atomo.Helpers (toPattern', toMacroPattern')

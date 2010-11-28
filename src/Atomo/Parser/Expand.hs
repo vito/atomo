@@ -2,7 +2,7 @@ module Atomo.Parser.Expand (macroExpand) where
 
 import Control.Monad.State
 import Text.Parsec
-import qualified "mtl" Control.Monad.Trans as MTL
+import qualified Control.Monad.Trans as MTL
 
 import Atomo.Environment
 import Atomo.Helpers
