@@ -97,6 +97,9 @@ eval (EQuote { eExpr = qe }) = do
     unquote n u@(EUnquote { eExpr = e }) = do
         ne <- unquote (n - 1) e
         return (u { eExpr = ne })
+    unquote n q@(EQuote { eExpr = e }) = do
+        ne <- unquote (n + 1) e
+        return q { eExpr = ne }
     unquote n d@(Define { eExpr = e }) = do
         ne <- unquote n e
         return (d { eExpr = ne })
@@ -132,9 +135,15 @@ eval (EQuote { eExpr = qe }) = do
                 return p { eParticle = PMKeyword ns nmes }
 
             _ -> return p
-    unquote n q@(EQuote { eExpr = e }) = do
-        ne <- unquote (n + 1) e
-        return q { eExpr = ne }
+    unquote n d@(ENewDynamic { eExpr = e }) = do
+        ne <- unquote n e
+        return d { eExpr = ne }
+    unquote n d@(EDefineDynamic { eExpr = e }) = do
+        ne <- unquote n e
+        return d { eExpr = ne }
+    unquote n d@(ESetDynamic { eExpr = e }) = do
+        ne <- unquote n e
+        return d { eExpr = ne }
     unquote n p@(Primitive { eValue = Expression e }) = do
         ne <- unquote n e
         return p { eValue = Expression ne }
@@ -143,6 +152,33 @@ eval (EQuote { eExpr = qe }) = do
     unquote _ v@(EVM {}) = return v
     unquote _ o@(Operator {}) = return o
     unquote _ f@(EForMacro {}) = return f
+    unquote _ g@(EGetDynamic {}) = return g
+eval (ENewDynamic { eBindings = bes, eExpr = e }) = do
+    bvs <- forM bes $ \(n, b) -> do
+        v <- eval b
+        return (n, v)
+
+    dynamicBind bvs (eval e)
+eval (EDefineDynamic { eName = n, eExpr = e }) = do
+    v <- eval e
+
+    modify $ \env -> env
+        { dynamic = newDynamic n v (dynamic env)
+        }
+
+    return v
+eval (ESetDynamic { eName = n, eExpr = e }) = do
+    v <- eval e
+    d <- gets dynamic
+
+    if isBound n d
+        then modify $ \env -> env { dynamic = setDynamic n v d }
+        else raise ["unbound-dynamic"] [string n]
+
+    return v
+eval (EGetDynamic { eName = n }) = do
+    mv <- gets (getDynamic n . dynamic)
+    maybe (raise ["unknown-dynamic"] [string n]) return mv
 
 -- | Evaluate multiple expressions, returning the last result.
 evalAll :: [Expr] -> VM Value
@@ -167,6 +203,20 @@ withTop t x = do
     res <- x
 
     modify (\e -> e { top = o })
+
+    return res
+
+dynamicBind :: [(String, Value)] -> VM a -> VM a
+dynamicBind bs x = do
+    modify $ \e -> e
+        { dynamic = foldl (\m (n, v) -> bindDynamic n v m) (dynamic e) bs
+        }
+
+    res <- x
+
+    modify $ \e -> e
+        { dynamic = foldl (\m (n, _) -> unbindDynamic n m) (dynamic e) bs
+        }
 
     return res
 

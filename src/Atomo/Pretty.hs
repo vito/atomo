@@ -171,6 +171,14 @@ instance Pretty Expr where
     prettyFrom _ (ETop {}) = text "this"
     prettyFrom c (EQuote _ e) = char '`' <> prettySpacedExpr c e
     prettyFrom c (EUnquote _ e) = char '~' <> prettySpacedExpr c e
+    prettyFrom _ (ENewDynamic {}) =
+        internal "new-dynamic" empty -- $ pretty (EBlock Nothing [] es) <+> pretty e
+    prettyFrom _ (EDefineDynamic { eName = n, eExpr = e }) =
+        internal "define-dynamic" $ text n <+> pretty e
+    prettyFrom _ (ESetDynamic { eName = n, eExpr = e }) =
+        internal "set-dynamic" $ text n <+> pretty e
+    prettyFrom _ (EGetDynamic { eName = n }) =
+        internal "get-dynamic" $ text n
 
 
 instance Pretty (Message Pattern) where

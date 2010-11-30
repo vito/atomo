@@ -60,7 +60,6 @@ loadPrelude = do
 
         , "boolean"
         , "association"
-        , "parameter"
         , "string"
 
         , "condition"

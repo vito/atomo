@@ -60,6 +60,29 @@ load = do
             PMKeyword ns _ ->
                 return $ Expression (Dispatch Nothing (keyword ns (map fromExpression ts)))
 
+    [$p|`DefineDynamic new: (name: Expression) as: (root: Expression)|] =: do
+        n <- here "name" >>= findExpression >>= toName . fromExpression
+        Expression r <- here "root" >>= findExpression
+        return . Expression $ EDefineDynamic Nothing n r
+
+    [$p|`SetDynamic new: (name: Expression) to: (root: Expression)|] =: do
+        n <- here "name" >>= findExpression >>= toName . fromExpression
+        Expression r <- here "root" >>= findExpression
+        return . Expression $ ESetDynamic Nothing n r
+
+    [$p|`GetDynamic new: (name: Expression)|] =: do
+        n <- here "name" >>= findExpression >>= toName . fromExpression
+        return . Expression $ EGetDynamic Nothing n
+
+    [$p|`NewDynamic new: (bindings: List) do: (expr: Expression)|] =: do
+        ns <- getList [$e|bindings map: @from|]
+            >>= mapM findExpression
+            >>= mapM (toName . fromExpression)
+        exprs <- liftM (map fromExpression) $ getList [$e|bindings map: @to|] >>= mapM findExpression
+
+        Expression e <- here "expr" >>= findExpression
+        return . Expression $ ENewDynamic Nothing (zip ns exprs) e
+
     [$p|(s: String) parse-expressions|] =:
         getString [$e|s|] >>= liftM (list . map Expression) . parseInput
 
@@ -97,6 +120,11 @@ load = do
                 return (keyParticleN ["particle"] [particle "keyword"])
             EParticle { eParticle = PMSingle _ } ->
                 return (keyParticleN ["particle"] [particle "single"])
+
+            ENewDynamic {} -> return (particle "new-dynamic")
+            ESetDynamic {} -> return (particle "set-dynamic")
+            EDefineDynamic {} -> return (particle "define-dynamic")
+            EGetDynamic {} -> return (particle "get-dynamic")
 
     [$p|(e: Expression) target|] =: do
         Expression e <- here "e" >>= findExpression
@@ -238,3 +266,7 @@ prettyMatch t bs =
   where
     branches = flip map bs $ \(p, e) ->
         Dispatch Nothing $ keyword ["->"] [p, e]
+
+toName :: Expr -> VM String
+toName (Dispatch { eMessage = Single { mName = n } }) = return n
+toName x = raise ["unknown-dynamic-name"] [Expression x]

@@ -247,6 +247,25 @@ data Expr
         { eLocation :: Maybe SourcePos
         , eExpr :: Expr
         }
+    | ENewDynamic
+        { eLocation :: Maybe SourcePos
+        , eBindings :: [(String, Expr)]
+        , eExpr :: Expr
+        }
+    | EDefineDynamic
+        { eLocation :: Maybe SourcePos
+        , eName :: String
+        , eExpr :: Expr
+        }
+    | ESetDynamic
+        { eLocation :: Maybe SourcePos
+        , eName :: String
+        , eExpr :: Expr
+        }
+    | EGetDynamic
+        { eLocation :: Maybe SourcePos
+        , eName :: String
+        }
     deriving (Show, Typeable)
 
 -- | Atomo's VM state.
@@ -277,6 +296,9 @@ data Env =
           -- | The parser's state, passed around when a parser action needs to
           -- be run.
         , parserState :: ParserState
+
+          -- | The current dynamic environment.
+        , dynamic :: DynamicMap
 
           -- | Unwind actions for call/cc etc.
         , unwinds :: [(Value, Value)]
@@ -350,6 +372,9 @@ type VVector = V.Vector Value
 
 -- | A reference to a continuation function.
 type Continuation = IORef (Value -> VM Value)
+
+-- | A dynamic environment
+type DynamicMap = M.IntMap [Value]
 
 
 instance Eq Value where
@@ -438,6 +463,10 @@ instance S.Lift Expr where
     lift (EForMacro _ e) = [| EForMacro Nothing e |]
     lift (EQuote _ e) = [| EQuote Nothing e |]
     lift (EUnquote _ e) = [| EUnquote Nothing e |]
+    lift (ENewDynamic _ bs e) = [| ENewDynamic Nothing bs e |]
+    lift (ESetDynamic _ n e) = [| ESetDynamic Nothing n e |]
+    lift (EDefineDynamic _ n e) = [| EDefineDynamic Nothing n e |]
+    lift (EGetDynamic _ n) = [| EGetDynamic Nothing n |]
 
 instance S.Lift Assoc where
     lift ALeft = [| ALeft |]
@@ -523,6 +552,7 @@ startEnv = Env
     , loaded = []
     , stack = []
     , parserState = startParserState
+    , dynamic = M.empty
     , unwinds = []
     }
 
@@ -533,6 +563,36 @@ runWith x = evalStateT (runContT x return)
 -- | Evaluate x with e as the environment.
 runVM :: VM Value -> Env -> IO (Value, Env)
 runVM x = runStateT (runContT x return)
+
+
+-----------------------------------------------------------------------------
+-- Dynamic environment ------------------------------------------------------
+-----------------------------------------------------------------------------
+
+newDynamic :: String -> Value -> DynamicMap -> DynamicMap
+newDynamic n v m =
+    M.insert (hash n) [v] m
+
+bindDynamic :: String -> Value -> DynamicMap -> DynamicMap
+bindDynamic n v m =
+    M.adjust (v:) (hash n) m
+
+unbindDynamic :: String -> DynamicMap -> DynamicMap
+unbindDynamic n m =
+    M.adjust tail (hash n) m
+
+setDynamic :: String -> Value -> DynamicMap -> DynamicMap
+setDynamic n v m =
+    M.adjust ((v:) . tail) (hash n) m
+
+getDynamic :: String -> DynamicMap -> Maybe Value
+getDynamic n m = fmap head (M.lookup (hash n) m)
+
+isBound :: String -> DynamicMap -> Bool
+isBound n m =
+    case M.lookup (hash n) m of
+        Just x -> length x > 1
+        Nothing -> False
 
 
 -----------------------------------------------------------------------------

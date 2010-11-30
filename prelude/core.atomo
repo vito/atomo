@@ -1,13 +1,31 @@
+operator right 0 = := =!
+
 macro (x match: (ts: Block))
   `Match new: (ts contents map: { `(~p -> ~e) | p -> e expand }) on: x expand
-
-operator right 0 = :=
 
 macro (p = e)
   `Set new: p to: e
 
 macro (p := e)
   `Define new: p as: e
+
+macro (define: (x: Dispatch) as: root)
+  `DefineDynamic new: x as: root
+
+macro (x _?)
+  `GetDynamic new: x
+
+macro (x =! y)
+  `SetDynamic new: x to: y
+
+macro (with: x as: y do: b)
+  `NewDynamic new: [x -> y] do: `(~b call)
+
+macro (with: (bs: List) do: action)
+  `NewDynamic new: (bs contents map: { `(~a -> ~b) | a -> b }) do: `(~action call)
+
+macro (modify: param as: change do: action)
+  `(with: ~param as: (~change call: [~param _?]) do: ~action)
 
 @(parse-error: d) describe-error :=
   "parse error:\n" .. (d indent: 2)

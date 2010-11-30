@@ -58,6 +58,14 @@ doPragmas (EVM {}) = return ()
 -- TODO: follow through EQuote into EUnquote
 doPragmas (EQuote {}) = return ()
 doPragmas (EUnquote {}) = return ()
+doPragmas (ESetDynamic { eExpr = e }) =
+    doPragmas e
+doPragmas (EDefineDynamic { eExpr = e }) =
+    doPragmas e
+doPragmas (ENewDynamic { eBindings = bs, eExpr = e }) = do
+    mapM_ (\(_, b) -> doPragmas b) bs
+    doPragmas e
+doPragmas (EGetDynamic {}) = return ()
 
 
 -- | Defines a macro, given its pattern and expression.
@@ -143,6 +151,17 @@ macroExpand p@(EParticle { eParticle = ep }) =
             return p { eParticle = PMKeyword ns nmes }
 
         _ -> return p
+macroExpand s@(ESetDynamic { eExpr = e }) = do
+    e' <- macroExpand e
+    return s { eExpr = e' }
+macroExpand d@(EDefineDynamic { eExpr = e }) = do
+    e' <- macroExpand e
+    return d { eExpr = e' }
+macroExpand n@(ENewDynamic { eBindings = bs, eExpr = e }) = do
+    bs' <- mapM (\(p, b) -> macroExpand b >>= \nb -> return (p, nb)) bs
+    e' <- macroExpand e
+    return n { eBindings = bs', eExpr = e' }
+macroExpand e@(EGetDynamic {}) = return e
 macroExpand e@(Operator {}) = return e
 macroExpand e@(Primitive {}) = return e
 macroExpand e@(EForMacro {}) = return e
@@ -151,6 +170,7 @@ macroExpand e@(EVM {}) = return e
 -- TODO: follow through EQuote into EUnquote
 macroExpand e@(EQuote {}) = return e
 macroExpand e@(EUnquote {}) = return e
+
 
 -- | find a findMacro method for message `m' on object `o'
 findMacro :: Message Value -> Parser (Maybe Method)
