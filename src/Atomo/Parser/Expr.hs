@@ -6,10 +6,8 @@ import Data.Maybe (fromJust, isJust)
 import Text.Parsec
 import qualified Control.Monad.Trans as MTL
 
-import Atomo.Environment
 import Atomo.Helpers (toPattern', toMacroPattern')
 import Atomo.Parser.Base
-import Atomo.Parser.Expand
 import Atomo.Parser.Primitive
 import Atomo.Types hiding (keyword, string)
 import qualified Atomo.Types as T

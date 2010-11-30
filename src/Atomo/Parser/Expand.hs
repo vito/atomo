@@ -62,8 +62,7 @@ doPragmas (EUnquote {}) = return ()
 
 -- | Defines a macro, given its pattern and expression.
 addMacro :: Message Pattern -> Expr -> Parser ()
-addMacro p e = do
-    ms <- fmap psMacros getState
+addMacro p e =
     modifyState $ \ps -> ps
         { psMacros = withMacro (psMacros ps)
         }

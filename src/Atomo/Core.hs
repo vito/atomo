@@ -15,6 +15,7 @@ initCore = do
 
     -- top scope is a proto delegating to the root object
     topObj <- newObject $ \o -> o { oDelegates = [object] }
+
     modify $ \e -> e { top = topObj }
 
     -- Lobby is the very bottom scope object
