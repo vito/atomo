@@ -156,14 +156,14 @@ load = do
     [$p|(s: String) split: (d: String)|] =: do
         s <- getText [$e|s|]
         d <- getText [$e|d|]
-        return $ list (map String (T.split d s))
+        return $ list (map String (T.splitOn d s))
 
     -- TODO: split-by
 
     [$p|(s: String) split-on: (d: Char)|] =: do
         s <- getText [$e|s|]
         Char d <- here "d" >>= findChar
-        return $ list (map String (T.splitBy (== d) s))
+        return $ list (map String (T.split (== d) s))
 
     [$p|(s: String) split-at: (n: Integer)|] =: do
         Integer n <- here "n" >>= findInteger
@@ -171,16 +171,16 @@ load = do
         let (a, b) = T.splitAt (fromIntegral n) s
         return $ list [String a, String b]
 
-    [$p|(s: String) break-on: (d: Integer)|] =: do
+    [$p|(s: String) break-on: (d: String)|] =: do
         s <- getText [$e|s|]
         d <- getText [$e|d|]
-        let (a, b) = T.break d s
+        let (a, b) = T.breakOn d s
         return $ list [String a, String b]
 
-    [$p|(s: String) break-end: (d: Integer)|] =: do
+    [$p|(s: String) break-end: (d: String)|] =: do
         s <- getText [$e|s|]
         d <- getText [$e|d|]
-        let (a, b) = T.breakEnd d s
+        let (a, b) = T.breakOnEnd d s
         return $ list [String a, String b]
 
     [$p|(s: String) group|] =: do
