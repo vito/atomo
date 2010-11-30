@@ -5,23 +5,25 @@
 
   (s: String) word-wrap: (length: Integer) :=
     s lines
-      (map: { l | (l take-while: @space?) .. (wrap-line: l to: length) })
+      (map: { l | (l take-while: @space?) .. (wrap-line: l to: length acc: "") })
       unlines
 
-  wrap-line: l to: length :=
+  wrap-line: "" to: _ acc: acc := acc
+  wrap-line: l to: length acc: acc :=
     { words = l words
 
-      line-length = 0
+      condition: {
+        acc empty? ->
+          wrap-line: words tail unwords to: length acc: words head
 
-      ok-words =
-        words take-while:
-          { w |
-            line-length = line-length + 1 + w length
-            line-length < length
-          } in-context
+        acc length > length ->
+          acc .. "\n" .. (wrap-line: l to: length acc: "")
 
-      [ ok-words unwords
-        words (drop: ok-words length) unwords word-wrap: length
-      ] unlines strip-end
+        acc length + 1 + words head length > length ->
+          acc .. "\n" .. (wrap-line: words tail unwords to: length acc: words head)
+
+        otherwise ->
+          wrap-line: words tail unwords to: length acc: (acc .. " " .. words head)
+      }
     } call
 } call
