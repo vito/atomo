@@ -277,6 +277,9 @@ data Env =
           -- | The parser's state, passed around when a parser action needs to
           -- be run.
         , parserState :: ParserState
+
+          -- | Unwind actions for call/cc etc.
+        , unwinds :: [(Value, Value)]
         }
     deriving Typeable
 
@@ -520,6 +523,7 @@ startEnv = Env
     , loaded = []
     , stack = []
     , parserState = startParserState
+    , unwinds = []
     }
 
 -- | Evaluate x with e as the environment.
