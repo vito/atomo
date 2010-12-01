@@ -9,8 +9,10 @@ macro (p = e)
 macro (p := e)
   `Define new: p as: e
 
-macro (define: (x: Dispatch) as: root)
-  `DefineDynamic new: x as: root
+macro (define: (name: Dispatch) as: root)
+  `({ ~name := ~name _?
+      ~(`DefineDynamic new: name as: root)
+    } call-in: this)
 
 macro (x _?)
   `GetDynamic new: x

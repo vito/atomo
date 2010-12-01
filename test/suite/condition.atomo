@@ -5,14 +5,14 @@ describe: "condition" as: {
     it: "triggers matching handlers" so: {
       with: x as: 0 do: {
         { signal: @foo } bind: { @foo -> (x =! 1) }
-        x _? should-be: 1
+        x should-be: 1
       }
     }
 
     it: "does not trigger non-matching handlers" so: {
       with: x as: 0 do: {
         { signal: @foo } bind: { @bar -> (x =! 1) }
-        x _? should-be: 0
+        x should-be: 0
       }
     }
 
@@ -20,13 +20,13 @@ describe: "condition" as: {
       with: x as: 0 do: {
         { { signal: @foo
           } bind: {
-            @foo -> (x =! 1 + x _?)
+            @foo -> (x =! 1 + x)
           }
         } bind: {
-          @foo -> (x =! 2 * x _?)
+          @foo -> (x =! 2 * x)
         }
 
-        x _? should-be: 2
+        x should-be: 2
       }
     }
 
