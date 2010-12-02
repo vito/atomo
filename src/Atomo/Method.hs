@@ -12,6 +12,7 @@ module Atomo.Method
 
 import Data.IORef
 import Data.List (elemIndices)
+import Data.Maybe (isJust)
 import System.IO.Unsafe
 import qualified Data.IntMap as M
 
@@ -50,6 +51,9 @@ comparePrecision PThis (PMatch (Reference _)) = LT
 comparePrecision (PMatch (Reference _)) PThis = GT
 comparePrecision (PMatch _) _ = LT
 comparePrecision _ (PMatch _) = GT
+comparePrecision (PExpr a) (PExpr b) = exprPrecision 0 a b
+comparePrecision (PExpr _) _ = LT
+comparePrecision _ (PExpr _) = GT
 comparePrecision (PList _) _ = LT
 comparePrecision _ (PList _) = GT
 comparePrecision (PPMKeyword _ _) _ = LT
@@ -71,10 +75,13 @@ compareHeads (a:as) (b:bs) =
 compareHeads a b = error $ "impossible: compareHeads on " ++ show (a, b)
 
 comparePrecisions :: [Pattern] -> [Pattern] -> Ordering
-comparePrecisions as bs =
+comparePrecisions = comparePrecisionsWith comparePrecision
+
+comparePrecisionsWith :: (a -> a -> Ordering) -> [a] -> [a] -> Ordering
+comparePrecisionsWith cmp as bs =
     compare gt lt
   where
-    compared = zipWith comparePrecision as bs
+    compared = zipWith cmp as bs
     gt = length $ elemIndices GT compared
     lt = length $ elemIndices LT compared
 
@@ -84,6 +91,39 @@ unsafeDelegatesTo (Reference f) t =
   where
     ds = oDelegates (unsafePerformIO (readIORef f))
 unsafeDelegatesTo _ _ = False
+
+exprPrecision :: Int -> Expr -> Expr -> Ordering
+exprPrecision 0 (EUnquote {}) (EUnquote {}) = EQ
+exprPrecision 0 (EUnquote {}) _ = GT
+exprPrecision 0 _ (EUnquote {}) = LT
+exprPrecision n (Define { eExpr = a }) (Define { eExpr = b }) =
+    exprPrecision n a b
+exprPrecision n (Set { eExpr = a }) (Set { eExpr = b }) =
+    exprPrecision n a b
+exprPrecision n (Dispatch { eMessage = am@(Keyword {}) }) (Dispatch { eMessage = bm@(Keyword {}) }) =
+    comparePrecisionsWith (exprPrecision n) (mTargets am) (mTargets bm)
+exprPrecision n (Dispatch { eMessage = am@(Single {}) }) (Dispatch { eMessage = bm@(Single {}) }) =
+    exprPrecision n (mTarget am) (mTarget bm)
+exprPrecision n (EBlock { eContents = as }) (EBlock { eContents = bs }) =
+    comparePrecisionsWith (exprPrecision n) as bs
+exprPrecision n (EList { eContents = as }) (EList { eContents = bs }) =
+    comparePrecisionsWith (exprPrecision n) as bs
+exprPrecision n (EMacro { eExpr = a }) (EMacro { eExpr = b }) =
+    exprPrecision n a b
+exprPrecision n (EParticle { eParticle = ap' }) (EParticle { eParticle = bp }) =
+    case (ap', bp) of
+        (PMKeyword _ ames, PMKeyword _ bmes) ->
+            comparePrecisionsWith (exprPrecision n) (firsts ames bmes) (seconds ames bmes)
+        _ -> EQ
+  where
+    pairs ames bmes = map (\(Just a, Just b) -> (a, b)) $ filter (\(a, b) -> isJust a && isJust b) $ zip ames bmes
+
+    firsts ames = fst . unzip . pairs ames
+    seconds ames = fst . unzip . pairs ames
+exprPrecision n (EQuote { eExpr = a }) (EQuote { eExpr = b }) =
+    exprPrecision (n + 1) a b
+exprPrecision _ _ _ = EQ
+
 
 -- | Insert a method into a MethodMap based on its pattern's ID and precision.
 addMethod :: Method -> MethodMap -> MethodMap
