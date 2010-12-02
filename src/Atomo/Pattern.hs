@@ -13,7 +13,7 @@ module Atomo.Pattern
 import Control.Monad (forM, liftM)
 import Data.Char (isUpper)
 import Data.IORef (readIORef)
-import Data.Maybe (isJust)
+import Data.Maybe (fromJust, isJust)
 import System.IO.Unsafe
 import qualified Data.Text as T
 import qualified Data.Vector as V
@@ -61,19 +61,23 @@ match ids r (PHeadTail hp tp) (String t) | not (T.null t) =
     match ids r hp (Char (T.head t)) && match ids r tp (String (T.tail t))
 match ids r (PPMKeyword ans aps) (Particle (PMKeyword bns mvs)) =
     ans == bns && matchParticle ids r aps mvs
-match _ _ PEDispatch (Expression (Dispatch {})) = True
-match _ _ PEOperator (Expression (Operator {})) = True
-match _ _ PEPrimitive (Expression (Primitive {})) = True
-match _ _ PEBlock (Expression (EBlock {})) = True
-match _ _ PEList (Expression (EList {})) = True
-match _ _ PEMacro (Expression (EMacro {})) = True
-match _ _ PEParticle (Expression (EParticle {})) = True
-match _ _ PETop (Expression (ETop {})) = True
-match _ _ PEQuote (Expression (EQuote {})) = True
-match _ _ PEUnquote (Expression (EUnquote {})) = True
-match _ _ (PExpr a) (Expression b) = matchExpr 0 a b
 match ids r p (Reference y) = delegatesMatch ids r p y
+match _ _ p (Expression e) = macroMatch p e
 match _ _ _ _ = False
+
+macroMatch :: Pattern -> Expr -> Bool
+macroMatch PEDispatch (Dispatch {}) = True
+macroMatch PEOperator (Operator {}) = True
+macroMatch PEPrimitive (Primitive {}) = True
+macroMatch PEBlock (EBlock {}) = True
+macroMatch PEList (EList {}) = True
+macroMatch PEMacro (EMacro {}) = True
+macroMatch PEParticle (EParticle {}) = True
+macroMatch PETop (ETop {}) = True
+macroMatch PEQuote (EQuote {}) = True
+macroMatch PEUnquote (EUnquote {}) = True
+macroMatch (PExpr a) b = matchExpr 0 a b
+macroMatch _ _ = False
 
 -- | Check if two references are equal or if one delegates to another.
 refMatch :: IDs -> Maybe ORef -> ORef -> ORef -> Bool
@@ -98,7 +102,11 @@ matchEParticle n (Nothing:as) (Nothing:bs) = matchEParticle n as bs
 matchEParticle _ _ _ = False
 
 matchExpr :: Int -> Expr -> Expr -> Bool
-matchExpr 0 (EUnquote {}) _ = True
+matchExpr 0 (EUnquote { eExpr = Dispatch { eMessage = Single {} } }) _ = True
+matchExpr 0 (EUnquote { eExpr = Dispatch { eMessage = Keyword { mTargets = [ETop {}, pat] } } }) e
+    | isJust mp = macroMatch (fromJust mp) e --matchExpr 0 pat e
+  where
+    mp = toMacroRole pat
 matchExpr n (EUnquote { eExpr = a }) (EUnquote { eExpr = b }) =
     matchExpr (n - 1) a b
 matchExpr n (Define { emPattern = ap', eExpr = a }) (Define { emPattern = bp, eExpr = b }) =
@@ -167,6 +175,8 @@ bindings' _ _ = []
 
 exprBindings :: Int -> Expr -> Expr -> [(Message Pattern, Value)]
 exprBindings 0 (EUnquote { eExpr = Dispatch { eMessage = Single { mName = n } } }) e =
+    [(single n PThis, Expression e)]
+exprBindings 0 (EUnquote { eExpr = Dispatch { eMessage = Keyword { mNames = [n] } } }) e =
     [(single n PThis, Expression e)]
 exprBindings n (EUnquote { eExpr = a }) (EUnquote { eExpr = b }) =
     exprBindings (n - 1) a b
