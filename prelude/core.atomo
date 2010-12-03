@@ -1,4 +1,5 @@
 operator right 0 = := =!
+operator right 1 ->
 
 macro (x match: (ts: Block))
   `Match new: (ts contents map: { `(~p -> ~e) | p -> e expand }) on: x expand

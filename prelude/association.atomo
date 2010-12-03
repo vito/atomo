@@ -1,5 +1,3 @@
-operator right 1 ->
-
 Association = Object clone
 a -> b := Association clone do: { from = a; to = b }
 
