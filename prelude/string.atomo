@@ -5,7 +5,11 @@
 
   (s: String) word-wrap: (length: Integer) :=
     s lines
-      (map: { l | (l take-while: @space?) .. (wrap-line: l to: length acc: "") })
+      (map: { l |
+        if: (l all?: @space?)
+          then: { l }
+          else: { (l take-while: @space?) .. (wrap-line: l to: length acc: "") }
+      })
       unlines
 
   wrap-line: "" to: _ acc: acc := acc
