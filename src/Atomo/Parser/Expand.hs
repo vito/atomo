@@ -104,9 +104,13 @@ macroExpand d@(Dispatch { eMessage = em }) = do
 
             ps <- getState
 
-            Expression e <- lift $ do
+            (e, nps) <- lift $ do
                 modify $ \e -> e { parserState = ps }
-                runMethod m msg >>= findExpression
+                Expression ne <- runMethod m msg >>= findExpression
+                nps <- gets parserState
+                return (ne, nps)
+
+            putState nps
 
             macroExpand e
 
