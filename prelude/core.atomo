@@ -29,3 +29,9 @@ macro (with: (bs: List) do: action)
 macro (modify: param as: change do: action)
   `(with: ~param as: (~change call: [~param _?]) do: ~action)
 
+macro (target slurp: filename)
+  { src = File read: (super evaluate: filename)
+    exprs = src parse-expressions
+    blk = `Block new: exprs
+    `(~blk call-in: ~target)
+  } call
