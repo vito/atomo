@@ -59,21 +59,7 @@ eval (EBlock { eArguments = as, eContents = es }) = do
 eval (EList { eContents = es }) = do
     vs <- mapM eval es
     return (list vs)
-eval (EMacro { emPattern = p, eExpr = e }) = do
-    ps <- gets parserState
-    modify $ \s -> s
-        { parserState = ps
-            { psMacros =
-                case p of
-                    Single {} ->
-                        (addMethod (Macro p e) (fst (psMacros ps)), snd (psMacros ps))
-
-                    Keyword {} ->
-                        (fst (psMacros ps), addMethod (Macro p e) (snd (psMacros ps)))
-            }
-        }
-
-    return (particle "ok")
+eval (EMacro {}) = return (particle "ok")
 eval (EForMacro {}) = return (particle "ok")
 eval (EParticle { eParticle = PMSingle n }) =
     return (Particle $ PMSingle n)
