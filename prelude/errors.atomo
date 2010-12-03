@@ -1,0 +1,50 @@
+@(did-not-understand: m) describe-error :=
+  m type match: {
+    @single ->
+      [ "message " .. m particle show .. " not understood by:"
+        m target show indent: 2
+      ] join: "\n"
+
+    @keyword ->
+      [ "message " .. m particle show .. " not understood by targets:"
+        m targets (map: @show) unlines indent: 2
+      ] join: "\n"
+  }
+
+@(parse-error: d) describe-error :=
+  "parse error:\n" .. (d indent: 2)
+
+@(pattern: p did-not-match: v) describe-error :=
+  v show .. " did not match pattern: " .. p show
+
+@(unknown-hint-error: d) describe-error :=
+  "unknown hint error:\n" .. (d indent: 2)
+
+@(wont-compile: es) describe-error :=
+  "Haskell source won't compile:\n" .. es (map: @(indent: 2)) (join: "\n\n")
+
+@(not-allowed: e) describe-error :=
+  "not allowed: " .. e
+
+@(ghc-exception: e) describe-error :=
+  "GHC exception: " .. e
+
+@(file-not-found: f) describe-error :=
+  "file not found: " .. f
+
+@(particle-needed: n given: g) describe-error :=
+  "particle needed " .. n show .. " values to complete, given " .. g show
+
+@(block-expected: e given: g) describe-error :=
+  "block expected " .. e show .. " arguments, given " .. g show
+
+@no-expressions describe-error := "no expressions to evaluate"
+
+@(could-not-find: t in: v) describe-error :=
+  "could not find a " .. t .. " in: " .. v show
+
+@(dynamic-needed: e got: g) describe-error :=
+  "expected Haskell value of type:\n" .. (e indent: 2) .. "\nbut got value of type:\n" .. (g indent: 2)
+
+@(dynamic-needed: e given: v) describe-error :=
+  "expected Haskell value of type:\n" .. (e indent: 2) .. "\nbut given value:\n" .. (v show indent: 2)

@@ -63,6 +63,7 @@ loadPrelude = do
         , "string"
 
         , "condition"
+        , "errors"
         , "exception"
 
         , "block"
