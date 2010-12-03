@@ -7,6 +7,14 @@ import Atomo
 
 load :: VM ()
 load = do
+    [$p|(p: Particle) new: (name: String)|] =: do
+        n <- getString [$e|name|]
+        return (particle n)
+
+    [$p|(p: Particle) new: (names: List)|] =: do
+        ns <- liftM (map (fromText . fromString)) $ getList [$e|names|]
+        return (keyParticle ns (replicate (length ns + 1) Nothing))
+
     [$p|(p: Particle) call: (targets: List)|] =:::
         [$e|(p complete: targets) dispatch|]
 
