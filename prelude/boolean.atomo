@@ -41,6 +41,23 @@ while: (test: Block) do: (action: Block) :=
     } repeat
   } call/cc: [action in-context]
 
+(action: Block) while: (test: Block) :=
+  { action in-context call
+    while: test do: action
+  } call
+
+until: (test: Block) do: (action: Block) :=
+  { cc a |
+    { (cc yield: @ok) when: test call
+      a call
+    } repeat
+  } call/cc: [action in-context]
+
+(action: Block) until: (test: Block) :=
+  { action in-context call
+    until: test do: action
+  } call
+
 True show := "True"
 False show := "False"
 
