@@ -27,6 +27,16 @@ pat =:: v = define pat (Primitive Nothing v)
 (=:::) :: Message Pattern -> Expr -> VM ()
 pat =::: e = define pat e
 
+-- | Create an object with some slots.
+newWith :: Expr -> [(String, Value)] -> VM Value
+newWith e ss = do
+    o <- eval e >>= dispatch . single "clone"
+
+    forM_ ss $ \(n, v) ->
+        define (single n (PMatch o)) (Primitive Nothing v)
+
+    return o
+
 -- | Find a value, searching through an object's delegates, and throwing
 -- @\@could-not-find:in:@ if it is not found.
 findValue :: String -> (Value -> Bool) -> Value -> VM Value
