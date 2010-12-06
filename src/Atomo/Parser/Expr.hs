@@ -4,11 +4,10 @@ import Control.Arrow (first, second)
 import Control.Monad.State
 import Data.Maybe (fromJust, isJust)
 import Text.Parsec
-import qualified Control.Monad.Trans as MTL
 
-import Atomo.Helpers (toPattern', toMacroPattern')
 import Atomo.Parser.Base
 import Atomo.Parser.Primitive
+import Atomo.Pattern
 import Atomo.Types hiding (keyword, string)
 import qualified Atomo.Types as T
 
@@ -129,7 +128,7 @@ pMacro = tagged (do
 
     whiteSpace
 
-    p <- parens (pExpr >>= MTL.lift . toMacroPattern')
+    p <- parens (liftM (fromJust . toMacroPattern) pExpr)
 
     whiteSpace
 
@@ -279,7 +278,7 @@ pBlock = tagged (braces $ do
         whiteSpace
         string "|"
         whiteSpace1
-        mapM (MTL.lift . toPattern') ps
+        return $ map (fromJust . toPattern) ps
 
     code <- wsBlock pExpr
 

@@ -5,7 +5,7 @@ module Atomo.Kernel.Expression (load) where
 import Text.PrettyPrint (Doc)
 
 import Atomo
-import Atomo.Parser (parseInput, withParser)
+import Atomo.Parser (parseInput)
 import Atomo.Parser.Expand
 import Atomo.Pattern (match)
 import Atomo.Pretty (pretty)
@@ -93,7 +93,7 @@ load = do
 
     [$p|(e: Expression) expand|] =: do
         Expression e <- here "e" >>= findExpression
-        liftM Expression $ withParser (macroExpand e)
+        liftM Expression $ macroExpand e
 
     [$p|(e: Expression) type|] =: do
         Expression e <- here "e" >>= findExpression

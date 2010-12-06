@@ -14,19 +14,19 @@ import Atomo.Types hiding (keyword, string)
 parseFile :: FilePath -> VM [Expr]
 parseFile fn =
     liftIO (readFile fn)
-        >>= continue (fileParser >>= nextPhase) fn
+        >>= continue fileParser fn
+        >>= nextPhase
 
 -- | Parses an input string, performs macro expansion, and returns an AST.
 parseInput :: String -> VM [Expr]
-parseInput = continue (parser >>= nextPhase) "<input>"
+parseInput s = continue parser "<input>" s >>= nextPhase
 
 -- | Given a Parser action, a source, and the input, perform that action
 -- passing the parser state between VM and Parser.
 continue :: Parser a -> String -> String -> VM a
 continue p s i = do
     ps <- gets parserState
-    r <- runParserT (p >>= \r -> getState >>= \ps' -> return (r, ps')) ps s i
-    case r of
+    case runParser (p >>= \r -> getState >>= \ps' -> return (r, ps')) ps s i of
         Left e -> throwError (ParseError e)
         Right (ok, ps') -> do
             modify $ \e -> e { parserState = ps' }

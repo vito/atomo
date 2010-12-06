@@ -1,16 +1,16 @@
 {-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.Parser.Base where
 
-import Control.Monad (liftM)
+import Control.Monad.Identity
 import Data.Char
 import Data.List (nub, sort)
 import Text.Parsec
 import qualified Text.Parsec.Token as P
 
-import Atomo.Types (Expr(..), ParserState(..), VM)
+import Atomo.Types (Expr(..), ParserState(..))
 
 
-type Parser = ParsecT String ParserState VM
+type Parser = ParsecT String ParserState Identity
 
 
 isOpLetter :: Char -> Bool
@@ -20,7 +20,7 @@ isOperator :: String -> Bool
 isOperator "" = False
 isOperator cs = head cs `notElem` "@$~" && all isOpLetter cs
 
-def :: P.GenLanguageDef String ParserState VM
+def :: P.GenLanguageDef String ParserState Identity
 def = P.LanguageDef
     { P.commentStart = "{-"
     , P.commentEnd = "-}"
@@ -35,7 +35,7 @@ def = P.LanguageDef
     , P.caseSensitive = True
     }
 
-tp :: P.GenTokenParser String ParserState VM
+tp :: P.GenTokenParser String ParserState Identity
 tp = makeTokenParser def
 
 eol :: Parser ()
@@ -220,7 +220,7 @@ tagged p = do
     r <- p
     return r { eLocation = Just pos }
 
-makeTokenParser :: P.GenLanguageDef String ParserState VM -> P.GenTokenParser String ParserState VM
+makeTokenParser :: P.GenLanguageDef String ParserState Identity -> P.GenTokenParser String ParserState Identity
 makeTokenParser languageDef
     = P.TokenParser{ P.identifier = identifier
                    , P.reserved = reserved

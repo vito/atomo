@@ -1,25 +1,21 @@
 module Atomo.Parser.Expand (doPragmas, macroExpand, nextPhase) where
 
 import Control.Monad.State
-import Text.Parsec
 
 import Atomo.Environment
 import Atomo.Helpers
 import Atomo.Method (addMethod, lookupMap)
-import Atomo.Parser.Base
 import Atomo.Pattern (match)
 import Atomo.Types
 
 
-nextPhase :: [Expr] -> Parser [Expr]
+nextPhase :: [Expr] -> VM [Expr]
 nextPhase es = do
     mapM_ doPragmas es
-    ps <- getState
-    lift $ modify $ \e -> e { parserState = ps }
     mapM macroExpand es
 
 
-doPragmas :: Expr -> Parser ()
+doPragmas :: Expr -> VM ()
 doPragmas (Dispatch { eMessage = em }) =
     pragmas em
   where
@@ -50,8 +46,8 @@ doPragmas (EParticle { eParticle = ep }) =
 doPragmas (Operator {}) = return ()
 doPragmas (Primitive {}) = return ()
 doPragmas (EForMacro { eExpr = e }) = do
-    env <- fmap psEnvironment getState
-    macroExpand e >>= lift . withTop env . eval
+    env <- gets (psEnvironment . parserState)
+    macroExpand e >>= withTop env . eval
     return ()
 doPragmas (ETop {}) = return ()
 doPragmas (EVM {}) = return ()
@@ -69,24 +65,33 @@ doPragmas (EGetDynamic {}) = return ()
 
 
 -- | Defines a macro, given its pattern and expression.
-addMacro :: Message Pattern -> Expr -> Parser ()
-addMacro p e =
-    modifyState $ \ps -> ps
-        { psMacros = withMacro (psMacros ps)
+addMacro :: Message Pattern -> Expr -> VM ()
+addMacro p e = do
+    ops <- gets parserState
+    nms <- liftIO (withMacro (psMacros ops))
+    modify $ \env -> env
+        { parserState = (parserState env) { psMacros = nms }
         }
   where
     withMacro ms =
         case p of
-            Single {} ->
-                ( addMethod (Macro p e) (fst ms)
-                , snd ms
-                )
+            Single {} -> do
+                wms <- addMethod (Macro p e) (fst ms) 
+                return (wms, snd ms)
 
-            Keyword {} ->
-                ( fst ms
-                , addMethod (Macro p e) (snd ms)
-                )
+            Keyword {} -> do
+                wms <- addMethod (Macro p e) (snd ms)
+                return (fst ms, wms)
 
+
+modifyPS :: (ParserState -> ParserState) -> VM ()
+modifyPS f =
+    modify $ \e -> e
+        { parserState = f (parserState e)
+        }
+
+getPS :: VM ParserState
+getPS = gets parserState
 
 -- | Go through an expression recursively expanding macros. A dispatch
 -- expression is checked to see if a macro was defined for it; if a macro is
@@ -95,24 +100,16 @@ addMacro p e =
 --
 -- Every other expression just recursively calls macroExpand on any
 -- sub-expressions.
-macroExpand :: Expr -> Parser Expr
+macroExpand :: Expr -> VM Expr
 macroExpand d@(Dispatch { eMessage = em }) = do
     mm <- findMacro msg
     case mm of
         Just m -> do
-            modifyState $ \ps -> ps { psClock = psClock ps + 1 }
+            modifyPS $ \ps -> ps { psClock = psClock ps + 1 }
 
-            ps <- getState
+            Expression ne <- runMethod m msg >>= findExpression
 
-            (e, nps) <- lift $ do
-                modify $ \e -> e { parserState = ps }
-                Expression ne <- runMethod m msg >>= findExpression
-                nps <- gets parserState
-                return (ne, nps)
-
-            putState nps
-
-            macroExpand e
+            macroExpand ne
 
         Nothing -> do
             nem <- expanded em
@@ -177,16 +174,18 @@ macroExpand e@(EUnquote {}) = return e
 
 
 -- | find a findMacro method for message `m' on object `o'
-findMacro :: Message Value -> Parser (Maybe Method)
+findMacro :: Message Value -> VM (Maybe Method)
 findMacro m = do
-    ids <- lift (gets primitives)
+    ids <- gets primitives
     ms <- methods m
     maybe (return Nothing) (firstMatch ids m) (lookupMap (mID m) ms)
   where
-    methods (Single {}) = liftM (fst . psMacros) getState
-    methods (Keyword {}) = liftM (snd . psMacros) getState
+    methods (Single {}) = liftM (fst . psMacros) getPS
+    methods (Keyword {}) = liftM (snd . psMacros) getPS
 
     firstMatch _ _ [] = return Nothing
-    firstMatch ids' m' (mt:mts)
-        | match ids' Nothing (PMessage (mPattern mt)) (Message m') = return (Just mt)
-        | otherwise = firstMatch ids' m' mts
+    firstMatch ids' m' (mt:mts) = do
+        chk <- liftIO (match ids' Nothing (PMessage (mPattern mt)) (Message m'))
+        if chk
+            then return (Just mt)
+            else firstMatch ids' m' mts
