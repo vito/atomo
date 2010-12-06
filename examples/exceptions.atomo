@@ -1,5 +1,5 @@
 Panicker = Object clone do:
-  { yield: v := raise: v
+  { yield: v := error: v
   }
 
 handler = Parameter new: Panicker
