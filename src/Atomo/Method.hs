@@ -18,8 +18,8 @@ import Atomo.Types
 
 
 -- referring to the left side:
---   LT = higher-precision
---   GT = lower-precision
+--   LT = is higher-precision
+--   GT = is lower-precision
 comparePrecision :: Pattern -> Pattern -> Ordering
 comparePrecision (PNamed _ a) (PNamed _ b) =
     comparePrecision a b

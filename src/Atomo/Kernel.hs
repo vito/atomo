@@ -41,7 +41,7 @@ load = do
     [$p|(x: Object) copy: (diff: Block)|] =:::
         [$e|x copy do: diff|]
 
-    [$p|(x: Object) delegates-to: (y: Object)|] =: do
+    [$p|(x: Object) delegating-to: (y: Object)|] =: do
         f <- here "x" >>= objectFor
         t <- here "y"
 

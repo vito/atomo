@@ -83,17 +83,11 @@ describe: "dispatch" as: {
       A foo := @a
       B foo := @b
 
-      { AB = Object clone
-        AB delegates-to: A
-        AB delegates-to: B
-
+      { AB = Object clone (with-delegates: [A, B])
         AB foo should-be: @a
       } call
 
-      { BA = Object clone
-        BA delegates-to: B
-        BA delegates-to: A
-
+      { BA = Object clone (with-delegates: [B, A])
         BA foo should-be: @b
       } call
     }
