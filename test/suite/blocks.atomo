@@ -81,7 +81,7 @@ describe: "blocks" as: {
 
         it: "does not leak argument bindings" so: {
             a = 1
-            { a | a + 1 } in-context (call: [2]) (should-be: 3)
+            { a | a + 1 } in-context (call: [2]) (should-be: 2)
             a should-be: 1
         }
     }

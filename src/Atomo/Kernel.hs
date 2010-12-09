@@ -165,74 +165,30 @@ joinWith :: Value -> Value -> [Value] -> VM Value
 joinWith t (Block s ps bes) as
     | length ps > length as =
         throwError (BlockArity (length ps) (length as))
+
     | null as || null ps =
         case t of
-            Object { oDelegates = ds, oMethods = rms } -> do
-                ms <- liftIO (readIORef rms)
-                blockScope <- newObject (ds ++ [s]) ms
+            o@(Object { oDelegates = ds }) ->
+                withTop (o { oDelegates = ds ++ [s] }) (evalAll bes)
 
-                res <- withTop blockScope (evalAll bes)
-                new <- objectFor blockScope
-
-                -- replace the old object with the new one
-                liftIO (readIORef (oMethods new)) >>= liftIO . writeIORef rms
-
-                finalize (oMethods new)
-
-                return res
             _ -> do
                 blockScope <- newObject [t, s] noMethods
                 withTop blockScope (evalAll bes)
+
     | otherwise = do
-        -- a toplevel scope with transient definitions
-        pseudoScope <- newObject [] (bs, emptyMap)
+        -- argument bindings
+        args <- newObject []
+            ( toMethods . concat $ zipWith bindings' ps as
+            , emptyMap
+            )
 
         case t of
-            Object { oDelegates = ds, oMethods = rms } -> do
-                ms <- liftIO (readIORef rms)
+            o@(Object { oDelegates = ds }) ->
+                withTop (o { oDelegates = args : ds ++ [s] })
+                    (evalAll bes)
 
-                -- the original prototype, but without its delegations
-                -- this is to prevent dispatch loops
-                doppelganger <- newObject [] ms
-
-                -- the main scope, methods are taken from here and merged with
-                -- the originals. delegates to the pseudoscope and doppelganger
-                -- so it has their methods in scope, but definitions go here
-                blockScope <- newObject (pseudoScope : doppelganger : ds ++ [s]) noMethods
-
-                res <- withTop blockScope (evalAll bes)
-                new <- objectFor blockScope
-
-                nms <- liftIO (readIORef (oMethods new))
-                liftIO (writeIORef rms (merge ms nms))
-
-                finalize (oMethods new)
-
-                return res
             _ -> do
-                blockScope <- newObject [pseudoScope, t, s] noMethods
-
+                blockScope <- newObject [args, t, s] noMethods
                 withTop blockScope (evalAll bes)
-  where
-    bs = toMethods . concat $ zipWith bindings' ps as
-
-    merge (os, ok) (ns, nk) =
-        ( foldl (flip addMethod) os (concat $ elemsMap ns)
-        , foldl (flip addMethod) ok (concat $ elemsMap nk)
-        )
-
-    -- clear the toplevel object's methods and have it delegate to the updated
-    -- object
-    --
-    -- this is important because method definitions have this as their context,
-    -- so methods changed in the new object wouldn't otherwise be available to
-    -- them
-    --
-    -- TODO: this doesn't update delegates anymore
-    finalize :: Methods -> VM ()
-    finalize rms = liftIO (writeIORef rms noMethods)
-        {-{ oDelegates = t : oDelegates c-}
-        {-, oMethods = noMethods-}
-        {-}-}
 
 joinWith _ v _ = error $ "impossible: joinWith on " ++ show v
