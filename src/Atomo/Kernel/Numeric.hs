@@ -14,11 +14,6 @@ load = do
         , [$e|operator 6 + -|]
         ]
 
-    eval [$e|Object clone|] >>= ([$p|Number|] =::)
-
-    eval [$e|Integer delegates-to: Number|]
-    eval [$e|Double delegates-to: Number|]
-
     [$p|(i: Integer) sqrt|] =: do
         Integer i <- here "i" >>= findInteger
         return (Double (sqrt (fromIntegral i)))

@@ -3,7 +3,6 @@ module Atomo.Helpers where
 
 import Control.Monad.State
 import Data.Dynamic
-import Data.IORef
 import qualified Data.Text as T
 import qualified Data.Vector as V
 
@@ -41,24 +40,22 @@ newWith e ss = do
 -- @\@could-not-find:in:@ if it is not found.
 findValue :: String -> (Value -> Bool) -> Value -> VM Value
 findValue _ t v | t v = return v
-findValue d t v = findValue' t v >>= maybe die return
+findValue d t v = maybe die return (findValue' t v)
   where
     die = throwError (ValueNotFound d v)
 
 -- | Same as `findValue', but returning Nothing instead of failing
-findValue' :: (Value -> Bool) -> Value -> VM (Maybe Value)
-findValue' t v | t v = return (Just v)
-findValue' t (Reference r) = do
-    o <- liftIO (readIORef r)
-    findDels (oDelegates o)
+findValue' :: (Value -> Bool) -> Value -> Maybe Value
+findValue' t v | t v = Just v
+findValue' t (Object { oDelegates = ds' }) =
+    findFirst ds'
   where
-    findDels [] = return Nothing
-    findDels (d:ds) = do
-        f <- findValue' t d
-        case f of
-            Nothing -> findDels ds
-            Just v -> return (Just v)
-findValue' _ _ = return Nothing
+    findFirst [] = Nothing
+    findFirst (d:ds) =
+        case findValue' t d of
+            Nothing -> findFirst ds
+            Just v -> Just v
+findValue' _ _ = Nothing
 
 -- | `findValue' for `Block'
 findBlock :: Value -> VM Value
@@ -150,11 +147,11 @@ findRational v
     | isRational v = return v
     | otherwise = findValue "Rational" isRational v
 
--- | `findValue' for `Reference'
-findReference :: Value -> VM Value
-findReference v
-    | isReference v = return v
-    | otherwise = findValue "Reference" isReference v
+-- | `findValue' for `Object'
+findObject :: Value -> VM Value
+findObject v
+    | isObject v = return v
+    | otherwise = findValue "Object" isObject v
 
 -- | `findValue' for `String'
 findString :: Value -> VM Value
@@ -200,11 +197,6 @@ ifVM' c a b = do
 ifE :: Expr -> VM a -> VM a -> VM a
 ifE = ifVM . eval
 
--- | Get a value's object.
-referenceTo :: Value -> VM Value
-{-# INLINE referenceTo #-}
-referenceTo = liftM Reference . orefFor
-
 -- | Call a block with the given arguments. Creates a scope, checks that its
 -- argument patterns match, and executes it with the bindings.
 callBlock :: Value -> [Value] -> VM Value
@@ -225,38 +217,34 @@ callBlock x _ = raise ["not-a-block"] [x]
 doBlock :: MethodMap -> Value -> [Expr] -> VM Value
 {-# INLINE doBlock #-}
 doBlock bms s es = do
-    blockScope <- newObject $ \o -> o
-        { oDelegates = [s]
-        , oMethods = (bms, emptyMap)
-        }
-
+    blockScope <- newObject [s] (bms, emptyMap)
     withTop blockScope (evalAll es)
 
--- | Get the object backing a value.
-objectFor :: Value -> VM Object
-{-# INLINE objectFor #-}
-objectFor v = orefFor v >>= liftIO . readIORef
-
 -- | Does one value delegate to another?
-delegatesTo :: Value -> Value -> VM Bool
-delegatesTo f t = do
-    o <- objectFor f
-    delegatesTo' (oDelegates o)
-  where
-    delegatesTo' [] = return False
-    delegatesTo' (d:ds)
-        | t `elem` (d:ds) = return True
-        | otherwise = do
-            o <- objectFor d
-            delegatesTo' (oDelegates o ++ ds)
+delegatesTo :: Value -> Value -> Bool
+delegatesTo (Object { oDelegates = ds }) t =
+    t `elem` ds || any (`delegatesTo` t) ds
+delegatesTo _ _ = False
+
+{-delegatesTo :: Value -> Value -> VM Bool-}
+{-delegatesTo f t = do-}
+    {-o <- objectFor f-}
+    {-delegatesTo' (oDelegates o)-}
+  {-where-}
+    {-delegatesTo' [] = return False-}
+    {-delegatesTo' (d:ds)-}
+        {-| t `elem` (d:ds) = return True-}
+        {-| otherwise = do-}
+            {-o <- objectFor d-}
+            {-delegatesTo' (oDelegates o ++ ds)-}
 
 -- | Is one value an instance of, equal to, or a delegation to another?
 --
 -- For example, 1 is-a?: Integer, but 1 does not delegates-to?: Integer
 isA :: Value -> Value -> VM Bool
 isA x y = do
-    xr <- orefFor x
-    yr <- orefFor y
+    xr <- objectFor x
+    yr <- objectFor y
 
     if xr == yr
         then return True

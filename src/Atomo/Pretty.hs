@@ -2,14 +2,11 @@
 module Atomo.Pretty (Pretty(pretty)) where
 
 import Data.Char (isUpper)
-import Data.IORef
 import Data.Maybe (isNothing)
 import Data.Ratio
 import Text.PrettyPrint hiding (braces)
-import System.IO.Unsafe
 import qualified Data.Vector as V
 
-import Atomo.Method
 import Atomo.Types hiding (keyword)
 import Atomo.Parser.Base (isOperator)
 
@@ -58,35 +55,36 @@ instance Pretty Value where
     prettyFrom _ (Pattern p) = internal "pattern" $ pretty p
     prettyFrom _ (Process _ tid) =
         internal "process" $ text (words (show tid) !! 1)
-    prettyFrom CNone (Reference r) = pretty (unsafePerformIO (readIORef r))
+    prettyFrom CNone (Object { oDelegates = ds }) =
+        internal "object" $ parens (text "delegates to" <+> pretty ds)
     prettyFrom _ (Rational r) =
         integer (numerator r) <> char '/' <> integer (denominator r)
-    prettyFrom _ (Reference _) = internal "object" empty
+    prettyFrom _ (Object {}) = internal "object" empty
     prettyFrom _ (String s) = text (show s)
 
-instance Pretty Object where
-    prettyFrom _ (Object ds (ss, ks)) = vcat
-        [ internal "object" $ parens (text "delegates to" <+> pretty ds)
+{-instance Pretty Object where-}
+    {-prettyFrom _ (Object ds (ss, ks)) = vcat-}
+        {-[ internal "object" $ parens (text "delegates to" <+> pretty ds)-}
 
-        , if not (nullMap ss)
-              then nest 2 $ vcat (map (vcat . map prettyMethod) (elemsMap ss)) <>
-                      if not (nullMap ks)
-                          then char '\n'
-                          else empty
-              else empty
+        {-, if not (nullMap ss)-}
+              {-then nest 2 $ vcat (map (vcat . map prettyMethod) (elemsMap ss)) <>-}
+                      {-if not (nullMap ks)-}
+                          {-then char '\n'-}
+                          {-else empty-}
+              {-else empty-}
 
-        , if not (nullMap ks)
-              then nest 2 . vcat $ flip map (elemsMap ks) $ \ms ->
-                  vcat (map prettyMethod ms) <> char '\n'
-              else empty
-        ]
-      where
-        prettyMethod (Slot { mPattern = p, mValue = v }) =
-            prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v
-        prettyMethod (Responder { mPattern = p, mExpr = e }) =
-            prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine e
-        prettyMethod (Macro { mPattern = p, mExpr = e }) =
-            text "macro" <+> parens (pretty p) <++> prettyFrom CDefine e
+        {-, if not (nullMap ks)-}
+              {-then nest 2 . vcat $ flip map (elemsMap ks) $ \ms ->-}
+                  {-vcat (map prettyMethod ms) <> char '\n'-}
+              {-else empty-}
+        {-]-}
+      {-where-}
+        {-prettyMethod (Slot { mPattern = p, mValue = v }) =-}
+            {-prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v-}
+        {-prettyMethod (Responder { mPattern = p, mExpr = e }) =-}
+            {-prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine e-}
+        {-prettyMethod (Macro { mPattern = p, mExpr = e }) =-}
+            {-text "macro" <+> parens (pretty p) <++> prettyFrom CDefine e-}
 
 instance Pretty Pattern where
     prettyFrom _ PAny = text "_"

@@ -173,16 +173,14 @@ evalAll [e] = eval e
 evalAll (e:es) = eval e >> evalAll es
 
 -- | Create a new empty object, passing a function to initialize it.
-newObject :: (Object -> Object) -> VM Value
-newObject f = liftM Reference . liftIO $
-    newIORef . f $ Object
-        { oDelegates = []
-        , oMethods = noMethods
-        }
+newObject :: Delegates -> (MethodMap, MethodMap) -> VM Value
+newObject ds mm = do
+    ms <- liftIO (newIORef mm)
+    return (Object ds ms)
 
 -- | Run x with t as its toplevel object.
 withTop :: Value -> VM a -> VM a
-withTop t x = do
+withTop !t x = do
     o <- gets top
     modify (\e -> e { top = t })
 
@@ -210,9 +208,7 @@ dynamicBind bs x = do
 newScope :: VM a -> VM a
 newScope x = do
     t <- gets top
-    nt <- newObject $ \o -> o
-        { oDelegates = [t]
-        }
+    nt <- newObject [t] noMethods
 
     withTop nt x
 
@@ -224,15 +220,14 @@ newScope x = do
 -- | Insert a method on a single value.
 defineOn :: Value -> Method -> VM ()
 defineOn v m' = do
-    o <- orefFor v
-    obj <- liftIO (readIORef o)
+    {-o <- orefFor v-}
+    {-obj <- liftIO (readIORef o)-}
+    (oss, oks) <- liftIO (readIORef (oMethods v))
 
-    let (oss, oks) = oMethods obj
-        ms (Single {}) = (addMethod m oss, oks)
+    let ms (Single {}) = (addMethod m oss, oks)
         ms (Keyword {}) = (oss, addMethod m oks)
 
-    liftIO . writeIORef o $
-        obj { oMethods = ms (mPattern m) }
+    liftIO . writeIORef (oMethods v) $ ms (mPattern m)
   where
     m = m' { mPattern = setSelf v (mPattern m') }
 
@@ -251,7 +246,7 @@ define !p !e = do
             _ -> targets is newp
 
     forM_ os $ \o ->
-        defineOn (Reference o) m
+        defineOn o m
   where
     isTop PThis = True
     isTop (PObject ETop {}) = True
@@ -309,14 +304,14 @@ matchable' (PMessage m) = liftM PMessage (matchable m)
 matchable' p' = return p'
 
 -- | Find the target objects for a pattern.
-targets :: IDs -> Message Pattern -> VM [ORef]
+targets :: IDs -> Message Pattern -> VM [Value]
 targets is (Single _ _ p) = targets' is p
 targets is (Keyword _ _ ps) = do
     ts <- mapM (targets' is) ps
     return (nub (concat ts))
 
-targets' :: IDs -> Pattern -> VM [ORef]
-targets' _ (PMatch v) = liftM (: []) (orefFor v)
+targets' :: IDs -> Pattern -> VM [Value]
+targets' _ (PMatch v) = liftM (: []) (objectFor v)
 targets' is (PNamed _ p) = targets' is p
 targets' is PAny = return [idObject is]
 targets' is (PList _) = return [idList is]
@@ -384,9 +379,9 @@ dispatch !m = do
 findMethod :: Value -> Message Value -> VM (Maybe Method)
 findMethod v m = do
     is <- gets primitives
-    r <- orefFor v
-    o <- liftIO (readIORef r)
-    case relevant is r o m of
+    o <- objectFor v
+    ms <- liftIO (readIORef (oMethods o))
+    case relevant is o ms m of
         Nothing -> findFirstMethod m (oDelegates o)
         mt -> return mt
 
@@ -400,12 +395,12 @@ findFirstMethod m (v:vs) = do
         _ -> return r
 
 -- | Find a relevant method for message `m' on object `o'.
-relevant :: IDs -> ORef -> Object -> Message Value -> Maybe Method
-relevant ids r o m =
-    lookupMap (mID m) (methods m) >>= firstMatch ids (Just r) m
+relevant :: IDs -> Value -> (MethodMap, MethodMap) -> Message Value -> Maybe Method
+relevant ids o ms m =
+    lookupMap (mID m) (methods m) >>= firstMatch ids (Just o) m
   where
-    methods (Single {}) = fst (oMethods o)
-    methods (Keyword {}) = snd (oMethods o)
+    methods (Single {}) = fst ms
+    methods (Keyword {}) = snd ms
 
     firstMatch _ _ _ [] = Nothing
     firstMatch ids' r' m' (mt:mts)
@@ -424,28 +419,17 @@ relevant ids r o m =
 runMethod :: Method -> Message Value -> VM Value
 runMethod (Slot { mValue = v }) _ = return v
 runMethod (Responder { mPattern = p, mContext = c, mExpr = e }) m = do
-    nt <- newObject $ \o -> o
-        { oDelegates = [c]
-        , oMethods =
-            ( bindings p m
-            , emptyMap
-            )
-        }
-
+    nt <- newObject [c] (bindings p m, emptyMap)
     withTop nt $ eval e
 runMethod (Macro { mPattern = p, mExpr = e }) m = do
     t <- gets (psEnvironment . parserState)
-    nt <- newObject $ \o -> o
-        { oDelegates = [t]
-        , oMethods = (bindings p m, emptyMap)
-        }
-
+    nt <- newObject [t] (bindings p m, emptyMap)
     withTop nt $ eval e
 
 -- | Get the object reference for a value.
-orefFor :: Value -> VM ORef
-{-# INLINE orefFor #-}
-orefFor !v = gets primitives >>= \is -> return $ orefFrom is v
+objectFor :: Value -> VM Value
+{-# INLINE objectFor #-}
+objectFor !v = gets primitives >>= \is -> return $ objectFrom is v
 
 -- | Raise a keyword particle as an error.
 raise :: [String] -> [Value] -> VM a

@@ -30,10 +30,10 @@ for-macro super Restart = Object clone
   (w: Simple-Warning) describe-error := w value describe-error
 
   Simple-Error new: v :=
-    Simple-Error clone do: { delegates-to: v; value = v }
+    Simple-Error clone (delegates-to: v) do: { value = v }
 
   Simple-Warning new: v :=
-    Simple-Warning clone do: { delegates-to: v; value = v }
+    Simple-Warning clone (delegates-to: v) do: { value = v }
 
   (e: Simple-Error) show := "<error " .. e value show .. ">"
   (e: Simple-Warning) show := "<warning " .. e value show .. ">"

@@ -69,24 +69,25 @@ data Value
     | Rational Rational
 
     -- | An object reference.
-    | Reference
-        { rORef :: {-# UNPACK #-} !ORef
+    | Object
+        { oDelegates :: !Delegates
+        , oMethods :: !Methods
         }
 
     -- | A string value; Data.Text.Text.
     | String { fromString :: !T.Text }
     deriving (Show, Typeable)
 
--- | A pure object.
-data Object =
-    Object
-        { -- | The object's delegates list.
-          oDelegates :: !Delegates
+{--- | A pure object.-}
+{-data Object =-}
+    {-Object-}
+        {-{ -- | The object's delegates list.-}
+          {-oDelegates :: !Delegates-}
 
-          -- | A pair of (single, keyword) methods.
-        , oMethods :: !(MethodMap, MethodMap)
-        }
-    deriving (Show, Typeable)
+          {--- | A pair of (single, keyword) methods.-}
+        {-, oMethods :: !(MethodMap, MethodMap)-}
+        {-}-}
+    {-deriving (Show, Typeable)-}
 
 -- | Methods, slot, and macro methods.
 data Method
@@ -312,23 +313,23 @@ data Assoc = ALeft | ARight
 -- | A giant record of the objects for each primitive value.
 data IDs =
     IDs
-        { idObject :: ORef
-        , idBlock :: ORef
-        , idBoolean :: ORef
-        , idChar :: ORef
-        , idContinuation :: ORef
-        , idDouble :: ORef
-        , idExpression :: ORef
-        , idHaskell :: ORef
-        , idInteger :: ORef
-        , idList :: ORef
-        , idMessage :: ORef
-        , idMethod :: ORef
-        , idParticle :: ORef
-        , idProcess :: ORef
-        , idPattern :: ORef
-        , idRational :: ORef
-        , idString :: ORef
+        { idObject :: Value
+        , idBlock :: Value
+        , idBoolean :: Value
+        , idChar :: Value
+        , idContinuation :: Value
+        , idDouble :: Value
+        , idExpression :: Value
+        , idHaskell :: Value
+        , idInteger :: Value
+        , idList :: Value
+        , idMessage :: Value
+        , idMethod :: Value
+        , idParticle :: Value
+        , idProcess :: Value
+        , idPattern :: Value
+        , idRational :: Value
+        , idString :: Value
         }
     deriving (Show, Typeable)
 
@@ -358,6 +359,9 @@ type Operators = [(String, (Assoc, Integer))]
 -- | The list of values an object delegates to.
 type Delegates = [Value]
 
+-- | An object's methods.
+type Methods = IORef (MethodMap, MethodMap)
+
 -- | A channel for sending values through to processes.
 type Channel = Chan Value
 
@@ -365,7 +369,7 @@ type Channel = Chan Value
 type MethodMap = M.IntMap [Method]
 
 -- | A reference to an object.
-type ORef = IORef Object
+{-type ORef = IORef Object-}
 
 -- | A vector containing values.
 type VVector = V.Vector Value
@@ -393,7 +397,7 @@ instance Eq Value where
     (==) (Particle a) (Particle b) = a == b
     (==) (Process _ a) (Process _ b) = a == b
     (==) (Rational a) (Rational b) = a == b
-    (==) (Reference a) (Reference b) = a == b
+    (==) (Object ad am) (Object bd bm) = ad == bd && am == bm
     (==) (String a) (String b) = a == b
     (==) _ _ = False
 
@@ -435,8 +439,8 @@ instance Eq Expr where
 instance Show Channel where
     show _ = "Channel"
 
-instance Show ORef where
-    show _ = "ORef"
+instance Show Methods where
+    show _ = "Methods"
 
 instance Show Continuation where
     show _ = "Continuation"
@@ -734,10 +738,10 @@ isRational :: Value -> Bool
 isRational (Rational _) = True
 isRational _ = False
 
--- | Is a value a `Reference'?
-isReference :: Value -> Bool
-isReference (Reference _) = True
-isReference _ = False
+-- | Is a value a `Object'?
+isObject :: Value -> Bool
+isObject (Object {}) = True
+isObject _ = False
 
 -- | Is a value a `String'?
 isString :: Value -> Bool
@@ -779,23 +783,23 @@ asValue (ValueNotFound d v) =
 asValue (DynamicNeeded t) =
     keyParticleN ["dynamic-needed"] [string t]
 
--- | Given a record of primitive IDs, get the object reference backing a value.
-orefFrom :: IDs -> Value -> ORef
-{-# INLINE orefFrom #-}
-orefFrom _ (Reference r) = r
-orefFrom ids (Block _ _ _) = idBlock ids
-orefFrom ids (Boolean _) = idBoolean ids
-orefFrom ids (Char _) = idChar ids
-orefFrom ids (Continuation _) = idContinuation ids
-orefFrom ids (Double _) = idDouble ids
-orefFrom ids (Expression _) = idExpression ids
-orefFrom ids (Haskell _) = idHaskell ids
-orefFrom ids (Integer _) = idInteger ids
-orefFrom ids (List _) = idList ids
-orefFrom ids (Message _) = idMessage ids
-orefFrom ids (Method _) = idMethod ids
-orefFrom ids (Particle _) = idParticle ids
-orefFrom ids (Process _ _) = idProcess ids
-orefFrom ids (Pattern _) = idPattern ids
-orefFrom ids (Rational _) = idRational ids
-orefFrom ids (String _) = idString ids
+-- | Given a record of primitive IDs, get the object backing a value.
+objectFrom :: IDs -> Value -> Value
+{-# INLINE objectFrom #-}
+objectFrom _ o@(Object {}) = o
+objectFrom ids (Block _ _ _) = idBlock ids
+objectFrom ids (Boolean _) = idBoolean ids
+objectFrom ids (Char _) = idChar ids
+objectFrom ids (Continuation _) = idContinuation ids
+objectFrom ids (Double _) = idDouble ids
+objectFrom ids (Expression _) = idExpression ids
+objectFrom ids (Haskell _) = idHaskell ids
+objectFrom ids (Integer _) = idInteger ids
+objectFrom ids (List _) = idList ids
+objectFrom ids (Message _) = idMessage ids
+objectFrom ids (Method _) = idMethod ids
+objectFrom ids (Particle _) = idParticle ids
+objectFrom ids (Process _ _) = idProcess ids
+objectFrom ids (Pattern _) = idPattern ids
+objectFrom ids (Rational _) = idRational ids
+objectFrom ids (String _) = idString ids

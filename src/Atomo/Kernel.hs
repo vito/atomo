@@ -2,7 +2,6 @@
 module Atomo.Kernel (load) where
 
 import Data.IORef
-import Data.List ((\\))
 import Data.Maybe (isJust)
 
 import Atomo
@@ -32,30 +31,28 @@ load :: VM ()
 load = do
     [$p|(x: Object) clone|] =: do
         x <- here "x"
-        newObject $ \o -> o
-            { oDelegates = [x]
-            }
+        newObject [x] noMethods
 
     [$p|(x: Object) copy|] =: do
         x <- here "x" >>= objectFor
-        liftM Reference (liftIO $ newIORef x)
+        ms <- liftIO (readIORef (oMethods x))
+        liftM (Object (oDelegates x)) (liftIO (newIORef ms))
 
     [$p|(x: Object) copy: (diff: Block)|] =:::
         [$e|x copy do: diff|]
 
     [$p|(x: Object) delegates-to: (y: Object)|] =: do
-        f <- here "x" >>= orefFor
+        f <- here "x" >>= objectFor
         t <- here "y"
 
-        from <- liftIO (readIORef f)
-        liftIO $ writeIORef f (from { oDelegates = oDelegates from ++ [t] })
-
-        return (particle "ok")
+        return f
+            { oDelegates = oDelegates f ++ [t]
+            }
 
     [$p|(x: Object) delegates-to?: (y: Object)|] =: do
         x <- here "x"
         y <- here "y"
-        liftM Boolean (delegatesTo x y)
+        return (Boolean (delegatesTo x y))
 
     [$p|(x: Object) delegates|] =: do
         o <- here "x" >>= objectFor
@@ -64,10 +61,7 @@ load = do
     [$p|(x: Object) with-delegates: (ds: List)|] =: do
         ds <- getList [$e|ds|]
         x <- here "x" >>= objectFor
-        newObject $ \o -> o
-            { oMethods = oMethods x
-            , oDelegates = ds
-            }
+        return x { oDelegates = ds }
 
     [$p|(x: Object) super|] =::: [$e|x delegates head|]
 
@@ -89,12 +83,12 @@ load = do
 
     [$p|(o: Object) methods|] =: do
         o <- here "o" >>= objectFor
-        let (ss, ks) = oMethods o
+        (ss, ks) <- liftIO (readIORef (oMethods o))
 
-        ([$p|ms|] =::) =<< eval [$e|Object clone|]
-        [$p|{ ms } singles|] =:: list (map (list . map Method) (elemsMap ss))
-        [$p|{ ms } keywords|] =:: list (map (list . map Method) (elemsMap ks))
-        here "ms"
+        [$e|Object|] `newWith`
+            [ ("singles", list (map (list . map Method) (elemsMap ss)))
+            , ("keywords", list (map (list . map Method) (elemsMap ks)))
+            ]
 
     [$p|(x: Object) dump|] =: do
         o <- here "x"
@@ -173,68 +167,50 @@ joinWith t (Block s ps bes) as
         throwError (BlockArity (length ps) (length as))
     | null as || null ps =
         case t of
-            Reference r -> do
-                Object ds ms <- objectFor t
-                blockScope <- newObject $ \o -> o
-                    { oDelegates = ds ++ [s]
-                    , oMethods = ms
-                    }
+            Object { oDelegates = ds, oMethods = rms } -> do
+                ms <- liftIO (readIORef rms)
+                blockScope <- newObject (ds ++ [s]) ms
 
                 res <- withTop blockScope (evalAll bes)
                 new <- objectFor blockScope
 
                 -- replace the old object with the new one
-                liftIO $ writeIORef r new
-                    { oDelegates = oDelegates new \\ [s]
-                    , oMethods = oMethods new
-                    }
+                liftIO (readIORef (oMethods new)) >>= liftIO . writeIORef rms
 
-                finalize (rORef blockScope) new
+                finalize (oMethods new)
 
                 return res
             _ -> do
-                blockScope <- newObject $ \o -> o
-                    { oDelegates = [t, s]
-                    }
-
+                blockScope <- newObject [t, s] noMethods
                 withTop blockScope (evalAll bes)
     | otherwise = do
         -- a toplevel scope with transient definitions
-        pseudoScope <- newObject $ \o -> o
-            { oMethods = (bs, emptyMap)
-            }
+        pseudoScope <- newObject [] (bs, emptyMap)
 
         case t of
-            Reference r -> do
-                Object ds ms <- objectFor t
+            Object { oDelegates = ds, oMethods = rms } -> do
+                ms <- liftIO (readIORef rms)
+
                 -- the original prototype, but without its delegations
                 -- this is to prevent dispatch loops
-                doppelganger <- newObject $ \o -> o
-                    { oMethods = ms
-                    }
+                doppelganger <- newObject [] ms
 
                 -- the main scope, methods are taken from here and merged with
                 -- the originals. delegates to the pseudoscope and doppelganger
                 -- so it has their methods in scope, but definitions go here
-                blockScope <- newObject $ \o -> o
-                    { oDelegates = pseudoScope : doppelganger : ds ++ [s]
-                    }
+                blockScope <- newObject (pseudoScope : doppelganger : ds ++ [s]) noMethods
 
                 res <- withTop blockScope (evalAll bes)
                 new <- objectFor blockScope
 
-                liftIO (writeIORef r new
-                    { oDelegates = oDelegates new \\ [pseudoScope, doppelganger, s]
-                    , oMethods = merge ms (oMethods new)
-                    })
+                nms <- liftIO (readIORef (oMethods new))
+                liftIO (writeIORef rms (merge ms nms))
 
-                finalize (rORef blockScope) new
+                finalize (oMethods new)
 
                 return res
             _ -> do
-                blockScope <- newObject $ \o -> o
-                    { oDelegates = [pseudoScope, t, s]
-                    }
+                blockScope <- newObject [pseudoScope, t, s] noMethods
 
                 withTop blockScope (evalAll bes)
   where
@@ -251,10 +227,12 @@ joinWith t (Block s ps bes) as
     -- this is important because method definitions have this as their context,
     -- so methods changed in the new object wouldn't otherwise be available to
     -- them
-    finalize :: ORef -> Object -> VM ()
-    finalize r c = liftIO $ writeIORef r c
-        { oDelegates = t : oDelegates c
-        , oMethods = noMethods
-        }
+    --
+    -- TODO: this doesn't update delegates anymore
+    finalize :: Methods -> VM ()
+    finalize rms = liftIO (writeIORef rms noMethods)
+        {-{ oDelegates = t : oDelegates c-}
+        {-, oMethods = noMethods-}
+        {-}-}
 
 joinWith _ v _ = error $ "impossible: joinWith on " ++ show v

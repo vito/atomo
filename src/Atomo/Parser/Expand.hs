@@ -66,22 +66,20 @@ doPragmas (EGetDynamic {}) = return ()
 
 -- | Defines a macro, given its pattern and expression.
 addMacro :: Message Pattern -> Expr -> VM ()
-addMacro p e = do
-    ops <- gets parserState
-    nms <- liftIO (withMacro (psMacros ops))
+addMacro p e =
     modify $ \env -> env
-        { parserState = (parserState env) { psMacros = nms }
+        { parserState = (parserState env)
+            { psMacros = withMacro (psMacros (parserState env))
+            }
         }
   where
     withMacro ms =
         case p of
-            Single {} -> do
-                wms <- addMethod (Macro p e) (fst ms) 
-                return (wms, snd ms)
+            Single {} ->
+                (addMethod (Macro p e) (fst ms), snd ms)
 
-            Keyword {} -> do
-                wms <- addMethod (Macro p e) (snd ms)
-                return (fst ms, wms)
+            Keyword {} ->
+                (fst ms, addMethod (Macro p e) (snd ms))
 
 
 modifyPS :: (ParserState -> ParserState) -> VM ()
@@ -178,14 +176,13 @@ findMacro :: Message Value -> VM (Maybe Method)
 findMacro m = do
     ids <- gets primitives
     ms <- methods m
-    maybe (return Nothing) (firstMatch ids m) (lookupMap (mID m) ms)
+    return $ maybe Nothing (firstMatch ids m) (lookupMap (mID m) ms)
   where
     methods (Single {}) = liftM (fst . psMacros) getPS
     methods (Keyword {}) = liftM (snd . psMacros) getPS
 
-    firstMatch _ _ [] = return Nothing
-    firstMatch ids' m' (mt:mts) = do
-        chk <- liftIO (match ids' Nothing (PMessage (mPattern mt)) (Message m'))
-        if chk
-            then return (Just mt)
-            else firstMatch ids' m' mts
+    firstMatch _ _ [] = Nothing
+    firstMatch ids' m' (mt:mts) 
+        | match ids' Nothing (PMessage (mPattern mt)) (Message m') =
+            Just mt
+        | otherwise = firstMatch ids' m' mts

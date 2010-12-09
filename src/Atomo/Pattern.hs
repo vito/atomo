@@ -12,9 +12,7 @@ module Atomo.Pattern
 
 import Control.Monad (forM, liftM)
 import Data.Char (isUpper)
-import Data.IORef (readIORef)
 import Data.Maybe (fromJust, isJust)
-import System.IO.Unsafe
 import qualified Data.Text as T
 import qualified Data.Vector as V
 
@@ -26,17 +24,17 @@ import Atomo.Types
 --
 -- Note that this is much faster when pure, so it uses unsafePerformIO
 -- to check things like delegation matches.
-match :: IDs -> Maybe ORef -> Pattern -> Value -> Bool
+match :: IDs -> Maybe Value -> Pattern -> Value -> Bool
 {-# NOINLINE match #-}
-match ids (Just r) PThis (Reference y) =
-    refMatch ids (Just r) r y
+match ids (Just r) PThis y@(Object { oDelegates = ds }) =
+    r == y || any (match ids (Just r) (PMatch r)) ds
 match ids (Just r) PThis y =
-    match ids (Just r) (PMatch (Reference r)) (Reference (orefFrom ids y))
+    match ids (Just r) (PMatch r) (objectFrom ids y)
 match _ _ (PMatch x) y | x == y = True
-match ids r (PMatch x) (Reference y) =
-    delegatesMatch ids r (PMatch x) y
-match ids r (PMatch (Reference x)) y =
-    match ids r (PMatch (Reference x)) (Reference (orefFrom ids y))
+match ids r x@(PMatch _) (Object { oDelegates = ds }) =
+    any (match ids r x) ds
+match ids r x@(PMatch (Object {})) y =
+    match ids r x (objectFrom ids y)
 match ids r
     (PMessage (Single { mTarget = p }))
     ( Message (Single { mTarget = t })) =
@@ -45,7 +43,8 @@ match ids r
     (PMessage (Keyword { mTargets = ps }))
     ( Message (Keyword { mTargets = ts })) =
     matchAll ids r ps ts
-match ids r (PInstance p) (Reference o) = delegatesMatch ids r p o
+match ids r (PInstance p) (Object { oDelegates = ds }) =
+    any (match ids r p) ds
 match ids r (PInstance p) v = match ids r p v
 match _ _ (PStrict (PMatch x)) v = x == v
 match ids r (PStrict p) v = match ids r p v
@@ -61,7 +60,8 @@ match ids r (PHeadTail hp tp) (String t) | not (T.null t) =
     match ids r hp (Char (T.head t)) && match ids r tp (String (T.tail t))
 match ids r (PPMKeyword ans aps) (Particle (PMKeyword bns mvs)) =
     ans == bns && matchParticle ids r aps mvs
-match ids r p (Reference y) = delegatesMatch ids r p y
+match ids r p (Object { oDelegates = ds }) =
+    any (match ids r p) ds
 match _ _ p (Expression e) = macroMatch p e
 match _ _ _ _ = False
 
@@ -79,17 +79,8 @@ macroMatch PEUnquote (EUnquote {}) = True
 macroMatch (PExpr a) b = matchExpr 0 a b
 macroMatch _ _ = False
 
--- | Check if two references are equal or if one delegates to another.
-refMatch :: IDs -> Maybe ORef -> ORef -> ORef -> Bool
-refMatch ids r x y = x == y || delegatesMatch ids r (PMatch (Reference x)) y
-
--- | Check if an object's delegates match a pattern.
-delegatesMatch :: IDs -> Maybe ORef -> Pattern -> ORef -> Bool
-delegatesMatch ids mr p x =
-    any (match ids mr p) (oDelegates (unsafePerformIO (readIORef x)))
-
 -- | Match multiple patterns with multiple values.
-matchAll :: IDs -> Maybe ORef -> [Pattern] -> [Value] -> Bool
+matchAll :: IDs -> Maybe Value -> [Pattern] -> [Value] -> Bool
 matchAll _ _ [] [] = True
 matchAll ids mr (p:ps) (v:vs) = match ids mr p v && matchAll ids mr ps vs
 matchAll _ _ _ _ = False
@@ -132,7 +123,7 @@ matchExpr n (EQuote { eExpr = a }) (EQuote { eExpr = b }) =
     matchExpr (n + 1) a b
 matchExpr _ a b = a == b
 
-matchParticle :: IDs -> Maybe ORef -> [Pattern] -> [Maybe Value] -> Bool
+matchParticle :: IDs -> Maybe Value -> [Pattern] -> [Maybe Value] -> Bool
 matchParticle _ _ [] [] = True
 matchParticle ids mr (PAny:ps) (Nothing:mvs) = matchParticle ids mr ps mvs
 matchParticle ids mr (PNamed _ p:ps) mvs = matchParticle ids mr (p:ps) mvs
@@ -164,12 +155,12 @@ bindings' (PHeadTail hp tp) (List vs) =
 bindings' (PHeadTail hp tp) (String t) | not (T.null t) =
     bindings' hp (Char (T.head t)) ++ bindings' tp (String (T.tail t))
 bindings' (PExpr a) (Expression b) = exprBindings 0 a b
-bindings' (PInstance p) (Reference r) =
-    concatMap (bindings' p) $ oDelegates (unsafePerformIO (readIORef r))
+bindings' (PInstance p) (Object { oDelegates = ds }) =
+    concatMap (bindings' p) ds
 bindings' (PInstance p) v = bindings' p v
 bindings' (PStrict p) v = bindings' p v
-bindings' p (Reference r) =
-    concatMap (bindings' p) $ oDelegates (unsafePerformIO (readIORef r))
+bindings' p (Object { oDelegates = ds }) =
+    concatMap (bindings' p) ds
 bindings' _ _ = []
 
 

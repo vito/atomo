@@ -4,6 +4,7 @@ import Control.Concurrent
 import Control.Monad.State
 
 import Atomo.Types
+import Atomo.Method
 import Atomo.Environment
 
 
@@ -11,10 +12,10 @@ import Atomo.Environment
 initCore :: VM ()
 initCore = do
     -- the very root object
-    object <- newObject id
+    object <- newObject [] noMethods
 
     -- top scope is a proto delegating to the root object
-    topObj <- newObject $ \o -> o { oDelegates = [object] }
+    topObj <- newObject [object] noMethods
 
     modify $ \e -> e { top = topObj }
 
@@ -25,10 +26,10 @@ initCore = do
     define (single "Object" PThis) (Primitive Nothing object)
 
     -- create parser environment
-    parserEnv <- newObject $ \o -> o { oDelegates = [topObj] }
+    parserEnv <- newObject [topObj] noMethods
 
     modify $ \e -> e
-        { primitives = (primitives e) { idObject = rORef object }
+        { primitives = (primitives e) { idObject = object }
         , parserState = (parserState e) { psEnvironment = parserEnv }
         }
 
@@ -36,11 +37,21 @@ initCore = do
     chan <- liftIO newChan
     modify $ \e -> e { channel = chan }
 
+    -- Numeric object; Integer and Double
+    number <- newObject [object] noMethods
+
+    -- define Object as the root object
+    define (single "Number" PThis) (Primitive Nothing number)
+
     -- define primitive objects
     forM_ primObjs $ \(n, f) -> do
-        o <- newObject $ \o -> o { oDelegates = [object] }
+        o <-
+            if n `elem` ["Integer", "Double"]
+                then newObject [number] noMethods
+                else newObject [object] noMethods
+
         define (single n PThis) (Primitive Nothing o)
-        modify $ \e -> e { primitives = f (primitives e) (rORef o) }
+        modify $ \e -> e { primitives = f (primitives e) o }
   where
     primObjs =
         [ ("Block", \is r -> is { idBlock = r })

@@ -86,7 +86,7 @@ load = do
                     _ -> Slot pat v
 
         forM_ obj $ \o ->
-            defineOn (Reference o) m
+            defineOn o m
         
         return (particle "ok")
 

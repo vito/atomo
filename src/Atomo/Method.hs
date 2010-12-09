@@ -10,10 +10,8 @@ module Atomo.Method
     , toMethods
     ) where
 
-import Data.IORef
 import Data.List (elemIndices)
 import Data.Maybe (isJust)
-import System.IO.Unsafe
 import qualified Data.IntMap as M
 
 import Atomo.Types
@@ -29,9 +27,9 @@ comparePrecision (PNamed _ a) b = comparePrecision a b
 comparePrecision a (PNamed _ b) = comparePrecision a b
 comparePrecision PAny PAny = EQ
 comparePrecision PThis PThis = EQ
-comparePrecision (PMatch (Reference a)) (PMatch (Reference b))
-    | unsafeDelegatesTo (Reference a) (Reference b) = LT
-    | unsafeDelegatesTo (Reference a) (Reference b) = GT
+comparePrecision (PMatch a@(Object {})) (PMatch b@(Object {}))
+    | delegatesTo a b = LT
+    | delegatesTo a b = GT
     | otherwise = EQ
 comparePrecision (PMatch _) (PMatch _) = EQ
 comparePrecision (PList as) (PList bs) =
@@ -47,8 +45,8 @@ comparePrecision (PMessage (Keyword { mTargets = as })) (PMessage (Keyword { mTa
 comparePrecision (PObject _) (PObject _) = EQ
 comparePrecision PAny _ = GT
 comparePrecision _ PAny = LT
-comparePrecision PThis (PMatch (Reference _)) = LT
-comparePrecision (PMatch (Reference _)) PThis = GT
+comparePrecision PThis (PMatch (Object {})) = LT
+comparePrecision (PMatch (Object {})) PThis = GT
 comparePrecision (PMatch _) _ = LT
 comparePrecision _ (PMatch _) = GT
 comparePrecision (PExpr a) (PExpr b) = exprPrecision 0 a b
@@ -85,12 +83,10 @@ comparePrecisionsWith cmp as bs =
     gt = length $ elemIndices GT compared
     lt = length $ elemIndices LT compared
 
-unsafeDelegatesTo :: Value -> Value -> Bool
-unsafeDelegatesTo (Reference f) t =
-    t `elem` ds || any (`unsafeDelegatesTo` t) ds
-  where
-    ds = oDelegates (unsafePerformIO (readIORef f))
-unsafeDelegatesTo _ _ = False
+delegatesTo :: Value -> Value -> Bool
+delegatesTo (Object { oDelegates = ds }) t =
+    t `elem` ds || any (`delegatesTo` t) ds
+delegatesTo _ _ = False
 
 exprPrecision :: Int -> Expr -> Expr -> Ordering
 exprPrecision 0 (EUnquote {}) (EUnquote {}) = EQ
