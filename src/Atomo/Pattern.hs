@@ -259,6 +259,7 @@ toRolePattern (Dispatch { eMessage = Keyword { mNames = [n], mTargets = [ETop {}
     return (PNamed n p)
 toRolePattern d@(Dispatch { eMessage = Single { mTarget = ETop {}, mName = n } })
     | isUpper (head n) = return (PObject d)
+    | n == "_" = return PAny
     | otherwise = return (PNamed n PAny)
 toRolePattern d@(Dispatch { eMessage = Single { mTarget = (Dispatch {}) } }) =
     return (PObject d)
