@@ -110,10 +110,18 @@
 }
 
 #define:{
-    x delegates-to: y
+    x delegating-to: y
     > @ok
 }body:{
-    Adds #atomo:y to #atomo:(x)'s list of delegates.
+    Yields a new object with #atomo:(x)'s method table and #atomo:(y) affixed to its delegates list.
+}
+
+#define:{
+    x with-delegates: ds
+    | ds is-a?: List
+    > @ok
+}body:{
+    Yields a new object with #atomo:(x)'s method table and #atomo:(ds) as its delegates list.
 }
 
 #define:{
@@ -126,8 +134,7 @@
         X = Object clone
         Y = Object clone
         Y delegates-to?: X
-        Y delegates-to: X
-        Y delegates-to?: X
+        Y (delegating-to: X) delegates-to?: X
     })
 }
 
@@ -140,8 +147,7 @@
     #example:({
       x = 1 clone
       x delegates
-      x delegates-to: 2
-      x delegates
+      x (delegating-to: 2) delegates
     })
 }
 
@@ -153,7 +159,7 @@
 
     #example:({
       1 clone super
-      1 clone join: { delegates-to: 2; super }
+      1 clone (delegating-to: 2) super
     })
 }
 
@@ -169,8 +175,7 @@
         Y = Object clone
         X is-a?: X
         Y is-a?: X
-        Y delegates-to: X
-        Y is-a?: X
+        Y (delegating-to: X) is-a?: X
     })
 }
 
@@ -186,7 +191,7 @@
         X responds-to?: @foo
         X foo = 42
         X responds-to?: @foo
-        
+
         1 responds-to?: @(+ 2)
         1 responds-to?: @(+ "foo")
     })
