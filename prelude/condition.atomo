@@ -70,7 +70,7 @@ for-macro super Restart = Object clone
         }
     } call
 
-  (r: Restart) show := "<restart " .. r action show .. ">"
+  (r: -> Restart) show := "<restart " .. r action show .. ">"
 
   macro (action with-restarts: (restarts: Block))
     { rs = restarts contents map:
