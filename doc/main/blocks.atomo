@@ -87,6 +87,82 @@
 }
 
 #define:{
+    v join: b
+    | b is-a?: Block
+    > any
+}body:{
+    Execute #atomo:b with #atomo:(v delegating-to: b context) as its toplevel object (i.e., the block's context is accessible). Returns the result of the block's execution.
+
+    Note that #atomo:(v)'s methods take priority over the block's context.
+
+    #example:({
+        True join: { not }
+        1 join: { + 2 }
+        x = 42
+        1 join: { + x }
+    })
+
+    This can be useful for executing a block in the current scope:
+
+    #example:({
+        blk = { x = 1; x + a }
+
+        Object clone do: {
+            a = 42
+            res = join: blk
+        }
+    })
+}
+
+#define:{
+    v join: b with: l
+    | b is-a?: Block
+    | l is-a?: List
+    > any
+}body:{
+    Like #atomo:(join:), but with arguments passed to the block.
+
+    Note that #atomo:(v)'s methods take priority over both the arguments and the block's context.
+
+    #example:({
+        1 join: { a | + a } with: [2]
+    })
+}
+
+#define:{
+    v do: b
+    | b is-a?: Block
+    > v
+}body:{
+    Like #atomo:(join:), but returns #atomo:v. Handy for quick object creation.
+
+    #example:({
+        X = Object clone do: {
+            a = 1
+            b = 2
+        }
+    })
+}
+
+#define:{
+    v do: b with: l
+    | b is-a?: Block
+    | l is-a?: List
+    > v
+}body:{
+    Like #atomo:(do:), but with arguments passed to the block.
+
+    #example:({
+        X = Object clone do: { a |
+            x = a
+            y := a + 1
+        } with: [1]
+        X y
+    })
+}
+
+
+#define:{
     b contents
     | b is-a?: Block
     > List
