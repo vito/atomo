@@ -54,7 +54,7 @@ Don't do this:
 
 as it indicates the final closing brace is somehow related to #atomo:foo, when really it's just the ending delimiter for the block passed to #atomo:(map:).
 
-Whitespace can also be used for cascaded message sends:
+Whitespace can also be used for chained message sends:
 
 #verbatim:{
   something
@@ -446,7 +446,7 @@ Keyword message dispatch normally requires parentheses to chain multiple message
   (((1 x: a) y: b) z: c) foo
 }
 
-Atomo remedies this by allowing parentheses to be used inside the cascade of sends itself, effectively turning keyword message dispatch into something that's as easily chained as single messages:
+Atomo remedies this by allowing parentheses to be used inside the chain of sends itself, effectively turning keyword message dispatch into something that's as easily chained as single messages:
 
 #verbatim:{
   1 (x: a) (y: b) (z: c) foo
