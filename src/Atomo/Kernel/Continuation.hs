@@ -75,13 +75,16 @@ unwind to d = do
 
     if d < 0
         then do
-            unwind (tail to) (d + 1)
-            dispatch (single "call" (fst (head to)))
+            unwind us (d + 1)
+            dispatch (single "call" pre)
             modify $ \env -> env { unwinds = to }
             return (particle "ok")
         else do
 
-    let post = fst (head to)
+    let post = snd (head ws)
     modify $ \env -> env { unwinds = tail (unwinds env) }
     dispatch (single "call" post)
     unwind to (d - 1)
+  where
+    (u:us) = to
+    pre = fst u
