@@ -209,7 +209,6 @@ newScope :: VM a -> VM a
 newScope x = do
     t <- gets top
     nt <- newObject [t] noMethods
-
     withTop nt x
 
 
@@ -219,15 +218,16 @@ newScope x = do
 
 -- | Insert a method on a single value.
 defineOn :: Value -> Method -> VM ()
-defineOn v m' = do
-    {-o <- orefFor v-}
-    {-obj <- liftIO (readIORef o)-}
-    (oss, oks) <- liftIO (readIORef (oMethods v))
+defineOn v m' = liftIO $ do
+    (oss, oks) <- readIORef (oMethods v)
 
-    let ms (Single {}) = (addMethod m oss, oks)
-        ms (Keyword {}) = (oss, addMethod m oks)
+    writeIORef (oMethods v) $
+        case mPattern m of
+            Single {} ->
+                (addMethod m oss, oks)
 
-    liftIO . writeIORef (oMethods v) $ ms (mPattern m)
+            Keyword {} ->
+                (oss, addMethod m oks)
   where
     m = m' { mPattern = setSelf v (mPattern m') }
 
@@ -245,8 +245,7 @@ define !p !e = do
 
             _ -> targets is newp
 
-    forM_ os $ \o ->
-        defineOn o m
+    forM_ os (flip defineOn m)
   where
     method p' (Primitive _ v) = return (Slot p' v)
     method p' e' = gets top >>= \t -> return (Responder p' t e')

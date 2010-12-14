@@ -226,18 +226,6 @@ delegatesTo (Object { oDelegates = ds }) t =
     t `elem` ds || any (`delegatesTo` t) ds
 delegatesTo _ _ = False
 
-{-delegatesTo :: Value -> Value -> VM Bool-}
-{-delegatesTo f t = do-}
-    {-o <- objectFor f-}
-    {-delegatesTo' (oDelegates o)-}
-  {-where-}
-    {-delegatesTo' [] = return False-}
-    {-delegatesTo' (d:ds)-}
-        {-| t `elem` (d:ds) = return True-}
-        {-| otherwise = do-}
-            {-o <- objectFor d-}
-            {-delegatesTo' (oDelegates o ++ ds)-}
-
 -- | Is one value an instance of, equal to, or a delegation to another?
 --
 -- For example, 1 is-a?: Integer, but 1 does not delegates-to?: Integer
@@ -316,7 +304,7 @@ toMacroPattern' = tryPattern toMacroPattern
 -- | Try a given pattern conversion, raising @\@unknown-pattern:@ if conversion
 -- fails.
 tryPattern :: (Expr -> Maybe p) -> Expr -> VM p
-tryPattern c e = 
+tryPattern c e =
     case c e of
         Nothing -> raise ["unknown-pattern"] [Expression e]
         Just p -> return p
