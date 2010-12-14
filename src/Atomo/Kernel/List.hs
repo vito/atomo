@@ -359,7 +359,7 @@ splitOn :: Eq a => [a] -> [a] -> [[a]]
 splitOn d vs' = splitOn' vs' []
   where
     splitOn' [] acc = [acc]
-    splitOn' vs acc
-        | d `isPrefixOf` vs = acc : splitOn' (drop (length d) vs) []
-        | otherwise = splitOn' (tail vs) (acc ++ [head vs])
+    splitOn' a@(v:vs) acc
+        | d `isPrefixOf` a = acc : splitOn' (drop (length d) a) []
+        | otherwise = splitOn' vs (acc ++ [v])
 
