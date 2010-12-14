@@ -154,7 +154,12 @@ load = do
 
     [$p|File delete: (fn: String)|] =: do
         fn <- getString [$e|fn|]
-        liftIO (removeFile fn)
+        b <- liftIO (doesFileExist fn)
+
+        if b
+           then liftIO (removeFile fn)
+           else raise ["file-not-found"] [string fn]
+
         return (particle "ok")
 
     [$p|File move: (from: String) to: (to: String)|] =:::
