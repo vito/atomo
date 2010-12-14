@@ -1,5 +1,4 @@
 {-# LANGUAGE QuasiQuotes #-}
-
 module Atomo.Kernel.Nucleus where
 
 import Data.IORef
