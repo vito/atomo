@@ -3,6 +3,8 @@
 module Atomo.Kernel.Block (load) where
 
 import Atomo
+import Atomo.Method
+import Atomo.Pattern (bindings')
 
 
 load :: VM ()
@@ -46,3 +48,57 @@ load = do
     [$p|(b: Block) contents|] =: do
         Block _ _ es <- here "b" >>= findBlock
         return $ list (map Expression es)
+
+    [$p|v do: (b: Block)|] =: do
+        v <- here "v"
+        b <- here "b" >>= findBlock
+        joinWith v b []
+        return v
+    [$p|v do: (b: Block) with: (l: List)|] =: do
+        v <- here "v"
+        b <- here "b" >>= findBlock
+        as <- getList [$e|l|]
+        joinWith v b as
+        return v
+
+    [$p|v join: (b: Block)|] =: do
+        v <- here "v"
+        b <- here "b" >>= findBlock
+        joinWith v b []
+    [$p|v join: (b: Block) with: (l: List)|] =: do
+        v <- here "v"
+        b <- here "b" >>= findBlock
+        as <- getList [$e|l|]
+        joinWith v b as
+
+
+joinWith :: Value -> Value -> [Value] -> VM Value
+joinWith t (Block s ps bes) as
+    | length ps > length as =
+        throwError (BlockArity (length ps) (length as))
+
+    | null as || null ps =
+        case t of
+            o@(Object { oDelegates = ds }) ->
+                withTop (o { oDelegates = ds ++ [s] }) (evalAll bes)
+
+            _ -> do
+                blockScope <- newObject [t, s] noMethods
+                withTop blockScope (evalAll bes)
+
+    | otherwise = do
+        -- argument bindings
+        args <- newObject []
+            ( toMethods . concat $ zipWith bindings' ps as
+            , emptyMap
+            )
+
+        case t of
+            o@(Object { oDelegates = ds }) ->
+                withTop (o { oDelegates = args : ds ++ [s] })
+                    (evalAll bes)
+
+            _ -> do
+                blockScope <- newObject [args, t, s] noMethods
+                withTop blockScope (evalAll bes)
+joinWith _ v _ = error $ "impossible: joinWith on " ++ show v
