@@ -397,7 +397,7 @@ instance Eq Value where
     (==) (Particle a) (Particle b) = a == b
     (==) (Process _ a) (Process _ b) = a == b
     (==) (Rational a) (Rational b) = a == b
-    (==) (Object ad am) (Object bd bm) = ad == bd && am == bm
+    (==) (Object _ am) (Object _ bm) = am == bm
     (==) (String a) (String b) = a == b
     (==) _ _ = False
 
