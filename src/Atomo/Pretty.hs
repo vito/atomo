@@ -2,11 +2,14 @@
 module Atomo.Pretty (Pretty(pretty)) where
 
 import Data.Char (isUpper)
+import Data.IORef
 import Data.Maybe (isNothing)
 import Data.Ratio
+import System.IO.Unsafe
 import Text.PrettyPrint hiding (braces)
 import qualified Data.Vector as V
 
+import Atomo.Method
 import Atomo.Types hiding (keyword)
 import Atomo.Parser.Base (isOperator)
 
@@ -55,36 +58,39 @@ instance Pretty Value where
     prettyFrom _ (Pattern p) = internal "pattern" $ pretty p
     prettyFrom _ (Process _ tid) =
         internal "process" $ text (words (show tid) !! 1)
-    prettyFrom CNone (Object { oDelegates = ds }) =
-        internal "object" $ parens (text "delegates to" <+> pretty ds)
+    prettyFrom CNone (Object { oDelegates = ds, oMethods = ms }) =
+        vcat
+            [ internal "object" $ parens (text "delegates to" <+> pretty ds)
+            , nest 2 (pretty ms)
+            ]
     prettyFrom _ (Rational r) =
         integer (numerator r) <> char '/' <> integer (denominator r)
     prettyFrom _ (Object {}) = internal "object" empty
     prettyFrom _ (String s) = text (show s)
 
-{-instance Pretty Object where-}
-    {-prettyFrom _ (Object ds (ss, ks)) = vcat-}
-        {-[ internal "object" $ parens (text "delegates to" <+> pretty ds)-}
+instance Pretty Methods where
+    prettyFrom _ ms = vcat
+        [ if not (nullMap ss)
+              then vcat (map (vcat . map prettyMethod) (elemsMap ss)) <>
+                      if not (nullMap ks)
+                          then char '\n'
+                          else empty
+              else empty
 
-        {-, if not (nullMap ss)-}
-              {-then nest 2 $ vcat (map (vcat . map prettyMethod) (elemsMap ss)) <>-}
-                      {-if not (nullMap ks)-}
-                          {-then char '\n'-}
-                          {-else empty-}
-              {-else empty-}
+        , if not (nullMap ks)
+              then vcat $ flip map (elemsMap ks) $ \ps ->
+                  vcat (map prettyMethod ps) <> char '\n'
+              else empty
+        ]
+      where
+        (ss, ks) = unsafePerformIO (readIORef ms)
 
-        {-, if not (nullMap ks)-}
-              {-then nest 2 . vcat $ flip map (elemsMap ks) $ \ms ->-}
-                  {-vcat (map prettyMethod ms) <> char '\n'-}
-              {-else empty-}
-        {-]-}
-      {-where-}
-        {-prettyMethod (Slot { mPattern = p, mValue = v }) =-}
-            {-prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v-}
-        {-prettyMethod (Responder { mPattern = p, mExpr = e }) =-}
-            {-prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine e-}
-        {-prettyMethod (Macro { mPattern = p, mExpr = e }) =-}
-            {-text "macro" <+> parens (pretty p) <++> prettyFrom CDefine e-}
+        prettyMethod (Slot { mPattern = p, mValue = v }) =
+            prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v
+        prettyMethod (Responder { mPattern = p, mExpr = e }) =
+            prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine e
+        prettyMethod (Macro { mPattern = p, mExpr = e }) =
+            text "macro" <+> parens (pretty p) <++> prettyFrom CDefine e
 
 instance Pretty Pattern where
     prettyFrom _ PAny = text "_"
@@ -170,7 +176,7 @@ instance Pretty Expr where
     prettyFrom c (EQuote _ e) = char '`' <> prettySpacedExpr c e
     prettyFrom c (EUnquote _ e) = char '~' <> prettySpacedExpr c e
     prettyFrom _ (ENewDynamic {}) =
-        internal "new-dynamic" empty -- $ pretty (EBlock Nothing [] es) <+> pretty e
+        internal "new-dynamic" empty
     prettyFrom _ (EDefineDynamic { eName = n, eExpr = e }) =
         internal "define-dynamic" $ text n <+> pretty e
     prettyFrom _ (ESetDynamic { eName = n, eExpr = e }) =
