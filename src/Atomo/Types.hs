@@ -8,6 +8,7 @@ import Control.Monad.State
 import Data.Dynamic
 import Data.Hashable (hash)
 import Data.List (nub)
+import Data.Maybe (listToMaybe)
 import Data.IORef
 import Text.Parsec (ParseError, SourcePos)
 import Text.PrettyPrint (Doc)
@@ -77,17 +78,6 @@ data Value
     -- | A string value; Data.Text.Text.
     | String { fromString :: !T.Text }
     deriving (Show, Typeable)
-
-{--- | A pure object.-}
-{-data Object =-}
-    {-Object-}
-        {-{ -- | The object's delegates list.-}
-          {-oDelegates :: !Delegates-}
-
-          {--- | A pair of (single, keyword) methods.-}
-        {-, oMethods :: !(MethodMap, MethodMap)-}
-        {-}-}
-    {-deriving (Show, Typeable)-}
 
 -- | Methods, slot, and macro methods.
 data Method
@@ -590,7 +580,7 @@ setDynamic n v m =
     M.adjust ((v:) . tail) (hash n) m
 
 getDynamic :: String -> DynamicMap -> Maybe Value
-getDynamic n m = fmap head (M.lookup (hash n) m)
+getDynamic n m = M.lookup (hash n) m >>= listToMaybe
 
 isBound :: String -> DynamicMap -> Bool
 isBound n m =
