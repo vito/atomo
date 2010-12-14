@@ -30,7 +30,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
     After the initialization stage, the only packages possible to load with #atomo:(use:) will be the ones determined to be "safe" by the dependency resolution.
 
     If a required package is not available, #atomo:@package-unavailable:needed: is raised.
-    
+
     If no versions of a package satisfy given constraints, #atomo:@no-versions-of:satisfy:for: is raised.
 }
 
@@ -67,7 +67,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
     Install the package at #atomo:path to #code:{~/.eco}.
 
     Required files: #code:{main.atomo}, #code:{package.eco}.
-    
+
     The two required files and anything listed in the package's #atomo:(include:) field are recursively copied to #code:{~/.eco/(package name)/(package version)}.
 
     Files listed in the package's #atomo:(executables:) field are copied to #code:{~/.eco/bin} and their executable flag is set to True (ie, #code:{+x}).
@@ -150,7 +150,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
     #atomo-segment:({
         name: "ehtml"
         description: "embedded html dsl"
-        version: 0 . 1
+        version: (0 . 1)
         author: "Alex Suraci"
     })
 
