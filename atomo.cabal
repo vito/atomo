@@ -80,6 +80,7 @@ library
   other-modules:
     Atomo.Debug,
     Atomo.Kernel,
+    Atomo.Kernel.Nucleus,
     Atomo.Kernel.Numeric,
     Atomo.Kernel.List,
     Atomo.Kernel.String,
