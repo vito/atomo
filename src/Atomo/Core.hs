@@ -20,10 +20,10 @@ initCore = do
     modify $ \e -> e { top = topObj }
 
     -- Lobby is the very bottom scope object
-    define (single "Lobby" PThis) (Primitive Nothing topObj)
+    define (single "Lobby" (PMatch topObj)) (Primitive Nothing topObj)
 
     -- define Object as the root object
-    define (single "Object" PThis) (Primitive Nothing object)
+    define (single "Object" (PMatch topObj)) (Primitive Nothing object)
 
     -- create parser environment
     parserEnv <- newObject [topObj] noMethods
@@ -41,7 +41,7 @@ initCore = do
     number <- newObject [object] noMethods
 
     -- define Object as the root object
-    define (single "Number" PThis) (Primitive Nothing number)
+    define (single "Number" (PMatch topObj)) (Primitive Nothing number)
 
     -- define primitive objects
     forM_ primObjs $ \(n, f) -> do
@@ -50,7 +50,7 @@ initCore = do
                 then newObject [number] noMethods
                 else newObject [object] noMethods
 
-        define (single n PThis) (Primitive Nothing o)
+        define (single n (PMatch topObj)) (Primitive Nothing o)
         modify $ \e -> e { primitives = f (primitives e) o }
   where
     primObjs =

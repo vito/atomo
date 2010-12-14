@@ -240,7 +240,7 @@ define !p !e = do
 
     os <-
         case p of
-            Keyword { mTargets = (t:_) } | isTop t ->
+            Keyword { mTargets = (PObject (ETop {}):_) } ->
                 targets' is (head (mTargets newp))
 
             _ -> targets is newp
@@ -248,10 +248,6 @@ define !p !e = do
     forM_ os $ \o ->
         defineOn o m
   where
-    isTop PThis = True
-    isTop (PObject ETop {}) = True
-    isTop _ = False
-
     method p' (Primitive _ v) = return (Slot p' v)
     method p' e' = gets top >>= \t -> return (Responder p' t e')
 
