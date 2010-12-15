@@ -26,6 +26,7 @@ maintainer:          i.am@toogeneric.com
 category:            Language
 build-type:          Custom
 stability:           Experimental
+tested-with:         GHC >= 6 && < 7
 
 cabal-version:       >= 1.6
 
