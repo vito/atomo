@@ -107,7 +107,7 @@ Now let's give it a shot:
 
 Ta-da! Rather than setting #hl:{a} to #hl:{2} inside of the block, it was actually executed in the block's context, thus redefining #hl:{a}.
 
-What with the scoping system being objects and all, this means you can go beyond just defining "variables". When you see #hl:{x = 1}, it's not saying "set the variable #hl:{x} to #atomo:1", it's saying "insert a slot on the top-level object that responds to #hl:{x} by yielding #hl:{1}." But you aren't limited to single messages like #hl:{x}. Oh, no. Feel free to define a keyword method if you want, it works just fine:
+What with the scoping system being objects and all, this means you can go beyond just defining "variables". When you see #hl:{x = 1}, it's not saying "set the variable #hl:{x} to #hl:{1}", it's saying "insert a slot on the top-level object that responds to #hl:{x} by yielding #hl:{1}." But you aren't limited to single messages like #hl:{x}. Oh, no. Feel free to define a keyword method if you want, it works just fine:
 
 #interaction:{
     foo: x := ("fooing: " .. x show) print

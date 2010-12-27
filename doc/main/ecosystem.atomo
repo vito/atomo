@@ -29,9 +29,9 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 
     After the initialization stage, the only packages possible to load with #hl:{use:} will be the ones determined to be "safe" by the dependency resolution.
 
-    If a required package is not available, #atomo:@package-unavailable:needed: is raised.
+    If a required package is not available, #hl:{@package-unavailable:needed:} is raised.
 
-    If no versions of a package satisfy given constraints, #atomo:@no-versions-of:satisfy:for: is raised.
+    If no versions of a package satisfy given constraints, #hl:{@no-versions-of:satisfy:for:} is raised.
 }
 
 #define:{

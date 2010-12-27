@@ -51,7 +51,7 @@
     | list is-a?: List
     > in?: [@(ok: any), @none]
 }body:{
-    Looks up a key in a list of #hl:{Associations} by #hl:{from}, returning either the association's #hl:{to} value or #atomo:@none.
+    Looks up a key in a list of #hl:{Associations} by #hl:{from}, returning either the association's #hl:{to} value or #hl:{@none}.
 
     #example:{
         [1 -> $a, 2 -> $b] lookup: 1

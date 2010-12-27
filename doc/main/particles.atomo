@@ -4,9 +4,9 @@
     Particle
     > Object
 }body:{
-    Ah, particles - an Atomo programmer's best friend. Although their primary purpose is to represent "partial messages" like #atomo:@sqrt or #atomo:@(foo: 2 bar: _), their use gracefully extends far beyond that. The fact that they can be pattern-matched makes their use as error values and success indicators very handy.
+    Ah, particles - an Atomo programmer's best friend. Although their primary purpose is to represent "partial messages" like #hl:{@sqrt} or #atomo:@(foo: 2 bar: _), their use gracefully extends far beyond that. The fact that they can be pattern-matched makes their use as error values and success indicators very handy.
 
-    For example, #hl:{lookup:} uses them to indicate whether it was able to find a given key in a list of #hl:{Association}s. If it finds the association, it returns the associated value wrapped in #atomo:@ok:. If it doesn't find it, it returns #atomo:@none. It is the dispatcher's job to decide what they want to do from there.
+    For example, #hl:{lookup:} uses them to indicate whether it was able to find a given key in a list of #hl:{Association}s. If it finds the association, it returns the associated value wrapped in #hl:{@ok:}. If it doesn't find it, it returns #hl:{@none}. It is the dispatcher's job to decide what they want to do from there.
 
     #example:{
         [1 -> $a, 2 -> $b] lookup: 1
@@ -39,7 +39,7 @@
 
     In this case, the values fill up the empty slots in the particle (in order), and the "completed" message is dispatched, yielding its result.
 
-    There are two kinds of particles: single particles and keyword particles. Single particles are simple names, like #atomo:@sqrt. Keyword particles may contain more "filled-in" values, such as #atomo:@(+ 2) or #atomo:@foo:. Single particles only have one unfilled value; keyword particles can have any number of them, but they are keyword-delimited.
+    There are two kinds of particles: single particles and keyword particles. Single particles are simple names, like #hl:{@sqrt}. Keyword particles may contain more "filled-in" values, such as #atomo:@(+ 2) or #hl:{@foo:}. Single particles only have one unfilled value; keyword particles can have any number of them, but they are keyword-delimited.
 
     Keyword particles have varying forms of syntax. #code:{@+} is equivalent to #code:{@(+ _)}. #code:{@foo:bar:} is equivalent to #code:{@(foo: _ bar: _)}.
 }
@@ -104,7 +104,7 @@
     | p is-a?: Particle
     > List
 }body:{
-    Returns a list of the keyword particle #hl:{p}'s values, indicating the absense of a value with #atomo:@none and wrapping existing values in #atomo:@ok:.
+    Returns a list of the keyword particle #hl:{p}'s values, indicating the absense of a value with #hl:{@none} and wrapping existing values in #hl:{@ok:}.
 
     #example:{
         @+ values

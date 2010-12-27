@@ -300,7 +300,7 @@ The #hl:{=} operator macro performs pattern-matching; the left-hand side is the 
     }
   }
 
-  #item:{#atomo:@foo, #atomo:@(foo: x), #atomo:@(foo: x bar: _), ...}is:{
+  #item:{#hl:{@foo}, #atomo:@(foo: x), #atomo:@(foo: x bar: _), ...}is:{
     Matches a particle value. If it's a single particle, it does regular equality checking; if it's a keyword particle, it recursively pattern-matches the particle's values. A wildcard in a particle pattern matches placeholders, but no other pattern will.
 
     #example:{
@@ -396,7 +396,7 @@ The targets implied by the respective patterns in a definition are as follows:
   #item:{#atomo:"", #atomo:"foo", ...}is:{#hl:{String}}
   #item:{#hl:{head . tail}, #atomo:[], #atomo:[pattern, pattern-2], ...}is:{#hl:{List}}
   #item:{#atomo:`x, #atomo:`(1 + ~y), ...}is:{#hl:{Expression}}
-  #item:{#atomo:@foo, #atomo:@(bar: 2 baz: _), ...}is:{#hl:{Particle}}
+  #item:{#hl:{@foo}, #atomo:@(bar: 2 baz: _), ...}is:{#hl:{Particle}}
   #item:{#hl:{foo: pattern}}is:{target of #code:{pattern}}
   #item:{#hl:{-> pattern}}is:{target of #code:{pattern}}
   #item:{#hl:{== pattern}}is:{target of #code:{pattern}}
@@ -521,4 +521,4 @@ An omitted associativity implies left, and an omitted precedence implies 5 (the 
   operator 6 + -
 }
 
-Operator expressions, when evaluated, just return #atomo:@ok.
+Operator expressions, when evaluated, just return #hl:{@ok}.
