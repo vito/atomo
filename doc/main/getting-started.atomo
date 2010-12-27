@@ -57,7 +57,7 @@ Defining sets a value or expression to respond to some message. Dispatching is s
 
 Here we're inserting a slot - a kind of method - on the toplevel object, which responds to the message #hl:{a} by yielding the integet #hl:{1}. We then dispatch that message and get the value back.
 
-There are two operators for defining methods: #atomo:(=) and #atomo:(:=). The #atomo:(=) operator performs pattern-matching and slot insertion, while #atomo:(:=) defines a method that responds to a message by evaluating an expression. Generally you'll use #atomo:(:=) for defining methods, and #atomo:(=) for setting values.
+There are two operators for defining methods: #hl:{=} and #hl:{:=}. The #hl:{=} operator performs pattern-matching and slot insertion, while #hl:{:=} defines a method that responds to a message by evaluating an expression. Generally you'll use #hl:{:=} for defining methods, and #hl:{=} for setting values.
 
 To illustrate this distinction, we'll define a method that simply prints #atomo:"Hello, world!", using both operators. Note that #hl:{print} outputs the value and yields the same value.
 
@@ -70,7 +70,7 @@ To illustrate this distinction, we'll define a method that simply prints #atomo:
 
 As you can see, #italic:{Goodbye, world!} was printed immediately after defining #hl:{x}, with subsequent dispatches for #hl:{x} simply returning the value that was printed. Conversely, #hl:{y} dutifully prints #italic:{Hello, world!} with every dispatch.
 
-But #atomo:(=) has a few more tricks up its sleeve. As mentioned before, it can also do pattern-matching. And since it returns the same value, it can be used to set multiple values at once:
+But #hl:{=} has a few more tricks up its sleeve. As mentioned before, it can also do pattern-matching. And since it returns the same value, it can be used to set multiple values at once:
 
 #interaction:{
     [a, _] = b = [1, 2]
@@ -80,7 +80,7 @@ But #atomo:(=) has a few more tricks up its sleeve. As mentioned before, it can 
     a
 }
 
-As you can see, first we set #hl:{b} to #atomo:[1, 2], and then we immediately pattern-match #atomo:[a, _] on #hl:{b}, which sets #hl:{a} to #hl:{1}, the first element of the list. We then re-assign #hl:{a} as #atomo:(a + 1), increasing #hl:{a}'s vlaue by 1.
+As you can see, first we set #hl:{b} to #atomo:[1, 2], and then we immediately pattern-match #atomo:[a, _] on #hl:{b}, which sets #hl:{a} to #hl:{1}, the first element of the list. We then re-assign #hl:{a} as #hl:{a + 1}, increasing #hl:{a}'s vlaue by 1.
 
 
 #section:{Lexical Scoping via Delegation}
@@ -107,7 +107,7 @@ Now let's give it a shot:
 
 Ta-da! Rather than setting #hl:{a} to #hl:{2} inside of the block, it was actually executed in the block's context, thus redefining #hl:{a}.
 
-What with the scoping system being objects and all, this means you can go beyond just defining "variables". When you see #atomo:(x = 1), it's not saying "set the variable #hl:{x} to #atomo:1", it's saying "insert a slot on the top-level object that responds to #hl:{x} by yielding #hl:{1}." But you aren't limited to single messages like #hl:{x}. Oh, no. Feel free to define a keyword method if you want, it works just fine:
+What with the scoping system being objects and all, this means you can go beyond just defining "variables". When you see #hl:{x = 1}, it's not saying "set the variable #hl:{x} to #atomo:1", it's saying "insert a slot on the top-level object that responds to #hl:{x} by yielding #hl:{1}." But you aren't limited to single messages like #hl:{x}. Oh, no. Feel free to define a keyword method if you want, it works just fine:
 
 #interaction:{
     foo: x := ("fooing: " .. x show) print
@@ -180,7 +180,7 @@ Pretty simple - to make a new object just clone #hl:{Object}. Here we have #hl:{
 #atomo-segment:def-methods
 #(_ = rps join: def-methods)
 
-The #atomo:(beats?:) method has two #italic:{roles} - the first one is being checked to see if it "beats" the second one in our game. In this case, the standard rules apply - rock beats scissors, paper beats rock, and scissors beats paper. Let's try it out!
+The #hl:{beats?:} method has two #italic:{roles} - the first one is being checked to see if it "beats" the second one in our game. In this case, the standard rules apply - rock beats scissors, paper beats rock, and scissors beats paper. Let's try it out!
 
 #interaction:{
   Rock beats?: Paper
@@ -197,7 +197,7 @@ Just for fun, let's take a peek at what the objects themselves look like now.
   Scissors
 }on:rps
 
-As you can see, the #atomo:(beats?:) method is placed on all roles involved.
+As you can see, the #hl:{beats?:} method is placed on all roles involved.
 
 
 #section:{Wrapping Up}

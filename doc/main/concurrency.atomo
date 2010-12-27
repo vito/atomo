@@ -37,7 +37,7 @@ Atomo uses message-passing concurrency akin to Erlang. Processes are very cheap 
     | b is-a?: Block
     > Process
 }body:{
-    Executes #atomo:(b call) in a separate process, and returns that new process.
+    Executes #hl:{b call} in a separate process, and returns that new process.
 
     #example:{
         { (1 + 1) print } spawn
@@ -50,7 +50,7 @@ Atomo uses message-passing concurrency akin to Erlang. Processes are very cheap 
     | l is-a?: List
     > Process
 }body:{
-    Like #hl:{spawn}, but executes #atomo:(b call: l) instead.
+    Like #hl:{spawn}, but executes #hl:{b call: l} instead.
 
     #example:{
         { a | (a + 1) print } spawn: [41]

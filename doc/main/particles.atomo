@@ -50,7 +50,7 @@
     | l is-a?: List
     > Message
 }body:{
-    Complete the particle #hl:{p} by taking values from #hl:{l}, in order. If there are not enough values in the list to complete the particle, #atomo:(@particle-needed:given:) is thrown.
+    Complete the particle #hl:{p} by taking values from #hl:{l}, in order. If there are not enough values in the list to complete the particle, #hl:{@particle-needed:given:} is thrown.
 
     #example:{
         @sqrt complete: [10]

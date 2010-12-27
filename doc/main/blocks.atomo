@@ -91,7 +91,7 @@
     | b is-a?: Block
     > any
 }body:{
-    Execute #hl:{b} with #atomo:(v delegating-to: b context) as its toplevel object (i.e., the block's context is accessible). Returns the result of the block's execution.
+    Execute #hl:{b} with #hl:{v delegating-to: b context} as its toplevel object (i.e., the block's context is accessible). Returns the result of the block's execution.
 
     Note that #hl:{v}'s methods take priority over the block's context.
 
@@ -227,7 +227,7 @@
     | b is-a?: Block
     > @ok
 }body:{
-    Alias for #atomo:(1 up-to: n do: b in-context).
+    Alias for #hl:{1 up-to: n do: b in-context}.
 
     #example:{
         5 times: { "Odelay!" print }
@@ -241,7 +241,7 @@
     | b is-a?: Block
     > @ok
 }body:{
-    Alias for #atomo:(start to: end by: 1 do: b).
+    Alias for #hl:{start to: end by: 1 do: b}.
 }
 
 #define:{
@@ -251,7 +251,7 @@
     | b is-a?: Block
     > @ok
 }body:{
-    Alias for #atomo:(start to: end by: -1 do: b).
+    Alias for #hl:{start to: end by: -1 do: b}.
 }
 
 #define:{
@@ -259,5 +259,5 @@
     | b is-a?: Block
     > none
 }body:{
-    Repeatedly sends #hl:{call} to #atomo:(b in-context). Never returns.
+    Repeatedly sends #hl:{call} to #hl:{b in-context}. Never returns.
 }

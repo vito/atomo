@@ -67,7 +67,7 @@
     | action is-a?: Block
     > Double
 }body:{
-    Times how long it takes for #atomo:(action call) to complete, returning the duration in seconds.
+    Times how long it takes for #hl:{action call} to complete, returning the duration in seconds.
 
     #example:{
         { Timer sleep: 0.1 seconds } time

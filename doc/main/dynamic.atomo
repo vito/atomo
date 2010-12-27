@@ -8,7 +8,7 @@ The usual convention of using #code:{*earmuffs*} for dynamic variable names is f
   top define: name as: root
   > root
 }body:{
-  Creates a new dynamic variable called #hl:{name}, defining an accessor in #hl:{top}. The accessor simply performs #atomo:(name _?).
+  Creates a new dynamic variable called #hl:{name}, defining an accessor in #hl:{top}. The accessor simply performs #hl:{name _?}.
 
   If the dynamic variable already exists, it is replaced.
 

@@ -60,7 +60,7 @@ Atomo uses a condition system very similar to Common Lisp's.
 }body:{
   Performs #hl:{action}, with a handler for all signals matched in #hl:{handlers} block. Returns the result of #hl:{action}.
 
-  The contents of #hl:{handlers} should be #hl:{Association} expressions, e.g. #atomo:(pattern -> responder), where #hl:{pattern} is a match on the signal value, and #hl:{responder} is either a #hl:{Block} (which will be called with the signal value itself as an argument) or an expression to be evaluated in response to the signal.
+  The contents of #hl:{handlers} should be #hl:{Association} expressions, e.g. #hl:{pattern -> responder}, where #hl:{pattern} is a match on the signal value, and #hl:{responder} is either a #hl:{Block} (which will be called with the signal value itself as an argument) or an expression to be evaluated in response to the signal.
 
   #example:{
     { signal: @foo } bind: { @foo -> "fooed!" print }
@@ -85,7 +85,7 @@ Atomo uses a condition system very similar to Common Lisp's.
 }body:{
   Call #hl:{action}, binding the restarts described by #hl:{restarts}. These restarts, when invoked, will replace the result of #hl:{action}.
 
-  The contents of #hl:{restarts} should be #hl:{Association} expressions, e.g. #atomo:(name -> expression), where #hl:{name} is the name for the restart, and #hl:{expression} is the action to be performed when the restart is invoked.
+  The contents of #hl:{restarts} should be #hl:{Association} expressions, e.g. #hl:{name -> expression}, where #hl:{name} is the name for the restart, and #hl:{expression} is the action to be performed when the restart is invoked.
 
   #example:{
     { { x } with-restarts: { ignore -> @ok } } bind: { Error -> restart: 'ignore }
@@ -129,7 +129,7 @@ These methods are specific to errors, and provide a system similar to that of tr
   | recover is-a?: Block
   > any
 }body:{
-  Execute #atomo:(action call), catching any errors and passing them to #hl:{recover} for handling.
+  Execute #hl:{action call}, catching any errors and passing them to #hl:{recover} for handling.
 
   Yields the result of #hl:{action} or #hl:{recover}.
 
@@ -144,7 +144,7 @@ These methods are specific to errors, and provide a system similar to that of tr
   | [action, recover, cleanup] all?: @(is-a?: Block)
   > any
 }body:{
-  Execute #atomo:(action call), catching any errors and passing them to #hl:{recover} for handling, and ensuring that #hl:{cleanup} is called after the action is executed.
+  Execute #hl:{action call}, catching any errors and passing them to #hl:{recover} for handling, and ensuring that #hl:{cleanup} is called after the action is executed.
 
   Yields the result of #hl:{action} or #hl:{recover}.
 
@@ -190,7 +190,7 @@ These methods are specific to errors, and provide a system similar to that of tr
   | cleanup is-a?: Block
   > any
 }body:{
-  Execute #atomo:(action call), ensuring that #hl:{cleanup} is called after the action is executed.
+  Execute #hl:{action call}, ensuring that #hl:{cleanup} is called after the action is executed.
 
   Yields the result of #hl:{action}.
 

@@ -78,7 +78,7 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
     | post-thunk is-a?: Block
     > any
 }body:{
-    Shortcut for #atomo:(action before: { @ok } after: post-thunk).
+    Shortcut for #hl:{action before: { @ok } after: post-thunk}.
 }
 
 #define:{
@@ -87,7 +87,7 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
     | pre-thunk is-a?: Block
     > any
 }body:{
-    Shortcut for #atomo:(action before: pre-thunk after: { @ok }).
+    Shortcut for #hl:{action before: pre-thunk after: { @ok }}.
 }
 
 #define:{
@@ -120,7 +120,7 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
         { a = current-continuation; a print; (a yield: 42) when: (a is-a?: Continuation); @done } call
     }
 
-    We had to check if #hl:{a} was a #hl:{Continuation} there, because after the #hl:{yield:} it becomes #hl:{42}, and you'd end up with #atomo:(42 yield: 42). That is, execution continues from just after the assignment, with #hl:{a} as its new value, which it happily attempts to #hl:{yield:} to all over again.
+    We had to check if #hl:{a} was a #hl:{Continuation} there, because after the #hl:{yield:} it becomes #hl:{42}, and you'd end up with #hl:{42 yield: 42}. That is, execution continues from just after the assignment, with #hl:{a} as its new value, which it happily attempts to #hl:{yield:} to all over again.
 }
 
 #define:{
@@ -129,7 +129,7 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
     | l is-a?: List && l length == 1
     > any
 }body:{
-    A helper that just calls #atomo:(c yield: l head).
+    A helper that just calls #hl:{c yield: l head}.
 }
 
 #define:{
@@ -137,7 +137,7 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
     | c is-a?: Continuation
     > any
 }body:{
-    #atomo:(c yield: @ok).
+    #hl:{c yield: @ok}.
 }
 
 #define:{
@@ -145,5 +145,5 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
     | c is-a?: Continuation
     > any
 }body:{
-    #atomo:(c yield: @ok).
+    #hl:{c yield: @ok}.
 }

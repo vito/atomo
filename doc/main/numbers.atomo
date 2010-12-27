@@ -400,5 +400,5 @@
     | b is-a?: Integer
     > Boolean
 }body:{
-    Alias for #atomo:(b divides?: a).
+    Alias for #hl:{b divides?: a}.
 }

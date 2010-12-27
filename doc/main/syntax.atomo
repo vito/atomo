@@ -5,9 +5,9 @@ Atomo has a rather simple-to-use syntax, enabled by the powerful Parsec library 
 
 #section:{General Rules}
 
-Atomo is whitespace-sensitive. Operators and keywords must be surrounded by whitespace, and indentation provides hints to the parser when you don't want to use semicolons. For example; #atomo:(1/2) is a #hl:{Rational}, while #atomo:(1 / 2) is integral division. #hl:{foo-bar} is an identifier, while #atomo:(foo - bar) is subtraction.
+Atomo is whitespace-sensitive. Operators and keywords must be surrounded by whitespace, and indentation provides hints to the parser when you don't want to use semicolons. For example; #hl:{1/2} is a #hl:{Rational}, while #hl:{1 / 2} is integral division. #hl:{foo-bar} is an identifier, while #hl:{foo - bar} is subtraction.
 
-Requiring whitespace around operators enables the use of more symbols in identifier names, allowing pleasant conventions like questions marks (e.g. #atomo:(empty?)) and exclamation points (e.g. #atomo:(do-something-destructive!)) for indicating the behaviour of a method.
+Requiring whitespace around operators enables the use of more symbols in identifier names, allowing pleasant conventions like questions marks (e.g. #hl:{empty?}) and exclamation points (e.g. #hl:{do-something-destructive!}) for indicating the behaviour of a method.
 
 Atomo's whitespace indentation rules are similar to Haskell's - they are not as strict as Python's, you just increase the spacing amount to indicate continuing the previous line, and continue that indentation amount to indicate continuing the current "block" of code.
 
@@ -168,7 +168,7 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
           `[1, 2, ~(1 + 2)]
         }
 
-        Note that unquoting too far throws an #atomo:(@out-of-quote:) error.
+        Note that unquoting too far throws an #hl:{@out-of-quote:} error.
 
         #example:{
           `~~(2 + 2)
@@ -204,7 +204,7 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
 
     These are equivalent to #code:{@(from: _ to: _)} and #code:{@(+ _)}, respectively.
 
-    Particles represent messages that are missing the initial role; hence, when you say #atomo:(@(+ 2)), you're representing a message like #atomo:(_ + 2), where #hl:{_} is filled in with a value to form a message like #atomo:(1 + 2).
+    Particles represent messages that are missing the initial role; hence, when you say #atomo:(@(+ 2)), you're representing a message like #hl:{_ + 2}, where #hl:{_} is filled in with a value to form a message like #hl:{1 + 2}.
 
     Note that, at the moment, all particles are missing an initial role. Hence, they are always partial. There is no such thing as #code:{@(2 foo)} or #code:{@(1 + 2)}. While support for that would be trivial (the parser would just need to be updated), there are other implications that need to be considered - for example, when you have a completed #hl:{Particle}, it's essentially a #hl:{Message}, but having the parser determine what you mean when you write #code:{@(2 + 2)} is tricky.
   }
@@ -243,7 +243,7 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
 
 Atomo's pattern-match syntax shares the same syntax as Expressions in the language. In many cases these are recursive.
 
-The #atomo:(=) operator macro performs pattern-matching; the left-hand side is the pattern and the right-hand side is an expression whose resulting value should match the pattern.
+The #hl:{=} operator macro performs pattern-matching; the left-hand side is the pattern and the right-hand side is an expression whose resulting value should match the pattern.
 
 #definitions:{
   #item:{#hl:{_}, #hl:{foo}, ...}is:{
@@ -270,7 +270,7 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
     }
   }
 
-  #item:{#atomo:(foo: pattern)}is:{
+  #item:{#hl:{foo: pattern}}is:{
     A named pattern-match. Matches #hl:{pattern}, binding the value it matches to #hl:{foo}.
 
     #example:{
@@ -280,7 +280,7 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
     }
   }
 
-  #item:{#atomo:(head . tail)}is:{
+  #item:{#hl:{head . tail}}is:{
     Matches a non-empty list, matching its first value on #hl:{head} and the rest of it on #hl:{tail}.
 
     #example:{
@@ -325,12 +325,12 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
     }
   }
 
-  #item:{#atomo:(-> pattern)}is:{
+  #item:{#hl:{-> pattern}}is:{
     Matches any object delegating to something matching #code:{pattern}. Often used to check if something is an "instance" of some object.
 
-    For primitive values, it checks if the value itself matches the pattern, so #atomo:([1, 2]) will match #code:{(-> List)}.
+    For primitive values, it checks if the value itself matches the pattern, so #hl:{[1, 2]} will match #code:{(-> List)}.
 
-    NOTE: This is only really useful in #hl:{match:} and in message patterns; when used with #atomo:(=) the objects aren't evaluated.
+    NOTE: This is only really useful in #hl:{match:} and in message patterns; when used with #hl:{=} the objects aren't evaluated.
 
     #example:{
       1 match: { (-> Double) -> @nope; (-> Integer) -> @yep }
@@ -338,7 +338,7 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
     }
   }
 
-  #item:{#atomo:(== pattern)}is:{
+  #item:{#hl:{== pattern}}is:{
     Matches with strict equality only. This is different from regular matching as it doesn't follow delegates to see if objects match.
 
     #example:{
@@ -348,7 +348,7 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
     }
   }
 
-  The #atomo:(=) operator can also be used to define methods, but its use is more limited than #atomo:(:=) in that it can only insert slots on objects; it cannot pattern-match message roles, and the right-hand side is always pre-evaluated.
+  The #hl:{=} operator can also be used to define methods, but its use is more limited than #hl:{:=} in that it can only insert slots on objects; it cannot pattern-match message roles, and the right-hand side is always pre-evaluated.
 
   #example:{
     a = Object clone
@@ -363,7 +363,7 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
 
 #section:{Definitions}tag:"definition-syntax"
 
-Method definitions use the #atomo:(:=) operator macro; the left-hand side is a "message pattern," which matches on messages sent to any of the roles involved in it. The right-hand side is the expression to be evaluated when the message pattern is matched.
+Method definitions use the #hl:{:=} operator macro; the left-hand side is a "message pattern," which matches on messages sent to any of the roles involved in it. The right-hand side is the expression to be evaluated when the message pattern is matched.
 
 Message patterns can contain the patterns listed above as their roles, with the sole exception that capitalized identifiers in role patterns are assumed to be objects.
 
@@ -382,7 +382,7 @@ To define on a particular object that isn't capitalized, wrap it in a block:
   { "hi" print; 1 + 1 } bar: Foo := 3
 }
 
-As in the first example, #atomo:(foo bar) matches any object, while #atomo:({ foo } bar) is only defined on #hl:{foo} (the result of the block's execution). #atomo:({ 1 + 1 } bar: Foo) is defined on #hl:{2} and #hl:{Foo}.
+As in the first example, #hl:{foo bar} matches any object, while #hl:{{ foo } bar} is only defined on #hl:{foo} (the result of the block's execution). #hl:{{ 1 + 1 } bar: Foo} is defined on #hl:{2} and #hl:{Foo}.
 
 The targets implied by the respective patterns in a definition are as follows:
 
@@ -394,16 +394,16 @@ The targets implied by the respective patterns in a definition are as follows:
   #item:{#hl:{1}.0, #hl:{2}.0, ...}is:{#atomo:Double}
   #item:{#atomo:1/2, #atomo:3/4, ...}is:{#atomo:Rational}
   #item:{#atomo:"", #atomo:"foo", ...}is:{#atomo:String}
-  #item:{#atomo:(head . tail), #atomo:[], #atomo:[pattern, pattern-2], ...}is:{#atomo:List}
+  #item:{#hl:{head . tail}, #atomo:[], #atomo:[pattern, pattern-2], ...}is:{#atomo:List}
   #item:{#atomo:`x, #atomo:`(1 + ~y), ...}is:{#atomo:Expression}
   #item:{#atomo:@foo, #atomo:@(bar: 2 baz: _), ...}is:{#atomo:Particle}
-  #item:{#atomo:(foo: pattern)}is:{target of #code:{pattern}}
-  #item:{#atomo:(-> pattern)}is:{target of #code:{pattern}}
-  #item:{#atomo:(== pattern)}is:{target of #code:{pattern}}
-  #item:{#hl:{Foo}, #atomo:(Foo bar), #atomo:({ expr; expr-2 }), ...}is:{the object itself, or the object yielded by the block's execution}
+  #item:{#hl:{foo: pattern}}is:{target of #code:{pattern}}
+  #item:{#hl:{-> pattern}}is:{target of #code:{pattern}}
+  #item:{#hl:{== pattern}}is:{target of #code:{pattern}}
+  #item:{#hl:{Foo}, #hl:{Foo bar}, #hl:{{ expr; expr-2 }}, ...}is:{the object itself, or the object yielded by the block's execution}
 }
 
-Thus, #atomo:(1 foo: $a := x) is a definition placed on #hl:{Integer} and #hl:{Char}.
+Thus, #hl:{1 foo: $a := x} is a definition placed on #hl:{Integer} and #hl:{Char}.
 
 
 #section:{Dispatch}tag:"dispatch-syntax"
@@ -459,7 +459,7 @@ A macro's role patterns are as follows:
     }
   }
 
-  #item:{#atomo:(foo: pattern)}is:{
+  #item:{#hl:{foo: pattern}}is:{
     A named pattern-match. Matches #hl:{pattern}, binding the expression it matches to #hl:{foo}.
 
     #interaction:{
@@ -479,7 +479,7 @@ A macro's role patterns are as follows:
     }
   }
 
-  #item:{#atomo:(`a), #atomo:(`(1 + ~b)), ...}is:{
+  #item:{#hl:{`a}, #atomo:(`(1 + ~b)), ...}is:{
     Matches expression recursively. Unquotes serve as named wildcard patterns, with the same recursive semantics as quasiquotation.
 
     #example:{
@@ -502,7 +502,7 @@ A macro's role patterns are as follows:
 
 #section:{Operator Precedence & Associativity}tag:"operator-syntax"
 
-You can control how Atomo parses binary operators like #atomo:(+) and #atomo:(->) via the #code:{operator} keyword. The basic syntax is as follows (square brackets indicating an optional segment, ellipses indicating 1 or more):
+You can control how Atomo parses binary operators like #hl:{+} and #hl:{->} via the #code:{operator} keyword. The basic syntax is as follows (square brackets indicating an optional segment, ellipses indicating 1 or more):
 
 #verbatim:{
   operator [associativity] [precedence] operators

@@ -48,7 +48,7 @@
     | b is-a?: Block
     > in?: [True, False]
 }body:{
-    A short-circuiting form of #atomo:(&&), only #hl:{call}ing the right-hand side if #hl:{a} is #hl:{True}.
+    A short-circuiting form of #hl:{&&}, only #hl:{call}ing the right-hand side if #hl:{a} is #hl:{True}.
 }
 
 #define:{
@@ -57,7 +57,7 @@
     | b is-a?: Block
     > in?: [True, False]
 }body:{
-    A short-circuiting form of #atomo:(||), only #hl:{call}ing the right-hand side if #hl:{a} is #hl:{False}.
+    A short-circuiting form of #hl:{||}, only #hl:{call}ing the right-hand side if #hl:{a} is #hl:{False}.
 }
 
 #define:{
@@ -96,7 +96,7 @@
     | action is-a?: Block
     > @ok
 }body:{
-    Sends #hl:{call} to #atomo:(action in-context) if #hl:{test} is #hl:{True}, always returning #atomo:@ok.
+    Sends #hl:{call} to #hl:{action in-context} if #hl:{test} is #hl:{True}, always returning #atomo:@ok.
 
     #example:{
         a = 0
@@ -113,7 +113,7 @@
     | action is-a?: Block
     > @ok
 }body:{
-    Continually sends #hl:{call} to #atomo:(action in-context) until #hl:{test} yields #hl:{False}.
+    Continually sends #hl:{call} to #hl:{action in-context} until #hl:{test} yields #hl:{False}.
 
     #example:{
         a = 1

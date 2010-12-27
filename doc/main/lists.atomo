@@ -69,7 +69,7 @@
     | l is-a?: List
     > any
 }body:{
-    Returns the first value of the list. If the list is empty, #atomo:(@empty-list) is raised.
+    Returns the first value of the list. If the list is empty, #hl:{@empty-list} is raised.
 
     #example:{
         [1, 2, 3] head
@@ -81,7 +81,7 @@
     | l is-a?: List
     > any
 }body:{
-    Returns the last value of the list. If the list is empty, #atomo:(@empty-list) is raised.
+    Returns the last value of the list. If the list is empty, #hl:{@empty-list} is raised.
 
     #example:{
         [1, 2, 3] last
@@ -93,7 +93,7 @@
     | l is-a?: List
     > List
 }body:{
-    Returns all but the last value of the list. If the list is empty, #atomo:(@empty-list) is raised.
+    Returns all but the last value of the list. If the list is empty, #hl:{@empty-list} is raised.
 
     #example:{
         [1, 2, 3] init
@@ -105,7 +105,7 @@
     | l is-a?: List
     > List
 }body:{
-    Returns all but the first value of the list. If the list is empty, #atomo:(@empty-list) is raised.
+    Returns all but the first value of the list. If the list is empty, #hl:{@empty-list} is raised.
 
     #example:{
         [1, 2, 3] tail
@@ -227,7 +227,7 @@
     | y is-a?: List
     > List
 }body:{
-    Yields #atomo:(x zip: y with: @->), i.e. an association list.
+    Yields #hl:{x zip: y with: @->}, i.e. an association list.
 }
 
 #define:{
@@ -293,7 +293,7 @@
     | b responds-to?: @call:
     > any
 }body:{
-    Alias for #atomo:(l tail reduce: b with: l head). If the list is empty, #atomo:(@empty-list) is raised.
+    Alias for #hl:{l tail reduce: b with: l head}. If the list is empty, #hl:{@empty-list} is raised.
 
     #example:{
         [1, 2, 3, 4, 5] reduce: @*
@@ -320,7 +320,7 @@
     | b responds-to?: @call:
     > any
 }body:{
-    Similar to #hl:{reduce:}, but right-associative. If the list is empty, #atomo:(@empty-list) is raised.
+    Similar to #hl:{reduce:}, but right-associative. If the list is empty, #hl:{@empty-list} is raised.
 }
 
 #define:{
@@ -350,7 +350,7 @@
     | l is-a?: List
     > any
 }body:{
-    Reduces a list with #atomo:(+) and #hl:{0}.
+    Reduces a list with #hl:{+} and #hl:{0}.
 
     #example:{
         [1, 2, 3] sum
@@ -363,7 +363,7 @@
     | l is-a?: List
     > any
 }body:{
-    Reduces a list with #atomo:(*) and #hl:{1}.
+    Reduces a list with #hl:{*} and #hl:{1}.
 
     #example:{
         [1, 2, 3] product
@@ -472,7 +472,7 @@
     | l is-a?: List
     > Boolean
 }body:{
-    Alias for #atomo:(l contains?: v).
+    Alias for #hl:{l contains?: v}.
 }
 
 #define:{
@@ -495,7 +495,7 @@
     | end is-a?: Integer
     > List
 }body:{
-    Alias for #atomo:(start to: end by: 1).
+    Alias for #hl:{start to: end by: 1}.
 }
 
 #define:{
@@ -504,7 +504,7 @@
     | end is-a?: Integer
     > List
 }body:{
-    Alias for #atomo:(start to: end by: -1).
+    Alias for #hl:{start to: end by: -1}.
 }
 
 #define:{
@@ -553,7 +553,7 @@
     | l is-a?: List
     > List
 }body:{
-    Pushes a value onto the front of a list. Same as #atomo:(.).
+    Pushes a value onto the front of a list. Same as #hl:{.}.
 
     #example:{
         a = [1, 2, 3]
@@ -567,7 +567,7 @@
     | delimiter is-a?: List
     > List
 }body:{
-    Split a list into sublists, separated by #hl:{delimiter}. Note that strict equality (i.e. #atomo:(equals?:)) is used for matching the delimiter.
+    Split a list into sublists, separated by #hl:{delimiter}. Note that strict equality (i.e. #hl:{equals?:}) is used for matching the delimiter.
 
     #example:{
         [0, 1, 1, 2, 1, 1, 3] split: [1, 1]
@@ -595,7 +595,7 @@
     | l is-a?: List
     > List
 }body:{
-    Returns a sorted list of #atomo:l's values, using the mergesort algorithm. It does this by sending #atomo:(>) to determine the larger between two values.
+    Returns a sorted list of #atomo:l's values, using the mergesort algorithm. It does this by sending #hl:{>} to determine the larger between two values.
 
     #example:{
         [1, 6, 3, 0, 10] sort

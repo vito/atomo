@@ -71,7 +71,7 @@ Strings are immutable, efficient, Unicode sequences of characters.
     | s is-a?: String
     > any
 }body:{
-    Returns the first character of the string. If the string is empty, #atomo:(@empty-string) is raised.
+    Returns the first character of the string. If the string is empty, #hl:{@empty-string} is raised.
 
     #example:{
         "abc" head
@@ -83,7 +83,7 @@ Strings are immutable, efficient, Unicode sequences of characters.
     | s is-a?: String
     > any
 }body:{
-    Returns the last character of the string. If the string is empty, #atomo:(@empty-string) is raised.
+    Returns the last character of the string. If the string is empty, #hl:{@empty-string} is raised.
 
     #example:{
         "abc" last
@@ -95,7 +95,7 @@ Strings are immutable, efficient, Unicode sequences of characters.
     | s is-a?: String
     > String
 }body:{
-    Returns all but the last character of the string. If the string is empty, #atomo:(@empty-string) is raised.
+    Returns all but the last character of the string. If the string is empty, #hl:{@empty-string} is raised.
 
     #example:{
         "abc" init
@@ -107,7 +107,7 @@ Strings are immutable, efficient, Unicode sequences of characters.
     | s is-a?: String
     > String
 }body:{
-    Returns all but the first character of the string. If the string is empty, #atomo:(@empty-string) is raised.
+    Returns all but the first character of the string. If the string is empty, #hl:{@empty-string} is raised.
 
     #example:{
         "abc" tail

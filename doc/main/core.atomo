@@ -26,7 +26,7 @@
     | e is-a?: Expression
     > @ok
 }body:{
-    Defines #hl:{e} to be evaluated when the message described by #hl:{p} is dispatched to any of its targets. Returns #atomo:(@ok). See #reference:{definition-syntax}.
+    Defines #hl:{e} to be evaluated when the message described by #hl:{p} is dispatched to any of its targets. Returns #hl:{@ok}. See #reference:{definition-syntax}.
 
     When defining a method of the same name as an existing one, it will be inserted with the most precise first. If two patterns are equivalent, the new method replaces the old.
 
@@ -67,7 +67,7 @@
         [a, x, y, foo]
     }
 
-    In addition to simple pattern-matching, #atomo:(=) can also define methods. However, it always evaluates the right-hand side before insertion, and roles in a message pattern are all objects (not patterns), unlike its brethren #atomo:(:=).
+    In addition to simple pattern-matching, #hl:{=} can also define methods. However, it always evaluates the right-hand side before insertion, and roles in a message pattern are all objects (not patterns), unlike its brethren #hl:{:=}.
 
     #example:{
         a = 1
@@ -223,7 +223,7 @@
     | filename is-a?: String
     > @ok
 }body:{
-    Like #hl:{load:}, but loaded files are remembered (by their canonicalized, absolute path), so subsequent attempts to require them will be a no-op, returning #atomo:(@ok).
+    Like #hl:{load:}, but loaded files are remembered (by their canonicalized, absolute path), so subsequent attempts to require them will be a no-op, returning #hl:{@ok}.
 }
 #define:{
   v match: branches
