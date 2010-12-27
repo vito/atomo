@@ -26,7 +26,7 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
         { return | "before" print; return yield: 100; "after" print } call/cc
     }
     
-    When the continuation is yielded to, the appropriate before/after thunks (provided by #atomo:(before:after:), et al.) are unwound.
+    When the continuation is yielded to, the appropriate before/after thunks (provided by #hl:{before:after:}, et al.) are unwound.
 }
 
 #define:{
@@ -46,7 +46,7 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
     | [action, pre-thunk, post-think] all?: @(is-a?: Block)
     > any
 }body:{
-    Calls the three blocks in order, returning #atomo:(action)'s result.
+    Calls the three blocks in order, returning #hl:{action}'s result.
 
     In addition; #atomo:post-thunk is always called, even if an exception is raised.
 
@@ -97,9 +97,9 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
     | action responds-to?: @call:
     > any
 }body:{
-    Calls #atomo:action with the #atomo:(init)'s result, ensuring that #atomo:cleanup is performed when control leaves #atomo:action and that #atomo:init is re-#atomo:(called)ed and passed to #atomo:action when control enters #atomo:action.
+    Calls #atomo:action with the #hl:{init}'s result, ensuring that #atomo:cleanup is performed when control leaves #atomo:action and that #atomo:init is re-#hl:{called}ed and passed to #atomo:action when control enters #atomo:action.
 
-    See also #atomo:(before:after:).
+    See also #hl:{before:after:}.
 
     #example:{
         { "init" print } wrap: { c | c uppercase print } do: { c | @(action: c) print }
@@ -120,7 +120,7 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
         { a = current-continuation; a print; (a yield: 42) when: (a is-a?: Continuation); @done } call
     }
 
-    We had to check if #atomo:a was a #atomo:Continuation there, because after the #atomo:(yield:) it becomes #atomo:42, and you'd end up with #atomo:(42 yield: 42). That is, execution continues from just after the assignment, with #atomo:a as its new value, which it happily attempts to #atomo:(yield:) to all over again.
+    We had to check if #atomo:a was a #atomo:Continuation there, because after the #hl:{yield:} it becomes #atomo:42, and you'd end up with #atomo:(42 yield: 42). That is, execution continues from just after the assignment, with #atomo:a as its new value, which it happily attempts to #hl:{yield:} to all over again.
 }
 
 #define:{

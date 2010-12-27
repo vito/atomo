@@ -172,7 +172,7 @@
     | n is-a?: Integer
     > List
 }body:{
-    Returns a list containing the results of #atomo:n #atomo:(call)s of #atomo:b.
+    Returns a list containing the results of #atomo:n #hl:{call}s of #atomo:b.
 
     #example:{
         with-input-from: "doc/main/lists.atomo" do: { { read-line } repeat: 3 }
@@ -213,7 +213,7 @@
     | a responds-to?: @call:
     > List
 }body:{
-    Returns a new list, with #atomo:(call:) sent to #atomo:a with each value in #atomo:l.
+    Returns a new list, with #hl:{call:} sent to #atomo:a with each value in #atomo:l.
 
     #example:{
         [1, 2, 3] map: { n | n + 1 }
@@ -320,7 +320,7 @@
     | b responds-to?: @call:
     > any
 }body:{
-    Similar to #atomo:(reduce:), but right-associative. If the list is empty, #atomo:(@empty-list) is raised.
+    Similar to #hl:{reduce:}, but right-associative. If the list is empty, #atomo:(@empty-list) is raised.
 }
 
 #define:{
@@ -329,7 +329,7 @@
     | b responds-to?: @call:
     > any
 }body:{
-    Similar to #atomo:(reduce:with:), but right-associative.
+    Similar to #hl:{reduce:with:}, but right-associative.
 }
 
 #define:{
@@ -376,7 +376,7 @@
     | l is-a?: List
     > any
 }body:{
-    Reduces a list with #atomo:(max:). The list must not be empty.
+    Reduces a list with #hl:{max:}. The list must not be empty.
 
     #example:{
         [1, 2, 3] maximum
@@ -388,7 +388,7 @@
     | l is-a?: List
     > any
 }body:{
-    Reduces a list with #atomo:(min:). The list must not be empty.
+    Reduces a list with #hl:{min:}. The list must not be empty.
 
     #example:{
         [1, 2, 3] minimum
@@ -609,7 +609,7 @@
     | compare responds-to?: @call:
     > List
 }body:{
-    Returns a sorted list of #atomo:l's values, using the mergesort algorithm. #atomo:compare, when #atomo:(call:)ed with two values in #atomo:l, should return #atomo:True if the first is greater than the second, and #atomo:False otherwise.
+    Returns a sorted list of #atomo:l's values, using the mergesort algorithm. #atomo:compare, when #hl:{call:}ed with two values in #atomo:l, should return #atomo:True if the first is greater than the second, and #atomo:False otherwise.
 
     #example:{
         [1, 6, 3, 0, 10] sort-by: @>

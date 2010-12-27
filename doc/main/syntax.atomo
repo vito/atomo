@@ -5,7 +5,7 @@ Atomo has a rather simple-to-use syntax, enabled by the powerful Parsec library 
 
 #section:{General Rules}
 
-Atomo is whitespace-sensitive. Operators and keywords must be surrounded by whitespace, and indentation provides hints to the parser when you don't want to use semicolons. For example; #atomo:(1/2) is a #atomo:Rational, while #atomo:(1 / 2) is integral division. #atomo:(foo-bar) is an identifier, while #atomo:(foo - bar) is subtraction.
+Atomo is whitespace-sensitive. Operators and keywords must be surrounded by whitespace, and indentation provides hints to the parser when you don't want to use semicolons. For example; #atomo:(1/2) is a #atomo:Rational, while #atomo:(1 / 2) is integral division. #hl:{foo-bar} is an identifier, while #atomo:(foo - bar) is subtraction.
 
 Requiring whitespace around operators enables the use of more symbols in identifier names, allowing pleasant conventions like questions marks (e.g. #atomo:(empty?)) and exclamation points (e.g. #atomo:(do-something-destructive!)) for indicating the behaviour of a method.
 
@@ -49,7 +49,7 @@ Don't do this:
   }
 }
 
-as it indicates the final closing brace is somehow related to #atomo:foo, when really it's just the ending delimiter for the block passed to #atomo:(map:).
+as it indicates the final closing brace is somehow related to #atomo:foo, when really it's just the ending delimiter for the block passed to #hl:{map:}.
 
 Whitespace can also be used for chained message sends:
 
@@ -330,7 +330,7 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
 
     For primitive values, it checks if the value itself matches the pattern, so #atomo:([1, 2]) will match #code:{(-> List)}.
 
-    NOTE: This is only really useful in #atomo:(match:) and in message patterns; when used with #atomo:(=) the objects aren't evaluated.
+    NOTE: This is only really useful in #hl:{match:} and in message patterns; when used with #atomo:(=) the objects aren't evaluated.
 
     #example:{
       1 match: { (-> Double) -> @nope; (-> Integer) -> @yep }

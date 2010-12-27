@@ -80,14 +80,14 @@ But #atomo:(=) has a few more tricks up its sleeve. As mentioned before, it can 
     a
 }
 
-As you can see, first we set #atomo:b to #atomo:[1, 2], and then we immediately pattern-match #atomo:[a, _] on #atomo:b, which sets #atomo:a to #atomo:1, the first element of the list. We then re-assign #atomo:a as #atomo:(a + 1), increasing #atomo:(a)'s vlaue by 1.
+As you can see, first we set #atomo:b to #atomo:[1, 2], and then we immediately pattern-match #atomo:[a, _] on #atomo:b, which sets #atomo:a to #atomo:1, the first element of the list. We then re-assign #atomo:a as #atomo:(a + 1), increasing #hl:{a}'s vlaue by 1.
 
 
 #section:{Lexical Scoping via Delegation}
 
 You'll notice earlier I used the term #italic:{top-level object} for describing the target of the #atomo:a definition. This is the entirety of Atomo's scoping system; it's objects all the way down. The nearest lexical scope to a point in your code (henceforth called the #italic:{top-level object} or #italic:{top}) is simply an object that delegates down the chain to the surrounding scope, and so on and son on until it hits rock #italic:{bottom} (#atomo:Object). You can grab the current top-level object via the keyword #atomo:this.
 
-To illustrate the power of this sytem, let's try putting scope objects to use. #atomo:(Block)s provide a #atomo:context method for grabbing the context in which they were written. Putting the pieces together, #atomo:in-context is easily defined - which converts a block into one that is evalulated in its original scope:
+To illustrate the power of this sytem, let's try putting scope objects to use. #hl:{Block}s provide a #atomo:context method for grabbing the context in which they were written. Putting the pieces together, #atomo:in-context is easily defined - which converts a block into one that is evalulated in its original scope:
 
 #atomo-block:({
   (b: Block) in-context :=
@@ -147,7 +147,7 @@ In Atomo, there is no "call a method Y on object X." It's all just sending messa
 
 This way of thinking makes a huge difference in how you reason about things in Atomo, especially when it comes to #italic:{multiple dispatch}. In a nutshell, multiple dispatch means you define your methods in terms of everything involved - not just one object. When you define a keyword method, it has a number of roles - objects that the method involves. If a message is not understood by one role, it moves on to the next, and so on.
 
-If no roles understand the message, it sends either #atomo:(did-not-understand:) (for single messages) or #atomo:(did-not-understand:at:) (for keyword messages) to each object involved until one handles it. If none of them respond, you get an error.
+If no roles understand the message, it sends either #hl:{did-not-understand:} (for single messages) or #hl:{did-not-understand:at:} (for keyword messages) to each object involved until one handles it. If none of them respond, you get an error.
 
 #example:{
     X = Object clone

@@ -97,7 +97,7 @@
 }body:{
     Similar to #atomo:clone, but often does certain initialization stuff like setting default values.
 
-    Note: this method, along with #atomo:(new:), is just listed here so that links in the documentation will point to these more general descriptions rather than a more specific, but wrong, definition. It is not defined for #atomo:Object.
+    Note: this method, along with #hl:{new:}, is just listed here so that links in the documentation will point to these more general descriptions rather than a more specific, but wrong, definition. It is not defined for #atomo:Object.
 }
 
 #define:{
@@ -113,7 +113,7 @@
     x delegating-to: y
     > @ok
 }body:{
-    Yields a new object with #atomo:(x)'s method table and #atomo:(y) affixed to its delegates list.
+    Yields a new object with #hl:{x}'s method table and #hl:{y} affixed to its delegates list.
 }
 
 #define:{
@@ -121,7 +121,7 @@
     | ds is-a?: List
     > @ok
 }body:{
-    Yields a new object with #atomo:(x)'s method table and #atomo:(ds) as its delegates list.
+    Yields a new object with #hl:{x}'s method table and #hl:{ds} as its delegates list.
 }
 
 #define:{
@@ -142,7 +142,7 @@
     x delegates
     > List
 }body:{
-    Returns a list of #atomo:(x)'s delegates.
+    Returns a list of #hl:{x}'s delegates.
 
     #example:{
       x = 1 clone
@@ -223,7 +223,7 @@
     | filename is-a?: String
     > @ok
 }body:{
-    Like #atomo:(load:), but loaded files are remembered (by their canonicalized, absolute path), so subsequent attempts to require them will be a no-op, returning #atomo:(@ok).
+    Like #hl:{load:}, but loaded files are remembered (by their canonicalized, absolute path), so subsequent attempts to require them will be a no-op, returning #atomo:(@ok).
 }
 #define:{
   v match: branches

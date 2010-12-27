@@ -27,7 +27,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 }body:{
     "Initialize" the ecosystem. Loads your package's #code:{package.eco} file and initializes each of its dependencies, recursively.
 
-    After the initialization stage, the only packages possible to load with #atomo:(use:) will be the ones determined to be "safe" by the dependency resolution.
+    After the initialization stage, the only packages possible to load with #hl:{use:} will be the ones determined to be "safe" by the dependency resolution.
 
     If a required package is not available, #atomo:@package-unavailable:needed: is raised.
 
@@ -68,9 +68,9 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 
     Required files: #code:{main.atomo}, #code:{package.eco}.
 
-    The two required files and anything listed in the package's #atomo:(include:) field are recursively copied to #code:{~/.eco/(package name)/(package version)}.
+    The two required files and anything listed in the package's #hl:{include:} field are recursively copied to #code:{~/.eco/(package name)/(package version)}.
 
-    Files listed in the package's #atomo:(executables:) field are copied to #code:{~/.eco/bin} and their executable flag is set to True (ie, #code:{+x}).
+    Files listed in the package's #hl:{executables:} field are copied to #code:{~/.eco/bin} and their executable flag is set to True (ie, #code:{+x}).
 }
 
 #define:{
@@ -125,7 +125,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 
         #item:{#atomo:@(no-versions-of: (name -> versions) satisfy: constraint)}is:{if none of the package versions installed are satisfactory.}
 
-        #item:{#atomo:@(incompatible-version-loaded: name needed: constraint)}is:{if the package was already loaded, but the version that was loaded does not satisfy #atomo:constraint. This may happen if you don't use #atomo:(Eco initialize) and just use #atomo:(use:version:) everywhere, which is not recommended.}
+        #item:{#atomo:@(incompatible-version-loaded: name needed: constraint)}is:{if the package was already loaded, but the version that was loaded does not satisfy #atomo:constraint. This may happen if you don't use #atomo:(Eco initialize) and just use #hl:{use:version:} everywhere, which is not recommended.}
     }
 }
 
@@ -204,7 +204,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 }body:{
     Sets the package's dependencies field to #atomo:dependencies.
 
-    Values in the list should be either #atomo:(Association)s from package names to a block for checking the package version, or just package names.
+    Values in the list should be either #hl:{Association}s from package names to a block for checking the package version, or just package names.
 
     For example, to depend on any version of #code:{ehtml}, and versions greater than #code:{0.1} of #code:{ecss}:
 

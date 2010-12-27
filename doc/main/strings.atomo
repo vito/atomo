@@ -19,7 +19,7 @@ Strings are immutable, efficient, Unicode sequences of characters.
     | s is-a?: String
     > List
 }body:{
-    Convert string #atomo:s to a #atomo:List of #atomo:(Char)s.
+    Convert string #atomo:s to a #atomo:List of #hl:{Char}s.
 
     #example:{
         "foo" as: List

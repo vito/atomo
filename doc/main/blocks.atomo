@@ -48,7 +48,7 @@
     | b is-a?: Block
     > any
 }body:{
-    Returns the result of evaluating each expression in #atomo:b, in order, with a new toplevel object that delegates to the block's context. #atomo:(call)ing a block does not affect its context (unless it is a block returned by #atomo:in-context).
+    Returns the result of evaluating each expression in #atomo:b, in order, with a new toplevel object that delegates to the block's context. #hl:{call}ing a block does not affect its context (unless it is a block returned by #atomo:in-context).
 
     Sending #hl:{call} to an empty block raises a #hl:{@no-expressions} error.
 
@@ -93,7 +93,7 @@
 }body:{
     Execute #atomo:b with #atomo:(v delegating-to: b context) as its toplevel object (i.e., the block's context is accessible). Returns the result of the block's execution.
 
-    Note that #atomo:(v)'s methods take priority over the block's context.
+    Note that #hl:{v}'s methods take priority over the block's context.
 
     #example:{
         True join: { not }
@@ -116,9 +116,9 @@
     | l is-a?: List
     > any
 }body:{
-    Like #atomo:(join:), but with arguments passed to the block.
+    Like #hl:{join:}, but with arguments passed to the block.
 
-    Note that #atomo:(v)'s methods take priority over both the arguments and the block's context.
+    Note that #hl:{v}'s methods take priority over both the arguments and the block's context.
 
     #example:{
         1 join: { a | + a } with: [2]
@@ -130,7 +130,7 @@
     | b is-a?: Block
     > v
 }body:{
-    Like #atomo:(join:), but returns #atomo:v. Handy for quick object creation.
+    Like #hl:{join:}, but returns #atomo:v. Handy for quick object creation.
 
     #example:{
         X = Object clone do: { a = 1; b = 2 }
@@ -143,7 +143,7 @@
     | l is-a?: List
     > v
 }body:{
-    Like #atomo:(do:), but with arguments passed to the block.
+    Like #hl:{do:}, but with arguments passed to the block.
 
     #example:{
         X = Object clone do: { a | x = a; y := a + 1 } with: [1]
@@ -182,7 +182,7 @@
     | b is-a?: Block
     > List
 }body:{
-    Returns a list of the block's arguments, which are #atomo:(Pattern)s.
+    Returns a list of the block's arguments, which are #hl:{Pattern}s.
 
     #example:{
         { a (x . _) 0 | a + x } arguments
@@ -194,7 +194,7 @@
     | b is-a?: Block
     > is-a?: Block
 }body:{
-    Returns an object that delegates to the original block, #atomo:b, but has its own #atomo:call and #atomo:(call:) methods defined. These overrides evaluate the block in its original scope, as opposed to lexically, via #atomo:(join:) and #atomo:(join:with:).
+    Returns an object that delegates to the original block, #atomo:b, but has its own #atomo:call and #hl:{call:} methods defined. These overrides evaluate the block in its original scope, as opposed to lexically, via #hl:{join:} and #hl:{join:with:}.
 
     #example:{
         a = 42

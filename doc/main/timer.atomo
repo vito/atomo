@@ -91,7 +91,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    See #atomo:(us).
+    See #hl:{us}.
 }
 
 #define:{
@@ -99,7 +99,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    See #atomo:(us).
+    See #hl:{us}.
 }
 
 #define:{
@@ -115,7 +115,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    See #atomo:(ms).
+    See #hl:{ms}.
 }
 
 #define:{
@@ -123,7 +123,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    See #atomo:(ms).
+    See #hl:{ms}.
 }
 
 #define:{
@@ -139,7 +139,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    See #atomo:(seconds).
+    See #hl:{seconds}.
 }
 
 #define:{
@@ -155,7 +155,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    See #atomo:(minutes).
+    See #hl:{minutes}.
 }
 
 #define:{
@@ -171,7 +171,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    See #atomo:(hours).
+    See #hl:{hours}.
 }
 
 #define:{
@@ -187,7 +187,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    See #atomo:(days).
+    See #hl:{days}.
 }
 
 #define:{
@@ -203,7 +203,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    See #atomo:(weeks).
+    See #hl:{weeks}.
 }
 
 #define:{
@@ -219,7 +219,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    See #atomo:(months).
+    See #hl:{months}.
 }
 
 #define:{
@@ -235,5 +235,5 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    See #atomo:(years).
+    See #hl:{years}.
 }

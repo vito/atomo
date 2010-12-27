@@ -6,7 +6,7 @@
 }body:{
     Ah, particles - an Atomo programmer's best friend. Although their primary purpose is to represent "partial messages" like #atomo:@sqrt or #atomo:@(foo: 2 bar: _), their use gracefully extends far beyond that. The fact that they can be pattern-matched makes their use as error values and success indicators very handy.
 
-    For example, #atomo:(lookup:) uses them to indicate whether it was able to find a given key in a list of #atomo:(Association)s. If it finds the association, it returns the associated value wrapped in #atomo:@ok:. If it doesn't find it, it returns #atomo:@none. It is the dispatcher's job to decide what they want to do from there.
+    For example, #hl:{lookup:} uses them to indicate whether it was able to find a given key in a list of #hl:{Association}s. If it finds the association, it returns the associated value wrapped in #atomo:@ok:. If it doesn't find it, it returns #atomo:@none. It is the dispatcher's job to decide what they want to do from there.
 
     #example:{
         [1 -> $a, 2 -> $b] lookup: 1
@@ -29,7 +29,7 @@
       }
     })
 
-    And, since they respond to #atomo:(call:), they can be used most places where you would otherwise have a block that takes certain arguments:
+    And, since they respond to #hl:{call:}, they can be used most places where you would otherwise have a block that takes certain arguments:
 
     #interaction:{
         [1, 2, 3] map: { n | n + 2 }
@@ -65,7 +65,7 @@
     | l is-a?: List
     > any
 }body:{
-    Complete the particle #atomo:p by taking values from #atomo:l, in order, and #atomo:(send)s the completed message.
+    Complete the particle #atomo:p by taking values from #atomo:l, in order, and #hl:{send}s the completed message.
 
     #example:{
         @sqrt call: [10]

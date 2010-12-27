@@ -4,7 +4,7 @@
     Number
     > Object
 }body:{
-    Any numeric value. #atomo:Integer and #atomo:Double are both #atomo:(Number)s, though presumeably quotients and complex numbers would also be valid.
+    Any numeric value. #atomo:Integer and #atomo:Double are both #hl:{Number}s, though presumeably quotients and complex numbers would also be valid.
 }
 
 #define:{
@@ -40,7 +40,7 @@
     | b is-a?: Number
     > Number
 }body:{
-    Adds #atomo:a and #atomo:b. If either are #atomo:(Rational)s, it returns a #atomo:Rational; otherwise, if either are #atomo:(Double)s, it returns a #atomo:Double.
+    Adds #atomo:a and #atomo:b. If either are #hl:{Rational}s, it returns a #atomo:Rational; otherwise, if either are #hl:{Double}s, it returns a #atomo:Double.
 
     #example:{
       1 + 2
@@ -57,7 +57,7 @@
     | b is-a?: Number
     > Number
 }body:{
-    Subtracts #atomo:b from #atomo:a. If either are #atomo:(Rational)s, it returns a #atomo:Rational; otherwise, if either are #atomo:(Double)s, it returns a #atomo:Double.
+    Subtracts #atomo:b from #atomo:a. If either are #hl:{Rational}s, it returns a #atomo:Rational; otherwise, if either are #hl:{Double}s, it returns a #atomo:Double.
 
     #example:{
       1 - 2
@@ -74,7 +74,7 @@
     | b is-a?: Number
     > Number
 }body:{
-    Multiplies #atomo:a by #atomo:b. If either are #atomo:(Rational)s, it returns a #atomo:Rational; otherwise, if either are #atomo:(Double)s, it returns a #atomo:Double.
+    Multiplies #atomo:a by #atomo:b. If either are #hl:{Rational}s, it returns a #atomo:Rational; otherwise, if either are #hl:{Double}s, it returns a #atomo:Double.
 
     #example:{
       1 * 2
@@ -91,7 +91,7 @@
     | b is-a?: Number
     > Number
 }body:{
-    Divides #atomo:a by #atomo:b. If either are #atomo:(Rational)s, it returns a #atomo:Rational; otherwise, if either are #atomo:(Double)s, it returns a #atomo:Double. If both are #atomo:(Integer)s, it performs integer division.
+    Divides #atomo:a by #atomo:b. If either are #hl:{Rational}s, it returns a #atomo:Rational; otherwise, if either are #hl:{Double}s, it returns a #atomo:Double. If both are #hl:{Integer}s, it performs integer division.
 
     #example:{
       1 / 2
@@ -108,7 +108,7 @@
     | b is-a?: Integer || b is-a?: Double
     > Number
 }body:{
-    Raises #atomo:a to the power of #atomo:b. If either are #atomo:(Double)s, it returns a #atomo:Double. If #atomo:a is a #atomo:Rational, #atomo:b must be an #atomo:Integer.
+    Raises #atomo:a to the power of #atomo:b. If either are #hl:{Double}s, it returns a #atomo:Double. If #atomo:a is a #atomo:Rational, #atomo:b must be an #atomo:Integer.
 
     #example:{
       1 ^ 2
@@ -234,7 +234,7 @@
     | r is-a?: Rational
     > Integer
 }body:{
-    Returns #atomo:(r)'s numerator.
+    Returns #hl:{r}'s numerator.
 
     #example:{
       3/4 numerator
@@ -246,7 +246,7 @@
     | r is-a?: Rational
     > Integer
 }body:{
-    Returns #atomo:(r)'s denominator.
+    Returns #hl:{r}'s denominator.
 
     #example:{
       3/4 denominator

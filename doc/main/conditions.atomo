@@ -19,7 +19,7 @@ Atomo uses a condition system very similar to Common Lisp's.
   error: v
   > any
 }body:{
-  Signals #atomo:v as an error. If the #atomo:(signal:) call exits normally, a debugger is started. Hence, this method never exits normally.
+  Signals #atomo:v as an error. If the #hl:{signal:} call exits normally, a debugger is started. Hence, this method never exits normally.
 
   #example:{
     { "x" print; error: 1; "y" print } call
@@ -30,7 +30,7 @@ Atomo uses a condition system very similar to Common Lisp's.
   warning: v
   > @ok
 }body:{
-  Similar to #atomo:(error:), but instead of starting a debugger, prints the error to #atomo:*error-output*.
+  Similar to #hl:{error:}, but instead of starting a debugger, prints the error to #atomo:*error-output*.
 
   #example:{
     { "x" print; warning: 2; "y" print } call
@@ -68,7 +68,7 @@ Atomo uses a condition system very similar to Common Lisp's.
     { error: @uh-oh } bind: { Error -> { e | @(got-error: e) print } }
   }
 
-  A #atomo:responder may often invoke #atomo:(restart:) or #atomo:(restart:with:), which is the only way they can affect the return value of #atomo:action.
+  A #atomo:responder may often invoke #hl:{restart:} or #hl:{restart:with:}, which is the only way they can affect the return value of #atomo:action.
 
   After a handler responds to a signal, the signal continues outward to the next recently bound handler:
 
@@ -160,7 +160,7 @@ These methods are specific to errors, and provide a system similar to that of tr
   | branches is-a?: Block
   > any
 }body:{
-  Similar to #atomo:(catch:), but #atomo:branches is a block containing exception patterns bound to the action to take if they're thrown. If none of the exceptions match any of the patterns, the exception is re-thrown.
+  Similar to #hl:{catch:}, but #atomo:branches is a block containing exception patterns bound to the action to take if they're thrown. If none of the exceptions match any of the patterns, the exception is re-thrown.
 
   #example:{
     { error: @foo } handle: { @foo -> 1; @bar -> 2 }
@@ -175,7 +175,7 @@ These methods are specific to errors, and provide a system similar to that of tr
   | [action, branches, cleanup] all?: @(is-a?: Block)
   > any
 }body:{
-  Similar to #atomo:(handle:), but with an #atomo:(ensuring:) block.
+  Similar to #hl:{handle:}, but with an #hl:{ensuring:} block.
 
   #example:{
     { error: @foo } handle: { @foo -> 1 } ensuring: { "hi" print }
@@ -206,7 +206,7 @@ These methods are specific to errors, and provide a system similar to that of tr
   | action is-a?: Block
   > any
 }body:{
-  Similar to #atomo:(ensuring:), but #atomo:value is passed to both blocks. This makes things like file opening and closing very natural.
+  Similar to #hl:{ensuring:}, but #atomo:value is passed to both blocks. This makes things like file opening and closing very natural.
 
   Yields the result of #atomo:action.
 
