@@ -147,12 +147,12 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 
     Example file:
 
-    #atomo-segment:({
+    #atomo:{
         name: "ehtml"
         description: "embedded html dsl"
         version: (0 . 1)
         author: "Alex Suraci"
-    })
+    }
 
     Note that #hl:{filename} should be valid Atomo source code; that's all it is. The file is loaded as-is on a new #hl:{Eco Package}; each of those lines is a dispatch.
 }
@@ -208,7 +208,9 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 
     For example, to depend on any version of #code:{ehtml}, and versions greater than #code:{0.1} of #code:{ecss}:
 
-    #atomo-line:(depends-on: ["ehtml", "eccs" -> { > (0 . 1) }])
+    #atomo:{
+      depends-on: ["ehtml", "eccs" -> { > (0 . 1) }]
+    }
 }
 
 #define:{

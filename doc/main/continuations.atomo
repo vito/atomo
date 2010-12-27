@@ -112,7 +112,7 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
 }body:{
     Returns the current continuation.
 
-    Be careful, though: by current, it really means #italic:{current}. You usually want to use #atomo:call/cc.
+    Be careful, though: by current, it really means #italic:{current}. You usually want to use #hl:{call/cc}.
 
     For example, if you assign this to a value, the continuation will be that assignment:
 

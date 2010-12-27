@@ -22,12 +22,12 @@
 
     This value can be caught and pattern-matched, with the keywords in the particle clearly explaining the importance and meaning of every value involved:
 
-    #atomo-block:({
+    #atomo:{
       { [1, 2, 3] at: 3 } handle: {
         @(out-of-bounds: idx for-list: _) ->
             "out of bounds: " (.. idx show) print
       }
-    })
+    }
 
     And, since they respond to #hl:{call:}, they can be used most places where you would otherwise have a block that takes certain arguments:
 

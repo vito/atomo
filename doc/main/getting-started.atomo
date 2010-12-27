@@ -80,7 +80,7 @@ But #hl:{=} has a few more tricks up its sleeve. As mentioned before, it can als
     a
 }
 
-As you can see, first we set #hl:{b} to #atomo:[1, 2], and then we immediately pattern-match #atomo:[a, _] on #hl:{b}, which sets #hl:{a} to #hl:{1}, the first element of the list. We then re-assign #hl:{a} as #hl:{a + 1}, increasing #hl:{a}'s vlaue by 1.
+As you can see, first we set #hl:{b} to #hl:{[1, 2]}, and then we immediately pattern-match #hl:{[a, _]} on #hl:{b}, which sets #hl:{a} to #hl:{1}, the first element of the list. We then re-assign #hl:{a} as #hl:{a + 1}, increasing #hl:{a}'s vlaue by 1.
 
 
 #section:{Lexical Scoping via Delegation}
@@ -89,13 +89,13 @@ You'll notice earlier I used the term #italic:{top-level object} for describing 
 
 To illustrate the power of this sytem, let's try putting scope objects to use. #hl:{Block}s provide a #hl:{context} method for grabbing the context in which they were written. Putting the pieces together, #hl:{in-context} is easily defined - which converts a block into one that is evalulated in its original scope:
 
-#atomo-block:({
+#atomo:{
   (b: Block) in-context :=
     b clone do:
       { call := b context join: b
         call: vs := b context join: b with: vs
       }
-})
+}
 
 Now let's give it a shot:
 
@@ -134,9 +134,9 @@ The syntax for keyword dispatch is very flexible, to ease the flow of writing co
 
 This gets parsed as regular ol' dispatching, as in:
 
-#atomo-block:({
-  1 (+ 2) (divides?: 6) not
-})
+#atomo:{
+  ((1 + 2) divides?: 6) not
+}
 
 Those parentheses at the front come at a huge cost to the flow of your writing - every time you want to add a dispatch, you would have to go back to the beginning, add a #code:{(}, and find where you were. Keyword chains remedy that by allowing you to use parentheses wherever you are to effectively turn them into a single-dispatch syntax.
 
@@ -159,26 +159,20 @@ That's a lot to take in at once, so let's just dive in and play around with this
 
 #(rps = Lobby clone)
 
-#(def-objs = {
+#atomo:{
   Rock = Object clone
   Paper = Object clone
   Scissors = Object clone
-})
+}on:rps
 
-#(def-methods = {
+Pretty simple - to make a new object just clone #hl:{Object}. Here we have #hl:{Rock}, #hl:{Paper}, and #hl:{Scissors} defined and ready for action. Now comes the fun part - defining how the game works!
+
+#atomo:{
   Rock beats?: Scissors := True
   Paper beats?: Rock := True
   Scissors beats?: Paper := True
   _ beats?: _ := False
-})
-
-#atomo-segment:def-objs
-#(_ = rps join: def-objs)
-
-Pretty simple - to make a new object just clone #hl:{Object}. Here we have #hl:{Rock}, #hl:{Paper}, and #hl:{Scissors} defined and ready for action. Now comes the fun part - defining how the game works!
-
-#atomo-segment:def-methods
-#(_ = rps join: def-methods)
+}on:rps
 
 The #hl:{beats?:} method has two #italic:{roles} - the first one is being checked to see if it "beats" the second one in our game. In this case, the standard rules apply - rock beats scissors, paper beats rock, and scissors beats paper. Let's try it out!
 

@@ -119,7 +119,7 @@
     | end is-a?: Integer
     > List
 }body:{
-    Returns the slice of elements from #hl:{start} to #hl:{end} of #hl:{l}. If the range is invalid, #atomo:@(invalid-range: @(from: start to: end) for-list: l) is raised. A range is invalid if either #hl:{start} or #hl:{end} are negative, or if either are out of the list's boundaries.
+    Returns the slice of elements from #hl:{start} to #hl:{end} of #hl:{l}. If the range is invalid, #hl:{@(invalid-range: @(from: start to: end) for-list: l)} is raised. A range is invalid if either #hl:{start} or #hl:{end} are negative, or if either are out of the list's boundaries.
 
     #example:{
         [1, 2, 3, 4, 5] from: 1 to: 3

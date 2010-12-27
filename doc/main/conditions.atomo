@@ -30,7 +30,7 @@ Atomo uses a condition system very similar to Common Lisp's.
   warning: v
   > @ok
 }body:{
-  Similar to #hl:{error:}, but instead of starting a debugger, prints the error to #atomo:*error-output*.
+  Similar to #hl:{error:}, but instead of starting a debugger, prints the error to #hl:{*error-output*}.
 
   #example:{
     { "x" print; warning: 2; "y" print } call

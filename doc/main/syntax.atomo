@@ -118,7 +118,7 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
   #item:{doubles}is:{#hl:{1}.0, #hl:{2}.0, #hl:{-1}.5, ..., plus scientific notation (e.g. #code:{1.5e10})}
 
   #item:{characters}is:{
-    #atomo:$a, #atomo:$b, #atomo:$\n, #atomo:$\1234 (unicode number)...
+    #hl:{$a}, #hl:{$b}, #hl:{$\n}, #hl:{$\1234} (unicode number)...
 
     Escape codes supported (in addition to numeric escapes):
     
@@ -139,7 +139,7 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
 
   #item:{boolean}is:{#hl:{True} and #hl:{False}}
 
-  #item:{lists}is:{#atomo:[], #atomo:[1, 2], #atomo:[1, $2, "three"], ...}
+  #item:{lists}is:{#hl:{[]}, #hl:{[1, 2]}, #hl:{[1, $2, "three"]}, ...}
 
   #item:{expressions}is:{
     #definitions:{
@@ -256,7 +256,7 @@ The #hl:{=} operator macro performs pattern-matching; the left-hand side is the 
     }
   }
 
-  #item:{#hl:{1}, #hl:{2/3}, #hl:{4.0}, #atomo:$a, #hl:{True}, #hl:{False}, #hl:{"foo"}, ...}is:{
+  #item:{#hl:{1}, #hl:{2/3}, #hl:{4.0}, #hl:{$a}, #hl:{True}, #hl:{False}, #hl:{"foo"}, ...}is:{
     Primitive literal values match only on themselves.
 
     #example:{
@@ -290,7 +290,7 @@ The #hl:{=} operator macro performs pattern-matching; the left-hand side is the 
     }
   }
 
-  #item:{#atomo:[], #atomo:[pattern, pattern-2], ...}is:{
+  #item:{#hl:{[]}, #hl:{[pattern, pattern-2]}, ...}is:{
     Matches a list of fixed length, recursively matching each #hl:{pattern} on each of its values.
 
     #example:{
@@ -314,7 +314,7 @@ The #hl:{=} operator macro performs pattern-matching; the left-hand side is the 
     }
   }
 
-  #item:{#atomo:`a, #atomo:`(1 + ~b), ...}is:{
+  #item:{#hl:{`a}, #hl:{`(1 + ~b)}, ...}is:{
     Matches expression values recursively. Unquotes serve as named wildcard patterns, with the same recursive semantics as quasiquotation.
 
     #example:{
@@ -389,13 +389,13 @@ The targets implied by the respective patterns in a definition are as follows:
 #definitions:{
   #item:{#hl:{_}, #hl:{foo}, #hl:{bar}, ...}is:{#hl:{Object}}
   #item:{#hl:{1}, #hl:{2}, ...}is:{#hl:{Integer}}
-  #item:{#atomo:$a, #atomo:$b, ...}is:{#hl:{Char}}
+  #item:{#hl:{$a}, #hl:{$b}, ...}is:{#hl:{Char}}
   #item:{#hl:{True}, #hl:{False}}is:{#hl:{Boolean}}
   #item:{#hl:{1}.0, #hl:{2}.0, ...}is:{#hl:{Double}}
   #item:{#hl:{1/2}, #hl:{3/4}, ...}is:{#hl:{Rational}}
   #item:{#hl:{""}, #hl:{"foo"}, ...}is:{#hl:{String}}
-  #item:{#hl:{head . tail}, #atomo:[], #atomo:[pattern, pattern-2], ...}is:{#hl:{List}}
-  #item:{#atomo:`x, #atomo:`(1 + ~y), ...}is:{#hl:{Expression}}
+  #item:{#hl:{head . tail}, #hl:{[]}, #hl:{[pattern, pattern-2]}, ...}is:{#hl:{List}}
+  #item:{#hl:{`x}, #hl:{`(1 + ~y)}, ...}is:{#hl:{Expression}}
   #item:{#hl:{@foo}, #hl:{@(bar: 2 baz: _)}, ...}is:{#hl:{Particle}}
   #item:{#hl:{foo: pattern}}is:{target of #code:{pattern}}
   #item:{#hl:{-> pattern}}is:{target of #code:{pattern}}
