@@ -6,18 +6,18 @@
 }body:{
     The "root" of everything. Everything delegates to #atomo:Object, including toplevel objects.
 
-    #example:({
+    #example:{
         True is-a?: Object
         is-a?: Object
-    })
+    }
 
     Generally, to create new objects you send #atomo:clone to this if there's nothing more specific.
 
-    #example-segment:({
-        Boolean = Object clone
-        True = Boolean clone
-        False = Boolean clone
-    })
+    #example-segment:{
+        MyBoolean = Object clone
+        MyTrue = Boolean clone
+        MyFalse = Boolean clone
+    }
 }
 
 #define:{
@@ -30,25 +30,25 @@
 
     When defining a method of the same name as an existing one, it will be inserted with the most precise first. If two patterns are equivalent, the new method replaces the old.
 
-    #example:({
+    #example:{
         0 fib := 1
         1 fib := 1
         (n: Integer) fib := (n - 2) fib + (n - 1) fib
         5 fib
-    })
+    }
 
     This defines three #atomo:fib methods on #atomo:Integer. The order of the definitions doesn't matter; they are inserted in order of precision, so the methods that pattern-match on #atomo:0 and #atomo:1 are always chosen over the more general #atomo:Integer match.
 
     The method's expression #atomo:e is evaluated with a new toplevel object containing the bindings from the pattern-match as methods, and delegating to the context of the method definition.
 
-    #example:({
+    #example:{
         x foo: [y, z] bar: _ := this
         1 foo: [2, $3] bar: 4
         a = 2
         foo := [1, a]
         foo
         { a = 3; foo } call
-    })
+    }
 
     Here we're using #atomo:this to simply return the toplevel object that the expression is evaluated in.
 }
@@ -60,21 +60,21 @@
 }body:{
     Pattern-match #atomo:p on #atomo:v, inserting the bindings from the match into the current scope. Returns the value it's matching on (#atomo:v). See #reference:{pattern-syntax}.
 
-    #example:({
+    #example:{
         a = 1
         [x, y] = [2, 3]
         @(ok: foo) = @(ok: 4)
         [a, x, y, foo]
-    })
+    }
 
     In addition to simple pattern-matching, #atomo:(=) can also define methods. However, it always evaluates the right-hand side before insertion, and roles in a message pattern are all objects (not patterns), unlike its brethren #atomo:(:=).
 
-    #example:({
+    #example:{
         a = 1
         X = Object clone
         X b = a + 2
         X b
-    })
+    }
 }
 
 #define:{
@@ -130,12 +130,12 @@
 }body:{
     Returns #atomo:True if #atomo:x delegates to #atomo:y.
 
-    #example:({
+    #example:{
         X = Object clone
         Y = Object clone
         Y delegates-to?: X
         Y (delegating-to: X) delegates-to?: X
-    })
+    }
 }
 
 #define:{
@@ -144,11 +144,11 @@
 }body:{
     Returns a list of #atomo:(x)'s delegates.
 
-    #example:({
+    #example:{
       x = 1 clone
       x delegates
       x (delegating-to: 2) delegates
-    })
+    }
 }
 
 #define:{
@@ -157,10 +157,10 @@
 }body:{
     Returns the first value that #atomo:x delegates to.
 
-    #example:({
+    #example:{
       1 clone super
       1 clone (delegating-to: 2) super
-    })
+    }
 }
 
 #define:{
@@ -169,14 +169,14 @@
 }body:{
     Returns #atomo:True if #atomo:x is equal to #atomo:y or delegates to it, directly or indirectly.
 
-    #example:({
+    #example:{
         1 is-a?: Integer
         X = Object clone
         Y = Object clone
         X is-a?: X
         Y is-a?: X
         Y (delegating-to: X) is-a?: X
-    })
+    }
 }
 
 #define:{
@@ -186,7 +186,7 @@
 }body:{
     Check if object #atomo:x would respond to the partial message #atomo:p (completed with #atomo:x to form a #atomo:Message).
 
-    #example:({
+    #example:{
         X = Object clone
         X responds-to?: @foo
         X foo = 42
@@ -194,7 +194,7 @@
 
         1 responds-to?: @(+ 2)
         1 responds-to?: @(+ "foo")
-    })
+    }
 }
 
 #define:{
@@ -203,11 +203,11 @@
 }body:{
     Convert #atomo:x to a proper representation of that value in code (if possible).
 
-    #example:({
+    #example:{
         10 show
         "foo" show
         False show
-    })
+    }
 }
 
 #define:{
@@ -234,9 +234,9 @@
 
   Errors with #atomo:@(no-match-for: v) if none of the branches match the value.
 
-  #example:({
+  #example:{
     1 match: { 2 -> @nope; 1 -> @yep }
     1 match: { 2 -> @nope }
     [1, 2] match: { [1, b] -> @(got: b) }
-  })
+  }
 }

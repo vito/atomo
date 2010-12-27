@@ -9,9 +9,9 @@ Strings are immutable, efficient, Unicode sequences of characters.
 }body:{
     Creates a #atomo:String containing a single character.
 
-    #example:({
+    #example:{
         $a singleton
-    })
+    }
 }
 
 #define:{
@@ -21,9 +21,9 @@ Strings are immutable, efficient, Unicode sequences of characters.
 }body:{
     Convert string #atomo:s to a #atomo:List of #atomo:(Char)s.
 
-    #example:({
+    #example:{
         "foo" as: List
-    })
+    }
 }
 
 #define:{
@@ -33,10 +33,10 @@ Strings are immutable, efficient, Unicode sequences of characters.
 }body:{
     Yields the length of the string.
 
-    #example:({
+    #example:{
         "abc" length
         "Hello, 世界!" print length
-    })
+    }
 }
 
 #define:{
@@ -46,10 +46,10 @@ Strings are immutable, efficient, Unicode sequences of characters.
 }body:{
     Is the string #atomo:s empty?
 
-    #example:({
+    #example:{
         "" empty?
         "no" empty?
-    })
+    }
 }
 
 #define:{
@@ -60,10 +60,10 @@ Strings are immutable, efficient, Unicode sequences of characters.
 }body:{
     Returns the string's character at #atomo:index. If the index is out of bounds, #atomo:@(out-of-bounds: index for-string: s) is raised.
 
-    #example:({
+    #example:{
         "abc" at: 1
         "abc" at: 3
-    })
+    }
 }
 
 #define:{
@@ -73,9 +73,9 @@ Strings are immutable, efficient, Unicode sequences of characters.
 }body:{
     Returns the first character of the string. If the string is empty, #atomo:(@empty-string) is raised.
 
-    #example:({
+    #example:{
         "abc" head
-    })
+    }
 }
 
 #define:{
@@ -85,9 +85,9 @@ Strings are immutable, efficient, Unicode sequences of characters.
 }body:{
     Returns the last character of the string. If the string is empty, #atomo:(@empty-string) is raised.
 
-    #example:({
+    #example:{
         "abc" last
-    })
+    }
 }
 
 #define:{
@@ -97,9 +97,9 @@ Strings are immutable, efficient, Unicode sequences of characters.
 }body:{
     Returns all but the last character of the string. If the string is empty, #atomo:(@empty-string) is raised.
 
-    #example:({
+    #example:{
         "abc" init
-    })
+    }
 }
 
 #define:{
@@ -109,9 +109,9 @@ Strings are immutable, efficient, Unicode sequences of characters.
 }body:{
     Returns all but the first character of the string. If the string is empty, #atomo:(@empty-string) is raised.
 
-    #example:({
+    #example:{
         "abc" tail
-    })
+    }
 }
 
 

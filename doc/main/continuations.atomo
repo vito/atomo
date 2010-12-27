@@ -22,9 +22,9 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
 }body:{
     Sends the current #atomo:Continuation to #atomo:o.
 
-    #example:({
+    #example:{
         { return | "before" print; return yield: 100; "after" print } call/cc
-    })
+    }
     
     When the continuation is yielded to, the appropriate before/after thunks (provided by #atomo:(before:after:), et al.) are unwound.
 }
@@ -36,9 +36,9 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
 }body:{
     Immediately go back to #atomo:c's context and yield #atomo:v in its place.
 
-    #example:({
+    #example:{
         { cc | "before" print; cc yield: 1; "after" print } call/cc
-    })
+    }
 }
 
 #define:{
@@ -50,15 +50,15 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
 
     In addition; #atomo:post-thunk is always called, even if an exception is raised.
 
-    #example:({
+    #example:{
         { "in" print } before: { "pre" print } after: { "post" print }
-    })
+    }
 
     #atomo:pre-thunk is called whenever #atomo:action is re-entered (e.g. by jumping back into it by yielding to a continuation).
     
     #atomo:post-thunk is called whenever control leaves the block (e.g. by yielding to another continuation) or when #atomo:action completes.
 
-    #example:({
+    #example:{
         yield!: c := when: (c is-a?: Continuation) do: { c yield }
 
         x := { "in" print; current-continuation } before: { "pre" print } after: { "post" print }
@@ -69,7 +69,7 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
             cont print
             yield!: cont
         } call
-    })
+    }
 }
 
 #define:{
@@ -101,9 +101,9 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
 
     See also #atomo:(before:after:).
 
-    #example:({
+    #example:{
         { "init" print } wrap: { c | c uppercase print } do: { c | @(action: c) print }
-    })
+    }
 }
 
 #define:{
@@ -116,18 +116,9 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
 
     For example, if you assign this to a value, the continuation will be that assignment:
 
-    #interaction:({
-        {
-            a = current-continuation
-
-            a print
-
-            when: (a is-a?: Continuation)
-                do: { a yield: 42 }
-
-            @done
-        } call
-    })
+    #interaction:{
+        { a = current-continuation; a print; (a yield: 42) when: (a is-a?: Continuation); @done } call
+    }
 
     We had to check if #atomo:a was a #atomo:Continuation there, because after the #atomo:(yield:) it becomes #atomo:42, and you'd end up with #atomo:(42 yield: 42). That is, execution continues from just after the assignment, with #atomo:a as its new value, which it happily attempts to #atomo:(yield:) to all over again.
 }

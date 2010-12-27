@@ -15,9 +15,9 @@ Atomo uses message-passing concurrency akin to Erlang. Processes are very cheap 
 }body:{
     Returns the current #atomo:Process.
 
-    #example:({
+    #example:{
         self
-    })
+    }
 }
 
 #define:{
@@ -26,10 +26,10 @@ Atomo uses message-passing concurrency akin to Erlang. Processes are very cheap 
 }body:{
     Waits for a message, blocking until one is received.
 
-    #example:({
+    #example:{
         { main | "hello!" print; main <- @done } spawn: [self]
         receive
-    })
+    }
 }
 
 #define:{
@@ -39,9 +39,9 @@ Atomo uses message-passing concurrency akin to Erlang. Processes are very cheap 
 }body:{
     Executes #atomo:(b call) in a separate process, and returns that new process.
 
-    #example:({
+    #example:{
         { (1 + 1) print } spawn
-    })
+    }
 }
 
 #define:{
@@ -52,9 +52,9 @@ Atomo uses message-passing concurrency akin to Erlang. Processes are very cheap 
 }body:{
     Like #atomo:spawn, but executes #atomo:(b call: l) instead.
 
-    #example:({
+    #example:{
         { a | (a + 1) print } spawn: [41]
-    })
+    }
 }
 
 #define:{
@@ -64,11 +64,11 @@ Atomo uses message-passing concurrency akin to Erlang. Processes are very cheap 
 }body:{
     Sends the value #atomo:v to process #atomo:p, and returns #atomo:p.
 
-    #example:({
+    #example:{
         p = { receive <- @pong } spawn
         p <- self
         receive
-    })
+    }
 }
 
 #define:{

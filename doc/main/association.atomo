@@ -15,11 +15,11 @@
     
     This operator is right-associative and has a very low precedence level:
 
-    #example:({
+    #example:{
         1 -> $a
         True -> 10
         1 -> (2 -> (3 + 4))
-    })
+    }
 }
 
 #define:{
@@ -29,9 +29,9 @@
 }body:{
     Yields #atomo:a's "from" value.
 
-    #example:({
+    #example:{
         (1 -> $a) from
-    })
+    }
 }
 
 #define:{
@@ -41,9 +41,9 @@
 }body:{
     Yields #atomo:a's "to" value.
 
-    #example:({
+    #example:{
         (1 -> $a) to
-    })
+    }
 }
 
 #define:{
@@ -53,10 +53,10 @@
 }body:{
     Looks up a key in a list of #atomo:Associations by #atomo:from, returning either the association's #atomo:to value or #atomo:@none.
 
-    #example:({
+    #example:{
         [1 -> $a, 2 -> $b] lookup: 1
         [1 -> $a, 2 -> $b] lookup: 5
-    })
+    }
 }
 
 #define:{
@@ -66,10 +66,10 @@
 }body:{
     Similar to #atomo:(lookup:), except it returns the #atomo:Association object rather than its #atomo:to value.
 
-    #example:({
+    #example:{
         [1 -> $a, 2 -> $b] find: 1
         [1 -> $a, 2 -> $b] find: 5
-    })
+    }
 }
 
 #define:{
@@ -79,8 +79,8 @@
 }body:{
     Sets an association from #atomo:key to #atomo:value in #atomo:list, updating an association if it exists or adding it to the list if it doesn't.
 
-    #example:({
+    #example:{
         [1 -> $a, 2 -> $b] set: 2 to: $B
         [1 -> $a, 2 -> $b] set: 3 to: $c
-    })
+    }
 }

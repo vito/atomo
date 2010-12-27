@@ -8,10 +8,10 @@
 }body:{
     Boolean values.
 
-    #example-segment:({
+    #example-segment:{
       True
       False
-    })
+    }
 }
 
 #define:{
@@ -22,10 +22,10 @@
 }body:{
     Test whether #atomo:a and #atomo:b are both #atomo:True. This is actually a macro which calls the short-circuiting #atomo:(and:).
 
-    #example:({
+    #example:{
         True && False
         (1 == 1) && ($a /= $b)
-    })
+    }
 }
 
 #define:{
@@ -36,10 +36,10 @@
 }body:{
     Test if either #atomo:a or #atomo:b are #atomo:True. This is actually a macro which calls the short-circuiting #atomo:(or:).
 
-    #example:({
+    #example:{
         True || False
         (1 == 1) || ($a /= $b)
-    })
+    }
 }
 
 #define:{
@@ -67,11 +67,11 @@
 }body:{
     Negate #atomo:a.
 
-    #example:({
+    #example:{
         True not
         False not
         True not not
-    })
+    }
 }
 
 #section:{Control Flow}
@@ -85,9 +85,9 @@
 }body:{
     Basic if-then-else control flow. If #atomo:test is #atomo:True, #atomo:yes is #atomo:(call)ed, otherwise #atomo:no is. The result is the result of whichever block is called.
 
-    #example:({
+    #example:{
         if: (1 == 0) then: { "Uh-oh." } else: { "We're good!" }
-    })
+    }
 }
 
 #define:{
@@ -98,13 +98,13 @@
 }body:{
     Sends #atomo:call to #atomo:(action in-context) if #atomo:test is #atomo:True, always returning #atomo:@ok.
 
-    #example:({
+    #example:{
         a = 0
         b := when: (a == 1) do: { "a is 1!" print }
         b
         a = 1
         b
-    })
+    }
 }
 
 #define:{
@@ -115,11 +115,11 @@
 }body:{
     Continually sends #atomo:call to #atomo:(action in-context) until #atomo:test yields #atomo:False.
 
-    #example:({
+    #example:{
         a = 1
         while: { a < 10 } do: { a = a + 1 }
         a
-    })
+    }
 }
 
 #define:{
@@ -133,10 +133,10 @@
 
     NOTE: #italic:{This is a macro which expands to chained #atomo:(if:then:else:) dispatches.}
 
-    #example:({
+    #example:{
         condition: { False -> "Hello!" print; True -> "Goodbye!" print }
         condition: { 1 == 1 -> 0; otherwise -> 1 }
-    })
+    }
 }
 
 #define:{

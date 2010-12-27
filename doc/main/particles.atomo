@@ -8,17 +8,17 @@
 
     For example, #atomo:(lookup:) uses them to indicate whether it was able to find a given key in a list of #atomo:(Association)s. If it finds the association, it returns the associated value wrapped in #atomo:@ok:. If it doesn't find it, it returns #atomo:@none. It is the dispatcher's job to decide what they want to do from there.
 
-    #example:({
+    #example:{
         [1 -> $a, 2 -> $b] lookup: 1
         [1 -> $a, 2 -> $b] lookup: 3
-    })
+    }
 
     Many errors are also encoded as simple "structured error messages" using particles. For example, when indexing a list out of bounds:
 
-    #interaction:({
+    #interaction:{
         [1, 2, 3] at: 1
         [1, 2, 3] at: 3
-    })
+    }
 
     This value can be caught and pattern-matched, with the keywords in the particle clearly explaining the importance and meaning of every value involved:
 
@@ -31,11 +31,11 @@
 
     And, since they respond to #atomo:(call:), they can be used most places where you would otherwise have a block that takes certain arguments:
 
-    #interaction:({
+    #interaction:{
         [1, 2, 3] map: { n | n + 2 }
         [1, 2, 3] map: @(+ 2)
         [1, 4, 9] map: @sqrt
-    })
+    }
 
     In this case, the values fill up the empty slots in the particle (in order), and the "completed" message is dispatched, yielding its result.
 
@@ -52,11 +52,11 @@
 }body:{
     Complete the particle #atomo:p by taking values from #atomo:l, in order. If there are not enough values in the list to complete the particle, #atomo:(@particle-needed:given:) is thrown.
 
-    #example:({
+    #example:{
         @sqrt complete: [10]
         @+ complete: [1, 2]
         @+ complete: [1]
-    })
+    }
 }
 
 #define:{
@@ -67,11 +67,11 @@
 }body:{
     Complete the particle #atomo:p by taking values from #atomo:l, in order, and #atomo:(send)s the completed message.
 
-    #example:({
+    #example:{
         @sqrt call: [10]
         @+ call: [1, 2]
         @+ call: [1]
-    })
+    }
 }
 
 #define:{
@@ -81,9 +81,9 @@
 }body:{
     Returns the name of the single particle #atomo:p.
 
-    #example:({
+    #example:{
         @sqrt name
-    })
+    }
 }
 
 #define:{
@@ -93,10 +93,10 @@
 }body:{
     Returns the names in the keyword particle #atomo:p.
 
-    #example:({
+    #example:{
         @+ names
         @foo:bar: names
-    })
+    }
 }
 
 #define:{
@@ -106,11 +106,11 @@
 }body:{
     Returns a list of the keyword particle #atomo:p's values, indicating the absense of a value with #atomo:@none and wrapping existing values in #atomo:@ok:.
 
-    #example:({
+    #example:{
         @+ values
         @(+ 2) values
         @(foo: _ bar: $a) values
-    })
+    }
 }
 
 #define:{
@@ -120,9 +120,9 @@
 }body:{
     Yields the type of the keyword - single or keyword.
 
-    #example:({
+    #example:{
         @sqrt type
         @+ type
         @foo:bar: type
-    })
+    }
 }

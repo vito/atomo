@@ -6,10 +6,10 @@
 }body:{
     Lists are immutable vectors of arbitrary values.
 
-    #example-segment:({
+    #example-segment:{
         [1, $b, "three", 4.0]
         []
-    })
+    }
 }
 
 #define:{
@@ -19,9 +19,9 @@
 }body:{
     Returns the length of the list #atomo:l.
 
-    #example:({
+    #example:{
         [1, 2, 3] length
-    })
+    }
 }
 
 #define:{
@@ -31,10 +31,10 @@
 }body:{
     Is the list #atomo:l empty?
 
-    #example:({
+    #example:{
         [] empty?
         [1, 2, 3] empty?
-    })
+    }
 }
 
 #define:{
@@ -45,10 +45,10 @@
 }body:{
     Returns the list's value at #atomo:index. If the index is out of bounds, #atomo:@(out-of-bounds: index for-list: l) is raised.
 
-    #example:({
+    #example:{
         [1, 2, 3] at: 1
         [1, 2, 3] at: 3
-    })
+    }
 }
 
 #define:{
@@ -59,9 +59,9 @@
 }body:{
     Yield a new list with the value at #atomo:index replaced with #atomo:v. If the index is out of bounds, #atomo:@(out-of-bounds: index for-list: l) is raised.
 
-    #example:({
+    #example:{
         [1, 2, 3] at: 1 put: 5
-    })
+    }
 }
 
 #define:{
@@ -71,9 +71,9 @@
 }body:{
     Returns the first value of the list. If the list is empty, #atomo:(@empty-list) is raised.
 
-    #example:({
+    #example:{
         [1, 2, 3] head
-    })
+    }
 }
 
 #define:{
@@ -83,9 +83,9 @@
 }body:{
     Returns the last value of the list. If the list is empty, #atomo:(@empty-list) is raised.
 
-    #example:({
+    #example:{
         [1, 2, 3] last
-    })
+    }
 }
 
 #define:{
@@ -95,9 +95,9 @@
 }body:{
     Returns all but the last value of the list. If the list is empty, #atomo:(@empty-list) is raised.
 
-    #example:({
+    #example:{
         [1, 2, 3] init
-    })
+    }
 }
 
 #define:{
@@ -107,9 +107,9 @@
 }body:{
     Returns all but the first value of the list. If the list is empty, #atomo:(@empty-list) is raised.
 
-    #example:({
+    #example:{
         [1, 2, 3] tail
-    })
+    }
 }
 
 #define:{
@@ -121,9 +121,9 @@
 }body:{
     Returns the slice of elements from #atomo:start to #atomo:end of #atomo:l. If the range is invalid, #atomo:@(invalid-range: @(from: start to: end) for-list: l) is raised. A range is invalid if either #atomo:start or #atomo:end are negative, or if either are out of the list's boundaries.
 
-    #example:({
+    #example:{
         [1, 2, 3, 4, 5] from: 1 to: 3
-    })
+    }
 }
 
 #define:{
@@ -134,10 +134,10 @@
 }body:{
     Returns a list of the first #atomo:n values of the list. If #atomo:n is greater than the list's length, it returns as many as it can (i.e., the entire list); the length of the returned list will not always be #atomo:n.
 
-    #example:({
+    #example:{
         [1, 2, 3, 4, 5] take: 2
         [1, 2] take: 4
-    })
+    }
 }
 
 #define:{
@@ -148,10 +148,10 @@
 }body:{
     Returns a list of the values after #atomo:n values have been dropped from the start of the list. If #atomo:n is greater than the list's length, it returns an empty list.
 
-    #example:({
+    #example:{
         [1, 2, 3, 4, 5] drop: 2
         [5, 6, 7] drop: 5
-    })
+    }
 }
 
 #define:{
@@ -161,9 +161,9 @@
 }body:{
     Returns a list containing #atomo:v replicated #atomo:n times.
 
-    #example:({
+    #example:{
         "Odelay!" replicate: 5
-    })
+    }
 }
 
 #define:{
@@ -174,11 +174,9 @@
 }body:{
     Returns a list containing the results of #atomo:n #atomo:(call)s of #atomo:b.
 
-    #example:({
-        with-input-from: "doc/main/lists.atomo" do: {
-            { read-line } repeat: 3
-        }
-    })
+    #example:{
+        with-input-from: "doc/main/lists.atomo" do: { { read-line } repeat: 3 }
+    }
     
     Here we're reading 3 lines of text from the file #atomo:"doc/main/lists.atomo" (the source for the documentation you're reading).
 }
@@ -191,10 +189,10 @@
 }body:{
     Appends the two lists #atomo:a and #atomo:b, returning a new list.
 
-    #example:({
+    #example:{
         [1, 2, 3] .. [4, 5, 6]
         [] .. [1, 2] .. []
-    })
+    }
 }
 
 #define:{
@@ -204,9 +202,9 @@
 }body:{
     Returns a new list, with all values of #atomo:l, in reversed order.
 
-    #example:({
+    #example:{
         [1, 2, 3] reverse
-    })
+    }
 }
 
 #define:{
@@ -217,10 +215,10 @@
 }body:{
     Returns a new list, with #atomo:(call:) sent to #atomo:a with each value in #atomo:l.
 
-    #example:({
+    #example:{
         [1, 2, 3] map: { n | n + 1 }
         [1, 2, 3] map: @(* 2)
-    })
+    }
 }
 
 #define:{
@@ -243,10 +241,10 @@
 
     The list it returns is as long as the shorter list.
 
-    #example:({
+    #example:{
         [1, 2, 3] zip: [4, 5, 6] with: { a b | a * b }
         [1, 7, 4] zip: [4, 5, 6, 0] with: @min:
-    })
+    }
 }
 
 #define:{
@@ -257,9 +255,9 @@
 }body:{
     Takes values from list #atomo:l while #atomo:p called on them yields #atomo:True.
 
-    #example:({
+    #example:{
         [1, 3, 4, 5, 6] take-while: @odd?
-    })
+    }
 }
 
 #define:{
@@ -270,9 +268,9 @@
 }body:{
     Removes values from list #atomo:l while #atomo:p called on them yields #atomo:True, returning a list of the remaining values.
 
-    #example:({
+    #example:{
         [1, 3, 4, 5, 6] drop-while: @odd?
-    })
+    }
 }
 
 #define:{
@@ -283,10 +281,10 @@
 }body:{
     Returns a list of all values in #atomo:l that satisfy the predicate #atomo:p.
 
-    #example:({
+    #example:{
         [1, 2, 3, 4, 5] filter: @odd?
         [1, 2, 3, 2, 1] filter: { n | n == 3 }
-    })
+    }
 }
 
 #define:{
@@ -297,9 +295,9 @@
 }body:{
     Alias for #atomo:(l tail reduce: b with: l head). If the list is empty, #atomo:(@empty-list) is raised.
 
-    #example:({
+    #example:{
         [1, 2, 3, 4, 5] reduce: @*
-    })
+    }
 }
 
 #define:{
@@ -310,10 +308,10 @@
 }body:{
     Reduces the list to a single value by "folding" over it, with #atomo:v as the initial value.
 
-    #example:({
+    #example:{
         [1, 2, 3, 4, 5] reduce: @*
         [] reduce: @* with: 1
-    })
+    }
 }
 
 #define:{
@@ -341,10 +339,10 @@
 }body:{
     Reduces a list by appending all of its values. The list's values must all be lists.
 
-    #example:({
+    #example:{
         [[1, 2], [3, 4, 5], [6]] concat
         [] concat
-    })
+    }
 }
 
 #define:{
@@ -354,10 +352,10 @@
 }body:{
     Reduces a list with #atomo:(+) and #atomo:0.
 
-    #example:({
+    #example:{
         [1, 2, 3] sum
         [] sum
-    })
+    }
 }
 
 #define:{
@@ -367,10 +365,10 @@
 }body:{
     Reduces a list with #atomo:(*) and #atomo:1.
 
-    #example:({
+    #example:{
         [1, 2, 3] product
         [] product
-    })
+    }
 }
 
 #define:{
@@ -380,9 +378,9 @@
 }body:{
     Reduces a list with #atomo:(max:). The list must not be empty.
 
-    #example:({
+    #example:{
         [1, 2, 3] maximum
-    })
+    }
 }
 
 #define:{
@@ -392,9 +390,9 @@
 }body:{
     Reduces a list with #atomo:(min:). The list must not be empty.
 
-    #example:({
+    #example:{
         [1, 2, 3] minimum
-    })
+    }
 }
 
 #define:{
@@ -405,11 +403,11 @@
 }body:{
     Checks if all values in #atomo:l satisfy the predicate #atomo:p.
 
-    #example:({
+    #example:{
         [1, 3, 5] all?: @odd?
         [1, 3, 6] all?: @odd?
         [] all?: @odd?
-    })
+    }
 }
 
 #define:{
@@ -420,11 +418,11 @@
 }body:{
     Checks if any values in #atomo:l satisfy the predicate #atomo:p.
 
-    #example:({
+    #example:{
         [2, 3, 6] any?: @odd?
         [2, 4, 6] any?: @odd?
         [] any?: @odd?
-    })
+    }
 }
 
 #define:{
@@ -434,11 +432,11 @@
 }body:{
     Check if all values in the list are #atomo:True.
 
-    #example:({
+    #example:{
         [1 == 1, $a == $a] and
         [1 == 1, $a == $b] and
         [] and
-    })
+    }
 }
 
 #define:{
@@ -448,12 +446,12 @@
 }body:{
     Check if any values in the list are #atomo:True.
 
-    #example:({
+    #example:{
         [1 == 1, $a == $a] or
         [1 == 1, $a == $b] or
         [1 == 2, $a == $c] or
         [] or
-    })
+    }
 }
 
 #define:{
@@ -463,10 +461,10 @@
 }body:{
     Check if #atomo:v is a member of the list #atomo:l.
 
-    #example:({
+    #example:{
         "abc" contains?: $a
         "abc" contains?: $d
-    })
+    }
 }
 
 #define:{
@@ -486,9 +484,9 @@
 }body:{
     Efficiently generate a list from the range #atomo:start to #atomo:end, inclusive, by adding #atomo:diff to each integer.
 
-    #example:({
+    #example:{
         0 to: 5 by: 2
-    })
+    }
 }
 
 #define:{
@@ -517,10 +515,10 @@
 }body:{
     Efficiently generate a sequence of integers between #atomo:start and #atomo:end, inclusive.
 
-    #example:({
+    #example:{
         0 .. 5
         5 .. 0
-    })
+    }
 }
 
 #define:{
@@ -531,10 +529,10 @@
 }body:{
     Efficiently generate a sequence of integers between #atomo:start and #atomo:end, exclusive.
 
-    #example:({
+    #example:{
         0 ... 5
         5 ... 0
-    })
+    }
 }
 
 #define:{
@@ -544,10 +542,10 @@
 }body:{
     Pushes a value onto the end of a list.
 
-    #example:({
+    #example:{
         a = [1, 2, 3]
         a << 4
-    })
+    }
 }
 
 #define:{
@@ -557,10 +555,10 @@
 }body:{
     Pushes a value onto the front of a list. Same as #atomo:(.).
 
-    #example:({
+    #example:{
         a = [1, 2, 3]
         4 >> a
-    })
+    }
 }
 
 #define:{
@@ -571,11 +569,11 @@
 }body:{
     Split a list into sublists, separated by #atomo:delimiter. Note that strict equality (i.e. #atomo:(equals?:)) is used for matching the delimiter.
 
-    #example:({
+    #example:{
         [0, 1, 1, 2, 1, 1, 3] split: [1, 1]
         [0, 1, 1] split: [1, 1]
         [] split: [1, 1]
-    })
+    }
 }
 
 #define:{
@@ -585,11 +583,11 @@
 }body:{
     Split #atomo:l into sublists, breaking on every occurrence of #atomo:o. Also uses strict equality.
 
-    #example:({
+    #example:{
         [0, 1, 2, 1, 3] split-on: 1
         [0, 1] split-on: 1
         [] split-on: 1
-    })
+    }
 }
 
 #define:{
@@ -599,10 +597,10 @@
 }body:{
     Returns a sorted list of #atomo:l's values, using the mergesort algorithm. It does this by sending #atomo:(>) to determine the larger between two values.
 
-    #example:({
+    #example:{
         [1, 6, 3, 0, 10] sort
         [$z, $f, $x] sort
-    })
+    }
 }
 
 #define:{
@@ -613,8 +611,8 @@
 }body:{
     Returns a sorted list of #atomo:l's values, using the mergesort algorithm. #atomo:compare, when #atomo:(call:)ed with two values in #atomo:l, should return #atomo:True if the first is greater than the second, and #atomo:False otherwise.
 
-    #example:({
+    #example:{
         [1, 6, 3, 0, 10] sort-by: @>
         [1, 6, 3, 0, 10] sort-by: @<
-    })
+    }
 }

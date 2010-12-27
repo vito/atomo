@@ -13,7 +13,7 @@ Atomo's whitespace indentation rules are similar to Haskell's - they are not as 
 
 Using significant whitespace, this block:
 
-#verbatim:{
+#atomo:{
   { "hi" print
     goodbye
     2 + 2
@@ -22,16 +22,13 @@ Using significant whitespace, this block:
 
 is equivalent to:
 
-#atomo-segment:({
-  { "hi" print
-    goodbye
-    2 + 2
-  } call
-})
+#atomo:{
+  { "hi" print; goodbye; 2 + 2 } call
+}
 
 Two spaces for indentation is highly recommended, as it commonly aligns things perfectly on one column. For example, a block's arguments, its contents, and the message sent to the block all end up on the same column:
 
-#verbatim:{
+#atomo:{
   { foo |
     do-something: foo
     foo * 2
@@ -46,7 +43,7 @@ Using this convention you also avoid stray closing braces, which would be common
 
 Don't do this:
 
-#verbatim:{
+#atomo:{
   foo := [1, 2, 3] map: { n |
     -- ...
   }
@@ -56,7 +53,7 @@ as it indicates the final closing brace is somehow related to #atomo:foo, when r
 
 Whitespace can also be used for chained message sends:
 
-#verbatim:{
+#atomo:{
   something
     foo
     (+ 2)
@@ -65,16 +62,11 @@ Whitespace can also be used for chained message sends:
 
 Which is parsed as:
 
-#atomo-segment:({
-  something
-    foo
-    (+ 2)
-    sqrt
-})
+#atomo:{ something foo (+ 2) sqrt }
 
 Multiple-keyword messages can also be continued via indentation:
 
-#verbatim:{
+#atomo:{
   if: x
     then: { y }
     else: { z }
@@ -82,12 +74,12 @@ Multiple-keyword messages can also be continued via indentation:
 
 Note that to continue the keyword message the next keywords must be indented more than the initial keyword.
 
-#verbatim:{
+#atomo:{
   0 up-to: 5
       do: { n | n print } -- OK; "do:" is indented more than "up-to:"
 
   something up-to: 5
-      do: { n | n print } -- NOT OK; "do:" is deindented
+    do: { n | n print } -- NOT OK; "do:" is deindented
 
   something up-to: 5
               do: { n | n print } -- OK
@@ -97,9 +89,9 @@ Note that to continue the keyword message the next keywords must be indented mor
       do: { n | n print } -- OK
 }
 
-Any whitespace following #atomo:(:=) or #atomo:(=) is skipped, so you can start a new line and indent from there if you like:
+Any whitespace following an operator or keyword is skipped, so you can start a new line and indent from there if you like:
 
-#verbatim:{
+#atomo:{
   x foo =
     { a = 1
       a + 1
@@ -108,12 +100,7 @@ Any whitespace following #atomo:(:=) or #atomo:(=) is skipped, so you can start 
 
 Which is parsed as:
 
-#atomo-segment:({
-  x foo =
-    { a = 1
-      a + 1
-    } call
-})
+#atomo:{ x foo = { a = 1; a + 1 } call }
 
 
 #section:{Comments}
@@ -133,7 +120,7 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
   #item:{characters}is:{
     #atomo:$a, #atomo:$b, #atomo:$\n, #atomo:$\1234 (unicode number)...
 
-    Escape codes supported:
+    Escape codes supported (in addition to numeric escapes):
     
     #verbatim:{
       ascii-2:
@@ -159,13 +146,13 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
       #item:{quoted}is:{
         An apostrophe (#code:{'}) before an expression "quotes" it, turning it into an expression literal:
         
-        #example-segment:({
+        #example-segment:{
           '1
           'a
           '(1 + 1)
           ''(1 + b)
           '{ a = 1; a + 1 }
-        })
+        }
       }
 
       #item:{quasiquoted}is:{
@@ -173,19 +160,19 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
 
         These can be nested infinitely; unquoting works inside of aggregate expressions such as lists, blocks, and definitions.
 
-        #example:({
+        #example:{
           `1
           `(1 + ~(2 + 2))
           ``(1 + ~~(2 + 2))
           `{ a = ~(2 + 2) }
           `[1, 2, ~(1 + 2)]
-        })
+        }
 
         Note that unquoting too far throws an #atomo:(@out-of-quote:) error.
 
-        #example:({
+        #example:{
           `~~(2 + 2)
-        })
+        }
       }
     }
   }
@@ -195,25 +182,25 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
 
     For single-messages, a particle always looks like this:
 
-    #atomo-segment:({
+    #atomo:{
       @foo
       @fizz-buzz
-    })
+    }
 
     Keyword particles are more complex, and may contain placeholders (#code:{_}):
 
-    #atomo-segment:({
+    #atomo:{
       @(print: "hi!")
       @(+ 2)
       @(from: _ to: 3)
-    })
+    }
 
     Additionally, the value parts may be omitted entirely, leaving only selector names:
 
-    #atomo-segment:({
+    #atomo:{
       @from:to:
       @+
-    })
+    }
 
     These are equivalent to #code:{@(from: _ to: _)} and #code:{@(+ _)}, respectively.
 
@@ -227,7 +214,7 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
     
     A block may have arguments, which are pattern-matches separated by spaces. The arguments are placed after the opening brace, and are terminated by a pipe (#code:{|}), followed by the block's contents (if any).
 
-    #example-segment:({
+    #example-segment:{
       { 1 + 1 }
       { a | a * 2 }
       { }
@@ -235,7 +222,7 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
       { a b | }
       { "hi" print; another; 6 * 7 }
       { a (b . c) | x; y; z }
-    })
+    }
 
     Block parsing is whitespace-aware; see #reference:{General Rules}.
   }
@@ -243,11 +230,11 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
   #item:{scope}is:{
     #atomo:this always refers to the current toplevel object.
 
-    #example:({
+    #example:{
       { a = 1; this } call
       x = this
       { a = 1; @(them: x me: this) } call
-    })
+    }
   }
 }
 
@@ -262,17 +249,17 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
   #item:{#atomo:_, #atomo:foo, ...}is:{
     Possibly-named wildcard matches.
 
-    #example:({
+    #example:{
       _ = 1
       a = 2
       a
-    })
+    }
   }
 
   #item:{#atomo:1, #atomo:2/3, #atomo:4.0, #atomo:$a, #atomo:True, #atomo:False, #atomo:"foo", ...}is:{
     Primitive literal values match only on themselves.
 
-    #example:({
+    #example:{
       1 = 1
       1 = 2
       $a = $a
@@ -280,43 +267,43 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
       4.0 = 4.0
       4.0 = 4.000000000001
       "foo" = "foo"
-    })
+    }
   }
 
   #item:{#atomo:(foo: pattern)}is:{
     A named pattern-match. Matches #atomo:pattern, binding the value it matches to #atomo:foo.
 
-    #example:({
+    #example:{
       (foo: 2) = 2
       foo
       (foo: 2) = 1
-    })
+    }
   }
 
   #item:{#atomo:(head . tail)}is:{
     Matches a non-empty list, matching its first value on #atomo:head and the rest of it on #atomo:tail.
 
-    #example:({
+    #example:{
       (x . xs) = [1, 2, 3]
       x
       xs
-    })
+    }
   }
 
   #item:{#atomo:[], #atomo:[pattern, pattern-2], ...}is:{
     Matches a list of fixed length, recursively matching each #atomo:pattern on each of its values.
 
-    #example:({
+    #example:{
       [a, b] = [1, 2]
       [c, 4] = [3, 4]
       [a, b, c]
-    })
+    }
   }
 
   #item:{#atomo:@foo, #atomo:@(foo: x), #atomo:@(foo: x bar: _), ...}is:{
     Matches a particle value. If it's a single particle, it does regular equality checking; if it's a keyword particle, it recursively pattern-matches the particle's values. A wildcard in a particle pattern matches placeholders, but no other pattern will.
 
-    #example:({
+    #example:{
       @foo = @foo
       @foo = @bar
       @(foo: x) = @(foo: 2)
@@ -324,18 +311,18 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
       @(foo: _) = @(foo: _)
       @(foo: _) = @(foo: 2)
       @(foo: 2) = @(foo: _)
-    })
+    }
   }
 
   #item:{#atomo:`a, #atomo:`(1 + ~b), ...}is:{
     Matches expression values recursively. Unquotes serve as named wildcard patterns, with the same recursive semantics as quasiquotation.
 
-    #example:({
+    #example:{
       `a = `a
       `(1 + ~b) = '(1 + 2)
       ``(1 + ~~c) = ``(1 + ~3)
       [b, c]
-    })
+    }
   }
 
   #item:{#atomo:(-> pattern)}is:{
@@ -345,32 +332,32 @@ The #atomo:(=) operator macro performs pattern-matching; the left-hand side is t
 
     NOTE: This is only really useful in #atomo:(match:) and in message patterns; when used with #atomo:(=) the objects aren't evaluated.
 
-    #example:({
+    #example:{
       1 match: { (-> Double) -> @nope; (-> Integer) -> @yep }
       [1, 2] match: { (-> [a, b]) -> @(yep: [b, a]) }
-    })
+    }
   }
 
   #item:{#atomo:(== pattern)}is:{
     Matches with strict equality only. This is different from regular matching as it doesn't follow delegates to see if objects match.
 
-    #example:({
+    #example:{
       X = Object clone
       X match: { (== X) -> @yep }
       X clone match: { (== X) -> @yep; _ -> @nope }
-    })
+    }
   }
 
   The #atomo:(=) operator can also be used to define methods, but its use is more limited than #atomo:(:=) in that it can only insert slots on objects; it cannot pattern-match message roles, and the right-hand side is always pre-evaluated.
 
-  #example:({
+  #example:{
     a = Object clone
     a foo: self = 10
     a foo: self
     a foo: { @ok } spawn
     a foo: self = "Hello, world!" print
     a foo: self
-  })
+  }
 }
 
 
@@ -380,20 +367,20 @@ Method definitions use the #atomo:(:=) operator macro; the left-hand side is a "
 
 Message patterns can contain the patterns listed above as their roles, with the sole exception that capitalized identifiers in role patterns are assumed to be objects.
 
-#example-segment:({
+#example-segment:{
   Foo bar := 1
   Foo bar: baz := 1
-})
+}
 
 Above, the first definition is placed on the particular object #atomo:Foo (assuming it's defined), while the second definition is placed on the #atomo:Foo object as well as #atomo:Object (the second role, a named wildcard), binding the second role value as #atomo:baz.
 
 To define on a particular object that isn't capitalized, wrap it in a block:
 
-#example-segment:({
+#example-segment:{
   foo bar := 1
   { foo } bar := 2
   { "hi" print; 1 + 1 } bar: Foo := 3
-})
+}
 
 As in the first example, #atomo:(foo bar) matches any object, while #atomo:({ foo } bar) is only defined on #atomo:foo (the result of the block's execution). #atomo:({ 1 + 1 } bar: Foo) is defined on #atomo:2 and #atomo:Foo.
 
@@ -425,30 +412,30 @@ Atomo's dispatch syntax is similar to the Smalltalk family, naming conventions a
 
 To dispatch a single message to some target, the message name is placed after the target value, separated by whitespace.
 
-#example-segment:({
+#example-segment:{
   1 foo
   { 1 + 1 } call
-})
+}
 
 If there is no "target" for the message, the implied target is #atomo:this (the toplevel object representing the current scope).
 
 Keyword messages are slightly different in that they have more than one target, each separated by a "keyword" which is part of one whole message. Like single messages, if there is no initial role, #atomo:this is assumed.
 
-#example:({
+#example:{
   3 divides?: 12
   1 + 2
   (0 .. 10) from: 3 to: 5
-})
+}
 
 Keyword message dispatch normally requires parentheses to chain multiple message sends, starting from the start of the chain to the end of the current dispatch. This leads to a lot of jumping around whenever you want to add another keyword dispatch:
 
-#verbatim:{
+#atomo:{
   (((1 x: a) y: b) z: c) foo
 }
 
 Atomo remedies this by allowing parentheses to be used inside the chain of sends itself, effectively turning keyword message dispatch into something that's as easily chained as single messages:
 
-#verbatim:{
+#atomo:{
   1 (x: a) (y: b) (z: c) foo
 }
 
@@ -465,53 +452,51 @@ A macro's role patterns are as follows:
   #item:{#atomo:_, #atomo:foo, ...}is:{
     Possibly-named wildcard matches.
 
-    #example:({
+    #example:{
       macro (x squared) `(~x * ~x)
       '(42 squared) expand
       42 squared
-    })
+    }
   }
 
   #item:{#atomo:(foo: pattern)}is:{
     A named pattern-match. Matches #atomo:pattern, binding the expression it matches to #atomo:foo.
 
-    #interaction:({
+    #interaction:{
       macro ((x: Primitive) square-root) `(~x ^ (1.0 / 2.0))
       2 square-root
       [1] square-root
-    })
+    }
   }
 
   #item:{#atomo:Dispatch, #atomo:Operator, #atomo:Primitive, #atomo:Block, #atomo:List, #atomo:Macro, #atomo:Particle, #atomo:Top, #atomo:Quote, #atomo:Unquote}is:{
     Match on the type of the expression.
 
-    #interaction:({
+    #interaction:{
       macro (Top foo) `10
       foo
       $a foo
-    })
+    }
   }
 
   #item:{#atomo:(`a), #atomo:(`(1 + ~b)), ...}is:{
     Matches expression recursively. Unquotes serve as named wildcard patterns, with the same recursive semantics as quasiquotation.
 
-    #example:({
+    #example:{
       macro (`(~a -> ~b) from) a
       (1 -> $a) from
       (1 + 2) from
-    })
+    }
   }
 
   The entire Atomo runtime is usable during macro expansion; you can do whatever you want in a macro defintion, so long as the macro's result is an #atomo:Expression value.
 
   Another keyword is provided, which evaluates an expression as soon as the parser runs into it; often for use with macros. It is aptly named #code:{for-macro}.
 
-  #example-segment:({
+  #example-segment:{
     for-macro 1 print
     for-macro Foo = Object clone
-  })
-
-  You should only use #code:{for-macro} at the very top of your parse tree - if it's in a block or some other expression, it will likely get evaluated more than once.
+  }
 }
 
 
@@ -529,11 +514,11 @@ You can control how Atomo parses binary operators like #atomo:(+) and #atomo:(->
 
 An omitted associativity implies left, and an omitted precedence implies 5 (the default). One of the two must be provided.
 
-#example-segment:({
+#example-segment:{
   operator right 0 ->
   operator right 8 ^
   operator 7 % * /
   operator 6 + -
-})
+}
 
 Operator expressions, when evaluated, just return #atomo:@ok.

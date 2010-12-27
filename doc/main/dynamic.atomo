@@ -12,11 +12,11 @@ The usual convention of using #code:{*earmuffs*} for dynamic variable names is f
 
   If the dynamic variable already exists, it is replaced.
 
-  #example:({
+  #example:{
     define: *foo* as: 10
     *foo* _?
     *foo*
-  })
+  }
 }
 
 #define:{
@@ -25,10 +25,10 @@ The usual convention of using #code:{*earmuffs*} for dynamic variable names is f
 }body:{
   Retrieves the binding for #atomo:name from the dynamic environment.
 
-  #example:({
+  #example:{
     define: *foo* as: 10
     *foo* _?
-  })
+  }
 
   Normally you won't need to do this, since #atomo:(define:as:) defines an accessor for you, so you can just say the name.
 }
@@ -39,11 +39,11 @@ The usual convention of using #code:{*earmuffs*} for dynamic variable names is f
 }body:{
   Updates the most recent binding for #atomo:name as #atomo:value. This cannot replace the root value.
 
-  #example:({
+  #example:{
     define: *foo* as: 0
     with: *foo* as: 1 do: { *foo* =! 2; *foo* }
     *foo* =! 2
-  })
+  }
 }
 
 #define:{
@@ -53,11 +53,11 @@ The usual convention of using #code:{*earmuffs*} for dynamic variable names is f
 }body:{
   Calls #atomo:action with #atomo:name bound as #atomo:binding.
 
-  #example:({
+  #example:{
     define: *foo* as: 0
     with: *foo* as: 1 do: { *foo* }
     *foo*
-  })
+  }
 }
 
 #define:{
@@ -69,12 +69,12 @@ The usual convention of using #code:{*earmuffs*} for dynamic variable names is f
   Calls #atomo:action with the given #atomo:Associations of variables to their new bindings. Expands into multiple #atomo:(with:as:do:) calls.
   Calls #atomo:action with #atomo:name bound as #atomo:binding.
 
-  #example:({
+  #example:{
     define: *foo* as: 0
     define: *bar* as: $a
     with: [*foo* -> 1, *bar* -> $b] do: { [*foo*, *bar*] }
     [*foo*, *bar*]
-  })
+  }
 }
 
 #define:{
@@ -85,9 +85,9 @@ The usual convention of using #code:{*earmuffs*} for dynamic variable names is f
 }body:{
   Similar to #atomo:(with:as:do:), but passes the current value to #atomo:modifier to yield the new binding.
 
-  #example:({
+  #example:{
     define: *foo* as: 0
     modify: *foo* as: @(+ 1) do: { *foo* }
     *foo*
-  })
+  }
 }

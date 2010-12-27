@@ -5,27 +5,27 @@
     > Object
 }body:{
     Blocks are the bread and butter of Atomo. They represent chunks of unevaluated code - sort of like lists of expressions, but with a reference to the context in which they were evaluated.
-    
+
     They are first-class values and can be passed around, evaluated, torn apart, created programmatically, sent between processes, etc.
 
-    #example-segment:({
+    #example-segment:{
         { "hi" print; @ok }
         { a | a + 2 }
         {}
-    })
+    }
 }
 
 #define:{
-    Block new: expressions
+    Block: expressions
     | expressions is-a?: List
     > Block
 }body:{
-    Calls #atomo:(new:in:) with its sender as the context.
+    Calls #hl:{new:in:} with its sender as the context.
 
-    #example:({
+    #example:{
         orig = { a = 1; a + 1 }
-        (Block new: orig contents) call
-    })
+        (Block: orig contents) call
+    }
 }
 
 #define:{
@@ -33,14 +33,14 @@
     | expressions is-a?: List
     > Block
 }body:{
-    Returns a new #atomo:Block with #atomo:expressions as its contents and #atomo:context as its context.
+    Returns a new #hl:{Block} with #hl:{expressions} as its contents and #hl:{context} as its context.
 
-    #example:({
+    #example:{
         orig = { a = 1; a + 1 }
         Block new: orig contents in: this
         adder = { * 7 }
         (Block new: adder contents in: 6) call
-    })
+    }
 }
 
 #define:{
@@ -50,14 +50,14 @@
 }body:{
     Returns the result of evaluating each expression in #atomo:b, in order, with a new toplevel object that delegates to the block's context. #atomo:(call)ing a block does not affect its context (unless it is a block returned by #atomo:in-context).
 
-    Sending #atomo:call to an empty block raises a #atomo:(@no-expressions) error.
+    Sending #hl:{call} to an empty block raises a #hl:{@no-expressions} error.
 
-    #example:({
+    #example:{
         a = 42
         { a = 1; a + 1 } call
         a
         {} call
-    })
+    }
 }
 
 #define:{
@@ -68,22 +68,22 @@
 }body:{
     Like #atomo:call, but passes some extra arguments along to #atomo:b. Any number of arguments may be passed to the block; it can use however many it wants.
 
-    Sending #atomo:(call:) to an empty block raises a #atomo:(@no-expressions) error.
+    Sending #hl:{call:} to an empty block raises a #hl:{@no-expressions} error.
 
-    #example:({
+    #example:{
         { a b | a + b } call: [1, 4]
         { a | a + 1 } call: [1]
         { 1 + 1 } call: [42]
         {} call: [42]
-    })
+    }
 
     Note that the arguments also do not affect the outer scope:
 
-    #example:({
+    #example:{
         a = 42
         { a | a + 1 } call: [10]
         a
-    })
+    }
 }
 
 #define:{
@@ -95,23 +95,19 @@
 
     Note that #atomo:(v)'s methods take priority over the block's context.
 
-    #example:({
+    #example:{
         True join: { not }
         1 join: { + 2 }
         x = 42
         1 join: { + x }
-    })
+    }
 
     This can be useful for executing a block in the current scope:
 
-    #example:({
+    #example:{
         blk = { x = 1; x + a }
-
-        Object clone do: {
-            a = 42
-            res = join: blk
-        }
-    })
+        Object clone do: { a = 42; res = join: blk }
+    }
 }
 
 #define:{
@@ -124,9 +120,9 @@
 
     Note that #atomo:(v)'s methods take priority over both the arguments and the block's context.
 
-    #example:({
+    #example:{
         1 join: { a | + a } with: [2]
-    })
+    }
 }
 
 #define:{
@@ -136,12 +132,9 @@
 }body:{
     Like #atomo:(join:), but returns #atomo:v. Handy for quick object creation.
 
-    #example:({
-        X = Object clone do: {
-            a = 1
-            b = 2
-        }
-    })
+    #example:{
+        X = Object clone do: { a = 1; b = 2 }
+    }
 }
 
 #define:{
@@ -152,13 +145,10 @@
 }body:{
     Like #atomo:(do:), but with arguments passed to the block.
 
-    #example:({
-        X = Object clone do: { a |
-            x = a
-            y := a + 1
-        } with: [1]
+    #example:{
+        X = Object clone do: { a | x = a; y := a + 1 } with: [1]
         X y
-    })
+    }
 }
 
 
@@ -169,9 +159,9 @@
 }body:{
     Returns a list of the expressions contained in #atomo:b.
 
-    #example:({
+    #example:{
         { a = 1; a + 1 } contents
-    })
+    }
 }
 
 #define:{
@@ -181,10 +171,10 @@
 }body:{
     Returns the context that the #atomo:b was evaluated in.
 
-    #example:({
+    #example:{
         a = 1
         {} context a
-    })
+    }
 }
 
 #define:{
@@ -194,9 +184,9 @@
 }body:{
     Returns a list of the block's arguments, which are #atomo:(Pattern)s.
 
-    #example:({
+    #example:{
         { a (x . _) 0 | a + x } arguments
-    })
+    }
 }
 
 #define:{
@@ -206,13 +196,13 @@
 }body:{
     Returns an object that delegates to the original block, #atomo:b, but has its own #atomo:call and #atomo:(call:) methods defined. These overrides evaluate the block in its original scope, as opposed to lexically, via #atomo:(join:) and #atomo:(join:with:).
 
-    #example:({
+    #example:{
         a = 42
         { a = 1; a } call
         a
         { a = 1; a } in-context call
         a
-    })
+    }
 }
 
 #define:{
@@ -225,10 +215,10 @@
 }body:{
     Calls #atomo:b with each integer in the range from #atomo:start to #atomo:end inclusive, by adding #atomo:diff to the current number.
 
-    #example:({
+    #example:{
         0 to: 5 by: 2 do: { n | ("Counting up... " .. n show) print }
         5 to: 0 by: -1 do: { n | ("Counting down... " .. n show) print }
-    })
+    }
 }
 
 #define:{
@@ -239,9 +229,9 @@
 }body:{
     Alias for #atomo:(1 up-to: n do: b in-context).
 
-    #example:({
+    #example:{
         5 times: { "Odelay!" print }
-    })
+    }
 }
 
 #define:{

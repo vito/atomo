@@ -97,9 +97,9 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 }body:{
     Alias for #atomo:(top use: name version: { True }) (that is, a constraint always yielding #atomo:True).
 
-    #example-segment:({
+    #example-segment:{
         use: "ehtml"
-    })
+    }
 }
 
 #define:{
@@ -112,9 +112,9 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 
     Note that this should be called after #atomo:(Eco initialize), which filters out versions that do not satisfy the package's dependency constraints.
 
-    #example-segment:({
+    #example-segment:{
         use: "ecss" version: { < (0 . 2) }
-    })
+    }
 
     Four possible exceptions may be raised:
 
@@ -223,14 +223,14 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 
 Proper comparable version numbers. All of the usual suspects for anything that's comparable are implemented: #atomo:(==), #atomo:(>), #atomo:(<), #atomo:(>=), and #atomo:(<=). These methods are defined for all combinations of #atomo:Version and #atomo:Integer.
 
-#example:({
+#example:{
     (0 . 1) < (0 . 2)
     2 > (1 . 9)
     (0 . 1) <= (0 . 1 . 1)
     (0 . 1) == (0 . 1)
     (0 . 1) == (0 . 1 . 0)
     2 == (2 . 0)
-})
+}
 
 Note that the parentheses used in version constructors below are not necessary; they are merely here because the documentation scanner parses Atomo source and pretty-prints it, which makes the parentheses explicit.
 
@@ -249,10 +249,10 @@ Note that the parentheses used in version constructors below are not necessary; 
 }body:{
     The primary #atomo:Version constructor.
 
-    #example:({
+    #example:{
         0 . 1
         1 . 2 . 0 . 3
-    })
+    }
 }
 
 #define:{
@@ -262,26 +262,26 @@ Note that the parentheses used in version constructors below are not necessary; 
 }body:{
     Converts a #atomo:Version to the typical textual representation of version numbers.
 
-    #example:({
+    #example:{
         (0 . 1 . 2) as: String
-    })
+    }
 }
 
 #define:{
-    n as: Version
+    n to: Version
     | n is-a?: Integer || n is-a?: String
     > Version
 }body:{
     Conversion from #atomo:String is the converse of #atomo:(Version as: String).
 
-    #example:({
-        "0.1.2" as: Version
-        (0 . 1 . 2) (as: String) (as: Version)
-    })
+    #example:{
+        "0.1.2" to: Version
+        (0 . 1 . 2) (as: String) (to: Version)
+    }
 
     Conversion from #atomo:Integer simply uses it as #atomo:major and #atomo:0 as #atomo:minor.
 
-    #example:({
+    #example:{
         1 as: Version
-    })
+    }
 }
