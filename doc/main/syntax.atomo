@@ -137,7 +137,7 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
 
   #item:{strings}is:{#atomo:"", #atomo:"foo", #atomo:"fizz \"buzz\"", containing the above-mentioned escape codes}
 
-  #item:{boolean}is:{#hl:{True} and #atomo:False}
+  #item:{boolean}is:{#hl:{True} and #hl:{False}}
 
   #item:{lists}is:{#atomo:[], #atomo:[1, 2], #atomo:[1, $2, "three"], ...}
 
@@ -387,16 +387,16 @@ As in the first example, #hl:{foo bar} matches any object, while #hl:{{ foo } ba
 The targets implied by the respective patterns in a definition are as follows:
 
 #definitions:{
-  #item:{#hl:{_}, #hl:{foo}, #hl:{bar}, ...}is:{#atomo:Object}
-  #item:{#hl:{1}, #hl:{2}, ...}is:{#atomo:Integer}
-  #item:{#atomo:$a, #atomo:$b, ...}is:{#atomo:Char}
-  #item:{#hl:{True}, #atomo:False}is:{#atomo:Boolean}
-  #item:{#hl:{1}.0, #hl:{2}.0, ...}is:{#atomo:Double}
-  #item:{#atomo:1/2, #atomo:3/4, ...}is:{#atomo:Rational}
-  #item:{#atomo:"", #atomo:"foo", ...}is:{#atomo:String}
-  #item:{#hl:{head . tail}, #atomo:[], #atomo:[pattern, pattern-2], ...}is:{#atomo:List}
-  #item:{#atomo:`x, #atomo:`(1 + ~y), ...}is:{#atomo:Expression}
-  #item:{#atomo:@foo, #atomo:@(bar: 2 baz: _), ...}is:{#atomo:Particle}
+  #item:{#hl:{_}, #hl:{foo}, #hl:{bar}, ...}is:{#hl:{Object}}
+  #item:{#hl:{1}, #hl:{2}, ...}is:{#hl:{Integer}}
+  #item:{#atomo:$a, #atomo:$b, ...}is:{#hl:{Char}}
+  #item:{#hl:{True}, #hl:{False}}is:{#hl:{Boolean}}
+  #item:{#hl:{1}.0, #hl:{2}.0, ...}is:{#hl:{Double}}
+  #item:{#atomo:1/2, #atomo:3/4, ...}is:{#hl:{Rational}}
+  #item:{#atomo:"", #atomo:"foo", ...}is:{#hl:{String}}
+  #item:{#hl:{head . tail}, #atomo:[], #atomo:[pattern, pattern-2], ...}is:{#hl:{List}}
+  #item:{#atomo:`x, #atomo:`(1 + ~y), ...}is:{#hl:{Expression}}
+  #item:{#atomo:@foo, #atomo:@(bar: 2 baz: _), ...}is:{#hl:{Particle}}
   #item:{#hl:{foo: pattern}}is:{target of #code:{pattern}}
   #item:{#hl:{-> pattern}}is:{target of #code:{pattern}}
   #item:{#hl:{== pattern}}is:{target of #code:{pattern}}
@@ -469,7 +469,7 @@ A macro's role patterns are as follows:
     }
   }
 
-  #item:{#hl:{Dispatch}, #hl:{Operator}, #hl:{Primitive}, #hl:{Block}, #hl:{List}, #hl:{Macro}, #hl:{Particle}, #hl:{Top}, #hl:{Quote}, #atomo:Unquote}is:{
+  #item:{#hl:{Dispatch}, #hl:{Operator}, #hl:{Primitive}, #hl:{Block}, #hl:{List}, #hl:{Macro}, #hl:{Particle}, #hl:{Top}, #hl:{Quote}, #hl:{Unquote}}is:{
     Match on the type of the expression.
 
     #interaction:{
