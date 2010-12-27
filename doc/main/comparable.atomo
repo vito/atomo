@@ -15,7 +15,7 @@ Various comparison operators and methods. All operators have a precedence level 
     a /= b
     > Boolean
 }body:{
-    Inverse of #hl:{==}, i.e. #atomo:((a == b) not).
+    Inverse of #hl:{==}, i.e. #hl:{(a == b) not}.
 }
 
 #define:{

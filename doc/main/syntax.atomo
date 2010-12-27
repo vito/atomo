@@ -204,7 +204,7 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
 
     These are equivalent to #code:{@(from: _ to: _)} and #code:{@(+ _)}, respectively.
 
-    Particles represent messages that are missing the initial role; hence, when you say #atomo:(@(+ 2)), you're representing a message like #hl:{_ + 2}, where #hl:{_} is filled in with a value to form a message like #hl:{1 + 2}.
+    Particles represent messages that are missing the initial role; hence, when you say #hl:{@(+ 2)}, you're representing a message like #hl:{_ + 2}, where #hl:{_} is filled in with a value to form a message like #hl:{1 + 2}.
 
     Note that, at the moment, all particles are missing an initial role. Hence, they are always partial. There is no such thing as #code:{@(2 foo)} or #code:{@(1 + 2)}. While support for that would be trivial (the parser would just need to be updated), there are other implications that need to be considered - for example, when you have a completed #hl:{Particle}, it's essentially a #hl:{Message}, but having the parser determine what you mean when you write #code:{@(2 + 2)} is tricky.
   }
@@ -479,7 +479,7 @@ A macro's role patterns are as follows:
     }
   }
 
-  #item:{#hl:{`a}, #atomo:(`(1 + ~b)), ...}is:{
+  #item:{#hl:{`a}, #hl:{`(1 + ~b)}, ...}is:{
     Matches expression recursively. Unquotes serve as named wildcard patterns, with the same recursive semantics as quasiquotation.
 
     #example:{
