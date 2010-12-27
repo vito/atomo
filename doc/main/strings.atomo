@@ -7,7 +7,7 @@ Strings are immutable, efficient, Unicode sequences of characters.
     | c is-a?: Char
     > String
 }body:{
-    Creates a #atomo:String containing a single character.
+    Creates a #hl:{String} containing a single character.
 
     #example:{
         $a singleton
@@ -19,7 +19,7 @@ Strings are immutable, efficient, Unicode sequences of characters.
     | s is-a?: String
     > List
 }body:{
-    Convert string #atomo:s to a #atomo:List of #hl:{Char}s.
+    Convert string #hl:{s} to a #hl:{List} of #hl:{Char}s.
 
     #example:{
         "foo" as: List
@@ -44,7 +44,7 @@ Strings are immutable, efficient, Unicode sequences of characters.
     | s is-a?: String
     > Boolean
 }body:{
-    Is the string #atomo:s empty?
+    Is the string #hl:{s} empty?
 
     #example:{
         "" empty?
@@ -58,7 +58,7 @@ Strings are immutable, efficient, Unicode sequences of characters.
     | index is-a?: Integer
     > Char
 }body:{
-    Returns the string's character at #atomo:index. If the index is out of bounds, #atomo:@(out-of-bounds: index for-string: s) is raised.
+    Returns the string's character at #hl:{index}. If the index is out of bounds, #atomo:@(out-of-bounds: index for-string: s) is raised.
 
     #example:{
         "abc" at: 1

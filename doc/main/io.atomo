@@ -1,12 +1,12 @@
 #title:{Input & Output}tag:"io"
 
-Atomo uses an I/O system similar to Scheme - methods for reading/writing internally use #atomo:current-input-port or #atomo:current-output-port, which can be overridden via parameterization. Certain methods, e.g. #atomo:print and #atomo:read-line, will act on whatever those parameters are.
+Atomo uses an I/O system similar to Scheme - methods for reading/writing internally use #hl:{current-input-port} or #hl:{current-output-port}, which can be overridden via parameterization. Certain methods, e.g. #hl:{print} and #hl:{read-line}, will act on whatever those parameters are.
 
 #define:{
     Port
     > Object
 }body:{
-    An object to read/write to. Typically has one slot, #atomo:handle, which points to the file descriptor (a Haskell #code:{Handle}).
+    An object to read/write to. Typically has one slot, #hl:{handle}, which points to the file descriptor (a Haskell #code:{Handle}).
 }
 
 #define:{
@@ -15,7 +15,7 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     | [@read, @write, @read-write, @append] contains?: mode
     > Port
 }body:{
-    Open the file #atomo:filename and return a #atomo:Port for performing I/O.
+    Open the file #hl:{filename} and return a #hl:{Port} for performing I/O.
 }
 
 #define:{
@@ -53,7 +53,7 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     | v responds-to?: @(as: String)
     > v
 }body:{
-    Outputs #atomo:(v as: String) to #atomo:p, followed by a linebreak.
+    Outputs #atomo:(v as: String) to #hl:{p}, followed by a linebreak.
 }
 
 #define:{
@@ -62,7 +62,7 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     | v responds-to?: @(as: String)
     > v
 }body:{
-    Outputs #atomo:(v as: String) to #atomo:p.
+    Outputs #atomo:(v as: String) to #hl:{p}.
 }
 
 #define:{
@@ -70,9 +70,9 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     | p is-a?: Port
     > any
 }body:{
-    Reads a primitive value from #atomo:p. A primitive value is an integer, double, character, string, or lists and particles that contain primitive values. For anything else, if the parse is successful it returns it as an #atomo:Expression. This includes blocks an arbitrary paranthesized expressions, or lists/particles containing non-primitives.
+    Reads a primitive value from #hl:{p}. A primitive value is an integer, double, character, string, or lists and particles that contain primitive values. For anything else, if the parse is successful it returns it as an #hl:{Expression}. This includes blocks an arbitrary paranthesized expressions, or lists/particles containing non-primitives.
 
-    The idea is that any value returned by #atomo:read is safe; anything else is returned unevaluated.
+    The idea is that any value returned by #hl:{read} is safe; anything else is returned unevaluated.
 }
 
 #define:{
@@ -80,7 +80,7 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     | p is-a?: Port
     > String
 }body:{
-    Read a line of text from #atomo:p.
+    Read a line of text from #hl:{p}.
 }
 
 #define:{
@@ -96,7 +96,7 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     | p is-a?: Port
     > @ok
 }body:{
-    Flush #atomo:p's output. #atomo:print and #atomo:display automatically perform this task for you.
+    Flush #atomo:p's output. #hl:{print} and #hl:{display} automatically perform this task for you.
 }
 
 #define:{
@@ -104,7 +104,7 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     | p is-a?: Port
     > @ok
 }body:{
-    Close #atomo:p, flushing any output.
+    Close #hl:{p}, flushing any output.
 }
 
 #section:{Parameters}
@@ -113,7 +113,7 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     current-output-port
     > Parameter
 }body:{
-    A #atomo:Parameter containing the default port used for printing output.
+    A #hl:{Parameter} containing the default port used for printing output.
 
     Default is #atomo:(Port standard-output).
 }
@@ -122,7 +122,7 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     current-input-port
     > Parameter
 }body:{
-    A #atomo:Parameter containing the default port used for getting input.
+    A #hl:{Parameter} containing the default port used for getting input.
 
     Default is #atomo:(Port standard-input).
 }
@@ -132,7 +132,7 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     | o responds-to?: @(as: String)
     > o
 }body:{
-    Outputs #atomo:(o as: String) to #atomo:current-output-port, followed by a linebreak.
+    Outputs #atomo:(o as: String) to #hl:{current-output-port}, followed by a linebreak.
 }
 
 #define:{
@@ -140,21 +140,21 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     | o responds-to?: @(as: String)
     > o
 }body:{
-    Outputs #atomo:(o as: String) to #atomo:current-output-port.
+    Outputs #atomo:(o as: String) to #hl:{current-output-port}.
 }
 
 #define:{
     read
     > o
 }body:{
-    Reads an object from #atomo:current-input-port.
+    Reads an object from #hl:{current-input-port}.
 }
 
 #define:{
     read-line
     > String
 }body:{
-    Reads one line of text from #atomo:current-input-port.
+    Reads one line of text from #hl:{current-input-port}.
 }
 
 #define:{
@@ -163,11 +163,11 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     | a is-a?: Block
     > any
 }body:{
-    Parameterize #atomo:current-input-port and execute #atomo:action, returning its result.
+    Parameterize #hl:{current-input-port} and execute #hl:{action}, returning its result.
 
-    If #atomo:p is a #atomo:String, it is considered a filename, and that file is opened for reading. The file is automatically closed after the block's execution.
+    If #hl:{p} is a #hl:{String}, it is considered a filename, and that file is opened for reading. The file is automatically closed after the block's execution.
 
-    If #atomo:p is a #atomo:Port, it is used for input.
+    If #hl:{p} is a #hl:{Port}, it is used for input.
 }
 
 #define:{
@@ -176,10 +176,10 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     | a is-a?: Block
     > any
 }body:{
-    Parameterize #atomo:current-output-port and execute #atomo:action, returning its result.
+    Parameterize #hl:{current-output-port} and execute #hl:{action}, returning its result.
 
-    If #atomo:p is a #atomo:String, it is considered a filename, and that file is opened for writing. The file is created if it doesn't exist, or overwritten if it does. The file is automatically closed after the block's execution.
+    If #hl:{p} is a #hl:{String}, it is considered a filename, and that file is opened for writing. The file is created if it doesn't exist, or overwritten if it does. The file is automatically closed after the block's execution.
 
-    If #atomo:p is a #atomo:Port, it is used for output.
+    If #hl:{p} is a #hl:{Port}, it is used for output.
 }
 

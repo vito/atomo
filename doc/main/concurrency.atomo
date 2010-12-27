@@ -13,7 +13,7 @@ Atomo uses message-passing concurrency akin to Erlang. Processes are very cheap 
     self
     > Process
 }body:{
-    Returns the current #atomo:Process.
+    Returns the current #hl:{Process}.
 
     #example:{
         self
@@ -50,7 +50,7 @@ Atomo uses message-passing concurrency akin to Erlang. Processes are very cheap 
     | l is-a?: List
     > Process
 }body:{
-    Like #atomo:spawn, but executes #atomo:(b call: l) instead.
+    Like #hl:{spawn}, but executes #atomo:(b call: l) instead.
 
     #example:{
         { a | (a + 1) print } spawn: [41]
@@ -62,7 +62,7 @@ Atomo uses message-passing concurrency akin to Erlang. Processes are very cheap 
     | p is-a?: Process
     > p
 }body:{
-    Sends the value #atomo:v to process #atomo:p, and returns #atomo:p.
+    Sends the value #hl:{v} to process #hl:{p}, and returns #hl:{p}.
 
     #example:{
         p = { receive <- @pong } spawn
@@ -76,7 +76,7 @@ Atomo uses message-passing concurrency akin to Erlang. Processes are very cheap 
     | p is-a?: Process
     > @ok
 }body:{
-    Immediately kills the process #atomo:p.
+    Immediately kills the process #hl:{p}.
 }
 
 #define:{

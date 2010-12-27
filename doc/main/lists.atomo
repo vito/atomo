@@ -17,7 +17,7 @@
     | l is-a?: List
     > Integer
 }body:{
-    Returns the length of the list #atomo:l.
+    Returns the length of the list #hl:{l}.
 
     #example:{
         [1, 2, 3] length
@@ -29,7 +29,7 @@
     | l is-a?: List
     > Boolean
 }body:{
-    Is the list #atomo:l empty?
+    Is the list #hl:{l} empty?
 
     #example:{
         [] empty?
@@ -43,7 +43,7 @@
     | index is-a?: Integer
     > any
 }body:{
-    Returns the list's value at #atomo:index. If the index is out of bounds, #atomo:@(out-of-bounds: index for-list: l) is raised.
+    Returns the list's value at #hl:{index}. If the index is out of bounds, #atomo:@(out-of-bounds: index for-list: l) is raised.
 
     #example:{
         [1, 2, 3] at: 1
@@ -57,7 +57,7 @@
     | index is-a?: Integer
     > List
 }body:{
-    Yield a new list with the value at #atomo:index replaced with #atomo:v. If the index is out of bounds, #atomo:@(out-of-bounds: index for-list: l) is raised.
+    Yield a new list with the value at #hl:{index} replaced with #hl:{v}. If the index is out of bounds, #atomo:@(out-of-bounds: index for-list: l) is raised.
 
     #example:{
         [1, 2, 3] at: 1 put: 5
@@ -119,7 +119,7 @@
     | end is-a?: Integer
     > List
 }body:{
-    Returns the slice of elements from #atomo:start to #atomo:end of #atomo:l. If the range is invalid, #atomo:@(invalid-range: @(from: start to: end) for-list: l) is raised. A range is invalid if either #atomo:start or #atomo:end are negative, or if either are out of the list's boundaries.
+    Returns the slice of elements from #hl:{start} to #hl:{end} of #hl:{l}. If the range is invalid, #atomo:@(invalid-range: @(from: start to: end) for-list: l) is raised. A range is invalid if either #hl:{start} or #hl:{end} are negative, or if either are out of the list's boundaries.
 
     #example:{
         [1, 2, 3, 4, 5] from: 1 to: 3
@@ -132,7 +132,7 @@
     | n is-a?: Integer
     > List
 }body:{
-    Returns a list of the first #atomo:n values of the list. If #atomo:n is greater than the list's length, it returns as many as it can (i.e., the entire list); the length of the returned list will not always be #atomo:n.
+    Returns a list of the first #hl:{n} values of the list. If #hl:{n} is greater than the list's length, it returns as many as it can (i.e., the entire list); the length of the returned list will not always be #hl:{n}.
 
     #example:{
         [1, 2, 3, 4, 5] take: 2
@@ -146,7 +146,7 @@
     | n is-a?: Integer
     > List
 }body:{
-    Returns a list of the values after #atomo:n values have been dropped from the start of the list. If #atomo:n is greater than the list's length, it returns an empty list.
+    Returns a list of the values after #hl:{n} values have been dropped from the start of the list. If #hl:{n} is greater than the list's length, it returns an empty list.
 
     #example:{
         [1, 2, 3, 4, 5] drop: 2
@@ -159,7 +159,7 @@
     | n is-a?: Integer
     > List
 }body:{
-    Returns a list containing #atomo:v replicated #atomo:n times.
+    Returns a list containing #hl:{v} replicated #hl:{n} times.
 
     #example:{
         "Odelay!" replicate: 5
@@ -172,7 +172,7 @@
     | n is-a?: Integer
     > List
 }body:{
-    Returns a list containing the results of #atomo:n #hl:{call}s of #atomo:b.
+    Returns a list containing the results of #hl:{n} #hl:{call}s of #hl:{b}.
 
     #example:{
         with-input-from: "doc/main/lists.atomo" do: { { read-line } repeat: 3 }
@@ -187,7 +187,7 @@
     | b is-a?: List
     > List
 }body:{
-    Appends the two lists #atomo:a and #atomo:b, returning a new list.
+    Appends the two lists #hl:{a} and #hl:{b}, returning a new list.
 
     #example:{
         [1, 2, 3] .. [4, 5, 6]
@@ -200,7 +200,7 @@
     | l is-a?: List
     > List
 }body:{
-    Returns a new list, with all values of #atomo:l, in reversed order.
+    Returns a new list, with all values of #hl:{l}, in reversed order.
 
     #example:{
         [1, 2, 3] reverse
@@ -213,7 +213,7 @@
     | a responds-to?: @call:
     > List
 }body:{
-    Returns a new list, with #hl:{call:} sent to #atomo:a with each value in #atomo:l.
+    Returns a new list, with #hl:{call:} sent to #hl:{a} with each value in #hl:{l}.
 
     #example:{
         [1, 2, 3] map: { n | n + 1 }
@@ -237,7 +237,7 @@
     | a responds-to?: @call:
     > List
 }body:{
-    "Zips" up the two lists #atomo:x and #atomo:y but calling #atomo:a with the respective values of each list.
+    "Zips" up the two lists #hl:{x} and #hl:{y} but calling #hl:{a} with the respective values of each list.
 
     The list it returns is as long as the shorter list.
 
@@ -253,7 +253,7 @@
     | p responds-to?: @call:
     > List
 }body:{
-    Takes values from list #atomo:l while #atomo:p called on them yields #atomo:True.
+    Takes values from list #hl:{l} while #hl:{p} called on them yields #hl:{True}.
 
     #example:{
         [1, 3, 4, 5, 6] take-while: @odd?
@@ -266,7 +266,7 @@
     | p responds-to?: @call:
     > List
 }body:{
-    Removes values from list #atomo:l while #atomo:p called on them yields #atomo:True, returning a list of the remaining values.
+    Removes values from list #hl:{l} while #hl:{p} called on them yields #hl:{True}, returning a list of the remaining values.
 
     #example:{
         [1, 3, 4, 5, 6] drop-while: @odd?
@@ -279,7 +279,7 @@
     | p responds-to?: @call:
     > List
 }body:{
-    Returns a list of all values in #atomo:l that satisfy the predicate #atomo:p.
+    Returns a list of all values in #hl:{l} that satisfy the predicate #hl:{p}.
 
     #example:{
         [1, 2, 3, 4, 5] filter: @odd?
@@ -306,7 +306,7 @@
     | b responds-to?: @call:
     > any
 }body:{
-    Reduces the list to a single value by "folding" over it, with #atomo:v as the initial value.
+    Reduces the list to a single value by "folding" over it, with #hl:{v} as the initial value.
 
     #example:{
         [1, 2, 3, 4, 5] reduce: @*
@@ -350,7 +350,7 @@
     | l is-a?: List
     > any
 }body:{
-    Reduces a list with #atomo:(+) and #atomo:0.
+    Reduces a list with #atomo:(+) and #hl:{0}.
 
     #example:{
         [1, 2, 3] sum
@@ -363,7 +363,7 @@
     | l is-a?: List
     > any
 }body:{
-    Reduces a list with #atomo:(*) and #atomo:1.
+    Reduces a list with #atomo:(*) and #hl:{1}.
 
     #example:{
         [1, 2, 3] product
@@ -401,7 +401,7 @@
     | p responds-to?: @call:
     > Boolean
 }body:{
-    Checks if all values in #atomo:l satisfy the predicate #atomo:p.
+    Checks if all values in #hl:{l} satisfy the predicate #hl:{p}.
 
     #example:{
         [1, 3, 5] all?: @odd?
@@ -416,7 +416,7 @@
     | p responds-to?: @call:
     > Boolean
 }body:{
-    Checks if any values in #atomo:l satisfy the predicate #atomo:p.
+    Checks if any values in #hl:{l} satisfy the predicate #hl:{p}.
 
     #example:{
         [2, 3, 6] any?: @odd?
@@ -430,7 +430,7 @@
     | l is-a?: List
     > Boolean
 }body:{
-    Check if all values in the list are #atomo:True.
+    Check if all values in the list are #hl:{True}.
 
     #example:{
         [1 == 1, $a == $a] and
@@ -444,7 +444,7 @@
     | l is-a?: List
     > Boolean
 }body:{
-    Check if any values in the list are #atomo:True.
+    Check if any values in the list are #hl:{True}.
 
     #example:{
         [1 == 1, $a == $a] or
@@ -459,7 +459,7 @@
     | l is-a?: List
     > Boolean
 }body:{
-    Check if #atomo:v is a member of the list #atomo:l.
+    Check if #hl:{v} is a member of the list #hl:{l}.
 
     #example:{
         "abc" contains?: $a
@@ -482,7 +482,7 @@
     | diff is-a?: Integer
     > List
 }body:{
-    Efficiently generate a list from the range #atomo:start to #atomo:end, inclusive, by adding #atomo:diff to each integer.
+    Efficiently generate a list from the range #hl:{start} to #hl:{end}, inclusive, by adding #hl:{diff} to each integer.
 
     #example:{
         0 to: 5 by: 2
@@ -513,7 +513,7 @@
     | end is-a?: Integer
     > List
 }body:{
-    Efficiently generate a sequence of integers between #atomo:start and #atomo:end, inclusive.
+    Efficiently generate a sequence of integers between #hl:{start} and #hl:{end}, inclusive.
 
     #example:{
         0 .. 5
@@ -527,7 +527,7 @@
     | end is-a?: Integer
     > List
 }body:{
-    Efficiently generate a sequence of integers between #atomo:start and #atomo:end, exclusive.
+    Efficiently generate a sequence of integers between #hl:{start} and #hl:{end}, exclusive.
 
     #example:{
         0 ... 5
@@ -567,7 +567,7 @@
     | delimiter is-a?: List
     > List
 }body:{
-    Split a list into sublists, separated by #atomo:delimiter. Note that strict equality (i.e. #atomo:(equals?:)) is used for matching the delimiter.
+    Split a list into sublists, separated by #hl:{delimiter}. Note that strict equality (i.e. #atomo:(equals?:)) is used for matching the delimiter.
 
     #example:{
         [0, 1, 1, 2, 1, 1, 3] split: [1, 1]
@@ -581,7 +581,7 @@
     | l is-a?: List
     > List
 }body:{
-    Split #atomo:l into sublists, breaking on every occurrence of #atomo:o. Also uses strict equality.
+    Split #hl:{l} into sublists, breaking on every occurrence of #hl:{o}. Also uses strict equality.
 
     #example:{
         [0, 1, 2, 1, 3] split-on: 1
@@ -609,7 +609,7 @@
     | compare responds-to?: @call:
     > List
 }body:{
-    Returns a sorted list of #atomo:l's values, using the mergesort algorithm. #atomo:compare, when #hl:{call:}ed with two values in #atomo:l, should return #atomo:True if the first is greater than the second, and #atomo:False otherwise.
+    Returns a sorted list of #atomo:l's values, using the mergesort algorithm. #hl:{compare}, when #hl:{call:}ed with two values in #hl:{l}, should return #hl:{True} if the first is greater than the second, and #hl:{False} otherwise.
 
     #example:{
         [1, 6, 3, 0, 10] sort-by: @>

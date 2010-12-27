@@ -4,7 +4,7 @@
     Number
     > Object
 }body:{
-    Any numeric value. #atomo:Integer and #atomo:Double are both #hl:{Number}s, though presumeably quotients and complex numbers would also be valid.
+    Any numeric value. #hl:{Integer} and #hl:{Double} are both #hl:{Number}s, though presumeably quotients and complex numbers would also be valid.
 }
 
 #define:{
@@ -40,7 +40,7 @@
     | b is-a?: Number
     > Number
 }body:{
-    Adds #atomo:a and #atomo:b. If either are #hl:{Rational}s, it returns a #atomo:Rational; otherwise, if either are #hl:{Double}s, it returns a #atomo:Double.
+    Adds #hl:{a} and #hl:{b}. If either are #hl:{Rational}s, it returns a #atomo:Rational; otherwise, if either are #hl:{Double}s, it returns a #hl:{Double}.
 
     #example:{
       1 + 2
@@ -57,7 +57,7 @@
     | b is-a?: Number
     > Number
 }body:{
-    Subtracts #atomo:b from #atomo:a. If either are #hl:{Rational}s, it returns a #atomo:Rational; otherwise, if either are #hl:{Double}s, it returns a #atomo:Double.
+    Subtracts #hl:{b} from #hl:{a}. If either are #hl:{Rational}s, it returns a #atomo:Rational; otherwise, if either are #hl:{Double}s, it returns a #hl:{Double}.
 
     #example:{
       1 - 2
@@ -74,7 +74,7 @@
     | b is-a?: Number
     > Number
 }body:{
-    Multiplies #atomo:a by #atomo:b. If either are #hl:{Rational}s, it returns a #atomo:Rational; otherwise, if either are #hl:{Double}s, it returns a #atomo:Double.
+    Multiplies #hl:{a} by #hl:{b}. If either are #hl:{Rational}s, it returns a #atomo:Rational; otherwise, if either are #hl:{Double}s, it returns a #hl:{Double}.
 
     #example:{
       1 * 2
@@ -91,7 +91,7 @@
     | b is-a?: Number
     > Number
 }body:{
-    Divides #atomo:a by #atomo:b. If either are #hl:{Rational}s, it returns a #atomo:Rational; otherwise, if either are #hl:{Double}s, it returns a #atomo:Double. If both are #hl:{Integer}s, it performs integer division.
+    Divides #hl:{a} by #hl:{b}. If either are #hl:{Rational}s, it returns a #atomo:Rational; otherwise, if either are #hl:{Double}s, it returns a #hl:{Double}. If both are #hl:{Integer}s, it performs integer division.
 
     #example:{
       1 / 2
@@ -108,7 +108,7 @@
     | b is-a?: Integer || b is-a?: Double
     > Number
 }body:{
-    Raises #atomo:a to the power of #atomo:b. If either are #hl:{Double}s, it returns a #atomo:Double. If #atomo:a is a #atomo:Rational, #atomo:b must be an #atomo:Integer.
+    Raises #hl:{a} to the power of #hl:{b}. If either are #hl:{Double}s, it returns a #hl:{Double}. If #hl:{a} is a #hl:{Rational}, #hl:{b} must be an #hl:{Integer}.
 
     #example:{
       1 ^ 2
@@ -139,7 +139,7 @@
     | b is-a?: Integer
     > Integer
 }body:{
-    Returns the quotient of dividing #atomo:a by #atomo:b.
+    Returns the quotient of dividing #hl:{a} by #hl:{b}.
 
     #example:{
       22 quotient: 5
@@ -152,7 +152,7 @@
     | b is-a?: Integer
     > Integer
 }body:{
-    Returns the remainder of dividing #atomo:a by #atomo:b.
+    Returns the remainder of dividing #hl:{a} by #hl:{b}.
 
     #example:{
       22 remainder: 5
@@ -164,7 +164,7 @@
     | n is-a?: Integer || n is-a?: Double
     > Double
 }body:{
-    Returns the square root of #atomo:n.
+    Returns the square root of #hl:{n}.
 
     #example:{
       5 sqrt
@@ -177,7 +177,7 @@
     | d is-a?: Double
     > Integer
 }body:{
-    Converts #atomo:d into an #atomo:Integer by rounding up.
+    Converts #hl:{d} into an #hl:{Integer} by rounding up.
 
     #example:{
       1.9 ceiling
@@ -191,7 +191,7 @@
     | d is-a?: Double
     > Integer
 }body:{
-    Rounds #atomo:d down or up to the nearest #atomo:Integer.
+    Rounds #hl:{d} down or up to the nearest #hl:{Integer}.
 
     #example:{
       1.9 round
@@ -206,7 +206,7 @@
     | d is-a?: Double
     > Integer
 }body:{
-    Converts #atomo:d into an #atomo:Integer by rounding down.
+    Converts #hl:{d} into an #hl:{Integer} by rounding down.
 
     #example:{
       1.9 floor
@@ -220,7 +220,7 @@
     | n is-a?: Number
     > Number
 }body:{
-    Returns the reciprocal of #atomo:n, returning either a #atomo:Double (if #atomo:n is an #atomo:Integer or #atomo:Double) or a #atomo:Rational (if #atomo:n is a #atomo:Rational).
+    Returns the reciprocal of #hl:{n}, returning either a #hl:{Double} (if #hl:{n} is an #hl:{Integer} or #hl:{Double}) or a #hl:{Rational} (if #hl:{n} is a #hl:{Rational}).
 
     #example:{
       2 reciprocal
@@ -258,7 +258,7 @@
     | r is-a?: Rational
     > Double
 }body:{
-    Approximates #atomo:r as an (inexact) #atomo:Double.
+    Approximates #hl:{r} as an (inexact) #hl:{Double}.
 
     #example:{
       3/4 approximate
@@ -270,7 +270,7 @@
     | n is-a?: Integer || n is-a?: Double
     > Rational
 }body:{
-    Convert an #atomo:Integer or an inexact #atomo:Double into the simplest rational number within #atomo:0.001 of #atomo:n.
+    Convert an #hl:{Integer} or an inexact #hl:{Double} into the simplest rational number within #hl:{0}.001 of #hl:{n}.
 
     #example:{
       5 rationalize
@@ -284,7 +284,7 @@
     | n is-a?: Integer || n is-a?: Double
     > Rational
 }body:{
-    Convert an #atomo:Integer or an inexact #atomo:Double into the simplest rational number within #atomo:epsilon of #atomo:n.
+    Convert an #hl:{Integer} or an inexact #hl:{Double} into the simplest rational number within #hl:{epsilon} of #hl:{n}.
 
     #example:{
       0.1234 rationalize: 1.0
@@ -301,7 +301,7 @@
     | d is-a?: Double
     > Integer
 }body:{
-    Converts #atomo:d into an #atomo:Integer by sending #atomo:floor to it.
+    Converts #hl:{d} into an #hl:{Integer} by sending #hl:{floor} to it.
 
     #example:{
       0.75 as: Integer
@@ -314,7 +314,7 @@
     | d is-a?: Double
     > Rational
 }body:{
-    Converts #atomo:d into a #atomo:Rational by sending #atomo:rationalize to it.
+    Converts #hl:{d} into a #hl:{Rational} by sending #hl:{rationalize} to it.
 
     #example:{
       0.75 as: Rational
@@ -326,7 +326,7 @@
     | i is-a?: Integer
     > Double
 }body:{
-    Converts #atomo:i into a #atomo:Double.
+    Converts #hl:{i} into a #hl:{Double}.
 
     #example:{
       4 as: Double
@@ -338,7 +338,7 @@
     | i is-a?: Integer
     > Rational
 }body:{
-    Converts #atomo:i into a #atomo:Rational.
+    Converts #hl:{i} into a #hl:{Rational}.
 
     #example:{
       4 as: Rational
@@ -350,7 +350,7 @@
     | r is-a?: Rational
     > Double
 }body:{
-    Converts #atomo:r into a #atomo:Double by sending #atomo:approximate to it.
+    Converts #hl:{r} into a #hl:{Double} by sending #hl:{approximate} to it.
 
     #example:{
       4/3 as: Double
@@ -362,7 +362,7 @@
     | r is-a?: Rational
     > Integer
 }body:{
-    Converts #atomo:r into an #atomo:Integer by sending #atomo:approximate and #atomo:floor to it.
+    Converts #hl:{r} into an #hl:{Integer} by sending #hl:{approximate} and #hl:{floor} to it.
 
     #example:{
       4/3 as: Integer
@@ -374,7 +374,7 @@
     | n is-a?: Integer
     > Boolean
 }body:{
-    Is #atomo:n even?.
+    Is #hl:{n} even?.
 }
 
 #define:{
@@ -382,7 +382,7 @@
     | n is-a?: Integer
     > Boolean
 }body:{
-    Is #atomo:n odd?.
+    Is #hl:{n} odd?.
 }
 
 #define:{
@@ -391,7 +391,7 @@
     | b is-a?: Integer
     > Boolean
 }body:{
-    Does #atomo:a divide #atomo:b?
+    Does #hl:{a} divide #atomo:b?
 }
 
 #define:{

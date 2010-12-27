@@ -8,7 +8,7 @@ The usual convention of using #code:{*earmuffs*} for dynamic variable names is f
   top define: name as: root
   > root
 }body:{
-  Creates a new dynamic variable called #atomo:name, defining an accessor in #atomo:top. The accessor simply performs #atomo:(name _?).
+  Creates a new dynamic variable called #hl:{name}, defining an accessor in #hl:{top}. The accessor simply performs #atomo:(name _?).
 
   If the dynamic variable already exists, it is replaced.
 
@@ -23,7 +23,7 @@ The usual convention of using #code:{*earmuffs*} for dynamic variable names is f
   name _?
   > any
 }body:{
-  Retrieves the binding for #atomo:name from the dynamic environment.
+  Retrieves the binding for #hl:{name} from the dynamic environment.
 
   #example:{
     define: *foo* as: 10
@@ -37,7 +37,7 @@ The usual convention of using #code:{*earmuffs*} for dynamic variable names is f
   name =! value
   > value
 }body:{
-  Updates the most recent binding for #atomo:name as #atomo:value. This cannot replace the root value.
+  Updates the most recent binding for #hl:{name} as #hl:{value}. This cannot replace the root value.
 
   #example:{
     define: *foo* as: 0
@@ -51,7 +51,7 @@ The usual convention of using #code:{*earmuffs*} for dynamic variable names is f
   | action is-a?: Block
   > any
 }body:{
-  Calls #atomo:action with #atomo:name bound as #atomo:binding.
+  Calls #hl:{action} with #hl:{name} bound as #hl:{binding}.
 
   #example:{
     define: *foo* as: 0
@@ -66,8 +66,8 @@ The usual convention of using #code:{*earmuffs*} for dynamic variable names is f
   | action is-a?: Block
   > any
 }body:{
-  Calls #atomo:action with the given #atomo:Associations of variables to their new bindings. Expands into multiple #hl:{with:as:do:} calls.
-  Calls #atomo:action with #atomo:name bound as #atomo:binding.
+  Calls #hl:{action} with the given #hl:{Associations} of variables to their new bindings. Expands into multiple #hl:{with:as:do:} calls.
+  Calls #hl:{action} with #hl:{name} bound as #hl:{binding}.
 
   #example:{
     define: *foo* as: 0
@@ -83,7 +83,7 @@ The usual convention of using #code:{*earmuffs*} for dynamic variable names is f
   | modifier responds-to?: @call:
   > any
 }body:{
-  Similar to #hl:{with:as:do:}, but passes the current value to #atomo:modifier to yield the new binding.
+  Similar to #hl:{with:as:do:}, but passes the current value to #hl:{modifier} to yield the new binding.
 
   #example:{
     define: *foo* as: 0

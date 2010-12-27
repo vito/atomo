@@ -25,7 +25,7 @@
     | duration is-a?: Number
     > @ok
 }body:{
-    Delays the current process's execution by #atomo:duration microseconds.
+    Delays the current process's execution by #hl:{duration} microseconds.
 
     #example:{
         Timer sleep: 1 millisecond
@@ -38,7 +38,7 @@
     | duration is-a?: Number
     > Process
 }body:{
-    Spawns a new process that repeatedly calls #atomo:action at intervals of #atomo:duration microseconds.
+    Spawns a new process that repeatedly calls #hl:{action} at intervals of #hl:{duration} microseconds.
 
     #example:{
         p = Timer do: { "hello" print } every: 0.125 seconds
@@ -53,7 +53,7 @@
     | duration is-a?: Number
     > Process
 }body:{
-    Spawns a new process that calls #atomo:action after #atomo:duration microseconds.
+    Spawns a new process that calls #hl:{action} after #hl:{duration} microseconds.
 
     #example:{
         p = Timer do: { "hello" print } after: 0.125 seconds
@@ -76,14 +76,14 @@
 
 #section:{Unit Helpers}
 
-There are many methods defined for use with #atomo:Timer so you don't have to do a bunch of calculations or repeat a bunch of 0s.
+There are many methods defined for use with #hl:{Timer} so you don't have to do a bunch of calculations or repeat a bunch of 0s.
 
 #define:{
     n us
     | n is-a?: Number
     > Number
 }body:{
-    Yields #atomo:n microseconds. This is effectively a no-op, returning the same number back, since Timer already uses microsecond precision.
+    Yields #hl:{n} microseconds. This is effectively a no-op, returning the same number back, since Timer already uses microsecond precision.
 }
 
 #define:{
@@ -107,7 +107,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    Yields #atomo:n milliseconds.
+    Yields #hl:{n} milliseconds.
 }
 
 #define:{
@@ -131,7 +131,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    Yields #atomo:n in seconds.
+    Yields #hl:{n} in seconds.
 }
 
 #define:{
@@ -147,7 +147,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    Yields #atomo:n in minutes.
+    Yields #hl:{n} in minutes.
 }
 
 #define:{
@@ -163,7 +163,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    Yields #atomo:n in hours.
+    Yields #hl:{n} in hours.
 }
 
 #define:{
@@ -179,7 +179,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    Yields #atomo:n in days.
+    Yields #hl:{n} in days.
 }
 
 #define:{
@@ -195,7 +195,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    Yields #atomo:n in weeks.
+    Yields #hl:{n} in weeks.
 }
 
 #define:{
@@ -211,7 +211,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    Yields #atomo:n in months.
+    Yields #hl:{n} in months.
 }
 
 #define:{
@@ -227,7 +227,7 @@ There are many methods defined for use with #atomo:Timer so you don't have to do
     | n is-a?: Number
     > Number
 }body:{
-    Yields #atomo:n in years.
+    Yields #hl:{n} in years.
 }
 
 #define:{

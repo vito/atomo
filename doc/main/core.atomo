@@ -4,14 +4,14 @@
     Object
     > Object
 }body:{
-    The "root" of everything. Everything delegates to #atomo:Object, including toplevel objects.
+    The "root" of everything. Everything delegates to #hl:{Object}, including toplevel objects.
 
     #example:{
         True is-a?: Object
         is-a?: Object
     }
 
-    Generally, to create new objects you send #atomo:clone to this if there's nothing more specific.
+    Generally, to create new objects you send #hl:{clone} to this if there's nothing more specific.
 
     #example-segment:{
         MyBoolean = Object clone
@@ -26,7 +26,7 @@
     | e is-a?: Expression
     > @ok
 }body:{
-    Defines #atomo:e to be evaluated when the message described by #atomo:p is dispatched to any of its targets. Returns #atomo:(@ok). See #reference:{definition-syntax}.
+    Defines #hl:{e} to be evaluated when the message described by #hl:{p} is dispatched to any of its targets. Returns #atomo:(@ok). See #reference:{definition-syntax}.
 
     When defining a method of the same name as an existing one, it will be inserted with the most precise first. If two patterns are equivalent, the new method replaces the old.
 
@@ -37,9 +37,9 @@
         5 fib
     }
 
-    This defines three #atomo:fib methods on #atomo:Integer. The order of the definitions doesn't matter; they are inserted in order of precision, so the methods that pattern-match on #atomo:0 and #atomo:1 are always chosen over the more general #atomo:Integer match.
+    This defines three #hl:{fib} methods on #hl:{Integer}. The order of the definitions doesn't matter; they are inserted in order of precision, so the methods that pattern-match on #hl:{0} and #hl:{1} are always chosen over the more general #hl:{Integer} match.
 
-    The method's expression #atomo:e is evaluated with a new toplevel object containing the bindings from the pattern-match as methods, and delegating to the context of the method definition.
+    The method's expression #hl:{e} is evaluated with a new toplevel object containing the bindings from the pattern-match as methods, and delegating to the context of the method definition.
 
     #example:{
         x foo: [y, z] bar: _ := this
@@ -50,7 +50,7 @@
         { a = 3; foo } call
     }
 
-    Here we're using #atomo:this to simply return the toplevel object that the expression is evaluated in.
+    Here we're using #hl:{this} to simply return the toplevel object that the expression is evaluated in.
 }
 
 #define:{
@@ -58,7 +58,7 @@
     | p is-a?: Expression
     > v
 }body:{
-    Pattern-match #atomo:p on #atomo:v, inserting the bindings from the match into the current scope. Returns the value it's matching on (#atomo:v). See #reference:{pattern-syntax}.
+    Pattern-match #hl:{p} on #hl:{v}, inserting the bindings from the match into the current scope. Returns the value it's matching on (#hl:{v}). See #reference:{pattern-syntax}.
 
     #example:{
         a = 1
@@ -81,32 +81,32 @@
     o clone
     > is-a?: o
 }body:{
-    Returns a new object, delegating to #atomo:o.
+    Returns a new object, delegating to #hl:{o}.
 }
 
 #define:{
     o copy
     > any
 }body:{
-    Copies object #atomo:o, creating a new object with the same methods and delegates.
+    Copies object #hl:{o}, creating a new object with the same methods and delegates.
 }
 
 #define:{
     o new
     > is-a?: o
 }body:{
-    Similar to #atomo:clone, but often does certain initialization stuff like setting default values.
+    Similar to #hl:{clone}, but often does certain initialization stuff like setting default values.
 
-    Note: this method, along with #hl:{new:}, is just listed here so that links in the documentation will point to these more general descriptions rather than a more specific, but wrong, definition. It is not defined for #atomo:Object.
+    Note: this method, along with #hl:{new:}, is just listed here so that links in the documentation will point to these more general descriptions rather than a more specific, but wrong, definition. It is not defined for #hl:{Object}.
 }
 
 #define:{
     o new: x
     > is-a?: o
 }body:{
-    Similar to #atomo:new, but with an additional argument used for initialization.
+    Similar to #hl:{new}, but with an additional argument used for initialization.
 
-    Note: this method, along with #atomo:new, is just listed here so that links in the documentation will point to these more general descriptions rather than a more specific, but wrong, definition. It is not defined for #atomo:Object.
+    Note: this method, along with #hl:{new}, is just listed here so that links in the documentation will point to these more general descriptions rather than a more specific, but wrong, definition. It is not defined for #hl:{Object}.
 }
 
 #define:{
@@ -128,7 +128,7 @@
     x delegates-to?: y
     > Boolean
 }body:{
-    Returns #atomo:True if #atomo:x delegates to #atomo:y.
+    Returns #hl:{True} if #hl:{x} delegates to #hl:{y}.
 
     #example:{
         X = Object clone
@@ -155,7 +155,7 @@
     x super
     > any
 }body:{
-    Returns the first value that #atomo:x delegates to.
+    Returns the first value that #hl:{x} delegates to.
 
     #example:{
       1 clone super
@@ -167,7 +167,7 @@
     x is-a?: y
     > Boolean
 }body:{
-    Returns #atomo:True if #atomo:x is equal to #atomo:y or delegates to it, directly or indirectly.
+    Returns #hl:{True} if #hl:{x} is equal to #hl:{y} or delegates to it, directly or indirectly.
 
     #example:{
         1 is-a?: Integer
@@ -184,7 +184,7 @@
     | p is-a?: Particle
     > Boolean
 }body:{
-    Check if object #atomo:x would respond to the partial message #atomo:p (completed with #atomo:x to form a #atomo:Message).
+    Check if object #hl:{x} would respond to the partial message #hl:{p} (completed with #hl:{x} to form a #hl:{Message}).
 
     #example:{
         X = Object clone
@@ -201,7 +201,7 @@
     x show
     > String
 }body:{
-    Convert #atomo:x to a proper representation of that value in code (if possible).
+    Convert #hl:{x} to a proper representation of that value in code (if possible).
 
     #example:{
         10 show
@@ -215,7 +215,7 @@
     | filename is-a?: String
     > @ok
 }body:{
-    Executes the file #atomo:filename with #atomo:top as its top scope.
+    Executes the file #hl:{filename} with #hl:{top} as its top scope.
 }
 
 #define:{
@@ -230,7 +230,7 @@
   | branches is-a?: Block
   > any
 }body:{
-  Pattern-match #atomo:v on the patterns described by #atomo:branches, evaluating the first branch that matches the value.
+  Pattern-match #hl:{v} on the patterns described by #hl:{branches}, evaluating the first branch that matches the value.
 
   Errors with #atomo:@(no-match-for: v) if none of the branches match the value.
 

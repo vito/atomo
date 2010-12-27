@@ -20,7 +20,7 @@
     | b is-a?: Boolean
     > in?: [True, False]
 }body:{
-    Test whether #atomo:a and #atomo:b are both #atomo:True. This is actually a macro which calls the short-circuiting #hl:{and:}.
+    Test whether #hl:{a} and #hl:{b} are both #hl:{True}. This is actually a macro which calls the short-circuiting #hl:{and:}.
 
     #example:{
         True && False
@@ -34,7 +34,7 @@
     | b is-a?: Boolean
     > in?: [True, False]
 }body:{
-    Test if either #atomo:a or #atomo:b are #atomo:True. This is actually a macro which calls the short-circuiting #hl:{or:}.
+    Test if either #hl:{a} or #hl:{b} are #hl:{True}. This is actually a macro which calls the short-circuiting #hl:{or:}.
 
     #example:{
         True || False
@@ -48,7 +48,7 @@
     | b is-a?: Block
     > in?: [True, False]
 }body:{
-    A short-circuiting form of #atomo:(&&), only #hl:{call}ing the right-hand side if #atomo:a is #atomo:True.
+    A short-circuiting form of #atomo:(&&), only #hl:{call}ing the right-hand side if #hl:{a} is #hl:{True}.
 }
 
 #define:{
@@ -57,7 +57,7 @@
     | b is-a?: Block
     > in?: [True, False]
 }body:{
-    A short-circuiting form of #atomo:(||), only #hl:{call}ing the right-hand side if #atomo:a is #atomo:False.
+    A short-circuiting form of #atomo:(||), only #hl:{call}ing the right-hand side if #hl:{a} is #hl:{False}.
 }
 
 #define:{
@@ -65,7 +65,7 @@
     | a is-a?: Boolean
     > in?: [True, False]
 }body:{
-    Negate #atomo:a.
+    Negate #hl:{a}.
 
     #example:{
         True not
@@ -83,7 +83,7 @@
     | no is-a?: Block
     > any
 }body:{
-    Basic if-then-else control flow. If #atomo:test is #atomo:True, #atomo:yes is #hl:{call}ed, otherwise #atomo:no is. The result is the result of whichever block is called.
+    Basic if-then-else control flow. If #hl:{test} is #hl:{True}, #hl:{yes} is #hl:{call}ed, otherwise #hl:{no} is. The result is the result of whichever block is called.
 
     #example:{
         if: (1 == 0) then: { "Uh-oh." } else: { "We're good!" }
@@ -96,7 +96,7 @@
     | action is-a?: Block
     > @ok
 }body:{
-    Sends #atomo:call to #atomo:(action in-context) if #atomo:test is #atomo:True, always returning #atomo:@ok.
+    Sends #hl:{call} to #atomo:(action in-context) if #hl:{test} is #hl:{True}, always returning #atomo:@ok.
 
     #example:{
         a = 0
@@ -113,7 +113,7 @@
     | action is-a?: Block
     > @ok
 }body:{
-    Continually sends #atomo:call to #atomo:(action in-context) until #atomo:test yields #atomo:False.
+    Continually sends #hl:{call} to #atomo:(action in-context) until #hl:{test} yields #hl:{False}.
 
     #example:{
         a = 1
@@ -127,9 +127,9 @@
     | branches is-a?: Block
     > any
 }body:{
-    Similar to Scheme's #code:{cond}, this construct takes a block pairing tests with their branch, and goes through each pairing until a test yields #atomo:True, in which case it evaluates the expression that test was associated with.
+    Similar to Scheme's #code:{cond}, this construct takes a block pairing tests with their branch, and goes through each pairing until a test yields #hl:{True}, in which case it evaluates the expression that test was associated with.
 
-    If no branches yield #atomo:True, #atomo:@no-true-branches is raised.
+    If no branches yield #hl:{True}, #atomo:@no-true-branches is raised.
 
     NOTE: #italic:{This is a macro which expands to chained #hl:{if:then:else:} dispatches.}
 
@@ -143,5 +143,5 @@
     otherwise
     > True
 }body:{
-    Alias for #atomo:True for use in #hl:{condition:}, or anywhere else where it would look nicer.
+    Alias for #hl:{True} for use in #hl:{condition:}, or anywhere else where it would look nicer.
 }

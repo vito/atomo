@@ -19,7 +19,7 @@ Atomo uses a condition system very similar to Common Lisp's.
   error: v
   > any
 }body:{
-  Signals #atomo:v as an error. If the #hl:{signal:} call exits normally, a debugger is started. Hence, this method never exits normally.
+  Signals #hl:{v} as an error. If the #hl:{signal:} call exits normally, a debugger is started. Hence, this method never exits normally.
 
   #example:{
     { "x" print; error: 1; "y" print } call
@@ -42,7 +42,7 @@ Atomo uses a condition system very similar to Common Lisp's.
   | name is-a?: Expression
   > any
 }body:{
-  Finds restart #atomo:name and jumps to it.
+  Finds restart #hl:{name} and jumps to it.
 
   #example:{
     action := { signal: @foo; "hi" print } with-restarts: { skip -> @skipped }
@@ -58,9 +58,9 @@ Atomo uses a condition system very similar to Common Lisp's.
   | handlers is-a?: Block
   > any
 }body:{
-  Performs #atomo:action, with a handler for all signals matched in #atomo:handlers block. Returns the result of #atomo:action.
+  Performs #hl:{action}, with a handler for all signals matched in #hl:{handlers} block. Returns the result of #hl:{action}.
 
-  The contents of #atomo:handlers should be #atomo:Association expressions, e.g. #atomo:(pattern -> responder), where #atomo:pattern is a match on the signal value, and #atomo:responder is either a #atomo:Block (which will be called with the signal value itself as an argument) or an expression to be evaluated in response to the signal.
+  The contents of #hl:{handlers} should be #hl:{Association} expressions, e.g. #atomo:(pattern -> responder), where #hl:{pattern} is a match on the signal value, and #hl:{responder} is either a #hl:{Block} (which will be called with the signal value itself as an argument) or an expression to be evaluated in response to the signal.
 
   #example:{
     { signal: @foo } bind: { @foo -> "fooed!" print }
@@ -68,7 +68,7 @@ Atomo uses a condition system very similar to Common Lisp's.
     { error: @uh-oh } bind: { Error -> { e | @(got-error: e) print } }
   }
 
-  A #atomo:responder may often invoke #hl:{restart:} or #hl:{restart:with:}, which is the only way they can affect the return value of #atomo:action.
+  A #hl:{responder} may often invoke #hl:{restart:} or #hl:{restart:with:}, which is the only way they can affect the return value of #hl:{action}.
 
   After a handler responds to a signal, the signal continues outward to the next recently bound handler:
 
@@ -83,9 +83,9 @@ Atomo uses a condition system very similar to Common Lisp's.
   | restarts is-a?: Block
   > any
 }body:{
-  Call #atomo:action, binding the restarts described by #atomo:restarts. These restarts, when invoked, will replace the result of #atomo:action.
+  Call #hl:{action}, binding the restarts described by #hl:{restarts}. These restarts, when invoked, will replace the result of #hl:{action}.
 
-  The contents of #atomo:restarts should be #atomo:Association expressions, e.g. #atomo:(name -> expression), where #atomo:name is the name for the restart, and #atomo:expression is the action to be performed when the restart is invoked.
+  The contents of #hl:{restarts} should be #hl:{Association} expressions, e.g. #atomo:(name -> expression), where #hl:{name} is the name for the restart, and #hl:{expression} is the action to be performed when the restart is invoked.
 
   #example:{
     { { x } with-restarts: { ignore -> @ok } } bind: { Error -> restart: 'ignore }
@@ -98,7 +98,7 @@ Atomo uses a condition system very similar to Common Lisp's.
   | arguments is-a?: List
   > any
 }body:{
-  Invokes restart #atomo:name with #atomo:arguments passed to the block.
+  Invokes restart #hl:{name} with #hl:{arguments} passed to the block.
 
   #example:{
     action := { signal: @foo; "hi" print } with-restarts: { use-value -> { v | v } }
@@ -111,7 +111,7 @@ Atomo uses a condition system very similar to Common Lisp's.
   | name is-a?: Expression
   > in?: [@(ok: Restart), @none]
 }body:{
-  Looks for a restart named #atomo:name.
+  Looks for a restart named #hl:{name}.
 
   #example:{
     action := { signal: @foo; "hi" print } with-restarts: { skip -> @skipped }
@@ -129,9 +129,9 @@ These methods are specific to errors, and provide a system similar to that of tr
   | recover is-a?: Block
   > any
 }body:{
-  Execute #atomo:(action call), catching any errors and passing them to #atomo:recover for handling.
+  Execute #atomo:(action call), catching any errors and passing them to #hl:{recover} for handling.
 
-  Yields the result of #atomo:action or #atomo:recover.
+  Yields the result of #hl:{action} or #hl:{recover}.
 
   #example:{
     { error: @error } catch: { e | @(got: e) }
@@ -144,9 +144,9 @@ These methods are specific to errors, and provide a system similar to that of tr
   | [action, recover, cleanup] all?: @(is-a?: Block)
   > any
 }body:{
-  Execute #atomo:(action call), catching any errors and passing them to #atomo:recover for handling, and ensuring that #atomo:cleanup is called after the action is executed.
+  Execute #atomo:(action call), catching any errors and passing them to #hl:{recover} for handling, and ensuring that #hl:{cleanup} is called after the action is executed.
 
-  Yields the result of #atomo:action or #atomo:recover.
+  Yields the result of #hl:{action} or #hl:{recover}.
 
   #example:{
     { @ok } catch: { @caught } ensuring: { "cleaning up" print }
@@ -160,7 +160,7 @@ These methods are specific to errors, and provide a system similar to that of tr
   | branches is-a?: Block
   > any
 }body:{
-  Similar to #hl:{catch:}, but #atomo:branches is a block containing exception patterns bound to the action to take if they're thrown. If none of the exceptions match any of the patterns, the exception is re-thrown.
+  Similar to #hl:{catch:}, but #hl:{branches} is a block containing exception patterns bound to the action to take if they're thrown. If none of the exceptions match any of the patterns, the exception is re-thrown.
 
   #example:{
     { error: @foo } handle: { @foo -> 1; @bar -> 2 }
@@ -190,9 +190,9 @@ These methods are specific to errors, and provide a system similar to that of tr
   | cleanup is-a?: Block
   > any
 }body:{
-  Execute #atomo:(action call), ensuring that #atomo:cleanup is called after the action is executed.
+  Execute #atomo:(action call), ensuring that #hl:{cleanup} is called after the action is executed.
 
-  Yields the result of #atomo:action.
+  Yields the result of #hl:{action}.
 
   #example:{
     { @ok } ensuring: { "cleaning up" print }
@@ -206,9 +206,9 @@ These methods are specific to errors, and provide a system similar to that of tr
   | action is-a?: Block
   > any
 }body:{
-  Similar to #hl:{ensuring:}, but #atomo:value is passed to both blocks. This makes things like file opening and closing very natural.
+  Similar to #hl:{ensuring:}, but #hl:{value} is passed to both blocks. This makes things like file opening and closing very natural.
 
-  Yields the result of #atomo:action.
+  Yields the result of #hl:{action}.
 
   #example:{
     File (new: "example-file") ensuring: @close do: @(display: "Hello!")

@@ -12,7 +12,7 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
     Continuation
     > Object
 }body:{
-    A #atomo:Continuation is a value that represents the context of an expression that was evaluated; what was being done with it, and whatever was going to happen next.
+    A #hl:{Continuation} is a value that represents the context of an expression that was evaluated; what was being done with it, and whatever was going to happen next.
 }
 
 #define:{
@@ -20,7 +20,7 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
     | o responds-to?: @call:
     > any
 }body:{
-    Sends the current #atomo:Continuation to #atomo:o.
+    Sends the current #hl:{Continuation} to #hl:{o}.
 
     #example:{
         { return | "before" print; return yield: 100; "after" print } call/cc
@@ -34,7 +34,7 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
     | c is-a?: Continuation
     > any
 }body:{
-    Immediately go back to #atomo:c's context and yield #atomo:v in its place.
+    Immediately go back to #atomo:c's context and yield #hl:{v} in its place.
 
     #example:{
         { cc | "before" print; cc yield: 1; "after" print } call/cc
@@ -48,15 +48,15 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
 }body:{
     Calls the three blocks in order, returning #hl:{action}'s result.
 
-    In addition; #atomo:post-thunk is always called, even if an exception is raised.
+    In addition; #hl:{post-thunk} is always called, even if an exception is raised.
 
     #example:{
         { "in" print } before: { "pre" print } after: { "post" print }
     }
 
-    #atomo:pre-thunk is called whenever #atomo:action is re-entered (e.g. by jumping back into it by yielding to a continuation).
+    #hl:{pre-thunk} is called whenever #hl:{action} is re-entered (e.g. by jumping back into it by yielding to a continuation).
     
-    #atomo:post-thunk is called whenever control leaves the block (e.g. by yielding to another continuation) or when #atomo:action completes.
+    #hl:{post-thunk} is called whenever control leaves the block (e.g. by yielding to another continuation) or when #hl:{action} completes.
 
     #example:{
         yield!: c := when: (c is-a?: Continuation) do: { c yield }
@@ -97,7 +97,7 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
     | action responds-to?: @call:
     > any
 }body:{
-    Calls #atomo:action with the #hl:{init}'s result, ensuring that #atomo:cleanup is performed when control leaves #atomo:action and that #atomo:init is re-#hl:{called}ed and passed to #atomo:action when control enters #atomo:action.
+    Calls #hl:{action} with the #hl:{init}'s result, ensuring that #hl:{cleanup} is performed when control leaves #hl:{action} and that #hl:{init} is re-#hl:{called}ed and passed to #hl:{action} when control enters #hl:{action}.
 
     See also #hl:{before:after:}.
 
@@ -120,7 +120,7 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
         { a = current-continuation; a print; (a yield: 42) when: (a is-a?: Continuation); @done } call
     }
 
-    We had to check if #atomo:a was a #atomo:Continuation there, because after the #hl:{yield:} it becomes #atomo:42, and you'd end up with #atomo:(42 yield: 42). That is, execution continues from just after the assignment, with #atomo:a as its new value, which it happily attempts to #hl:{yield:} to all over again.
+    We had to check if #hl:{a} was a #hl:{Continuation} there, because after the #hl:{yield:} it becomes #hl:{42}, and you'd end up with #atomo:(42 yield: 42). That is, execution continues from just after the assignment, with #hl:{a} as its new value, which it happily attempts to #hl:{yield:} to all over again.
 }
 
 #define:{

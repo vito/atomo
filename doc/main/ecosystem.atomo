@@ -11,7 +11,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
     Eco
     > Object
 }body:{
-    A global object that manages available and loaded packages. Your application should #atomo:initialize it at startup.
+    A global object that manages available and loaded packages. Your application should #hl:{initialize} it at startup.
 }
 
 #define:{
@@ -64,7 +64,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
     | path is-a?: String
     > @ok
 }body:{
-    Install the package at #atomo:path to #code:{~/.eco}.
+    Install the package at #hl:{path} to #code:{~/.eco}.
 
     Required files: #code:{main.atomo}, #code:{package.eco}.
 
@@ -95,7 +95,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
     | name is-a?: String
     > @ok
 }body:{
-    Alias for #atomo:(top use: name version: { True }) (that is, a constraint always yielding #atomo:True).
+    Alias for #atomo:(top use: name version: { True }) (that is, a constraint always yielding #hl:{True}).
 
     #example-segment:{
         use: "ehtml"
@@ -108,7 +108,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
     | constraint is-a?: Block || constraint is-a?: Version
     > @ok
 }body:{
-    Load the highset version of package #atomo:name satisfying the constraint (or matching the version) #atomo:constraint onto #atomo:top.
+    Load the highset version of package #hl:{name} satisfying the constraint (or matching the version) #hl:{constraint} onto #hl:{top}.
 
     Note that this should be called after #atomo:(Eco initialize), which filters out versions that do not satisfy the package's dependency constraints.
 
@@ -125,7 +125,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 
         #item:{#atomo:@(no-versions-of: (name -> versions) satisfy: constraint)}is:{if none of the package versions installed are satisfactory.}
 
-        #item:{#atomo:@(incompatible-version-loaded: name needed: constraint)}is:{if the package was already loaded, but the version that was loaded does not satisfy #atomo:constraint. This may happen if you don't use #atomo:(Eco initialize) and just use #hl:{use:version:} everywhere, which is not recommended.}
+        #item:{#atomo:@(incompatible-version-loaded: name needed: constraint)}is:{if the package was already loaded, but the version that was loaded does not satisfy #hl:{constraint}. This may happen if you don't use #atomo:(Eco initialize) and just use #hl:{use:version:} everywhere, which is not recommended.}
     }
 }
 
@@ -143,7 +143,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
     | file is-a?: String
     > Eco Package
 }body:{
-    Loads a package from #atomo:filename, typically named #code:{package.eco}.
+    Loads a package from #hl:{filename}, typically named #code:{package.eco}.
 
     Example file:
 
@@ -154,7 +154,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
         author: "Alex Suraci"
     })
 
-    Note that #atomo:filename should be valid Atomo source code; that's all it is. The file is loaded as-is on a new #atomo:(Eco Package); each of those lines is a dispatch.
+    Note that #hl:{filename} should be valid Atomo source code; that's all it is. The file is loaded as-is on a new #atomo:(Eco Package); each of those lines is a dispatch.
 }
 
 #define:{
@@ -162,7 +162,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
     | n is-a?: String
     > String
 }body:{
-    Sets the package's name to #atomo:n.
+    Sets the package's name to #hl:{n}.
 }
 
 #define:{
@@ -170,7 +170,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
     | d is-a?: String
     > String
 }body:{
-    Sets the package's description to #atomo:d.
+    Sets the package's description to #hl:{d}.
 }
 
 #define:{
@@ -178,7 +178,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
     | v is-a?: Version
     > Version
 }body:{
-    Sets the package's version to #atomo:v.
+    Sets the package's version to #hl:{v}.
 }
 
 #define:{
@@ -186,7 +186,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
     | n is-a?: String
     > String
 }body:{
-    Sets the package's author to #atomo:n.
+    Sets the package's author to #hl:{n}.
 }
 
 #define:{
@@ -194,7 +194,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
     | filenames is-a?: List
     > String
 }body:{
-    Sets the package's include field to #atomo:filenames.
+    Sets the package's include field to #hl:{filenames}.
 }
 
 #define:{
@@ -202,7 +202,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
     | dependencies is-a?: List
     > String
 }body:{
-    Sets the package's dependencies field to #atomo:dependencies.
+    Sets the package's dependencies field to #hl:{dependencies}.
 
     Values in the list should be either #hl:{Association}s from package names to a block for checking the package version, or just package names.
 
@@ -216,12 +216,12 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
     | filenames is-a?: List
     > String
 }body:{
-    Sets the package's executables field to #atomo:filenames.
+    Sets the package's executables field to #hl:{filenames}.
 }
 
 #section:{Versions}
 
-Proper comparable version numbers. All of the usual suspects for anything that's comparable are implemented: #atomo:(==), #atomo:(>), #atomo:(<), #atomo:(>=), and #atomo:(<=). These methods are defined for all combinations of #atomo:Version and #atomo:Integer.
+Proper comparable version numbers. All of the usual suspects for anything that's comparable are implemented: #atomo:(==), #atomo:(>), #atomo:(<), #atomo:(>=), and #atomo:(<=). These methods are defined for all combinations of #hl:{Version} and #hl:{Integer}.
 
 #example:{
     (0 . 1) < (0 . 2)
@@ -247,7 +247,7 @@ Note that the parentheses used in version constructors below are not necessary; 
     | minor is-a?: Integer || minor is-a?: Version
     > Version
 }body:{
-    The primary #atomo:Version constructor.
+    The primary #hl:{Version} constructor.
 
     #example:{
         0 . 1
@@ -260,7 +260,7 @@ Note that the parentheses used in version constructors below are not necessary; 
     | v is-a?: Version
     > String
 }body:{
-    Converts a #atomo:Version to the typical textual representation of version numbers.
+    Converts a #hl:{Version} to the typical textual representation of version numbers.
 
     #example:{
         (0 . 1 . 2) as: String
@@ -272,14 +272,14 @@ Note that the parentheses used in version constructors below are not necessary; 
     | n is-a?: Integer || n is-a?: String
     > Version
 }body:{
-    Conversion from #atomo:String is the converse of #atomo:(Version as: String).
+    Conversion from #hl:{String} is the converse of #atomo:(Version as: String).
 
     #example:{
         "0.1.2" to: Version
         (0 . 1 . 2) (as: String) (to: Version)
     }
 
-    Conversion from #atomo:Integer simply uses it as #atomo:major and #atomo:0 as #atomo:minor.
+    Conversion from #hl:{Integer} simply uses it as #hl:{major} and #hl:{0} as #hl:{minor}.
 
     #example:{
         1 as: Version

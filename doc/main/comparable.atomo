@@ -6,7 +6,7 @@ Various comparison operators and methods. All operators have a precedence level 
     a == b
     > Boolean
 }body:{
-    Is #atomo:a equivalent to #atomo:b?
+    Is #hl:{a} equivalent to #atomo:b?
 
     For your definitions, this should be a deep equality check, as opposed to #atomo:(equals?:).
 }
@@ -22,47 +22,47 @@ Various comparison operators and methods. All operators have a precedence level 
     a equals?: b
     > Boolean
 }body:{
-    Performs a strict equality check on #atomo:a and #atomo:b using internal comparison. Usually you'll want #atomo:(==), but this may be used for checking identity, etc.
+    Performs a strict equality check on #hl:{a} and #hl:{b} using internal comparison. Usually you'll want #atomo:(==), but this may be used for checking identity, etc.
 }
 
 #define:{
     a < b
     > Boolean
 }body:{
-    Is #atomo:a less than #atomo:b?
+    Is #hl:{a} less than #atomo:b?
 }
 
 #define:{
     a > b
     > Boolean
 }body:{
-    Is #atomo:a greater than #atomo:b?
+    Is #hl:{a} greater than #atomo:b?
 }
 
 #define:{
     a <= b
     > Boolean
 }body:{
-    Is #atomo:a less than or equal to #atomo:b?
+    Is #hl:{a} less than or equal to #atomo:b?
 }
 
 #define:{
     a >= b
     > Boolean
 }body:{
-    Is #atomo:a greater than or equal to #atomo:b?
+    Is #hl:{a} greater than or equal to #atomo:b?
 }
 
 #define:{
     a max: b
     > any
 }body:{
-    Returns the larger of #atomo:a and #atomo:b using the comparison operator #atomo:(>).
+    Returns the larger of #hl:{a} and #hl:{b} using the comparison operator #atomo:(>).
 }
 
 #define:{
     a min: b
     > any
 }body:{
-    Returns the smaller of #atomo:a and #atomo:b using the comparison operator #atomo:(<).
+    Returns the smaller of #hl:{a} and #hl:{b} using the comparison operator #atomo:(<).
 }
