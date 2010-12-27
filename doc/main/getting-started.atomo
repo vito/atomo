@@ -59,7 +59,7 @@ Here we're inserting a slot - a kind of method - on the toplevel object, which r
 
 There are two operators for defining methods: #hl:{=} and #hl:{:=}. The #hl:{=} operator performs pattern-matching and slot insertion, while #hl:{:=} defines a method that responds to a message by evaluating an expression. Generally you'll use #hl:{:=} for defining methods, and #hl:{=} for setting values.
 
-To illustrate this distinction, we'll define a method that simply prints #atomo:"Hello, world!", using both operators. Note that #hl:{print} outputs the value and yields the same value.
+To illustrate this distinction, we'll define a method that simply prints #hl:{"Hello, world!"}, using both operators. Note that #hl:{print} outputs the value and yields the same value.
 
 #interaction:{
     y := "Hello, world!" print

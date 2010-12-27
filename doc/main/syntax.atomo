@@ -135,7 +135,7 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
 
   #item:{rationals}is:{#atomo:1/2, #atomo:30/500, #atomo:-1/2, ...}
 
-  #item:{strings}is:{#atomo:"", #atomo:"foo", #atomo:"fizz \"buzz\"", containing the above-mentioned escape codes}
+  #item:{strings}is:{#hl:{""}, #hl:{"foo"}, #hl:{"fizz \"buzz\""}, containing the above-mentioned escape codes}
 
   #item:{boolean}is:{#hl:{True} and #hl:{False}}
 
@@ -256,7 +256,7 @@ The #hl:{=} operator macro performs pattern-matching; the left-hand side is the 
     }
   }
 
-  #item:{#hl:{1}, #atomo:2/3, #hl:{4}.0, #atomo:$a, #hl:{True}, #hl:{False}, #atomo:"foo", ...}is:{
+  #item:{#hl:{1}, #atomo:2/3, #hl:{4.0}, #atomo:$a, #hl:{True}, #hl:{False}, #hl:{"foo"}, ...}is:{
     Primitive literal values match only on themselves.
 
     #example:{
@@ -393,7 +393,7 @@ The targets implied by the respective patterns in a definition are as follows:
   #item:{#hl:{True}, #hl:{False}}is:{#hl:{Boolean}}
   #item:{#hl:{1}.0, #hl:{2}.0, ...}is:{#hl:{Double}}
   #item:{#atomo:1/2, #atomo:3/4, ...}is:{#hl:{Rational}}
-  #item:{#atomo:"", #atomo:"foo", ...}is:{#hl:{String}}
+  #item:{#hl:{""}, #hl:{"foo"}, ...}is:{#hl:{String}}
   #item:{#hl:{head . tail}, #atomo:[], #atomo:[pattern, pattern-2], ...}is:{#hl:{List}}
   #item:{#atomo:`x, #atomo:`(1 + ~y), ...}is:{#hl:{Expression}}
   #item:{#hl:{@foo}, #hl:{@(bar: 2 baz: _)}, ...}is:{#hl:{Particle}}

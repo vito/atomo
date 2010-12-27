@@ -123,7 +123,7 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 
         #item:{#hl:{@(no-package-versions: name)}}is:{if the package is installed, but no versions are valid (this should never happen).}
 
-        #item:{#atomo:@(no-versions-of: (name -> versions) satisfy: constraint)}is:{if none of the package versions installed are satisfactory.}
+        #item:{#hl:{@(no-versions-of: (name -> versions) satisfy: constraint)}}is:{if none of the package versions installed are satisfactory.}
 
         #item:{#hl:{@(incompatible-version-loaded: name needed: constraint)}}is:{if the package was already loaded, but the version that was loaded does not satisfy #hl:{constraint}. This may happen if you don't use #hl:{Eco initialize} and just use #hl:{use:version:} everywhere, which is not recommended.}
     }

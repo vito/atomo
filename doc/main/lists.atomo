@@ -178,7 +178,7 @@
         with-input-from: "doc/main/lists.atomo" do: { { read-line } repeat: 3 }
     }
     
-    Here we're reading 3 lines of text from the file #atomo:"doc/main/lists.atomo" (the source for the documentation you're reading).
+    Here we're reading 3 lines of text from the file #hl:{"doc/main/lists.atomo"} (the source for the documentation you're reading).
 }
 
 #define:{
