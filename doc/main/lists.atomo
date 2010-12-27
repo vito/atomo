@@ -43,7 +43,7 @@
     | index is-a?: Integer
     > any
 }body:{
-    Returns the list's value at #hl:{index}. If the index is out of bounds, #atomo:@(out-of-bounds: index for-list: l) is raised.
+    Returns the list's value at #hl:{index}. If the index is out of bounds, #hl:{@(out-of-bounds: index for-list: l)} is raised.
 
     #example:{
         [1, 2, 3] at: 1
@@ -57,7 +57,7 @@
     | index is-a?: Integer
     > List
 }body:{
-    Yield a new list with the value at #hl:{index} replaced with #hl:{v}. If the index is out of bounds, #atomo:@(out-of-bounds: index for-list: l) is raised.
+    Yield a new list with the value at #hl:{index} replaced with #hl:{v}. If the index is out of bounds, #hl:{@(out-of-bounds: index for-list: l)} is raised.
 
     #example:{
         [1, 2, 3] at: 1 put: 5

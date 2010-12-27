@@ -58,7 +58,7 @@ Strings are immutable, efficient, Unicode sequences of characters.
     | index is-a?: Integer
     > Char
 }body:{
-    Returns the string's character at #hl:{index}. If the index is out of bounds, #atomo:@(out-of-bounds: index for-string: s) is raised.
+    Returns the string's character at #hl:{index}. If the index is out of bounds, #hl:{@(out-of-bounds: index for-string: s)} is raised.
 
     #example:{
         "abc" at: 1

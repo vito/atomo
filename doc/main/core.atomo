@@ -232,7 +232,7 @@
 }body:{
   Pattern-match #hl:{v} on the patterns described by #hl:{branches}, evaluating the first branch that matches the value.
 
-  Errors with #atomo:@(no-match-for: v) if none of the branches match the value.
+  Errors with #hl:{@(no-match-for: v)} if none of the branches match the value.
 
   #example:{
     1 match: { 2 -> @nope; 1 -> @yep }
