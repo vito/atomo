@@ -595,7 +595,7 @@
     | l is-a?: List
     > List
 }body:{
-    Returns a sorted list of #atomo:l's values, using the mergesort algorithm. It does this by sending #hl:{>} to determine the larger between two values.
+    Returns a sorted list of #hl:{l}'s values, using the mergesort algorithm. It does this by sending #hl:{>} to determine the larger between two values.
 
     #example:{
         [1, 6, 3, 0, 10] sort
@@ -609,7 +609,7 @@
     | compare responds-to?: @call:
     > List
 }body:{
-    Returns a sorted list of #atomo:l's values, using the mergesort algorithm. #hl:{compare}, when #hl:{call:}ed with two values in #hl:{l}, should return #hl:{True} if the first is greater than the second, and #hl:{False} otherwise.
+    Returns a sorted list of #hl:{l}'s values, using the mergesort algorithm. #hl:{compare}, when #hl:{call:}ed with two values in #hl:{l}, should return #hl:{True} if the first is greater than the second, and #hl:{False} otherwise.
 
     #example:{
         [1, 6, 3, 0, 10] sort-by: @>

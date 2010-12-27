@@ -34,7 +34,7 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
     | c is-a?: Continuation
     > any
 }body:{
-    Immediately go back to #atomo:c's context and yield #hl:{v} in its place.
+    Immediately go back to #hl:{c}'s context and yield #hl:{v} in its place.
 
     #example:{
         { cc | "before" print; cc yield: 1; "after" print } call/cc

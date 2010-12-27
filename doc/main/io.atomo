@@ -88,7 +88,7 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     | p is-a?: Port
     > String
 }body:{
-    Read in #atomo:p's entire contents, blocking until the end of the input is reached.
+    Read in #hl:{p}'s entire contents, blocking until the end of the input is reached.
 }
 
 #define:{
@@ -96,7 +96,7 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     | p is-a?: Port
     > @ok
 }body:{
-    Flush #atomo:p's output. #hl:{print} and #hl:{display} automatically perform this task for you.
+    Flush #hl:{p}'s output. #hl:{print} and #hl:{display} automatically perform this task for you.
 }
 
 #define:{

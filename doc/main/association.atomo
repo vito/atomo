@@ -27,7 +27,7 @@
     | a is-a?: Association
     > any
 }body:{
-    Yields #atomo:a's "from" value.
+    Yields #hl:{a}'s "from" value.
 
     #example:{
         (1 -> $a) from
@@ -39,7 +39,7 @@
     | a is-a?: Association
     > any
 }body:{
-    Yields #atomo:a's "to" value.
+    Yields #hl:{a}'s "to" value.
 
     #example:{
         (1 -> $a) to

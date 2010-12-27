@@ -104,7 +104,7 @@
     | p is-a?: Particle
     > List
 }body:{
-    Returns a list of the keyword particle #atomo:p's values, indicating the absense of a value with #atomo:@none and wrapping existing values in #atomo:@ok:.
+    Returns a list of the keyword particle #hl:{p}'s values, indicating the absense of a value with #atomo:@none and wrapping existing values in #atomo:@ok:.
 
     #example:{
         @+ values
