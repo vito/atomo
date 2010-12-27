@@ -40,7 +40,7 @@
     | b is-a?: Number
     > Number
 }body:{
-    Adds #hl:{a} and #hl:{b}. If either are #hl:{Rational}s, it returns a #atomo:Rational; otherwise, if either are #hl:{Double}s, it returns a #hl:{Double}.
+    Adds #hl:{a} and #hl:{b}. If either are #hl:{Rational}s, it returns a #hl:{Rational}; otherwise, if either are #hl:{Double}s, it returns a #hl:{Double}.
 
     #example:{
       1 + 2
@@ -57,7 +57,7 @@
     | b is-a?: Number
     > Number
 }body:{
-    Subtracts #hl:{b} from #hl:{a}. If either are #hl:{Rational}s, it returns a #atomo:Rational; otherwise, if either are #hl:{Double}s, it returns a #hl:{Double}.
+    Subtracts #hl:{b} from #hl:{a}. If either are #hl:{Rational}s, it returns a #hl:{Rational}; otherwise, if either are #hl:{Double}s, it returns a #hl:{Double}.
 
     #example:{
       1 - 2
@@ -74,7 +74,7 @@
     | b is-a?: Number
     > Number
 }body:{
-    Multiplies #hl:{a} by #hl:{b}. If either are #hl:{Rational}s, it returns a #atomo:Rational; otherwise, if either are #hl:{Double}s, it returns a #hl:{Double}.
+    Multiplies #hl:{a} by #hl:{b}. If either are #hl:{Rational}s, it returns a #hl:{Rational}; otherwise, if either are #hl:{Double}s, it returns a #hl:{Double}.
 
     #example:{
       1 * 2
@@ -91,7 +91,7 @@
     | b is-a?: Number
     > Number
 }body:{
-    Divides #hl:{a} by #hl:{b}. If either are #hl:{Rational}s, it returns a #atomo:Rational; otherwise, if either are #hl:{Double}s, it returns a #hl:{Double}. If both are #hl:{Integer}s, it performs integer division.
+    Divides #hl:{a} by #hl:{b}. If either are #hl:{Rational}s, it returns a #hl:{Rational}; otherwise, if either are #hl:{Double}s, it returns a #hl:{Double}. If both are #hl:{Integer}s, it performs integer division.
 
     #example:{
       1 / 2
