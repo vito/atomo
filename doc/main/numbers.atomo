@@ -391,7 +391,7 @@
     | b is-a?: Integer
     > Boolean
 }body:{
-    Does #hl:{a} divide #atomo:b?
+    Does #hl:{a} divide #hl:{b}?
 }
 
 #define:{
