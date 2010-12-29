@@ -3,6 +3,7 @@
 #table-of-contents
 
 #include-section:"getting-started.atomo"
+#include-section:"tutorials.atomo"
 #include-section:"syntax.atomo"
 #include-section:"ecosystem.atomo"
 #include-section:"core.atomo"
@@ -20,4 +21,3 @@
 #include-section:"io.atomo"
 #include-section:"timer.atomo"
 #include-section:"association.atomo"
-

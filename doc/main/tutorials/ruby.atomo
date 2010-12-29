@@ -1,0 +1,336 @@
+#annotated-source
+
+#title:{Ruby in Atomo}tag:"ruby"
+
+#row:{
+  Ruby provides three powerful mechanisms for modular code and simple definition of class structures: modules, classes, and mixins. Atomo doesn't have these built into the language at the design level, but all three are rather easily implemented using Atomo itself, building upon its simple object system.
+
+  This document will guide you through its implementation, which is entirely composed of macros; it should serve as a great introduction to metaprogramming in Atomo with macros.
+}
+
+#row:{
+  Modules will be stored here, as #hl:{Association}s from the module's name, a string, to its contents, a list of expressions.
+
+  Here we use #hl:{for-macro}, a reserved word that tells the parser to evaluate this expression before the macroexpansion phase. We'll also use it later to define helper methods for our macros to use.
+}is:{
+  for-macro *modules* = []
+}on:this
+
+#row:{
+  Next, we'll need a nice syntax for defining modules. We can use a neat trick with Atomo's parser here - #hl:{a: b: c} is parsed as #hl:{a: (b: c)}; we'll use #hl:{module} as the first keyword, and the keyword in the nested dispatch will be the name of the module. The second target in the nested dispatch will be the module's body, a block. Using this trick we get very simple module definition syntax.
+
+  This macro just expands to the module's body block, but what it expands to isn't very important.
+}is:{
+  macro (module: (def: Dispatch))
+    { name = def names head
+      body = def targets at: 1
+      add-module: name as: body contents
+      body
+    } call
+}on:this
+
+#row:{
+  #hl:{add-module:as:} is a small helper method for registering a module.
+}is:{
+  for-macro add-module: (name: String) as: (body: List) :=
+    super *modules* = *modules* set: name to: body
+}on:this
+
+#row:{
+  Now when we say #hl:{module: A: { b := 2 }}, a module #hl:{A} will be inserted into #hl:{*modules*}, pointing to #hl:{['(b := 2)]} - a list of its contents.
+
+  Nothing too useful yet - the fun comes in when we #hl:{include:} it! So let's jump into that.
+}
+
+#row:{
+  Slurps a given module, found via a given #hl:{name}, into its target, often the implicit toplevel object.
+}is:{
+  macro (target include: (name: Dispatch))
+    include: name name on: target
+}on:this
+
+#row:{
+  Search for a module by name, panicking if it isn't registered. Returns an expression for defining the module's body onto the target.
+}is:{
+  for-macro include: (name: String) on: target :=
+    *modules* (lookup: name) match: {
+      @none -> error: @(unknown-module: name)
+
+      @(ok: mod) ->
+        { body = expand-body: mod on: `!top
+          `(~(`Block new: body arguments: [`!top])
+              call: [~target])
+        } call
+    }
+}on:this
+
+#row:{
+  It's important to note that we're using special names here, notably #hl:{!top}, to avoid name collision. These names are guaranteed to be safe; each time the macro expands, identifiers in a quasiquote beginning with an exclamation mark are decorated with a clock value, so there's no way for it to be confused with some other name from outside the expansion.
+}
+
+#row:{
+  Maps over a given list of expressions, expanding its contents into their module or class forms.
+
+  Note that methods defined with #hl:{:=} are exported and evaluated with the target as their implicit toplevel value, while slots inserted with #hl:{=} are kept internal.
+}is:{
+  for-macro expand-body: (exprs: List) on: target :=
+    exprs map: { e | expand-expr: e on: target }
+}on:this
+  
+#row:{
+  Come up with a method definition expression that has a the current instance as the method body's context. Ruby and Java use #code:{self} or #code:{this} for explicitly referring to this value, but both of these names are taken in Atomo, so we'll go with #hl:{me}.
+
+  As a quick example, this method turns #hl:{x := y} into #hl:{(me: { target }) x := me join: y }. It is also aware of initializer method naming conventions, so that #hl:{new := { a = 1 }} expands into #hl:{(me: { target }) new := me clone do: { a = 1 }}.
+}is:{
+  for-macro expand-expr: `(~name := ~body) on: target :=
+    { with-me =
+        `Dispatch new: name particle
+                    to: (name targets at: 0 put: `(me: { ~target }))
+
+      if: (initializer?: name particle)
+        then: { `(~with-me := me clone do: ~body) }
+        else: { `(~with-me := me join: { ~body }) }
+    } call
+}on:this
+  
+#row:{
+  Expands an #hl:{include:} expression into the module's body, executed onto the given target (the class object or another module).
+}is:{
+  for-macro expand-expr: `(include: ~(y: Dispatch)) on: target :=
+    include: y name on: target
+}on:this
+  
+#row:{
+  Leave everything else alone.
+}is:{
+  for-macro expand-expr: e on: _ := e
+}on:this
+
+#row:{
+  Determine if a given method name looks like an initializer. Basically, it checks if it's a single name, #code:{new}, or if the first keyword is #code:{new} or starts with #code:{new.}.
+}is:{
+  for-macro initializer?: (name: Particle) :=
+    name type match: {
+      @single -> name == @new
+
+      @keyword ->
+        name names head == "new" ||
+          name names head starts-with?: "new."
+    }
+}on:this
+
+#row:{
+  We already have a pretty usably module system, so let's give it a whirl!
+
+  #atomo:{
+    module: Math: {
+      -- an unexposed value
+      some-helper = 10
+
+      -- exposed methods
+      pi := 3.14
+      x := some-helper
+    }
+  }on:this
+
+  #interaction:{
+    include: Math
+    pi
+    x
+  }
+
+  Ok, that seems to work. But that's very basic. Let's try including one module into another.
+
+  #atomo:{
+    module: MoreMath: {
+      include: Math
+
+      another-helper = pi
+
+      pi*2 := another-helper * 2
+    }
+  }on:this
+
+  #interaction:{
+    include: MoreMath
+    pi
+    x
+    pi*2
+  }
+
+  And what happens when we include some unknown module?
+
+  #interaction:{
+    include: FooBar
+  }
+
+  Hooray! Seems to all be in working order. So let's move on to classes.
+}
+
+#row:{
+  Creates an anonymous class object, extending a given parent object, defaulting to #hl:{Object}.
+}is:{
+  macro (class: (b: Block))
+    `(class: ~b extends: Object)
+
+  macro (class: (b: Block) extends: obj)
+    `(~(class-create: b contents) call: [~obj clone])
+}on:this
+
+#row:{
+  Return a class creation block given the class body (a list of expressions). The block takes a single argument - the target of the definitions, which is normally a clone of the parent object.
+
+  The block also defines #hl:{me}, so that a class's body can refer to itself.
+
+  Again we're using a special name, #hl:{!o}, to prevent name collision.
+}is:{
+  for-macro class-create: (body: List) :=
+    `Block new: (`(me = !o) . (expand-body: body on: `!o) .. [`!o])
+              arguments: [`!o]
+}on:this
+
+#row:{
+  So now we have fully-functional (anonymous) classes with mixins. We can play around with it a bit already:
+
+  #atomo:{
+    Greeter =
+      class: {
+        new: x := { name = x }
+        say-hi := (name .. ": Hi!") print
+      }
+  }on:this
+
+  #interaction:{
+    Greeter (new: "John Smith") say-hi
+  }on:this
+}
+
+#row:{
+  That seems to be working pretty nicely, but now let's dig into class reopening! We'll be adding a second form of #hl:{class:}, this one taking a keyword dispatch very similar to that of #hl:{module:}. The main difference is that now we can decide whether to define or reopen.
+}
+
+#row:{
+  This macro expands to an #hl:{if:then:else:} dispatch which checks if the class is in-scope. If it is, it simply calls the class creation body with the current class object, effectively redefining all methods in the body. If it isn't defined, it just creates it.
+}is:{
+  macro (class: (c: Dispatch))
+    { single = Particle new: c names head
+      name = `Dispatch new: single to: ['this]
+      body = c targets at: 1
+
+      `(if: (responds-to?: ~single)
+          then: { ~(class-create: body contents) call: [~name] }
+          else: { ~name = class: ~body } in-context)
+    } call
+}on:this
+
+#row:{
+  Note that this works perfectly fine on arbitrary objects that weren't defined using this system. Everything just expands to regular objects and method definition - there is very little magic going on.
+
+  To prove it, I'll go ahead and reopen #hl:{Number}, the object representing numeric values in Atomo, and add a little #hl:{plus:} method which is just an alias for #hl:{+}.
+
+  #atomo:{
+    class: Number: {
+      plus: y := + y
+    }
+  }on:this
+
+  #interaction:{
+    1 plus: 2
+  }on:this
+
+  Ta-da!
+
+  But so far I've only shown classes working and modules working, not classes and modules working. So let's give that a shot.
+
+  #atomo:{
+    module: Enumerable: {
+      all?: p :=
+        { done |
+          each: { x | (done yield: False) unless: (p call: [x]) }
+          True
+        } call/cc
+    }
+
+    class: LinkedList: {
+      include: Enumerable
+
+      new := { empty? = True }
+
+      new.head: h tail: t :=
+        { head = h
+          tail = t
+          empty? = False
+        }
+
+      from: (l: List) :=
+        l reduce-right: { h t | LinkedList new.head: h tail: t }
+            with: LinkedList new
+
+      each: f :=
+        if: empty?
+          then: { @ok }
+          else: {
+            f call: [head]
+            tail each: f
+          }
+
+      show :=
+        if: empty?
+          then: { "()" }
+          else: {
+            "(" .. head show .. " : " .. tail show .. ")"
+          }
+    }
+  }on:this
+
+  Here I've implemented a (very) small subset of the #code:{Enumerable} module found in Ruby. I then implement a basic linked list class, which provides the necessary #hl:{each:} method, and includes the #hl:{Enumerable} module. So let's give it a shot:
+
+  #interaction:{
+    x = LinkedList from: [1, 2]
+    x each: { x | @(value: x) print }
+    x all?: @(is-a?: Integer)
+    x all?: @odd?
+  }on:this
+}
+
+#row:{
+  Now that we have everything working, let's see what exactly these macros we've cooked up expand into.
+
+  #interaction:{
+    `(class: { @ok }) expand
+    `(class: { new := { a = 1 }; is-one? := a == 1 }) expand
+  }
+
+  As you can see, anonymous classes expand into a call to a class-creation block; the block is called with the cloned parent as an argument, and any methods are defined on it. The block then returns the class object.
+
+  So what about including modules? What happens then? Let's see:
+
+  #interaction:{
+    `(include: Math) expand
+    `(include: MoreMath) expand
+  }
+
+  We see that including modules quite simply defines the module's contents onto a given target, with values defined with #hl:{=} unexported; they're kept within the block the methods are defined in, and end up in-scope for them but otherwise left alone. Including one module in another does the same as anything else, but what about including a module into a class definition?
+
+  #interaction:{
+    `(class: { include: Enumerable }) expand
+  }
+
+  Earlier we actually made #hl:{include:} inside of a class expand into something subtly different from the normal macro. The only thing we changed was that its target is the object being built, rather than the context of the building. It's a bit tricky to explain, but basically we're making it so that #hl:{include: SomeModule} inside of a class body acts like #hl:{me include: SomeModule}.
+}
+
+#heading:{Wrapping Up}
+
+#row:{
+  In just a few lines of code we've written a simple, elegant, and efficient implementation of Ruby's #code:{module}, #code:{class}, and #code:{include} forms. What's more, code written using these forms doesn't force others to adopt this paradigm - everything expands into simple Atomo code that's transparent to the users of your API.
+
+  We've used a few things you should remember: #hl:{for-macro} for defining helper methods and values for your macros, #hl:{macro} for writing code that creates code, and the use of #hl:{!bangs} to achieve hygienic macros without any mental overhead. We've also briefly shown #hl:{expand}, a very useful method when writing macros to see what's #italic:{really} happening to your code.
+
+  You may have noticed one thing missing, though. You can't do this:
+
+  #atomo:{
+    class: A: {} extends: B
+  }
+
+  The implementation isn't too hard, though; just remember that it's actually parsed as #hl:{class: (A: {} extends: B)}. This is left as an exercise. Good luck!
+}
