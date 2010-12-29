@@ -39,7 +39,7 @@ Two spaces for indentation is highly recommended, as it commonly aligns things p
   } call: [2]
 }
 
-Using this convention you also avoid stray closing braces, which would be common with the common alternative indentation style.
+Using this convention you also avoid stray closing braces, which would be common with the main alternative indentation style.
 
 Don't do this:
 
@@ -115,7 +115,7 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
     #hl:{1}, #hl:{2}, #hl:{-1}, ..., plus hexadecimal notation (e.g. #code:{0xdeadbeef})
   }
 
-  #item:{doubles}is:{#hl:{1}.0, #hl:{2}.0, #hl:{-1}.5, ..., plus scientific notation (e.g. #code:{1.5e10})}
+  #item:{doubles}is:{#hl:{1.0}, #hl:{2.0}, #hl:{-1.5}, ..., plus scientific notation (e.g. #code:{1.5e10})}
 
   #item:{characters}is:{
     #hl:{$a}, #hl:{$b}, #hl:{$\n}, #hl:{$\1234} (unicode number)...
@@ -391,7 +391,7 @@ The targets implied by the respective patterns in a definition are as follows:
   #item:{#hl:{1}, #hl:{2}, ...}is:{#hl:{Integer}}
   #item:{#hl:{$a}, #hl:{$b}, ...}is:{#hl:{Char}}
   #item:{#hl:{True}, #hl:{False}}is:{#hl:{Boolean}}
-  #item:{#hl:{1}.0, #hl:{2}.0, ...}is:{#hl:{Double}}
+  #item:{#hl:{1.0}, #hl:{2.0}, ...}is:{#hl:{Double}}
   #item:{#hl:{1/2}, #hl:{3/4}, ...}is:{#hl:{Rational}}
   #item:{#hl:{""}, #hl:{"foo"}, ...}is:{#hl:{String}}
   #item:{#hl:{head . tail}, #hl:{[]}, #hl:{[pattern, pattern-2]}, ...}is:{#hl:{List}}

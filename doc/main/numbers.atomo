@@ -270,7 +270,7 @@
     | n is-a?: Integer || n is-a?: Double
     > Rational
 }body:{
-    Convert an #hl:{Integer} or an inexact #hl:{Double} into the simplest rational number within #hl:{0}.001 of #hl:{n}.
+    Convert an #hl:{Integer} or an inexact #hl:{Double} into the simplest rational number within #hl:{0.001} of #hl:{n}.
 
     #example:{
       5 rationalize

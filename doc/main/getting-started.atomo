@@ -128,7 +128,7 @@ In Atomo, you're either dispatching #italic:{single messages}, such as #hl:{make
 
 The syntax for keyword dispatch is very flexible, to ease the flow of writing code that uses chains of them. For example, this syntax is perfectly valid, and is called #italic:{chaining}:
 
-#verbatim:{
+#atomo:{
     1 (+ 2) (divides?: 6) not
 }
 
