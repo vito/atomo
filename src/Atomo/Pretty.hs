@@ -112,11 +112,11 @@ instance Pretty Pattern where
             capitalized t
         capitalized _ = False
 
-        isParticular (Keyword { mNames = ["call"], mTargets = [EBlock {}, ETop {}] }) =
+        isParticular (Keyword { mNames = ["call-in"], mTargets = [EBlock {}, ETop {}] }) =
             True
         isParticular _ = False
 
-        block = mTarget msg
+        block = head (mTargets msg)
     prettyFrom _ (PObject e) = parens $ pretty e
     prettyFrom _ (PInstance p) = parens $ text "->" <+> pretty p
     prettyFrom _ (PStrict p) = parens $ text "==" <+> pretty p
