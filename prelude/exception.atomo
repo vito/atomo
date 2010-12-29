@@ -1,9 +1,9 @@
 macro (action handle: (branches: Block))
   { handlers = branches contents map:
-      { `(~c -> ~e) | `(~c -> #escape-handle yield: ~e)
+      { `(~c -> ~e) | `(~c -> !escape-handle yield: ~e)
       }
 
-    `({ #escape-handle | ~action bind: ~(`Block new: handlers) } call/cc)
+    `({ !escape-handle | ~action bind: ~(`Block new: handlers) } call/cc)
   } call
 
 macro (a handle: (b: Block) ensuring: (c: Block))

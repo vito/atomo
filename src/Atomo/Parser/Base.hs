@@ -13,6 +13,9 @@ import Atomo.Types (Expr(..), ParserState(..))
 type Parser = ParsecT String ParserState Identity
 
 
+gensym :: Char
+gensym = '!'
+
 isOpLetter :: Char -> Bool
 isOpLetter c = c `elem` "!@#%&*-./\\?:" || isSymbol c
 
@@ -53,7 +56,7 @@ anyIdent = try $ do
         else do
 
     ps <- getState
-    if c == '#' && psInQuote ps
+    if c == gensym && psInQuote ps
         then return ((c:cs) ++ ":" ++ show (psClock ps))
         else return (c:cs)
 
