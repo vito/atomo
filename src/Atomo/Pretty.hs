@@ -128,6 +128,7 @@ instance Pretty Pattern where
       where
         isAny PAny = True
         isAny _ = False
+    prettyFrom _ (PExpr e) = pretty (EQuote Nothing e)
     prettyFrom _ PThis = text "<this>"
 
     prettyFrom _ PEDispatch = text "Dispatch"
@@ -140,8 +141,6 @@ instance Pretty Pattern where
     prettyFrom _ PETop = text "Top"
     prettyFrom _ PEQuote = text "Quote"
     prettyFrom _ PEUnquote = text "Unquote"
-
-    prettyFrom _ (PExpr e) = pretty (EQuote Nothing e)
 
 
 instance Pretty Expr where

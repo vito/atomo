@@ -179,6 +179,10 @@ data Pattern
     -- definition, it's evaluated and turned into a @PMatch@.
     | PObject Expr
 
+    -- | Structurally matches an expression. The @Expr@ here is an @EQuote@,
+    -- inside of which @EUnquote@s have @PNamed@ semantics.
+    | PExpr Expr
+
     -- | Match a keyword particle. @PAny@ matches missing roles, but nothing
     -- else does.
     | PPMKeyword [String] [Pattern]
@@ -217,10 +221,6 @@ data Pattern
     | PEUnquote
 
     -- TODO: others
-
-    -- | Structurally matches an expression. The @Expr@ here is an @EQuote@,
-    -- inside of which @EUnquote@s have @PNamed@ semantics.
-    | PExpr Expr
     deriving (Show, Typeable)
 
 -- | Expressions; the nodes in a syntax tree.
