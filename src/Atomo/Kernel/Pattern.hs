@@ -9,7 +9,7 @@ import Atomo.Pattern (match)
 load :: VM ()
 load = do
     ([$p|Pattern Role|] =::) =<< eval [$e|Pattern clone|]
-    ([$p|Pattern EDefine|] =::) =<< eval [$e|Pattern clone|]
+    ([$p|Pattern Define|] =::) =<< eval [$e|Pattern clone|]
 
     [$p|(e: Expression) as: Pattern|] =: do
         Expression e <- here "e" >>= findExpression
@@ -21,7 +21,7 @@ load = do
         p <- toRolePattern' e
         return (Pattern p)
 
-    [$p|(e: Expression) as: Pattern EDefine|] =: do
+    [$p|(e: Expression) as: Pattern Define|] =: do
         Expression e <- here "e" >>= findExpression
         p <- toDefinePattern' e
         return (Pattern (PMessage p))
@@ -73,5 +73,5 @@ load = do
         t <- here "top"
 
         case p of
-            PMessage m -> define m (EPrimitive Nothing v) >> return v
+            PMessage m -> define m (Primitive Nothing v) >> return v
             _          -> withTop t (set p v)

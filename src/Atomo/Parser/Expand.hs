@@ -16,16 +16,16 @@ nextPhase es = do
 
 
 doPragmas :: Expr -> VM ()
-doPragmas (EDispatch { eMessage = em }) =
+doPragmas (Dispatch { eMessage = em }) =
     pragmas em
   where
     pragmas (Single _ _ t) =
         doPragmas t
     pragmas (Keyword _ _ ts) =
         mapM_ doPragmas ts
-doPragmas (EDefine { eExpr = e }) = do
+doPragmas (Define { eExpr = e }) = do
     doPragmas e
-doPragmas (ESet { eExpr = e }) = do
+doPragmas (Set { eExpr = e }) = do
     doPragmas e
 doPragmas (EBlock { eContents = es }) = do
     mapM_ doPragmas es
@@ -43,8 +43,8 @@ doPragmas (EParticle { eParticle = ep }) =
                     Just e -> doPragmas e
 
         _ -> return ()
-doPragmas (EOperator {}) = return ()
-doPragmas (EPrimitive {}) = return ()
+doPragmas (Operator {}) = return ()
+doPragmas (Primitive {}) = return ()
 doPragmas (EForMacro { eExpr = e }) = do
     env <- gets (psEnvironment . parserState)
     macroExpand e >>= withTop env . eval
@@ -99,7 +99,7 @@ getPS = gets parserState
 -- Every other expression just recursively calls macroExpand on any
 -- sub-expressions.
 macroExpand :: Expr -> VM Expr
-macroExpand d@(EDispatch { eMessage = em }) = do
+macroExpand d@(Dispatch { eMessage = em }) = do
     mm <- findMacro msg
     case mm of
         Just m -> do
@@ -124,10 +124,10 @@ macroExpand d@(EDispatch { eMessage = em }) = do
         case em of
             Single i n t -> Single i n (Expression t)
             Keyword i ns ts -> Keyword i ns (map Expression ts)
-macroExpand d@(EDefine { eExpr = e }) = do
+macroExpand d@(Define { eExpr = e }) = do
     e' <- macroExpand e
     return d { eExpr = e' }
-macroExpand s@(ESet { eExpr = e }) = do
+macroExpand s@(Set { eExpr = e }) = do
     e' <- macroExpand e
     return s { eExpr = e' }
 macroExpand b@(EBlock { eContents = es }) = do
@@ -161,8 +161,8 @@ macroExpand n@(ENewDynamic { eBindings = bs, eExpr = e }) = do
     e' <- macroExpand e
     return n { eBindings = bs', eExpr = e' }
 macroExpand e@(EGetDynamic {}) = return e
-macroExpand e@(EOperator {}) = return e
-macroExpand e@(EPrimitive {}) = return e
+macroExpand e@(Operator {}) = return e
+macroExpand e@(Primitive {}) = return e
 macroExpand e@(EForMacro {}) = return e
 macroExpand e@(ETop {}) = return e
 macroExpand e@(EVM {}) = return e

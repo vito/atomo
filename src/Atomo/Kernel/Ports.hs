@@ -84,7 +84,7 @@ load = do
         segment <- liftIO (hGetSegment h)
         parsed <- continuedParse segment "<read>"
 
-        let isPrimitive (EPrimitive {}) = True
+        let isPrimitive (Primitive {}) = True
             isPrimitive (EParticle { eParticle = PMSingle _ }) = True
             isPrimitive (EParticle { eParticle = PMKeyword _ ts }) =
                 all isPrimitive (catMaybes ts)
@@ -333,7 +333,7 @@ load = do
         port <- eval [$e|Port clone|]
 
         define (single "handle" (PMatch port))
-            (EPrimitive Nothing $ haskell hdl)
+            (Primitive Nothing $ haskell hdl)
 
         return port
 

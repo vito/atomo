@@ -20,7 +20,7 @@ pat =: vm = define pat (EVM Nothing Nothing vm)
 
 -- | Set a slot to a given value.
 (=::) :: Message Pattern -> Value -> VM ()
-pat =:: v = define pat (EPrimitive Nothing v)
+pat =:: v = define pat (Primitive Nothing v)
 
 -- | Define a method that evaluates e.
 (=:::) :: Message Pattern -> Expr -> VM ()
@@ -32,7 +32,7 @@ newWith e ss = do
     o <- eval e >>= dispatch . single "clone"
 
     forM_ ss $ \(n, v) ->
-        define (single n (PMatch o)) (EPrimitive Nothing v)
+        define (single n (PMatch o)) (Primitive Nothing v)
 
     return o
 
