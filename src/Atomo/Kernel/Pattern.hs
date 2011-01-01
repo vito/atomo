@@ -73,5 +73,5 @@ load = do
         t <- here "top"
 
         case p of
-            PMessage m -> define m (Primitive Nothing v) >> return v
+            PMessage m -> define m (EPrimitive Nothing v) >> return v
             _          -> withTop t (set p v)

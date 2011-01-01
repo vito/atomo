@@ -225,27 +225,27 @@ data Pattern
 
 -- | Expressions; the nodes in a syntax tree.
 data Expr
-    = Define
+    = EDefine
         { eLocation :: Maybe SourcePos
         , emPattern :: Message Pattern
         , eExpr :: Expr
         }
-    | Set
+    | ESet
         { eLocation :: Maybe SourcePos
         , ePattern :: Pattern
         , eExpr :: Expr
         }
-    | Dispatch
+    | EDispatch
         { eLocation :: Maybe SourcePos
         , eMessage :: Message Expr
         }
-    | Operator
+    | EOperator
         { eLocation :: Maybe SourcePos
         , eNames :: [String]
         , eAssoc :: Assoc
         , ePrec :: Integer
         }
-    | Primitive
+    | EPrimitive
         { eLocation :: Maybe SourcePos
         , eValue :: !Value
         }
@@ -460,12 +460,12 @@ instance Eq Pattern where
 
 
 instance Eq Expr where
-    (==) (Define _ ap' ae) (Define _ bp be) = ap' == bp && ae == be
-    (==) (Set _ ap' ae) (Set _ bp be) = ap' == bp && ae == be
-    (==) (Dispatch _ am) (Dispatch _ bm) = am == bm
-    (==) (Operator _ ans aa ap') (Operator _ bns ba bp) =
+    (==) (EDefine _ ap' ae) (EDefine _ bp be) = ap' == bp && ae == be
+    (==) (ESet _ ap' ae) (ESet _ bp be) = ap' == bp && ae == be
+    (==) (EDispatch _ am) (EDispatch _ bm) = am == bm
+    (==) (EOperator _ ans aa ap') (EOperator _ bns ba bp) =
         ans == bns && aa == ba && ap' == bp
-    (==) (Primitive _ a) (Primitive _ b) = a == b
+    (==) (EPrimitive _ a) (EPrimitive _ b) = a == b
     (==) (EBlock _ aas aes) (EBlock _ bas bes) =
         aas == bas && aes == bes
     (==) (EList _ aes) (EList _ bes) = aes == bes
@@ -492,11 +492,11 @@ instance Typeable (VM a) where
 
 
 instance S.Lift Expr where
-    lift (Define _ p e) = [| Define Nothing p e |]
-    lift (Set _ p e) = [| Set Nothing p e |]
-    lift (Dispatch _ m) = [| Dispatch Nothing m |]
-    lift (Operator _ ns a p) = [| Operator Nothing ns a p |]
-    lift (Primitive _ v) = [| Primitive Nothing v |]
+    lift (EDefine _ p e) = [| EDefine Nothing p e |]
+    lift (ESet _ p e) = [| ESet Nothing p e |]
+    lift (EDispatch _ m) = [| EDispatch Nothing m |]
+    lift (EOperator _ ns a p) = [| EOperator Nothing ns a p |]
+    lift (EPrimitive _ v) = [| EPrimitive Nothing v |]
     lift (EBlock _ as es) = [| EBlock Nothing as es |]
     lift (EVM {}) = error "cannot lift EVM"
     lift (EList _ es) = [| EList Nothing es |]

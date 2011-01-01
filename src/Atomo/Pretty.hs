@@ -102,13 +102,13 @@ instance Pretty Pattern where
     prettyFrom _ (PMatch v) = prettyFrom CPattern v
     prettyFrom _ (PNamed n PAny) = text n
     prettyFrom _ (PNamed n p) = parens $ text n <> colon <+> pretty p
-    prettyFrom _ (PObject e@(Dispatch { eMessage = msg }))
+    prettyFrom _ (PObject e@(EDispatch { eMessage = msg }))
         | capitalized msg = pretty e
         | isParticular msg = pretty block
       where
         capitalized (Single { mName = n, mTarget = ETop {} }) =
             isUpper (head n)
-        capitalized (Single { mTarget = Dispatch { eMessage = t@(Single {}) } }) =
+        capitalized (Single { mTarget = EDispatch { eMessage = t@(Single {}) } }) =
             capitalized t
         capitalized _ = False
 
@@ -144,19 +144,19 @@ instance Pretty Pattern where
 
 
 instance Pretty Expr where
-    prettyFrom _ (Define _ p v) =
+    prettyFrom _ (EDefine _ p v) =
         prettyFrom CDefine p <+> text ":=" <++> prettyFrom CDefine v
-    prettyFrom _ (Set _ p v)    =
+    prettyFrom _ (ESet _ p v)    =
         prettyFrom CDefine p <+> text "=" <++> prettyFrom CDefine v
-    prettyFrom CKeyword (Dispatch _ m@(Keyword {})) = parens $ pretty m
-    prettyFrom CSingle (Dispatch _ m@(Keyword {})) = parens $ pretty m
-    prettyFrom c (Dispatch _ m) = prettyFrom c m
-    prettyFrom _ (Operator _ ns a i) =
+    prettyFrom CKeyword (EDispatch _ m@(Keyword {})) = parens $ pretty m
+    prettyFrom CSingle (EDispatch _ m@(Keyword {})) = parens $ pretty m
+    prettyFrom c (EDispatch _ m) = prettyFrom c m
+    prettyFrom _ (EOperator _ ns a i) =
         text "operator" <+> assoc a <+> integer i <+> sep (map text ns)
       where
         assoc ALeft = text "left"
         assoc ARight = text "right"
-    prettyFrom c (Primitive _ v) = prettyFrom c v
+    prettyFrom c (EPrimitive _ v) = prettyFrom c v
     prettyFrom _ (EBlock _ ps es)
         | null ps = braces exprs
         | otherwise = braces $ sep (map pretty ps) <+> char '|' <+> exprs
@@ -276,11 +276,11 @@ prettySpacedExpr c e
     | needsParens e = parens (prettyFrom c e)
     | otherwise = prettyFrom c e
   where
-    needsParens (Define {}) = True
-    needsParens (Set {}) = True
-    needsParens (Dispatch { eMessage = Keyword {} }) = True
-    needsParens (Dispatch { eMessage = Single { mTarget = ETop {} } }) = False
-    needsParens (Dispatch { eMessage = Single {} }) = True
+    needsParens (EDefine {}) = True
+    needsParens (ESet {}) = True
+    needsParens (EDispatch { eMessage = Keyword {} }) = True
+    needsParens (EDispatch { eMessage = Single { mTarget = ETop {} } }) = False
+    needsParens (EDispatch { eMessage = Single {} }) = True
     needsParens _ = False
 
 

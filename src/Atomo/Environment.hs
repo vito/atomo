@@ -13,17 +13,17 @@ import Atomo.Types
 
 -- | Evaluate an expression, yielding a value.
 eval :: Expr -> VM Value
-eval (Define { emPattern = p, eExpr = ev }) = do
+eval (EDefine { emPattern = p, eExpr = ev }) = do
     define p ev
     return (particle "ok")
-eval (Set { ePattern = PMessage p, eExpr = ev }) = do
+eval (ESet { ePattern = PMessage p, eExpr = ev }) = do
     v <- eval ev
-    define p (Primitive (eLocation ev) v)
+    define p (EPrimitive (eLocation ev) v)
     return v
-eval (Set { ePattern = p, eExpr = ev }) = do
+eval (ESet { ePattern = p, eExpr = ev }) = do
     v <- eval ev
     set p v
-eval (Dispatch
+eval (EDispatch
         { eMessage = Single
             { mID = i
             , mName = n
@@ -32,7 +32,7 @@ eval (Dispatch
         }) = do
     v <- eval t
     dispatch (Single i n v)
-eval (Dispatch
+eval (EDispatch
         { eMessage = Keyword
             { mID = i
             , mNames = ns
@@ -41,7 +41,7 @@ eval (Dispatch
         }) = do
     vs <- mapM eval ts
     dispatch (Keyword i ns vs)
-eval (Operator { eNames = ns, eAssoc = a, ePrec = p }) = do
+eval (EOperator { eNames = ns, eAssoc = a, ePrec = p }) = do
     forM_ ns $ \n -> modify $ \s ->
         s
             { parserState =
@@ -52,7 +52,7 @@ eval (Operator { eNames = ns, eAssoc = a, ePrec = p }) = do
             }
 
     return (particle "ok")
-eval (Primitive { eValue = v }) = return v
+eval (EPrimitive { eValue = v }) = return v
 eval (EBlock { eArguments = as, eContents = es }) = do
     t <- gets top
     return (Block t as es)
@@ -79,20 +79,20 @@ eval (EQuote { eExpr = qe }) = do
         r <- eval e
         case r of
             Expression e' -> return e'
-            _ -> return (Primitive Nothing r)
+            _ -> return (EPrimitive Nothing r)
     unquote n u@(EUnquote { eExpr = e }) = do
         ne <- unquote (n - 1) e
         return (u { eExpr = ne })
     unquote n q@(EQuote { eExpr = e }) = do
         ne <- unquote (n + 1) e
         return q { eExpr = ne }
-    unquote n d@(Define { eExpr = e }) = do
+    unquote n d@(EDefine { eExpr = e }) = do
         ne <- unquote n e
         return (d { eExpr = ne })
-    unquote n s@(Set { eExpr = e }) = do
+    unquote n s@(ESet { eExpr = e }) = do
         ne <- unquote n e
         return (s { eExpr = ne })
-    unquote n d@(Dispatch { eMessage = em }) =
+    unquote n d@(EDispatch { eMessage = em }) =
         case em of
             Keyword { mTargets = ts } -> do
                 nts <- mapM (unquote n) ts
@@ -130,13 +130,13 @@ eval (EQuote { eExpr = qe }) = do
     unquote n d@(ESetDynamic { eExpr = e }) = do
         ne <- unquote n e
         return d { eExpr = ne }
-    unquote n p@(Primitive { eValue = Expression e }) = do
+    unquote n p@(EPrimitive { eValue = Expression e }) = do
         ne <- unquote n e
         return p { eValue = Expression ne }
-    unquote _ p@(Primitive {}) = return p
+    unquote _ p@(EPrimitive {}) = return p
     unquote _ t@(ETop {}) = return t
     unquote _ v@(EVM {}) = return v
-    unquote _ o@(Operator {}) = return o
+    unquote _ o@(EOperator {}) = return o
     unquote _ f@(EForMacro {}) = return f
     unquote _ g@(EGetDynamic {}) = return g
 eval (ENewDynamic { eBindings = bes, eExpr = e }) = do
@@ -248,7 +248,7 @@ define !p !e = do
 
     forM_ os (flip defineOn m)
   where
-    method p' (Primitive _ v) = return (Slot p' v)
+    method p' (EPrimitive _ v) = return (Slot p' v)
     method p' e' = gets top >>= \t -> return (Responder p' t e')
 
 
@@ -275,7 +275,7 @@ set p v = do
     if match is Nothing p v
         then do
             forM_ (bindings' p v) $ \(p', v') ->
-                define p' (Primitive Nothing v')
+                define p' (EPrimitive Nothing v')
 
             return v
         else throwError (Mismatch p v)

@@ -92,13 +92,13 @@ exprPrecision :: Int -> Expr -> Expr -> Ordering
 exprPrecision 0 (EUnquote {}) (EUnquote {}) = EQ
 exprPrecision 0 (EUnquote {}) _ = GT
 exprPrecision 0 _ (EUnquote {}) = LT
-exprPrecision n (Define { eExpr = a }) (Define { eExpr = b }) =
+exprPrecision n (EDefine { eExpr = a }) (EDefine { eExpr = b }) =
     exprPrecision n a b
-exprPrecision n (Set { eExpr = a }) (Set { eExpr = b }) =
+exprPrecision n (ESet { eExpr = a }) (ESet { eExpr = b }) =
     exprPrecision n a b
-exprPrecision n (Dispatch { eMessage = am@(Keyword {}) }) (Dispatch { eMessage = bm@(Keyword {}) }) =
+exprPrecision n (EDispatch { eMessage = am@(Keyword {}) }) (EDispatch { eMessage = bm@(Keyword {}) }) =
     comparePrecisionsWith (exprPrecision n) (mTargets am) (mTargets bm)
-exprPrecision n (Dispatch { eMessage = am@(Single {}) }) (Dispatch { eMessage = bm@(Single {}) }) =
+exprPrecision n (EDispatch { eMessage = am@(Single {}) }) (EDispatch { eMessage = bm@(Single {}) }) =
     exprPrecision n (mTarget am) (mTarget bm)
 exprPrecision n (EBlock { eContents = as }) (EBlock { eContents = bs }) =
     comparePrecisionsWith (exprPrecision n) as bs
