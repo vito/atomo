@@ -130,9 +130,9 @@ instance Pretty Pattern where
         isAny _ = False
     prettyFrom _ PThis = text "<this>"
 
-    prettyFrom _ PEDispatch = text "EDispatch"
-    prettyFrom _ PEOperator = text "EOperator"
-    prettyFrom _ PEPrimitive = text "EPrimitive"
+    prettyFrom _ PEDispatch = text "Dispatch"
+    prettyFrom _ PEOperator = text "Operator"
+    prettyFrom _ PEPrimitive = text "Primitive"
     prettyFrom _ PEBlock = text "Block"
     prettyFrom _ PEList = text "List"
     prettyFrom _ PEMacro = text "Macro"

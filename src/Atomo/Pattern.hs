@@ -277,9 +277,9 @@ toMacroPattern _ = Nothing
 
 -- | Convert an expression into a pattern-match for use as a macro's role.
 toMacroRole :: Expr -> Maybe Pattern
-toMacroRole (EDispatch _ (Single _ "EDispatch" _)) = Just PEDispatch
-toMacroRole (EDispatch _ (Single _ "EOperator" _)) = Just PEOperator
-toMacroRole (EDispatch _ (Single _ "EPrimitive" _)) = Just PEPrimitive
+toMacroRole (EDispatch _ (Single _ "Dispatch" _)) = Just PEDispatch
+toMacroRole (EDispatch _ (Single _ "Operator" _)) = Just PEOperator
+toMacroRole (EDispatch _ (Single _ "Primitive" _)) = Just PEPrimitive
 toMacroRole (EDispatch _ (Single _ "Block" _)) = Just PEBlock
 toMacroRole (EDispatch _ (Single _ "List" _)) = Just PEList
 toMacroRole (EDispatch _ (Single _ "Macro" _)) = Just PEMacro
