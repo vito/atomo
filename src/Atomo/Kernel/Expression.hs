@@ -3,6 +3,7 @@
 module Atomo.Kernel.Expression (load) where
 
 import Text.PrettyPrint (Doc)
+import Text.Parsec (sourceColumn, sourceLine, sourceName)
 
 import Atomo
 import Atomo.Parser (parseInput)
@@ -94,6 +95,21 @@ load = do
     [$p|(e: Expression) expand|] =: do
         Expression e <- here "e" >>= findExpression
         liftM Expression $ macroExpand e
+
+    [$p|(e: Expression) pretty|] =: do
+        Expression e <- here "e" >>= findExpression
+        return (string (show (pretty e)))
+
+    [$p|(e: Expression) location|] =: do
+        Expression e <- here "e" >>= findExpression
+
+        case eLocation e of
+            Nothing -> return (particle "none")
+            Just s -> return $ keyParticleN ["name", "line", "column"]
+                [ string (sourceName s)
+                , Integer (fromIntegral (sourceLine s))
+                , Integer (fromIntegral (sourceColumn s))
+                ]
 
     [$p|(e: Expression) type|] =: do
         Expression e <- here "e" >>= findExpression
