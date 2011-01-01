@@ -13,7 +13,7 @@ import qualified Atomo.Types as T
 
 
 -- | The types of values in Dispatch syntax.
-data Dispatch
+data EDispatch
     = DParticle (Particle Expr)
     | DNormal Expr
     deriving Show
@@ -52,7 +52,7 @@ pLiteral = choice
 --
 -- Examples: @1@, @2.0@, @3\/4@, @$d@, @\"foo\"@, @True@, @False@
 pPrimitive :: Parser Expr
-pPrimitive = tagged $ liftM (Primitive Nothing) pPrim
+pPrimitive = tagged $ liftM (EPrimitive Nothing) pPrim
 
 -- | The @this@ keyword, i.e. the toplevel object literal.
 pThis :: Parser Expr
@@ -65,7 +65,7 @@ pQuoted :: Parser Expr
 pQuoted = tagged $ do
     char '\''
     e <- pSpacedExpr
-    return (Primitive Nothing (Expression e))
+    return (EPrimitive Nothing (Expression e))
 
 -- | An expression literal that may contain "unquotes" - expressions to splice
 -- in to yield a different expression.
@@ -103,7 +103,7 @@ pSpacedExpr = pLiteral <|> simpleDispatch <|> parens pExpr
         name <- ident
         notFollowedBy (char ':')
         spacing
-        return (Dispatch Nothing (single name (ETop Nothing)))
+        return (EDispatch Nothing (single name (ETop Nothing)))
 
 -- | The for-macro "pragma."
 --
@@ -166,7 +166,7 @@ pOperator = tagged (do
                 (name, info) : psOperators ps
             }
 
-    return (uncurry (Operator Nothing ops) info))
+    return (uncurry (EOperator Nothing ops) info))
     <?> "operator pragma"
 
 -- | A particle literal.
@@ -206,14 +206,14 @@ pdKeys = do
     pos <- getPosition
     msg <- keywords T.keyword (ETop (Just pos)) (try pdChain <|> headless)
     ops <- liftM psOperators getState
-    return $ Dispatch (Just pos) (toBinaryOps ops msg)
+    return $ EDispatch (Just pos) (toBinaryOps ops msg)
     <?> "keyword dispatch"
   where
     headless = do
         p <- getPosition
         msg <- ckeywd p
         ops <- liftM psOperators getState
-        return (Dispatch (Just p) (toBinaryOps ops msg))
+        return (EDispatch (Just p) (toBinaryOps ops msg))
 
     ckeywd pos = do
         ks <- wsMany1 $ keyword pdChain
@@ -241,22 +241,22 @@ pdChain = do
         ]
 
     -- start off by dispatching on either a primitive or Top
-    dispatches :: SourcePos -> [Dispatch] -> Expr
+    dispatches :: SourcePos -> [EDispatch] -> Expr
     dispatches p (DNormal e:ps) =
         dispatches' p ps e
     dispatches p (DParticle (PMSingle n):ps) =
-        dispatches' p ps (Dispatch (Just p) $ single n (ETop (Just p)))
+        dispatches' p ps (EDispatch (Just p) $ single n (ETop (Just p)))
     dispatches p (DParticle (PMKeyword ns (Nothing:es)):ps) =
-        dispatches' p ps (Dispatch (Just p) $ T.keyword ns (ETop (Just p):map fromJust es))
+        dispatches' p ps (EDispatch (Just p) $ T.keyword ns (ETop (Just p):map fromJust es))
     dispatches _ ds = error $ "impossible: dispatches on " ++ show ds
 
     -- roll a list of partial messages into a bunch of dispatches
-    dispatches' :: SourcePos -> [Dispatch] -> Expr -> Expr
+    dispatches' :: SourcePos -> [EDispatch] -> Expr -> Expr
     dispatches' _ [] acc = acc
     dispatches' p (DParticle (PMKeyword ns (Nothing:es)):ps) acc =
-        dispatches' p ps (Dispatch (Just p) $ T.keyword ns (acc : map fromJust es))
+        dispatches' p ps (EDispatch (Just p) $ T.keyword ns (acc : map fromJust es))
     dispatches' p (DParticle (PMSingle n):ps) acc =
-        dispatches' p ps (Dispatch (Just p) $ single n acc)
+        dispatches' p ps (EDispatch (Just p) $ single n acc)
     dispatches' _ x y = error $ "impossible: dispatches' on " ++ show (x, y)
 
 -- | A comma-separated list of zero or more expressions, surrounded by square
@@ -340,7 +340,7 @@ cKeyword wc = do
             pos <- getPosition
             let msg = toBinaryOps (psOperators os) $ T.keyword opers (map fromJust opVals)
             return . PMKeyword nonOpers $
-                partVals ++ [Just $ Dispatch (Just pos) msg]
+                partVals ++ [Just $ EDispatch (Just pos) msg]
         | otherwise = fail "invalid particle; toplevel operator with wildcards as values"
       where
         (nonOpers, opers) = first (n:) $ break isOperator ns
@@ -356,23 +356,23 @@ toBinaryOps ops (Keyword h (n:ns) (v:vs))
     | nextFirst =
          T.keyword [n]
             [ v
-            , Dispatch (eLocation v)
+            , EDispatch (eLocation v)
                 (toBinaryOps ops (T.keyword ns vs))
             ]
     | isOperator n =
         toBinaryOps ops . T.keyword ns $
-            (Dispatch (eLocation v) (T.keyword [n] [v, head vs]):tail vs)
+            (EDispatch (eLocation v) (T.keyword [n] [v, head vs]):tail vs)
     | nonOperators == ns = Keyword h (n:ns) (v:vs)
     | null nonOperators && length vs > 2 =
         T.keyword [head ns]
-            [ Dispatch (eLocation v) $
+            [ EDispatch (eLocation v) $
                 T.keyword [n] [v, head vs]
-            , Dispatch (eLocation v) $
+            , EDispatch (eLocation v) $
                 toBinaryOps ops (T.keyword (tail ns) (tail vs))
             ]
     | otherwise =
         toBinaryOps ops . T.keyword (drop numNonOps ns) $
-            (Dispatch (eLocation v) $
+            (EDispatch (eLocation v) $
                 T.keyword (n : nonOperators)
                 (v : take (numNonOps + 1) vs)) :
                 drop (numNonOps + 1) vs

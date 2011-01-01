@@ -79,9 +79,10 @@ data Value
     | String { fromString :: !T.Text }
     deriving (Show, Typeable)
 
--- | Methods, slot, and macro methods.
+-- | Methods: responders, slots, and macro.
 data Method
-    -- | Responds to a message by evaluating an expression in the given context.
+    -- | Responds to a message by evaluating an expression with the method's
+    -- context available.
     = Responder
         { mPattern :: !(Message Pattern)
         , mContext :: !Value
@@ -147,56 +148,104 @@ data AtomoError
 -- The Eq instance only checks equivalence. For example, named pattern matches
 -- only match their patterns, not the names.
 data Pattern
+    -- | Matches any value.
     = PAny
+
+    -- | Matches a non-empty list, with the given patterns for its head and
+    -- tail.
     | PHeadTail Pattern Pattern
+
+    -- | Matches a list of a given length, also pattern-matching its contents.
     | PList [Pattern]
+
+    -- | Matches a specific value. When matching objects, the delegates are
+    -- checked as well.
     | PMatch Value
+
+    -- | Matches a message value.
     | PMessage (Message Pattern)
+
+    -- | Matches an object delegating to something that matches a pattern.
     | PInstance Pattern
+
+    -- | Matches a value strictly; delegates are not checked.
     | PStrict Pattern
+
+    -- | Gives a name to a pattern; this introduces a binding when
+    -- pattern-matching.
     | PNamed String Pattern
+
+    -- | Match an object specified by an expression. When used in a method
+    -- definition, it's evaluated and turned into a @PMatch@.
     | PObject Expr
+
+    -- | Match a keyword particle. @PAny@ matches missing roles, but nothing
+    -- else does.
     | PPMKeyword [String] [Pattern]
+
+    -- | Shortcut for the current object we're searching for a method on.
     | PThis
 
-    -- expression types, used in macros
+    -- | Matches any @EDispatch@ expression.
     | PEDispatch
+
+    -- | Matches any @EOperator@ expression.
     | PEOperator
+
+    -- | Matches any @EPrimitive@ expression.
     | PEPrimitive
+
+    -- | Matches any @EBlock@ expression.
     | PEBlock
+
+    -- | Matches any @EList@ expression.
     | PEList
+
+    -- | Matches any @EMacro@ expression.
     | PEMacro
+
+    -- | Matches any @EParticle@ expression.
     | PEParticle
+
+    -- | Matches any @ETop@ expression.
     | PETop
+
+    -- | Matches any @EQuote@ expression.
     | PEQuote
+
+    -- | Matches any @EUnquote@ expression.
     | PEUnquote
 
+    -- TODO: others
+
+    -- | Structurally matches an expression. The @Expr@ here is an @EQuote@,
+    -- inside of which @EUnquote@s have @PNamed@ semantics.
     | PExpr Expr
     deriving (Show, Typeable)
 
 -- | Expressions; the nodes in a syntax tree.
 data Expr
-    = Define
+    = EDefine
         { eLocation :: Maybe SourcePos
         , emPattern :: Message Pattern
         , eExpr :: Expr
         }
-    | Set
+    | ESet
         { eLocation :: Maybe SourcePos
         , ePattern :: Pattern
         , eExpr :: Expr
         }
-    | Dispatch
+    | EDispatch
         { eLocation :: Maybe SourcePos
         , eMessage :: Message Expr
         }
-    | Operator
+    | EOperator
         { eLocation :: Maybe SourcePos
         , eNames :: [String]
         , eAssoc :: Assoc
         , ePrec :: Integer
         }
-    | Primitive
+    | EPrimitive
         { eLocation :: Maybe SourcePos
         , eValue :: !Value
         }
@@ -411,12 +460,12 @@ instance Eq Pattern where
 
 
 instance Eq Expr where
-    (==) (Define _ ap' ae) (Define _ bp be) = ap' == bp && ae == be
-    (==) (Set _ ap' ae) (Set _ bp be) = ap' == bp && ae == be
-    (==) (Dispatch _ am) (Dispatch _ bm) = am == bm
-    (==) (Operator _ ans aa ap') (Operator _ bns ba bp) =
+    (==) (EDefine _ ap' ae) (EDefine _ bp be) = ap' == bp && ae == be
+    (==) (ESet _ ap' ae) (ESet _ bp be) = ap' == bp && ae == be
+    (==) (EDispatch _ am) (EDispatch _ bm) = am == bm
+    (==) (EOperator _ ans aa ap') (EOperator _ bns ba bp) =
         ans == bns && aa == ba && ap' == bp
-    (==) (Primitive _ a) (Primitive _ b) = a == b
+    (==) (EPrimitive _ a) (EPrimitive _ b) = a == b
     (==) (EBlock _ aas aes) (EBlock _ bas bes) =
         aas == bas && aes == bes
     (==) (EList _ aes) (EList _ bes) = aes == bes
@@ -443,11 +492,11 @@ instance Typeable (VM a) where
 
 
 instance S.Lift Expr where
-    lift (Define _ p e) = [| Define Nothing p e |]
-    lift (Set _ p e) = [| Set Nothing p e |]
-    lift (Dispatch _ m) = [| Dispatch Nothing m |]
-    lift (Operator _ ns a p) = [| Operator Nothing ns a p |]
-    lift (Primitive _ v) = [| Primitive Nothing v |]
+    lift (EDefine _ p e) = [| EDefine Nothing p e |]
+    lift (ESet _ p e) = [| ESet Nothing p e |]
+    lift (EDispatch _ m) = [| EDispatch Nothing m |]
+    lift (EOperator _ ns a p) = [| EOperator Nothing ns a p |]
+    lift (EPrimitive _ v) = [| EPrimitive Nothing v |]
     lift (EBlock _ as es) = [| EBlock Nothing as es |]
     lift (EVM {}) = error "cannot lift EVM"
     lift (EList _ es) = [| EList Nothing es |]

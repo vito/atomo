@@ -66,9 +66,9 @@ match _ _ p (Expression e) = macroMatch p e
 match _ _ _ _ = False
 
 macroMatch :: Pattern -> Expr -> Bool
-macroMatch PEDispatch (Dispatch {}) = True
-macroMatch PEOperator (Operator {}) = True
-macroMatch PEPrimitive (Primitive {}) = True
+macroMatch PEDispatch (EDispatch {}) = True
+macroMatch PEOperator (EOperator {}) = True
+macroMatch PEPrimitive (EPrimitive {}) = True
 macroMatch PEBlock (EBlock {}) = True
 macroMatch PEList (EList {}) = True
 macroMatch PEMacro (EMacro {}) = True
@@ -93,20 +93,20 @@ matchEParticle n (Nothing:as) (Nothing:bs) = matchEParticle n as bs
 matchEParticle _ _ _ = False
 
 matchExpr :: Int -> Expr -> Expr -> Bool
-matchExpr 0 (EUnquote { eExpr = Dispatch { eMessage = Single {} } }) _ = True
-matchExpr 0 (EUnquote { eExpr = Dispatch { eMessage = Keyword { mTargets = [ETop {}, pat] } } }) e
+matchExpr 0 (EUnquote { eExpr = EDispatch { eMessage = Single {} } }) _ = True
+matchExpr 0 (EUnquote { eExpr = EDispatch { eMessage = Keyword { mTargets = [ETop {}, pat] } } }) e
     | isJust mp = macroMatch (fromJust mp) e --matchExpr 0 pat e
   where
     mp = toMacroRole pat
 matchExpr n (EUnquote { eExpr = a }) (EUnquote { eExpr = b }) =
     matchExpr (n - 1) a b
-matchExpr n (Define { emPattern = ap', eExpr = a }) (Define { emPattern = bp, eExpr = b }) =
+matchExpr n (EDefine { emPattern = ap', eExpr = a }) (EDefine { emPattern = bp, eExpr = b }) =
     ap' == bp && matchExpr n a b
-matchExpr n (Set { ePattern = ap', eExpr = a }) (Set { ePattern = bp, eExpr = b }) =
+matchExpr n (ESet { ePattern = ap', eExpr = a }) (ESet { ePattern = bp, eExpr = b }) =
     ap' == bp && matchExpr n a b
-matchExpr n (Dispatch { eMessage = am@(Keyword {}) }) (Dispatch { eMessage = bm@(Keyword {}) }) =
+matchExpr n (EDispatch { eMessage = am@(Keyword {}) }) (EDispatch { eMessage = bm@(Keyword {}) }) =
     mID am == mID bm && length (mTargets am) == length (mTargets bm) && and (zipWith (matchExpr n) (mTargets am) (mTargets bm))
-matchExpr n (Dispatch { eMessage = am@(Single {}) }) (Dispatch { eMessage = bm@(Single {}) }) =
+matchExpr n (EDispatch { eMessage = am@(Single {}) }) (EDispatch { eMessage = bm@(Single {}) }) =
     mID am == mID bm && matchExpr n (mTarget am) (mTarget bm)
 matchExpr n (EBlock { eArguments = aps, eContents = as }) (EBlock { eArguments = bps, eContents = bs }) =
     aps == bps && length as == length bs && and (zipWith (matchExpr n) as bs)
@@ -165,19 +165,19 @@ bindings' _ _ = []
 
 
 exprBindings :: Int -> Expr -> Expr -> [(Message Pattern, Value)]
-exprBindings 0 (EUnquote { eExpr = Dispatch { eMessage = Single { mName = n } } }) e =
+exprBindings 0 (EUnquote { eExpr = EDispatch { eMessage = Single { mName = n } } }) e =
     [(single n PThis, Expression e)]
-exprBindings 0 (EUnquote { eExpr = Dispatch { eMessage = Keyword { mNames = [n] } } }) e =
+exprBindings 0 (EUnquote { eExpr = EDispatch { eMessage = Keyword { mNames = [n] } } }) e =
     [(single n PThis, Expression e)]
 exprBindings n (EUnquote { eExpr = a }) (EUnquote { eExpr = b }) =
     exprBindings (n - 1) a b
-exprBindings n (Define { eExpr = a }) (Define { eExpr = b }) =
+exprBindings n (EDefine { eExpr = a }) (EDefine { eExpr = b }) =
     exprBindings n a b
-exprBindings n (Set { eExpr = a }) (Set { eExpr = b }) =
+exprBindings n (ESet { eExpr = a }) (ESet { eExpr = b }) =
     exprBindings n a b
-exprBindings n (Dispatch { eMessage = am@(Keyword {}) }) (Dispatch { eMessage = bm@(Keyword {}) }) =
+exprBindings n (EDispatch { eMessage = am@(Keyword {}) }) (EDispatch { eMessage = bm@(Keyword {}) }) =
     concat $ zipWith (exprBindings n) (mTargets am) (mTargets bm)
-exprBindings n (Dispatch { eMessage = am@(Single {}) }) (Dispatch { eMessage = bm@(Single {}) }) =
+exprBindings n (EDispatch { eMessage = am@(Single {}) }) (EDispatch { eMessage = bm@(Single {}) }) =
     exprBindings n (mTarget am) (mTarget bm)
 exprBindings n (EBlock { eContents = as }) (EBlock { eContents = bs }) =
     concat $ zipWith (exprBindings n) as bs
@@ -198,24 +198,24 @@ exprBindings _ _ _ = []
 
 -- | Convert an expression to the pattern match it represents.
 toPattern :: Expr -> Maybe Pattern
-toPattern (Dispatch { eMessage = Keyword { mNames = ["."], mTargets = [h, t] } }) = do
+toPattern (EDispatch { eMessage = Keyword { mNames = ["."], mTargets = [h, t] } }) = do
     hp <- toPattern h
     tp <- toPattern t
     return (PHeadTail hp tp)
-toPattern (Dispatch { eMessage = Keyword { mNames = ["->"], mTargets = [ETop {}, o] } }) = do
+toPattern (EDispatch { eMessage = Keyword { mNames = ["->"], mTargets = [ETop {}, o] } }) = do
     liftM PInstance (toPattern o)
-toPattern (Dispatch { eMessage = Keyword { mNames = ["=="], mTargets = [ETop {}, o] } }) = do
+toPattern (EDispatch { eMessage = Keyword { mNames = ["=="], mTargets = [ETop {}, o] } }) = do
     liftM PStrict (toPattern o)
-toPattern (Dispatch { eMessage = Keyword { mNames = [n], mTargets = [ETop {}, x] } }) = do
+toPattern (EDispatch { eMessage = Keyword { mNames = [n], mTargets = [ETop {}, x] } }) = do
     p <- toPattern x
     return (PNamed n p)
-toPattern (Dispatch { eMessage = Keyword { mNames = ns, mTargets = ts } }) =
+toPattern (EDispatch { eMessage = Keyword { mNames = ns, mTargets = ts } }) =
     return (pkeyword ns (map PObject ts))
-toPattern (Dispatch { eMessage = Single { mName = "_" } }) =
+toPattern (EDispatch { eMessage = Single { mName = "_" } }) =
     return PAny
-toPattern (Dispatch { eMessage = Single { mName = n, mTarget = ETop {} } }) =
+toPattern (EDispatch { eMessage = Single { mName = n, mTarget = ETop {} } }) =
     return (PNamed n PAny)
-toPattern (Dispatch { eMessage = Single { mTarget = d@(Dispatch {}), mName = n } }) =
+toPattern (EDispatch { eMessage = Single { mTarget = d@(EDispatch {}), mName = n } }) =
     return (psingle n (PObject d))
 toPattern (EList { eContents = es }) = do
     ps <- mapM toPattern es
@@ -230,64 +230,64 @@ toPattern (EParticle { eParticle = PMKeyword ns mes }) = do
 
     return (PPMKeyword ns ps)
 toPattern (EQuote { eExpr = e }) = return (PExpr e)
-toPattern (Primitive { eValue = v }) =
+toPattern (EPrimitive { eValue = v }) =
     return (PMatch v)
 toPattern (ETop {}) =
     return (PObject (ETop Nothing))
 toPattern b@(EBlock {}) =
-    return (PObject (Dispatch Nothing (keyword ["call-in"] [b, ETop Nothing])))
+    return (PObject (EDispatch Nothing (keyword ["call-in"] [b, ETop Nothing])))
 toPattern _ = Nothing
 
 -- | Convert an expression into a definition's message pattern.
 toDefinePattern :: Expr -> Maybe (Message Pattern)
-toDefinePattern (Dispatch { eMessage = Single { mName = n, mTarget = t } }) = do
+toDefinePattern (EDispatch { eMessage = Single { mName = n, mTarget = t } }) = do
     p <- toRolePattern t
     return (single n p)
-toDefinePattern (Dispatch { eMessage = Keyword { mNames = ns, mTargets = ts } }) = do
+toDefinePattern (EDispatch { eMessage = Keyword { mNames = ns, mTargets = ts } }) = do
     ps <- mapM toRolePattern ts
     return (keyword ns ps)
 toDefinePattern _ = Nothing
 
 -- | Convert an expression into a pattern-match for use as a message's role.
 toRolePattern :: Expr -> Maybe Pattern
-toRolePattern (Dispatch { eMessage = Keyword { mNames = ["->"], mTargets = [ETop {}, o] } }) = do
+toRolePattern (EDispatch { eMessage = Keyword { mNames = ["->"], mTargets = [ETop {}, o] } }) = do
     liftM PInstance (toRolePattern o)
-toRolePattern (Dispatch { eMessage = Keyword { mNames = ["=="], mTargets = [ETop {}, o] } }) = do
+toRolePattern (EDispatch { eMessage = Keyword { mNames = ["=="], mTargets = [ETop {}, o] } }) = do
     liftM PStrict (toRolePattern o)
-toRolePattern (Dispatch { eMessage = Keyword { mNames = [n], mTargets = [ETop {}, x] } }) = do
+toRolePattern (EDispatch { eMessage = Keyword { mNames = [n], mTargets = [ETop {}, x] } }) = do
     p <- toRolePattern x
     return (PNamed n p)
-toRolePattern d@(Dispatch { eMessage = Single { mTarget = ETop {}, mName = n } })
+toRolePattern d@(EDispatch { eMessage = Single { mTarget = ETop {}, mName = n } })
     | isUpper (head n) = return (PObject d)
     | n == "_" = return PAny
     | otherwise = return (PNamed n PAny)
-toRolePattern d@(Dispatch { eMessage = Single { mTarget = (Dispatch {}) } }) =
+toRolePattern d@(EDispatch { eMessage = Single { mTarget = (EDispatch {}) } }) =
     return (PObject d)
 toRolePattern p = toPattern p
 
 -- | Convert an expression into a macro's message pattern.
 toMacroPattern :: Expr -> Maybe (Message Pattern)
-toMacroPattern (Dispatch { eMessage = Single { mName = n, mTarget = t } }) = do
+toMacroPattern (EDispatch { eMessage = Single { mName = n, mTarget = t } }) = do
     p <- toMacroRole t
     return (single n p)
-toMacroPattern (Dispatch { eMessage = Keyword { mNames = ns, mTargets = ts } }) = do
+toMacroPattern (EDispatch { eMessage = Keyword { mNames = ns, mTargets = ts } }) = do
     ps <- mapM toMacroRole ts
     return (keyword ns ps)
 toMacroPattern _ = Nothing
 
 -- | Convert an expression into a pattern-match for use as a macro's role.
 toMacroRole :: Expr -> Maybe Pattern
-toMacroRole (Dispatch _ (Single _ "Dispatch" _)) = Just PEDispatch
-toMacroRole (Dispatch _ (Single _ "Operator" _)) = Just PEOperator
-toMacroRole (Dispatch _ (Single _ "Primitive" _)) = Just PEPrimitive
-toMacroRole (Dispatch _ (Single _ "Block" _)) = Just PEBlock
-toMacroRole (Dispatch _ (Single _ "List" _)) = Just PEList
-toMacroRole (Dispatch _ (Single _ "Macro" _)) = Just PEMacro
-toMacroRole (Dispatch _ (Single _ "Particle" _)) = Just PEParticle
-toMacroRole (Dispatch _ (Single _ "Top" _)) = Just PETop
-toMacroRole (Dispatch _ (Single _ "Quote" _)) = Just PEQuote
-toMacroRole (Dispatch _ (Single _ "Unquote" _)) = Just PEUnquote
-toMacroRole (Dispatch { eMessage = Keyword { mNames = [n], mTargets = [ETop {}, x] } }) = do
+toMacroRole (EDispatch _ (Single _ "EDispatch" _)) = Just PEDispatch
+toMacroRole (EDispatch _ (Single _ "EOperator" _)) = Just PEOperator
+toMacroRole (EDispatch _ (Single _ "EPrimitive" _)) = Just PEPrimitive
+toMacroRole (EDispatch _ (Single _ "Block" _)) = Just PEBlock
+toMacroRole (EDispatch _ (Single _ "List" _)) = Just PEList
+toMacroRole (EDispatch _ (Single _ "Macro" _)) = Just PEMacro
+toMacroRole (EDispatch _ (Single _ "Particle" _)) = Just PEParticle
+toMacroRole (EDispatch _ (Single _ "Top" _)) = Just PETop
+toMacroRole (EDispatch _ (Single _ "Quote" _)) = Just PEQuote
+toMacroRole (EDispatch _ (Single _ "Unquote" _)) = Just PEUnquote
+toMacroRole (EDispatch { eMessage = Keyword { mNames = [n], mTargets = [ETop {}, x] } }) = do
     p <- toMacroRole x
     return (PNamed n p)
 toMacroRole (ETop {}) = Just PAny

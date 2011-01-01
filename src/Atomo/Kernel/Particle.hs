@@ -104,7 +104,7 @@ load = do
             expr =
                 case v of
                     Expression e -> e
-                    _ -> Primitive Nothing v
+                    _ -> EPrimitive Nothing v
 
         withTop c $ do
             case p of
