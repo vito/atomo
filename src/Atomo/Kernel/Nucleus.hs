@@ -58,8 +58,8 @@ load = do
 
         let completed =
                 case p' of
-                    PMKeyword ns mvs -> keyword ns (completeKP mvs [x])
-                    PMSingle n -> single n x
+                    Keyword { mNames = ns, mTargets = mvs } -> keyword ns (completeKP mvs [x])
+                    Single { mName = n } -> single n x
 
         liftM (Boolean . isJust) $ findMethod x completed
 

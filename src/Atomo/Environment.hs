@@ -61,12 +61,12 @@ eval (EList { eContents = es }) = do
     return (list vs)
 eval (EMacro {}) = return (particle "ok")
 eval (EForMacro {}) = return (particle "ok")
-eval (EParticle { eParticle = PMSingle n }) =
-    return (Particle $ PMSingle n)
-eval (EParticle { eParticle = PMKeyword ns mes }) = do
+eval (EParticle { eParticle = Single { mName = n } }) =
+    return (particle n)
+eval (EParticle { eParticle = Keyword { mNames = ns, mTargets = mes } }) = do
     mvs <- forM mes $
         maybe (return Nothing) (liftM Just . eval)
-    return (Particle $ PMKeyword ns mvs)
+    return (keyParticle ns mvs )
 eval (ETop {}) = gets top
 eval (EVM { eAction = x }) = x
 eval (EUnquote { eExpr = e }) = raise ["out-of-quote"] [Expression e]
@@ -112,13 +112,13 @@ eval (EQuote { eExpr = qe }) = do
         return m { eExpr = ne }
     unquote n p@(EParticle { eParticle = ep }) =
         case ep of
-            PMKeyword ns mes -> do
+            Keyword { mNames = ns, mTargets = mes } -> do
                 nmes <- forM mes $ \me ->
                     case me of
                         Nothing -> return Nothing
                         Just e -> liftM Just (unquote n e)
 
-                return p { eParticle = PMKeyword ns nmes }
+                return p { eParticle = keyword ns nmes }
 
             _ -> return p
     unquote n d@(ENewDynamic { eExpr = e }) = do

@@ -55,10 +55,10 @@ load = do
         ts <- getList [$e|targets|] >>= mapM findExpression
 
         case name of
-            PMSingle n ->
+            Single { mName = n } ->
                 return $ Expression (EDispatch Nothing (single n (fromExpression (head ts))))
 
-            PMKeyword ns _ ->
+            Keyword { mNames = ns } ->
                 return $ Expression (EDispatch Nothing (keyword ns (map fromExpression ts)))
 
     [$p|`DefineDynamic new: (name: Expression) as: (root: Expression)|] =: do
@@ -132,9 +132,9 @@ load = do
             EQuote {} -> return (particle "quote")
             EUnquote {} -> return (particle "unquote")
 
-            EParticle { eParticle = PMKeyword _ _ } ->
+            EParticle { eParticle = Keyword {} } ->
                 return (keyParticleN ["particle"] [particle "keyword"])
-            EParticle { eParticle = PMSingle _ } ->
+            EParticle { eParticle = Single {} } ->
                 return (keyParticleN ["particle"] [particle "single"])
 
             ENewDynamic {} -> return (particle "new-dynamic")
@@ -164,7 +164,7 @@ load = do
         Expression e <- here "e" >>= findExpression
 
         case e of
-            EParticle _ (PMSingle n) -> return (string n)
+            EParticle _ (Single { mName = n }) -> return (string n)
             EDispatch { eMessage = Single { mName = n } } ->
                 return (string n)
             _ -> raise ["no-name-for"] [Expression e]
@@ -173,7 +173,7 @@ load = do
         Expression e <- here "e" >>= findExpression
 
         case e of
-            EParticle _ (PMKeyword ns _) ->
+            EParticle _ (Keyword { mNames = ns }) ->
                 return (list (map string ns))
             EDispatch { eMessage = Keyword { mNames = ns } } ->
                 return (list (map string ns))
@@ -195,7 +195,7 @@ load = do
         Expression e <- here "e" >>= findExpression
 
         case e of
-            EParticle { eParticle = PMKeyword _ mes } ->
+            EParticle { eParticle = Keyword { mTargets = mes } } ->
                 return . list $
                     map
                         (maybe (particle "none") (keyParticleN ["ok"] . (:[]) . Expression))

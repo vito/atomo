@@ -58,7 +58,7 @@ match ids r (PHeadTail hp tp) (List vs) =
     t = List (V.tail vs)
 match ids r (PHeadTail hp tp) (String t) | not (T.null t) =
     match ids r hp (Char (T.head t)) && match ids r tp (String (T.tail t))
-match ids r (PPMKeyword ans aps) (Particle (PMKeyword bns mvs)) =
+match ids r (PPMKeyword ans aps) (Particle (Keyword { mNames = bns, mTargets = mvs })) =
     ans == bns && matchParticle ids r aps mvs
 match ids r p (Object { oDelegates = ds }) =
     any (match ids r p) ds
@@ -116,7 +116,7 @@ matchExpr n (EMacro { emPattern = ap', eExpr = a }) (EMacro { emPattern = bp, eE
     ap' == bp && matchExpr n a b
 matchExpr n (EParticle { eParticle = ap' }) (EParticle { eParticle = bp }) =
     case (ap', bp) of
-        (PMKeyword ans ames, PMKeyword bns bmes) ->
+        (Keyword { mNames = ans, mTargets = ames }, Keyword { mNames = bns, mTargets = bmes }) ->
             ans == bns && matchEParticle n ames bmes
         _ -> ap' == bp
 matchExpr n (EQuote { eExpr = a }) (EQuote { eExpr = b }) =
@@ -142,7 +142,7 @@ bindings p m = error $ "impossible: bindings on " ++ show (p, m)
 -- | Given a pattern and avalue, return the bindings as a list of pairs.
 bindings' :: Pattern -> Value -> [(Message Pattern, Value)]
 bindings' (PNamed n p) v = (single n PThis, v) : bindings' p v
-bindings' (PPMKeyword _ ps) (Particle (PMKeyword _ mvs)) =
+bindings' (PPMKeyword _ ps) (Particle (Keyword { mTargets = mvs })) =
     concatMap (\(p, Just v) -> bindings' p v)
     $ filter (isJust . snd)
     $ zip ps mvs
@@ -187,7 +187,7 @@ exprBindings n (EMacro { eExpr = a }) (EMacro { eExpr = b }) =
     exprBindings n a b
 exprBindings n (EParticle { eParticle = ap' }) (EParticle { eParticle = bp }) =
     case (ap', bp) of
-        (PMKeyword _ ames, PMKeyword _ bmes) ->
+        (Keyword { mNames = _, mTargets = ames }, Keyword { mNames = _, mTargets = bmes }) ->
             concatMap (\(Just a, Just b) -> exprBindings n a b)
             $ filter (isJust . fst)
             $ zip ames bmes
@@ -220,9 +220,9 @@ toPattern (EDispatch { eMessage = Single { mTarget = d@(EDispatch {}), mName = n
 toPattern (EList { eContents = es }) = do
     ps <- mapM toPattern es
     return (PList ps)
-toPattern (EParticle { eParticle = PMSingle n }) =
-    return (PMatch (Particle (PMSingle n)))
-toPattern (EParticle { eParticle = PMKeyword ns mes }) = do
+toPattern (EParticle { eParticle = Single { mName = n } }) =
+    return (PMatch (particle n))
+toPattern (EParticle { eParticle = Keyword { mNames = ns, mTargets = mes } }) = do
     ps <- forM mes $ \me ->
         case me of
             Nothing -> return PAny

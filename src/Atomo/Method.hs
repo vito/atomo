@@ -108,7 +108,7 @@ exprPrecision n (EMacro { eExpr = a }) (EMacro { eExpr = b }) =
     exprPrecision n a b
 exprPrecision n (EParticle { eParticle = ap' }) (EParticle { eParticle = bp }) =
     case (ap', bp) of
-        (PMKeyword _ ames, PMKeyword _ bmes) ->
+        (Keyword { mTargets = ames }, Keyword { mTargets = bmes }) ->
             comparePrecisionsWith (exprPrecision n) (firsts ames bmes) (seconds ames bmes)
         _ -> EQ
   where

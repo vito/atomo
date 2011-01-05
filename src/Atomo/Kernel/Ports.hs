@@ -37,13 +37,13 @@ load = do
         Particle m <- here "m" >>= findParticle
 
         hdl <- case m of
-            PMSingle "read" ->
+            Single { mName = "read" } ->
                 liftIO (openFile fn ReadMode)
-            PMSingle "write" ->
+            Single { mName = "write" } ->
                 liftIO (openFile fn WriteMode)
-            PMSingle "append" ->
+            Single { mName = "append" } ->
                 liftIO (openFile fn AppendMode)
-            PMSingle "read-write" ->
+            Single { mName = "read-write" } ->
                 liftIO (openFile fn ReadWriteMode)
             _ ->
                 error $ "unknown port mode: " ++ show (pretty m) ++ ", must be one of: @read, @write, @append, @read-write"
@@ -85,8 +85,8 @@ load = do
         parsed <- continuedParse segment "<read>"
 
         let isPrimitive (EPrimitive {}) = True
-            isPrimitive (EParticle { eParticle = PMSingle _ }) = True
-            isPrimitive (EParticle { eParticle = PMKeyword _ ts }) =
+            isPrimitive (EParticle { eParticle = Single {} }) = True
+            isPrimitive (EParticle { eParticle = Keyword { mTargets = ts } }) =
                 all isPrimitive (catMaybes ts)
             isPrimitive (EList { eContents = ts }) = all isPrimitive ts
             isPrimitive _ = False

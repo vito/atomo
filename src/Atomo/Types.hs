@@ -120,13 +120,7 @@ data Message v
     deriving (Eq, Show, Typeable)
 
 -- | Partial messages.
-data Particle v
-    -- | A single message with no target.
-    = PMSingle String
-
-    -- | A keyword message with many optional targets.
-    | PMKeyword [String] [Maybe v]
-    deriving (Eq, Show, Typeable)
+type Particle v = Message (Maybe v)
 
 -- | Shortcut error values.
 data AtomoError
@@ -519,10 +513,6 @@ instance (S.Lift v) => S.Lift (Message v) where
     lift (Keyword i ns vs) = [| Keyword i ns vs |]
     lift (Single i n v) = [| Single i n v |]
 
-instance (S.Lift v) => S.Lift (Particle v) where
-    lift (PMSingle n) = [| PMSingle n |]
-    lift (PMKeyword ns vs) = [| PMKeyword ns vs |]
-
 instance S.Lift Value where
     lift (Block s as es) = [| Block s as es |]
     lift (Boolean b) = [| Boolean b |]
@@ -645,12 +635,12 @@ isBound n m =
 -- | Create a single particle with a given name.
 particle :: String -> Value
 {-# INLINE particle #-}
-particle = Particle . PMSingle
+particle = Particle . flip single Nothing
 
 -- | Create a keyword particle with a given name and optional values.
 keyParticle :: [String] -> [Maybe Value] -> Value
 {-# INLINE keyParticle #-}
-keyParticle ns vs = Particle $ PMKeyword ns vs
+keyParticle ns vs = Particle $ keyword ns vs
 
 -- | Create a keyword particle with no first role and the given values.
 keyParticleN :: [String] -> [Value] -> Value

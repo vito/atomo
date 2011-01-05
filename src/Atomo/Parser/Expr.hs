@@ -186,12 +186,12 @@ pParticle = tagged (do
   where
     binary = do
         op <- operator
-        return $ PMKeyword [op] [Nothing, Nothing]
+        return $ T.keyword [op] [Nothing, Nothing]
 
     symbols = do
         names <- many1 (anyIdent >>= \n -> char ':' >> return n)
         spacing
-        return $ PMKeyword names (replicate (length names + 1) Nothing)
+        return $ T.keyword names (replicate (length names + 1) Nothing)
 
 -- | Any dispatch, both single and keyword.
 pDispatch :: Parser Expr
@@ -244,18 +244,18 @@ pdChain = do
     dispatches :: SourcePos -> [Dispatch] -> Expr
     dispatches p (DNormal e:ps) =
         dispatches' p ps e
-    dispatches p (DParticle (PMSingle n):ps) =
+    dispatches p (DParticle (Single { mName = n }):ps) =
         dispatches' p ps (EDispatch (Just p) $ single n (ETop (Just p)))
-    dispatches p (DParticle (PMKeyword ns (Nothing:es)):ps) =
+    dispatches p (DParticle (Keyword { mNames = ns, mTargets = (Nothing:es) }):ps) =
         dispatches' p ps (EDispatch (Just p) $ T.keyword ns (ETop (Just p):map fromJust es))
     dispatches _ ds = error $ "impossible: dispatches on " ++ show ds
 
     -- roll a list of partial messages into a bunch of dispatches
     dispatches' :: SourcePos -> [Dispatch] -> Expr -> Expr
     dispatches' _ [] acc = acc
-    dispatches' p (DParticle (PMKeyword ns (Nothing:es)):ps) acc =
+    dispatches' p (DParticle (Keyword { mNames = ns, mTargets = (Nothing:es) }):ps) acc =
         dispatches' p ps (EDispatch (Just p) $ T.keyword ns (acc : map fromJust es))
-    dispatches' p (DParticle (PMSingle n):ps) acc =
+    dispatches' p (DParticle (Single { mName = n }):ps) acc =
         dispatches' p ps (EDispatch (Just p) $ single n acc)
     dispatches' _ x y = error $ "impossible: dispatches' on " ++ show (x, y)
 
@@ -293,7 +293,7 @@ cSingle p = do
     n <- if p then anyIdent else ident
     notFollowedBy colon
     spacing
-    return (PMSingle n)
+    return (single n Nothing)
     <?> "single segment"
 
 -- | A general "keyword dispatch" form, without a head.
@@ -305,7 +305,7 @@ cKeyword wc = do
     let (ns, mvs) = second (Nothing:) $ unzip ks
     if any isOperator (tail ns)
         then toDispatch ns mvs
-        else return $ PMKeyword ns mvs
+        else return $ T.keyword ns mvs
     <?> "keyword segment"
   where
     keywordVal
@@ -339,7 +339,7 @@ cKeyword wc = do
             os <- getState
             pos <- getPosition
             let msg = toBinaryOps (psOperators os) $ T.keyword opers (map fromJust opVals)
-            return . PMKeyword nonOpers $
+            return . T.keyword nonOpers $
                 partVals ++ [Just $ EDispatch (Just pos) msg]
         | otherwise = fail "invalid particle; toplevel operator with wildcards as values"
       where

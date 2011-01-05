@@ -206,8 +206,8 @@ instance Pretty (Message Expr) where
     prettyFrom _ (Keyword _ ns es) = keywords ns es
 
 instance Pretty (Particle Value) where
-    prettyFrom _ (PMSingle e) = text e
-    prettyFrom _ (PMKeyword ns vs)
+    prettyFrom _ (Single { mName = n }) = text n
+    prettyFrom _ (Keyword { mNames = ns, mTargets = vs })
         | all isNothing vs = text . concat $ map keyword ns
         | isNothing (head vs) =
             parens $ headlessKeywords' prettyVal ns (tail vs)
@@ -219,8 +219,8 @@ instance Pretty (Particle Value) where
                 Just e -> prettyFrom CKeyword e
 
 instance Pretty (Particle Expr) where
-    prettyFrom _ (PMSingle e) = text e
-    prettyFrom _ (PMKeyword ns es)
+    prettyFrom _ (Single { mName = n }) = text n
+    prettyFrom _ (Keyword { mNames = ns, mTargets = es })
         | all isNothing es = text . concat $ map keyword ns
         | isNothing (head es) =
             parens $ headlessKeywords' prettyVal ns (tail es)

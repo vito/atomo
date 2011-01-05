@@ -131,10 +131,10 @@ load = do
         Particle b <- here "b" >>= findParticle
 
         case (a, b) of
-            (PMSingle an, PMSingle bn) ->
-                return $ Boolean (an == bn)
-            (PMKeyword ans avs, PMKeyword bns bvs)
-                | ans == bns && length avs == length bvs -> do
+            (Single { mID = a }, Single { mID = b }) ->
+                return $ Boolean (a == b)
+            (Keyword { mID = a, mTargets = avs }, Keyword { mID = b, mTargets = bvs })
+                | a == b && length avs == length bvs -> do
                 eqs <- zipWithM (\mx my ->
                     case (mx, my) of
                         (Nothing, Nothing) -> return (Boolean True)

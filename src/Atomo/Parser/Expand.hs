@@ -36,7 +36,7 @@ doPragmas (EMacro { emPattern = p, eExpr = e }) = do
     macroExpand e >>= addMacro p
 doPragmas (EParticle { eParticle = ep }) =
     case ep of
-        PMKeyword _ mes ->
+        Keyword { mTargets = mes } ->
             forM_ mes $ \me ->
                 case me of
                     Nothing -> return ()
@@ -141,13 +141,13 @@ macroExpand m@(EMacro { eExpr = e }) = do -- TODO: is this sane?
     return m { eExpr = e' }
 macroExpand p@(EParticle { eParticle = ep }) =
     case ep of
-        PMKeyword ns mes -> do
+        Keyword { mNames = ns, mTargets = mes } -> do
             nmes <- forM mes $ \me ->
                 case me of
                     Nothing -> return Nothing
                     Just e -> liftM Just (macroExpand e)
 
-            return p { eParticle = PMKeyword ns nmes }
+            return p { eParticle = keyword ns nmes }
 
         _ -> return p
 macroExpand s@(ESetDynamic { eExpr = e }) = do
