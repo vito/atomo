@@ -433,10 +433,9 @@ runMethod (Responder { mPattern = p, mContext = c, mExpr = e }) m = do
 
     forM_ (mOptionals p) $ \(Option i n (PObject oe)) ->
         case filter (\(Option x _ _) -> x == i) (mOptionals m) of
-            [] ->
-                withTop nt $ do
-                    d <- eval oe
-                    define (Single i n (PMatch nt) []) (EPrimitive Nothing d)
+            [] -> do
+                d <- withTop nt (eval oe)
+                define (Single i n (PMatch nt) []) (EPrimitive Nothing d)
             (Option oi on ov:_) ->
                 define (Single oi on (PMatch nt) []) (EPrimitive Nothing ov)
 
