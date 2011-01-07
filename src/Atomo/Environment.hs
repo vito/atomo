@@ -65,12 +65,21 @@ eval (EList { eContents = es }) = do
     return (list vs)
 eval (EMacro {}) = return (particle "ok")
 eval (EForMacro {}) = return (particle "ok")
-eval (EParticle { eParticle = Single { mName = n } }) =
-    return (particle n)
-eval (EParticle { eParticle = Keyword { mNames = ns, mTargets = mes } }) = do
+eval (EParticle { eParticle = Single i n _ os }) = do
+    nos <- forM os $ \(Option i n me) ->
+        liftM (Option i n)
+            (maybe (return Nothing) (liftM Just . eval) me)
+
+    return (Particle $ Single i n Nothing nos)
+eval (EParticle { eParticle = Keyword i ns mes os }) = do
     mvs <- forM mes $
         maybe (return Nothing) (liftM Just . eval)
-    return (keyParticle ns mvs )
+
+    nos <- forM os $ \(Option i n me) ->
+        liftM (Option i n)
+            (maybe (return Nothing) (liftM Just . eval) me)
+
+    return (Particle $ Keyword i ns mvs nos)
 eval (ETop {}) = gets top
 eval (EVM { eAction = x }) = x
 eval (EUnquote { eExpr = e }) = raise ["out-of-quote"] [Expression e]
