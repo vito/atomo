@@ -7,7 +7,7 @@ describe: "optionals" as: {
       X foo &bar: 1 should-be: 1
     }
 
-    it: "evaluates defaults in the method's scope" so: {
+    it: "evaluates defaults in the method body's context" so: {
       X = Object clone
       (x: X) bar &bar: @(got: X) := bar
       X bar should-be: @(got: X)
@@ -22,7 +22,7 @@ describe: "optionals" as: {
       (foo: 1 bar: 2 &baz: 1) should-be: 1
     }
 
-    it: "evaluates defaults in the method's scope" so: {
+    it: "evaluates defaults in the method body's context" so: {
       foo: x bar: y &baz: [x, y] := baz
       (foo: 1 bar: 2) should-be: [1, 2]
       (foo: 1 bar: 2 &baz: 1) should-be: 1
