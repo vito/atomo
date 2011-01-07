@@ -9,6 +9,7 @@ import Atomo.Pattern
 import Atomo.Types hiding (keyword, option, particle, string)
 import qualified Atomo.Types as T
 
+
 -- | The default precedence for an operator (5).
 defaultPrec :: Integer
 defaultPrec = 5
@@ -203,11 +204,18 @@ pBlock = tagged . braces $ do
 --  - a single dispatch
 --  - a literal or parenthesized expression
 pDispatch :: Parser Expr
-pDispatch = (do
-    s <- choice
-        [ try (lookAhead (keyword <|> operator)) >> return (ETop Nothing)
-        , pmSingle
-        ]
+pDispatch = tagged (do
+    s <- do
+        h <- choice
+            [ try (lookAhead (keyword <|> operator)) >> return (ETop Nothing)
+            , pmSingle
+            ]
+
+        case h of
+            EDispatch { eMessage = m } -> do
+                os <- pdOptionals
+                return h { eMessage = m { mOptionals = os } }
+            _ -> return h
 
     k <- followedBy keyword
     if k
@@ -231,13 +239,12 @@ pdOptionals = do
 -- That is, this may end up just being a literal or a parenthesized expression.
 pmSingle :: Parser Expr
 pmSingle = do
-    (restOf, target) <- do
-        t <- pSpacedExpr
-        case t of
-            EDispatch { eMessage = m } -> do
-                os <- pdOptionals
-                return (many, t { eMessage = m { mOptionals = os } })
-            _ -> return (many1, t)
+    target <- pSpacedExpr
+
+    let restOf =
+            case target of
+                EDispatch {} -> many
+                _ -> many1
 
     chain <- option [] (try $ restOf (cSingle <|> cKeyword))
     if null chain
