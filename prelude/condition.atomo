@@ -39,24 +39,28 @@ for-macro super Restart = Object clone
   (e: Simple-Warning) show := "<warning " .. e value show .. ">"
 
   Restart show-options-for: e :=
-    { $- (repeat: 78) print
-      e describe-error
-        (word-wrap: 74)
-        lines
-        (map: { l | "*** " .. l })
-        unlines
-        print
+    { { $- (repeat: 78) print
+        e describe-error
+          (word-wrap: 74)
+          lines
+          (map: { l | "*** " .. l })
+          unlines
+          print
 
-      halt when: *restarts* _? empty?
+        halt when: *restarts* _? empty?
 
-      "restarts:" print
+        "restarts:" print
 
-      *restarts* _? (zip: (0 .. *restarts* _? length)) map:
-        { choice |
-          [index, name] = [choice to, choice from from]
-          ("  :" .. index show .. " -> " .. name name) print
-        }
-    } call
+        *restarts* _? (zip: (0 .. *restarts* _? length)) map:
+          { choice |
+            [index, name] = [choice to, choice from from]
+            ("  :" .. index show .. " -> " .. name name) print
+          }
+      } call
+    } catch: { e |
+      "UH OH: error while showing error dialogue; dumping:\n  " display
+      e dump
+    }
 
   Restart get: (n: Integer) :=
     *restarts* _? (at: n) to
