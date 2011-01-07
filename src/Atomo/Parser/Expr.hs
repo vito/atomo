@@ -325,10 +325,13 @@ operatorNext f = do
 
 -- | Chained single message
 cSingle :: Parser Chained
-cSingle = do
-    n <- identifier
-    os <- pdOptionals
-    return (CSingle n os)
+cSingle = choice
+    [ liftM (flip CSingle []) identifier
+    , try . parens $ do
+        n <- identifier
+        os <- pdOptionals
+        return (CSingle n os)
+    ]
 
 -- | Chained keyword message
 cKeyword :: Parser Chained
