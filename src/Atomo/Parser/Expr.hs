@@ -212,7 +212,7 @@ pDispatch = tagged (do
             ]
 
         case h of
-            EDispatch { eMessage = m } -> do
+            EDispatch { eMessage = m@(Single { mOptionals = [] }) } -> do
                 os <- pdOptionals
                 return h { eMessage = m { mOptionals = os } }
             _ -> return h
@@ -247,6 +247,7 @@ pmSingle = do
                 _ -> many1
 
     chain <- option [] (try $ restOf (cSingle <|> cKeyword))
+
     if null chain
         then return target
         else return (dispatches target chain)
