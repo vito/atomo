@@ -46,10 +46,14 @@ operator =
             _ -> Nothing
 
 identifier :: Parser String
-identifier =
+identifier = do
+    ps <- getState
     tokenPrim (show . pretty) (\_ t _ -> tLocation t) $ \t ->
         case tToken t of
-            TokIdentifier n -> Just n
+            TokIdentifier (c:n) | c == gensym && psInQuote ps ->
+                Just (n ++ ":" ++ show (psClock ps))
+            TokIdentifier n ->
+                Just n
             _ -> Nothing
 
 particle :: Parser Chained
