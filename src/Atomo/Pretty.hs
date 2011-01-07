@@ -190,55 +190,49 @@ instance Pretty x => Pretty (Option x) where
     prettyFrom _ (Option _ n x) = char '&' <> text n <> char ':' <+> pretty x
 
 instance Pretty (Message Pattern) where
-    prettyFrom _ (Single { mName = n, mTarget = (PObject ETop {}) }) = text n
-    prettyFrom _ (Single { mName = n, mTarget = PThis }) = text n
-    prettyFrom _ (Single { mName = n, mTarget = p }) = pretty p <+> text n
-    prettyFrom _ (Keyword { mNames = ns, mTargets = (PObject ETop {}:vs) }) =
-        headlessKeywords ns vs
-    prettyFrom _ (Keyword { mNames = ns, mTargets = (PThis:vs) }) =
-        headlessKeywords ns vs
-    prettyFrom _ (Keyword { mNames = ns, mTargets = vs }) =
-        keywords ns vs
+    prettyFrom _ (Single { mName = n, mTarget = (PObject ETop {}), mOptionals = os }) =
+        text n <+> sep (map pretty os)
+    prettyFrom _ (Single { mName = n, mTarget = p, mOptionals = os }) =
+        pretty p <+> text n <+> sep (map pretty os)
+    prettyFrom _ (Keyword { mNames = ns, mTargets = (PObject ETop {}:vs), mOptionals = os }) =
+        headlessKeywords ns vs <+> sep (map pretty os)
+    prettyFrom _ (Keyword { mNames = ns, mTargets = vs, mOptionals = os }) =
+        keywords ns vs <+> sep (map pretty os)
 
 instance Pretty (Message Value) where
-    prettyFrom _ (Single { mName = n, mTarget = t }) =
-        prettyFrom CSingle t <+> text n
-    prettyFrom _ (Keyword { mNames = ns, mTargets = vs }) =
-        keywords ns vs
+    prettyFrom _ (Single { mName = n, mTarget = t, mOptionals = os }) =
+        prettyFrom CSingle t <+> text n <+> sep (map pretty os)
+    prettyFrom _ (Keyword { mNames = ns, mTargets = vs, mOptionals = os }) =
+        keywords ns vs <+> sep (map pretty os)
 
 instance Pretty (Message Expr) where
-    prettyFrom _ (Single { mName = n, mTarget = ETop {} }) = text n
-    prettyFrom _ (Single { mName = n, mTarget = t }) = prettyFrom CSingle t <+> text n
-    prettyFrom _ (Keyword { mNames = ns, mTargets = (ETop {}:es) }) = headlessKeywords ns es
+    prettyFrom _ (Single { mName = n, mTarget = ETop {}, mOptionals = os }) =
+        text n <+> sep (map pretty os)
+    prettyFrom _ (Single { mName = n, mTarget = t, mOptionals = os }) =
+        prettyFrom CSingle t <+> text n <+> sep (map pretty os)
+    prettyFrom _ (Keyword { mNames = ns, mTargets = (ETop {}:es), mOptionals = os }) =
+        headlessKeywords ns es <+> sep (map pretty os)
     prettyFrom _ (Keyword { mNames = ns, mTargets = es, mOptionals = os }) =
         keywords ns es <+> sep (map pretty os)
 
-instance Pretty (Particle Value) where
-    prettyFrom _ (Single { mName = n }) = text n
-    prettyFrom _ (Keyword { mNames = ns, mTargets = vs })
-        | all isNothing vs = text . concat $ map keyword ns
+instance Pretty x => Pretty (Particle x) where
+    prettyFrom _ (Single { mName = n, mOptionals = [] }) = text n
+    prettyFrom _ (Single { mName = n, mOptionals = os }) =
+        parens (text n <+> sep (map pretty os))
+    prettyFrom _ (Keyword { mNames = ns, mTargets = vs, mOptionals = os })
+        | all isNothing vs && null os = text . concat $ map keyword ns
         | isNothing (head vs) =
-            parens $ headlessKeywords' prettyVal ns (tail vs)
-        | otherwise = parens (keywords' prettyVal ns vs)
+            parens $ headlessKeywords' prettyVal ns (tail vs) <+> sep (map pretty os)
+        | otherwise = parens (keywords' prettyVal ns vs) <+> sep (map pretty os)
       where
         prettyVal me =
             case me of
                 Nothing -> text "_"
                 Just e -> prettyFrom CKeyword e
 
-instance Pretty (Particle Expr) where
-    prettyFrom _ (Single { mName = n }) = text n
-    prettyFrom _ (Keyword { mNames = ns, mTargets = es })
-        | all isNothing es = text . concat $ map keyword ns
-        | isNothing (head es) =
-            parens $ headlessKeywords' prettyVal ns (tail es)
-        | otherwise = parens $ keywords' prettyVal ns es
-      where
-        prettyVal me =
-            case me of
-                Nothing -> text "_"
-                Just e -> pretty e
-
+instance Pretty x => Pretty (Maybe x) where
+    prettyFrom _ Nothing = text "_"
+    prettyFrom c (Just v) = prettyFrom c v
 
 instance Pretty Delegates where
     prettyFrom _ [] = internal "bottom" empty
