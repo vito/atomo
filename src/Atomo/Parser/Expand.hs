@@ -143,13 +143,17 @@ macroExpand m@(EMacro { eExpr = e }) = do -- TODO: is this sane?
     return m { eExpr = e' }
 macroExpand p@(EParticle { eParticle = ep }) =
     case ep of
-        Keyword { mNames = ns, mTargets = mes } -> do
+        Keyword { mNames = ns, mTargets = mes, mOptionals = os } -> do
             nmes <- forM mes $ \me ->
                 case me of
                     Nothing -> return Nothing
                     Just e -> liftM Just (macroExpand e)
 
-            return p { eParticle = keyword ns nmes }
+            nos <- forM os $ \(Option i n (Just e)) -> do
+                ne <- macroExpand e
+                return (Option i n (Just ne))
+
+            return p { eParticle = keyword' ns nmes nos }
 
         _ -> return p
 macroExpand s@(ESetDynamic { eExpr = e }) = do
