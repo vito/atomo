@@ -109,7 +109,7 @@ data Message v
         { mID :: !Int
         , mNames :: [String]
         , mTargets :: [v]
-        , mOptionals :: [Option v]
+        , mOptionals :: ![Option v]
         }
 
     -- | A single message sent to one target.
@@ -117,7 +117,7 @@ data Message v
         { mID :: !Int
         , mName :: String
         , mTarget :: v
-        , mOptionals :: [Option v]
+        , mOptionals :: ![Option v]
         }
     deriving (Eq, Show, Typeable)
 

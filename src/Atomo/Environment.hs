@@ -23,14 +23,10 @@ eval (ESet { ePattern = PMessage p, eExpr = ev }) = do
 eval (ESet { ePattern = p, eExpr = ev }) = do
     v <- eval ev
     set p v
-eval (EDispatch
-        { eMessage = Single
-            { mID = i
-            , mName = n
-            , mTarget = t
-            , mOptionals = os
-            }
-        }) = do
+eval (EDispatch { eMessage = Single i n t [] }) = do
+    v <- eval t
+    dispatch (Single i n v [])
+eval (EDispatch { eMessage = Single i n t os }) = do
     v <- eval t
 
     nos <- forM os $ \(Option oi on oe) -> do
@@ -38,15 +34,12 @@ eval (EDispatch
         return (Option oi on ov)
 
     dispatch (Single i n v nos)
-eval (EDispatch
-        { eMessage = Keyword
-            { mID = i
-            , mNames = ns
-            , mTargets = ts
-            , mOptionals = os
-            }
-        }) = do
+eval (EDispatch { eMessage = Keyword i ns ts [] }) = do
     vs <- mapM eval ts
+    dispatch (Keyword i ns vs [])
+eval (EDispatch { eMessage = Keyword i ns ts os }) = do
+    vs <- mapM eval ts
+
     nos <- forM os $ \(Option oi on e) -> do
         ov <- eval e
         return (Option oi on ov)
@@ -429,17 +422,14 @@ runMethod (Slot { mValue = v }) _ = return v
 runMethod (Responder { mPattern = p, mContext = c, mExpr = e }) m = do
     nt <- newObject [c] (bindings p m, emptyMap)
 
-    if not (null (mOptionals p))
-        then
-            forM_ (mOptionals p) $ \(Option i n (PObject oe)) ->
-                case filter (\(Option x _ _) -> x == i) (mOptionals m) of
-                    [] ->
-                        withTop nt $ do
-                            d <- eval oe
-                            define (Single i n (PObject (ETop Nothing)) []) (EPrimitive Nothing d)
-                    (Option oi on ov:_) ->
-                        define (Single oi on (PMatch nt) []) (EPrimitive Nothing ov)
-        else return ()
+    forM_ (mOptionals p) $ \(Option i n (PObject oe)) ->
+        case filter (\(Option x _ _) -> x == i) (mOptionals m) of
+            [] ->
+                withTop nt $ do
+                    d <- eval oe
+                    define (Single i n (PMatch nt) []) (EPrimitive Nothing d)
+            (Option oi on ov:_) ->
+                define (Single oi on (PMatch nt) []) (EPrimitive Nothing ov)
 
     withTop nt $ eval e
 runMethod (Macro { mPattern = p, mExpr = e }) m = do
