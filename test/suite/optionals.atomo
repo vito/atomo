@@ -4,14 +4,14 @@ describe: "optionals" as: {
       X = Object clone
       X foo &bar: 0 := bar
       X foo should-be: 0
-      X (foo &bar: 1) should-be: 1
+      X foo &bar: 1 should-be: 1
     }
 
     it: "evaluates defaults in the method's scope" so: {
       X = Object clone
       (x: X) bar &bar: @(got: X) := bar
       X bar should-be: @(got: X)
-      X (bar &bar: 1) should-be: 1
+      X bar &bar: 1 should-be: 1
     }
   }
 
