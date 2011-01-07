@@ -117,13 +117,14 @@ load = do
         Message b <- here "b" >>= findMessage
 
         case (a, b) of
-            (Single ai _ at, Single bi _ bt) -> do
+            (Single ai _ at aos, Single bi _ bt bos)
+                | ai == bi -> do
                 Boolean t <- dispatch (keyword ["=="] [at, bt]) >>= findBoolean
-                return $ Boolean (ai == bi && t)
-            (Keyword ai _ avs, Keyword bi _ bvs)
+                return $ Boolean (aos == bos && t) -- TODO: @== equality for options
+            (Keyword ai _ avs aos, Keyword bi _ bvs bos)
                 | ai == bi && length avs == length bvs -> do
                 eqs <- zipWithM (\x y -> dispatch (keyword ["=="] [x, y])) avs bvs
-                return $ Boolean (all (== Boolean True) eqs)
+                return $ Boolean (aos == bos && all (== Boolean True) eqs)
             _ -> return $ Boolean False
 
     [$p|(a: Particle) == (b: Particle)|] =: do
@@ -131,10 +132,10 @@ load = do
         Particle b <- here "b" >>= findParticle
 
         case (a, b) of
-            (Single { mID = a }, Single { mID = b }) ->
-                return $ Boolean (a == b)
-            (Keyword { mID = a, mTargets = avs }, Keyword { mID = b, mTargets = bvs })
-                | a == b && length avs == length bvs -> do
+            (Single { mID = ai }, Single { mID = bi }) ->
+                return $ Boolean (ai == bi)
+            (Keyword { mID = ai, mTargets = avs }, Keyword { mID = bi, mTargets = bvs })
+                | ai == bi && length avs == length bvs -> do
                 eqs <- zipWithM (\mx my ->
                     case (mx, my) of
                         (Nothing, Nothing) -> return (Boolean True)

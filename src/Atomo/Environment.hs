@@ -28,19 +28,30 @@ eval (EDispatch
             { mID = i
             , mName = n
             , mTarget = t
+            , mOptionals = os
             }
         }) = do
     v <- eval t
-    dispatch (Single i n v)
+
+    nos <- forM os $ \(Option oi on oe) -> do
+        ov <- eval oe
+        return (Option oi on ov)
+
+    dispatch (Single i n v nos)
 eval (EDispatch
         { eMessage = Keyword
             { mID = i
             , mNames = ns
             , mTargets = ts
+            , mOptionals = os
             }
         }) = do
     vs <- mapM eval ts
-    dispatch (Keyword i ns vs)
+    nos <- forM os $ \(Option oi on e) -> do
+        ov <- eval e
+        return (Option oi on ov)
+
+    dispatch (Keyword i ns vs nos)
 eval (EOperator { eNames = ns, eAssoc = a, ePrec = p }) = do
     forM_ ns $ \n -> modify $ \s ->
         s
@@ -254,10 +265,10 @@ define !p !e = do
 
 -- | Swap out a reference match with PThis, for inserting on an object.
 setSelf :: Value -> Message Pattern -> Message Pattern
-setSelf v (Keyword i ns ps) =
-    Keyword i ns (map (setSelf' v) ps)
-setSelf v (Single i n t) =
-    Single i n (setSelf' v t)
+setSelf v (Keyword i ns ps os) =
+    Keyword i ns (map (setSelf' v) ps) os
+setSelf v (Single i n t o) =
+    Single i n (setSelf' v t) o
 
 setSelf' :: Value -> Pattern -> Pattern
 setSelf' v (PMatch x) | v == x = PThis
@@ -301,8 +312,8 @@ matchable' p' = return p'
 
 -- | Find the target objects for a message pattern.
 targets :: IDs -> Message Pattern -> VM [Value]
-targets is (Single _ _ p) = targets' is p
-targets is (Keyword _ _ ps) = do
+targets is (Single { mTarget = p }) = targets' is p
+targets is (Keyword { mTargets = ps }) = do
     ts <- mapM (targets' is) ps
     return (nub (concat ts))
 
@@ -417,6 +428,19 @@ runMethod :: Method -> Message Value -> VM Value
 runMethod (Slot { mValue = v }) _ = return v
 runMethod (Responder { mPattern = p, mContext = c, mExpr = e }) m = do
     nt <- newObject [c] (bindings p m, emptyMap)
+
+    if not (null (mOptionals p))
+        then
+            forM_ (mOptionals p) $ \(Option i n (PObject oe)) ->
+                case filter (\(Option x _ _) -> x == i) (mOptionals m) of
+                    [] ->
+                        withTop nt $ do
+                            d <- eval oe
+                            define (Single i n (PObject (ETop Nothing)) []) (EPrimitive Nothing d)
+                    (Option oi on ov:_) ->
+                        define (Single oi on (PMatch nt) []) (EPrimitive Nothing ov)
+        else return ()
+
     withTop nt $ eval e
 runMethod (Macro { mPattern = p, mExpr = e }) m = do
     t <- gets (psEnvironment . parserState)

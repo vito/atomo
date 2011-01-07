@@ -17,8 +17,9 @@ import qualified Language.Haskell.TH as TH
 
 import Atomo.Core
 import Atomo.Helpers (fromHaskell')
+import Atomo.Lexer
 import Atomo.Parser
-import Atomo.Parser.Base
+import Atomo.Parser.Base (Parser, blockOf, end)
 import Atomo.Parser.Expr
 import Atomo.Pattern (toDefinePattern)
 import Atomo.Types
@@ -54,7 +55,7 @@ parsing p s (file, line, col) =
     -- here be dragons
     fromHaskell' $ unsafePerformIO (runWith go (qqEnv))
   where
-    go = liftM haskell $ continue pp "<qq>" s
+    go = liftM haskell $ continue lexer pp "<qq>" s
 
     pp = do
         pos <- getPosition
@@ -62,11 +63,9 @@ parsing p s (file, line, col) =
             flip setSourceName file $
             flip setSourceLine line $
             setSourceColumn pos col
-        whiteSpace
-        e <- p
-        whiteSpace
-        eof
-        return e
+        r <- p
+        end <|> eof
+        return r
 
 quotePatternExp :: String -> TH.ExpQ
 quotePatternExp = withLocation (parsing (liftM (fromJust . toDefinePattern) pExpr)) lift
@@ -75,4 +74,4 @@ quoteExprExp :: String -> TH.ExpQ
 quoteExprExp = withLocation (parsing pExpr) lift
 
 quoteExprsExp :: String -> TH.ExpQ
-quoteExprsExp = withLocation (parsing (wsBlock pExpr)) (fmap ListE . mapM lift)
+quoteExprsExp = withLocation (parsing (blockOf pExpr)) (fmap ListE . mapM lift)

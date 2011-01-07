@@ -4,6 +4,8 @@ import Control.Monad.State
 import Text.Parsec
 
 import Atomo.Environment
+import Atomo.Lexer
+import Atomo.Lexer.Base
 import Atomo.Parser.Base
 import Atomo.Parser.Expr
 import Atomo.Parser.Expand
@@ -14,28 +16,31 @@ import Atomo.Types hiding (keyword, string)
 parseFile :: FilePath -> VM [Expr]
 parseFile fn =
     liftIO (readFile fn)
-        >>= continue fileParser fn
+        >>= continue fileLexer parser fn
         >>= nextPhase
 
 -- | Parses an input string, performs macro expansion, and returns an AST.
 parseInput :: String -> VM [Expr]
-parseInput s = continue parser "<input>" s >>= nextPhase
+parseInput s = continue lexer parser "<input>" s >>= nextPhase
 
 -- | Given a Parser action, a source, and the input, perform that action
 -- passing the parser state between VM and Parser.
-continue :: Parser a -> String -> String -> VM a
-continue p s i = do
+continue :: Lexer [TaggedToken] -> Parser a -> String -> String -> VM a
+continue l p s i = do
     ps <- gets parserState
-    case runParser (p >>= \r -> getState >>= \ps' -> return (r, ps')) ps s i of
+    case runParser l (LexerState []) s i of
         Left e -> throwError (ParseError e)
-        Right (ok, ps') -> do
-            modify $ \e -> e { parserState = ps' }
-            return ok
+        Right ts ->
+            case runParser (p >>= \r -> getState >>= \ps' -> return (r, ps')) ps s ts of
+                Left e -> throwError (ParseError e)
+                Right (ok, ps') -> do
+                    modify $ \e -> e { parserState = ps' }
+                    return ok
 
 -- | Parse input i from source s, maintaining parser state between parses.
 continuedParse :: String -> String -> VM [Expr]
-continuedParse i s = continue parser s i
+continuedParse i s = continue lexer parser s i
 
 -- | Run an arbitrary Parser action with the VM's parser state.
 withParser :: Parser a -> VM a
-withParser x = continue x "<internal>" ""
+withParser x = continue lexer x "<internal>" ""

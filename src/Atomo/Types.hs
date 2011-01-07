@@ -109,6 +109,7 @@ data Message v
         { mID :: !Int
         , mNames :: [String]
         , mTargets :: [v]
+        , mOptionals :: [Option v]
         }
 
     -- | A single message sent to one target.
@@ -116,7 +117,12 @@ data Message v
         { mID :: !Int
         , mName :: String
         , mTarget :: v
+        , mOptionals :: [Option v]
         }
+    deriving (Eq, Show, Typeable)
+
+-- | A named optional value.
+data Option v = Option !Int String v
     deriving (Eq, Show, Typeable)
 
 -- | Partial messages.
@@ -510,8 +516,11 @@ instance S.Lift Assoc where
     lift ARight = [| ARight |]
 
 instance (S.Lift v) => S.Lift (Message v) where
-    lift (Keyword i ns vs) = [| Keyword i ns vs |]
-    lift (Single i n v) = [| Single i n v |]
+    lift (Keyword i ns vs os) = [| Keyword i ns vs os |]
+    lift (Single i n v os) = [| Single i n v os |]
+
+instance (S.Lift v) => S.Lift (Option v) where
+    lift (Option i n v) = [| Option i n v |]
 
 instance S.Lift Value where
     lift (Block s as es) = [| Block s as es |]
@@ -675,12 +684,27 @@ fromList v = error $ "no fromList for: " ++ show v
 -- | Create a single message with a given name and target.
 single :: String -> v -> Message v
 {-# INLINE single #-}
-single n = Single (hash n) n
+single n v = Single (hash n) n v []
+
+-- | Create a single message with a given name and target.
+single' :: String -> v -> [Option v] -> Message v
+{-# INLINE single' #-}
+single' n v os = Single (hash n) n v os
 
 -- | Create a keyword message with a given name and targets.
 keyword :: [String] -> [v] -> Message v
 {-# INLINE keyword #-}
-keyword ns = Keyword (hash ns) ns
+keyword ns vs = Keyword (hash ns) ns vs []
+
+-- | Create a keyword message with a given name and targets.
+keyword' :: [String] -> [v] -> [Option v] -> Message v
+{-# INLINE keyword' #-}
+keyword' ns vs os = Keyword (hash ns) ns vs os
+
+-- | Create an @Option@ with the given name and value.
+option :: String -> v -> Option v
+{-# INLINE option #-}
+option n v = Option (hash n) n v
 
 -- | Create a single message pattern with a given name and target pattern.
 psingle :: String -> Pattern -> Pattern

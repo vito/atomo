@@ -240,12 +240,12 @@ toPattern _ = Nothing
 
 -- | Convert an expression into a definition's message pattern.
 toDefinePattern :: Expr -> Maybe (Message Pattern)
-toDefinePattern (EDispatch { eMessage = Single { mName = n, mTarget = t } }) = do
+toDefinePattern (EDispatch { eMessage = Single { mName = n, mTarget = t, mOptionals = os } }) = do
     p <- toRolePattern t
-    return (single n p)
-toDefinePattern (EDispatch { eMessage = Keyword { mNames = ns, mTargets = ts } }) = do
+    return (single n p) { mOptionals = map (\(Option i on e) -> Option i on (PObject e)) os }
+toDefinePattern (EDispatch { eMessage = Keyword { mNames = ns, mTargets = ts, mOptionals = os } }) = do
     ps <- mapM toRolePattern ts
-    return (keyword ns ps)
+    return (keyword ns ps) { mOptionals = map (\(Option i n e) -> Option i n (PObject e)) os }
 toDefinePattern _ = Nothing
 
 -- | Convert an expression into a pattern-match for use as a message's role.
@@ -277,16 +277,16 @@ toMacroPattern _ = Nothing
 
 -- | Convert an expression into a pattern-match for use as a macro's role.
 toMacroRole :: Expr -> Maybe Pattern
-toMacroRole (EDispatch _ (Single _ "Dispatch" _)) = Just PEDispatch
-toMacroRole (EDispatch _ (Single _ "Operator" _)) = Just PEOperator
-toMacroRole (EDispatch _ (Single _ "Primitive" _)) = Just PEPrimitive
-toMacroRole (EDispatch _ (Single _ "Block" _)) = Just PEBlock
-toMacroRole (EDispatch _ (Single _ "List" _)) = Just PEList
-toMacroRole (EDispatch _ (Single _ "Macro" _)) = Just PEMacro
-toMacroRole (EDispatch _ (Single _ "Particle" _)) = Just PEParticle
-toMacroRole (EDispatch _ (Single _ "Top" _)) = Just PETop
-toMacroRole (EDispatch _ (Single _ "Quote" _)) = Just PEQuote
-toMacroRole (EDispatch _ (Single _ "Unquote" _)) = Just PEUnquote
+toMacroRole (EDispatch _ (Single { mName = "Dispatch" })) = Just PEDispatch
+toMacroRole (EDispatch _ (Single { mName = "Operator" })) = Just PEOperator
+toMacroRole (EDispatch _ (Single { mName = "Primitive" })) = Just PEPrimitive
+toMacroRole (EDispatch _ (Single { mName = "Block" })) = Just PEBlock
+toMacroRole (EDispatch _ (Single { mName = "List" })) = Just PEList
+toMacroRole (EDispatch _ (Single { mName = "Macro" })) = Just PEMacro
+toMacroRole (EDispatch _ (Single { mName = "Particle" })) = Just PEParticle
+toMacroRole (EDispatch _ (Single { mName = "Top" })) = Just PETop
+toMacroRole (EDispatch _ (Single { mName = "Quote" })) = Just PEQuote
+toMacroRole (EDispatch _ (Single { mName = "Unquote" })) = Just PEUnquote
 toMacroRole (EDispatch { eMessage = Keyword { mNames = [n], mTargets = [ETop {}, x] } }) = do
     p <- toMacroRole x
     return (PNamed n p)

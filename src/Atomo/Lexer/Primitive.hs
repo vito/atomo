@@ -1,53 +1,42 @@
-module Atomo.Parser.Primitive where
+module Atomo.Lexer.Primitive where
 
 import Control.Monad (liftM)
 import Data.Ratio
 import Text.Parsec
 
-import Atomo.Parser.Base
+import Atomo.Lexer.Base
 import Atomo.Types as T
 
-
--- | Parser for all primitive values.
-pPrim :: Parser Value
-pPrim = choice
-    [ pvChar
-    , pvString
-    , try pvRational
-    , try pvDouble
-    , try pvInteger
-    , try pvBoolean
-    ]
 
 -- | Character literal.
 --
 -- Examples: @$a@, @$ @, @$\\EOT@, @$\\n@
-pvChar :: Parser Value
-pvChar = liftM Char charLiteral
+lvChar :: Lexer Value
+lvChar = liftM Char charLiteral
 
 -- | String literal.
 --
 -- Examples: @\"\"@, @\"foo\"@, @\"foo\\nbar\"@
-pvString :: Parser Value
-pvString = liftM T.string stringLiteral
+lvString :: Lexer Value
+lvString = liftM T.string stringLiteral
 
 -- | Double literal.
 --
 -- Examples: @1.0@, @4.6e10@, @-1.0@
-pvDouble :: Parser Value
-pvDouble = liftM Double float
+lvDouble :: Lexer Value
+lvDouble = liftM Double float
 
 -- | Integer literal.
 --
 -- Examples: @1@, @2@, @-1@, @-2@
-pvInteger :: Parser Value
-pvInteger = liftM Integer integer
+lvInteger :: Lexer Value
+lvInteger = liftM Integer integer
 
 -- | Boolean literal.
 --
 -- Examples: @True@, @False@
-pvBoolean :: Parser Value
-pvBoolean = liftM Boolean $ true <|> false
+lvBoolean :: Lexer Value
+lvBoolean = liftM Boolean $ true <|> false
   where
     true = reserved "True" >> return True
     false = reserved "False" >> return False
@@ -55,8 +44,8 @@ pvBoolean = liftM Boolean $ true <|> false
 -- | Rational literal.
 --
 -- Examples: @1\/2@, @-1\/2@, @1\/-2@
-pvRational :: Parser Value
-pvRational = do
+lvRational :: Lexer Value
+lvRational = do
     n <- integer
     char '/'
     d <- integer

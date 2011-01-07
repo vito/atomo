@@ -1,22 +1,13 @@
 module Atomo.Parser.Expr where
 
-import Control.Arrow (first, second)
 import Control.Monad.State
-import Data.Maybe (fromJust, isJust)
+import Data.Maybe (fromJust)
 import Text.Parsec
 
 import Atomo.Parser.Base
-import Atomo.Parser.Primitive
 import Atomo.Pattern
-import Atomo.Types hiding (keyword, string)
+import Atomo.Types hiding (keyword, option, particle, string)
 import qualified Atomo.Types as T
-
-
--- | The types of values in Dispatch syntax.
-data Dispatch
-    = DParticle (Particle Expr)
-    | DNormal Expr
-    deriving Show
 
 -- | The default precedence for an operator (5).
 defaultPrec :: Integer
@@ -28,9 +19,7 @@ pExpr = choice
     [ pOperator
     , pMacro
     , pForMacro
-    , try pDispatch
-    , pLiteral
-    , parens pExpr
+    , pDispatch
     ]
     <?> "expression"
 
@@ -52,44 +41,48 @@ pLiteral = choice
 --
 -- Examples: @1@, @2.0@, @3\/4@, @$d@, @\"foo\"@, @True@, @False@
 pPrimitive :: Parser Expr
-pPrimitive = tagged $ liftM (EPrimitive Nothing) pPrim
+pPrimitive = tagged $ liftM (EPrimitive Nothing) primitive
 
 -- | The @this@ keyword, i.e. the toplevel object literal.
 pThis :: Parser Expr
-pThis = tagged $ reserved "this" >> return (ETop Nothing)
+pThis = tagged (reserved "this" >> return (ETop Nothing))
+    <?> "this"
 
 -- | An expression literal.
 --
 -- Example: @'1@, @'(2 + 2)@
 pQuoted :: Parser Expr
-pQuoted = tagged $ do
-    char '\''
+pQuoted = tagged (do
+    punctuation '\''
     e <- pSpacedExpr
-    return (EPrimitive Nothing (Expression e))
+    return (EPrimitive Nothing (Expression e)))
+    <?> "quoted expression"
 
 -- | An expression literal that may contain "unquotes" - expressions to splice
 -- in to yield a different expression.
 --
 -- Examples: @`a@, @`(1 + ~(2 + 2))@
 pQuasiQuoted :: Parser Expr
-pQuasiQuoted = tagged $ do
-    char '`'
+pQuasiQuoted = tagged (do
+    punctuation '`'
     modifyState $ \ps -> ps { psInQuote = True }
     e <- pSpacedExpr
     modifyState $ \ps -> ps { psInQuote = False }
-    return (EQuote Nothing e)
+    return (EQuote Nothing e))
+    <?> "quasiquoted expression"
 
 -- | An unquote expression, used inside a quasiquote.
 -- 
 -- Examples: @~1@, @~(2 + 2)@
 pUnquoted :: Parser Expr
-pUnquoted = tagged $ do
-    char '~'
+pUnquoted = tagged (do
+    punctuation '~'
     iq <- fmap psInQuote getState
     modifyState $ \ps -> ps { psInQuote = False }
     e <- pSpacedExpr
     modifyState $ \ps -> ps { psInQuote = iq }
-    return (EUnquote Nothing e)
+    return (EUnquote Nothing e))
+    <?> "unquoted expression"
 
 -- | Any expression that fits into one lexical "space" - either a simple
 -- literal value, a single dispatch to the toplevel object, or an expression in
@@ -98,12 +91,12 @@ pUnquoted = tagged $ do
 -- Examples: @1@, @[1, 2]@, @a@, @(2 + 2)@
 pSpacedExpr :: Parser Expr
 pSpacedExpr = pLiteral <|> simpleDispatch <|> parens pExpr
-  where
-    simpleDispatch = tagged $ do
-        name <- ident
-        notFollowedBy (char ':')
-        spacing
-        return (EDispatch Nothing (single name (ETop Nothing)))
+
+-- | A single message sent to the toplevel object.
+simpleDispatch :: Parser Expr
+simpleDispatch = tagged $ do
+    name <- identifier
+    return (EDispatch Nothing (single name (ETop Nothing)))
 
 -- | The for-macro "pragma."
 --
@@ -111,11 +104,7 @@ pSpacedExpr = pLiteral <|> simpleDispatch <|> parens pExpr
 pForMacro :: Parser Expr
 pForMacro = tagged (do
     reserved "for-macro"
-
-    whiteSpace
-
     e <- pExpr
-
     return (EForMacro Nothing e))
     <?> "for-macro expression"
 
@@ -125,15 +114,8 @@ pForMacro = tagged (do
 pMacro :: Parser Expr
 pMacro = tagged (do
     reserved "macro"
-
-    whiteSpace
-
     p <- parens (liftM (fromJust . toMacroPattern) pExpr)
-
-    whiteSpace
-
     e <- pExpr
-
     return (EMacro Nothing p e))
     <?> "macro definition"
 
@@ -145,20 +127,18 @@ pOperator :: Parser Expr
 pOperator = tagged (do
     reserved "operator"
 
-    whiteSpace
-
     info <- choice
         [ do
             a <- choice
                 [ symbol "right" >> return ARight
                 , symbol "left" >> return ALeft
                 ]
-            prec <- option defaultPrec (try integer)
+            prec <- option defaultPrec integer
             return (a, prec)
         , liftM ((,) ALeft) integer
         ]
 
-    ops <- operator `sepBy1` spacing
+    ops <- many operator
 
     forM_ ops $ \name ->
         modifyState $ \ps -> ps
@@ -167,104 +147,42 @@ pOperator = tagged (do
             }
 
     return (uncurry (EOperator Nothing ops) info))
-    <?> "operator pragma"
+    <?> "operator declaration"
 
 -- | A particle literal.
 --
 -- Examples: @\@foo@, @\@(bar: 2)@, @\@bar:@, @\@(foo: 2 bar: _)@
 pParticle :: Parser Expr
 pParticle = tagged (do
-    char '@'
-    c <- choice
-        [ cKeyword True
-        , binary
-        , try (cSingle True)
-        , symbols
+    chained <- choice
+        [ do
+            punctuation '@'
+            cSingle <|> cKeyword
+        , particle
         ]
-    return (EParticle Nothing c))
+
+    case chained of
+        CSingle n os ->
+            return (EParticle Nothing $ single' n Nothing (map toOpt os))
+        CKeyword ns es os ->
+            return (EParticle Nothing $
+                keyword' ns (map toRole (wildcard:es)) (map toOpt os)))
     <?> "particle"
   where
-    binary = do
-        op <- operator
-        return $ T.keyword [op] [Nothing, Nothing]
+    wildcard = EDispatch Nothing (single "_" (ETop Nothing))
 
-    symbols = do
-        names <- many1 (anyIdent >>= \n -> char ':' >> return n)
-        spacing
-        return $ T.keyword names (replicate (length names + 1) Nothing)
+    toOpt (Option i n e) = Option i n (Just e)
 
--- | Any dispatch, both single and keyword.
-pDispatch :: Parser Expr
-pDispatch = try pdKeys <|> pdChain
-    <?> "dispatch"
-
--- | A keyword dispatch.
---
--- Examples: @1 foo: 2@, @1 + 2@
-pdKeys :: Parser Expr
-pdKeys = do
-    pos <- getPosition
-    msg <- keywords T.keyword (ETop (Just pos)) (try pdChain <|> headless)
-    ops <- liftM psOperators getState
-    return $ EDispatch (Just pos) (toBinaryOps ops msg)
-    <?> "keyword dispatch"
-  where
-    headless = do
-        p <- getPosition
-        msg <- ckeywd p
-        ops <- liftM psOperators getState
-        return (EDispatch (Just p) (toBinaryOps ops msg))
-
-    ckeywd pos = do
-        ks <- wsMany1 $ keyword pdChain
-        let (ns, es) = unzip ks
-        return $ T.keyword ns (ETop (Just pos):es)
-        <?> "keyword segment"
-
--- | A chain of message sends, both single and chained keywords.
---
--- Example: @1 sqrt (* 2) floor@
-pdChain :: Parser Expr
-pdChain = do
-    pos <- getPosition
-
-    chain <- wsManyStart
-        (liftM DNormal (try pLiteral <|> pThis <|> parens pExpr) <|> chained)
-        chained
-
-    return $ dispatches pos chain
-    <?> "single dispatch"
-  where
-    chained = liftM DParticle $ choice
-        [ cKeyword False
-        , cSingle False
-        ]
-
-    -- start off by dispatching on either a primitive or Top
-    dispatches :: SourcePos -> [Dispatch] -> Expr
-    dispatches p (DNormal e:ps) =
-        dispatches' p ps e
-    dispatches p (DParticle (Single { mName = n }):ps) =
-        dispatches' p ps (EDispatch (Just p) $ single n (ETop (Just p)))
-    dispatches p (DParticle (Keyword { mNames = ns, mTargets = (Nothing:es) }):ps) =
-        dispatches' p ps (EDispatch (Just p) $ T.keyword ns (ETop (Just p):map fromJust es))
-    dispatches _ ds = error $ "impossible: dispatches on " ++ show ds
-
-    -- roll a list of partial messages into a bunch of dispatches
-    dispatches' :: SourcePos -> [Dispatch] -> Expr -> Expr
-    dispatches' _ [] acc = acc
-    dispatches' p (DParticle (Keyword { mNames = ns, mTargets = (Nothing:es) }):ps) acc =
-        dispatches' p ps (EDispatch (Just p) $ T.keyword ns (acc : map fromJust es))
-    dispatches' p (DParticle (Single { mName = n }):ps) acc =
-        dispatches' p ps (EDispatch (Just p) $ single n acc)
-    dispatches' _ x y = error $ "impossible: dispatches' on " ++ show (x, y)
+    toRole (EDispatch { eMessage = Single { mName = "_", mTarget = ETop {} } }) =
+        Nothing
+    toRole e = Just e
 
 -- | A comma-separated list of zero or more expressions, surrounded by square
 -- brackets.
 --
 -- Examples: @[]@, @[1, $a]@
 pList :: Parser Expr
-pList = (tagged . liftM (EList Nothing) $ brackets (wsDelim "," pExpr))
+pList = tagged (liftM (EList Nothing) (brackets (blockOf pExpr)))
     <?> "list"
 
 -- | A block of expressions, surrounded by braces and optionally having
@@ -272,144 +190,185 @@ pList = (tagged . liftM (EList Nothing) $ brackets (wsDelim "," pExpr))
 --
 -- Examples: @{ }@, @{ a b | a + b }@, @{ a = 1; a + 1 }@
 pBlock :: Parser Expr
-pBlock = tagged (braces $ do
-    arguments <- option [] . try $ do
-        ps <- many1 pSpacedExpr
-        whiteSpace
-        string "|"
-        whiteSpace1
-        return $ map (fromJust . toPattern) ps
+pBlock = tagged . braces $ do
+    as <- option [] (try $ manyTill pSpacedExpr (punctuation '|' >> optional end))
+    es <- blockOf pExpr
+    return (EBlock Nothing (map (fromJust . toPattern) as) es)
 
-    code <- wsBlock pExpr
-
-    return $ EBlock Nothing arguments code)
-    <?> "block"
-
--- | A general "single dispatch" form, without a target.
+-- | Parse an expression possibly up to an operator dispatch.
 --
--- Used for both chaines and particles.
-cSingle :: Bool -> Parser (Particle Expr)
-cSingle p = do
-    n <- if p then anyIdent else ident
-    notFollowedBy colon
-    spacing
-    return (single n Nothing)
-    <?> "single segment"
+-- That is, this may be:
+--  - an operator dispatch
+--  - a keyword dispatch
+--  - a single dispatch
+--  - a literal or parenthesized expression
+pDispatch :: Parser Expr
+pDispatch = (do
+    s <- choice
+        [ try (lookAhead (keyword <|> operator)) >> return (ETop Nothing)
+        , pmSingle
+        ]
 
--- | A general "keyword dispatch" form, without a head.
+    k <- followedBy keyword
+    if k
+        then keywordNext s
+        else do
+
+    o <- followedBy operator
+    if o
+        then operatorNext s
+        else return s)
+    <?> "dispatch"
+
+-- | Optional keyword arguments.
+pdOptionals :: Parser [Option Expr]
+pdOptionals = do
+    os <- many (optionSegment prKeyword)
+    return (map (uncurry T.option) os)
+
+-- | Parse an expr up to a single dispatch.
 --
--- Used for both chaines and particles.
-cKeyword :: Bool -> Parser (Particle Expr)
-cKeyword wc = do
-    ks <- parens $ many1 keyword'
-    let (ns, mvs) = second (Nothing:) $ unzip ks
-    if any isOperator (tail ns)
-        then toDispatch ns mvs
-        else return $ T.keyword ns mvs
-    <?> "keyword segment"
+-- That is, this may end up just being a literal or a parenthesized expression.
+pmSingle :: Parser Expr
+pmSingle = do
+    target <- pSpacedExpr
+
+    let restOf =
+            case target of
+                EDispatch {} -> many
+                _ -> many1
+
+    chain <- option [] (try $ restOf (cSingle <|> cKeyword))
+    if null chain
+        then return target
+        else return (dispatches target chain)
   where
-    keywordVal
-        | wc = wildcard <|> value
-        | otherwise = value
+    dispatches = foldl sendTo
 
-    keywordDispatch
-        | wc = wildcard <|> disp
-        | otherwise = disp
+    sendTo t (CSingle n os) =
+        EDispatch Nothing (single' n t os)
+    sendTo t (CKeyword ns es os) =
+        EDispatch Nothing (keyword' ns (t:es) os)
 
-    value = liftM Just pdChain
-    disp = liftM Just pDispatch
-
-    keyword' = do
-        name <- try (do
-            name <- ident
-            char ':'
-            return name) <|> operator
-        whiteSpace1
-        target <-
-            if isOperator name
-                then keywordDispatch
-                else keywordVal
-        return (name, target)
-
-    wildcard = symbol "_" >> return Nothing
-
-    toDispatch [] mvs = error $ "impossible: toDispatch on [] and " ++ show mvs
-    toDispatch (n:ns) mvs
-        | all isJust opVals = do
-            os <- getState
-            pos <- getPosition
-            let msg = toBinaryOps (psOperators os) $ T.keyword opers (map fromJust opVals)
-            return . T.keyword nonOpers $
-                partVals ++ [Just $ EDispatch (Just pos) msg]
-        | otherwise = fail "invalid particle; toplevel operator with wildcards as values"
-      where
-        (nonOpers, opers) = first (n:) $ break isOperator ns
-        (partVals, opVals) = splitAt (length nonOpers) mvs
-
--- | Work out precadence, associativity, etc. for a keyword dispatch.
+-- | Parse an expr up to a keyword dispatch.
 --
--- The input is a keyword EMessage with a mix of operators and identifiers as
--- its name, e.g. @keyword { emNames = ["+", "*", "remainder"] }@.
-toBinaryOps :: Operators -> Message Expr -> Message Expr
-toBinaryOps _ done@(Keyword _ [_] [_, _]) = done
-toBinaryOps ops (Keyword h (n:ns) (v:vs))
+-- That is, this may end up just being a single dispatch, or a literal, or
+-- a parenthesized expression, but it will not parse the rest of an operator
+-- dispatch.
+pmKeyword :: Parser Expr
+pmKeyword = do
+    t <- choice
+        [ try (lookAhead keyword) >> return (ETop Nothing)
+        , pmSingle
+        ]
+
+    k <- followedBy keyword
+    if not k
+        then return t
+        else do
+
+    (ns, ts) <- liftM unzip $ many1 (keywordSegment prKeyword)
+    os <- pdOptionals
+    return $ EDispatch Nothing (keyword' ns (t:ts) os)
+
+-- | Headless operator dispatch
+phOperator :: Parser Expr
+phOperator = do
+    n <- operator
+    t <- prOperator
+    os <- pdOptionals
+    return (EDispatch Nothing (keyword' [n] [ETop Nothing, t] os))
+
+-- | Headless keyword dispatch
+phKeyword :: Parser Expr
+phKeyword = do
+    (ns, ts) <- liftM unzip $ many1 (keywordSegment prKeyword)
+    os <- pdOptionals
+    return $ EDispatch Nothing (keyword' ns (ETop Nothing:ts) os)
+    
+-- | Keyword (non-first) roles
+prKeyword :: Parser Expr
+prKeyword = phOperator <|> phKeyword <|> pmSingle
+
+-- | Operator (non-first) roles
+prOperator :: Parser Expr
+prOperator = phOperator <|> phKeyword <|> pmKeyword
+
+-- | Parse the rest of a keyword dispatch, possibly followed by an operator
+-- dispatch, with a given first role.
+keywordNext :: Expr -> Parser Expr
+keywordNext t = do
+    (ns, ts) <- liftM unzip $ many1 (keywordSegment prKeyword)
+    os <- pdOptionals
+    let keywd = EDispatch Nothing (keyword' ns (t:ts) os)
+
+    o <- followedBy operator
+    if o
+        then operatorNext keywd
+        else return keywd
+
+-- | Parse the rest of an operator dispatch, with a given first role.
+operatorNext :: Expr -> Parser Expr
+operatorNext f = do
+    (ns, ts, os) <- liftM unzip3 . many1 $ do
+        n <- operator
+        t <- prOperator
+        os <- pdOptionals
+        return (n, t, os)
+
+    ops <- fmap psOperators getState
+    return (EDispatch Nothing (opChain ops ns (f:ts) os))
+
+-- | Chained single message
+cSingle :: Parser Chained
+cSingle = liftM (flip CSingle []) identifier
+
+-- | Chained keyword message
+cKeyword :: Parser Chained
+cKeyword = parens $ do
+    (ns, es) <- choice
+        [ liftM unzip $ many1 (keywordSegment prKeyword)
+        , do
+            o <- operator
+            e <- prOperator
+            return ([o], [e])
+        ]
+
+    os <- pdOptionals
+
+    return (CKeyword ns es os)
+
+-- | Work out precadence, associativity, etc. for binary dispatch.
+-- Takes the operator table, a list of operators, their operands, and their
+-- options, and creates a message dispatch with proper associativity/precedence
+-- worked out.
+--
+-- Operators taking optional values are treated with highest precedence
+-- regardless of their settings in the operator table.
+--
+-- For example, @1 -> 2 &x: 3 * 5@ is @(1 -> 2 &x: 3) * 5@, rather than
+-- @1 -> (2 * 5) &x: 3@
+opChain :: Operators -> [String] -> [Expr] -> [[Option Expr]] -> Message Expr
+opChain _ [] [EDispatch { eMessage = done }] [] = done
+opChain _ [a] [w, x] [opts] = keyword' [a] [w, x] opts
+opChain os (a:b:cs) (w:x:y:zs) (aopts:bopts:opts)
     | nextFirst =
-         T.keyword [n]
-            [ v
-            , EDispatch (eLocation v)
-                (toBinaryOps ops (T.keyword ns vs))
-            ]
-    | isOperator n =
-        toBinaryOps ops . T.keyword ns $
-            (EDispatch (eLocation v) (T.keyword [n] [v, head vs]):tail vs)
-    | nonOperators == ns = Keyword h (n:ns) (v:vs)
-    | null nonOperators && length vs > 2 =
-        T.keyword [head ns]
-            [ EDispatch (eLocation v) $
-                T.keyword [n] [v, head vs]
-            , EDispatch (eLocation v) $
-                toBinaryOps ops (T.keyword (tail ns) (tail vs))
-            ]
+        keyword' [a] [w, disp $ opChain os (b:cs) (x:y:zs) (bopts:opts)] aopts
     | otherwise =
-        toBinaryOps ops . T.keyword (drop numNonOps ns) $
-            (EDispatch (eLocation v) $
-                T.keyword (n : nonOperators)
-                (v : take (numNonOps + 1) vs)) :
-                drop (numNonOps + 1) vs
+        opChain os (b:cs) (disp (keyword' [a] [w, x] aopts):y:zs) (bopts:opts)
   where
-    numNonOps = length nonOperators
-    nonOperators = takeWhile (not . isOperator) ns
+    disp = EDispatch Nothing
+
     nextFirst =
-        isOperator n && or
-            [ null ns
-            , prec next > prec n
-            , assoc n == ARight && prec next == prec n
-            ]
-      where next = head ns
+        null aopts && (prec b > prec a || (assoc a == ARight && prec b == prec a))
 
-    assoc n' =
-        case lookup n' ops of
-            Nothing -> ALeft
-            Just (a, _) -> a
-
-    prec n' =
-        case lookup n' ops of
-            Nothing -> defaultPrec
-            Just (_, p) -> p
-toBinaryOps _ u = error $ "cannot toBinaryOps: " ++ show u
+    assoc o = maybe ALeft fst (lookup o os)
+    prec o = maybe defaultPrec snd (lookup o os)
+opChain _ ns ts oss = error $ "opChain: " ++ show (ns, ts, oss)
 
 -- | Parse a block of expressions from a given input string.
 parser :: Parser [Expr]
 parser = do
-    whiteSpace
-    es <- wsBlock pExpr
-    whiteSpace
+    es <- blockOf pExpr
     eof
     return es
-
--- | Same as `parser', but ignores a shebang at the start of the source.
-fileParser :: Parser [Expr]
-fileParser = do
-    optional (string "#!" >> manyTill anyToken (eol <|> eof))
-    parser
-

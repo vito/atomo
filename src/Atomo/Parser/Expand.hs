@@ -19,9 +19,9 @@ doPragmas :: Expr -> VM ()
 doPragmas (EDispatch { eMessage = em }) =
     pragmas em
   where
-    pragmas (Single _ _ t) =
+    pragmas (Single { mTarget = t }) =
         doPragmas t
-    pragmas (Keyword _ _ ts) =
+    pragmas (Keyword { mTargets = ts }) =
         mapM_ doPragmas ts
 doPragmas (EDefine { eExpr = e }) = do
     doPragmas e
@@ -113,17 +113,19 @@ macroExpand d@(EDispatch { eMessage = em }) = do
             nem <- expanded em
             return d { eMessage = nem }
   where
-    expanded (Single i n t) = do
+    expanded s@(Single { mTarget = t }) = do
         nt <- macroExpand t
-        return (Single i n nt)
-    expanded (Keyword i ns ts) = do
+        return s { mTarget = nt }
+    expanded k@(Keyword { mTargets = ts }) = do
         nts <- mapM macroExpand ts
-        return (Keyword i ns nts)
+        return k { mTargets = nts }
 
     msg =
         case em of
-            Single i n t -> Single i n (Expression t)
-            Keyword i ns ts -> Keyword i ns (map Expression ts)
+            Single i n t os -> Single i n (Expression t) (map exprOpt os)
+            Keyword i ns ts os -> Keyword i ns (map Expression ts) (map exprOpt os)
+
+    exprOpt (Option i n e) = Option i n (Expression e)
 macroExpand d@(EDefine { eExpr = e }) = do
     e' <- macroExpand e
     return d { eExpr = e' }

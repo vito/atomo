@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
-module Atomo.Pretty (Pretty(pretty)) where
+module Atomo.Pretty (Pretty(..)) where
 
 import Data.Char (isUpper)
 import Data.IORef
@@ -11,7 +11,7 @@ import qualified Data.Vector as V
 
 import Atomo.Method
 import Atomo.Types hiding (keyword)
-import Atomo.Parser.Base (isOperator)
+import Atomo.Lexer.Base (isOperator, Token(..), TaggedToken(..))
 
 
 data Context
@@ -183,27 +183,35 @@ instance Pretty Expr where
     prettyFrom _ (EGetDynamic { eName = n }) =
         internal "get-dynamic" $ text n
 
+instance Pretty [Expr] where
+    prettyFrom _ es = sep . punctuate (text ";") $ map pretty es
+
+instance Pretty x => Pretty (Option x) where
+    prettyFrom _ (Option _ n x) = char '&' <> text n <> char ':' <+> pretty x
 
 instance Pretty (Message Pattern) where
-    prettyFrom _ (Single _ n (PObject ETop {})) = text n
-    prettyFrom _ (Single _ n PThis) = text n
-    prettyFrom _ (Single _ n p) = pretty p <+> text n
-    prettyFrom _ (Keyword _ ns (PObject ETop {}:vs)) =
+    prettyFrom _ (Single { mName = n, mTarget = (PObject ETop {}) }) = text n
+    prettyFrom _ (Single { mName = n, mTarget = PThis }) = text n
+    prettyFrom _ (Single { mName = n, mTarget = p }) = pretty p <+> text n
+    prettyFrom _ (Keyword { mNames = ns, mTargets = (PObject ETop {}:vs) }) =
         headlessKeywords ns vs
-    prettyFrom _ (Keyword _ ns (PThis:vs)) =
+    prettyFrom _ (Keyword { mNames = ns, mTargets = (PThis:vs) }) =
         headlessKeywords ns vs
-    prettyFrom _ (Keyword _ ns vs) = keywords ns vs
+    prettyFrom _ (Keyword { mNames = ns, mTargets = vs }) =
+        keywords ns vs
 
 instance Pretty (Message Value) where
-    prettyFrom _ (Single _ n t) = prettyFrom CSingle t <+> text n
-    prettyFrom _ (Keyword _ ns vs) = keywords ns vs
-
+    prettyFrom _ (Single { mName = n, mTarget = t }) =
+        prettyFrom CSingle t <+> text n
+    prettyFrom _ (Keyword { mNames = ns, mTargets = vs }) =
+        keywords ns vs
 
 instance Pretty (Message Expr) where
-    prettyFrom _ (Single _ n (ETop {})) = text n
-    prettyFrom _ (Single _ n t) = prettyFrom CSingle t <+> text n
-    prettyFrom _ (Keyword _ ns (ETop {}:es)) = headlessKeywords ns es
-    prettyFrom _ (Keyword _ ns es) = keywords ns es
+    prettyFrom _ (Single { mName = n, mTarget = ETop {} }) = text n
+    prettyFrom _ (Single { mName = n, mTarget = t }) = prettyFrom CSingle t <+> text n
+    prettyFrom _ (Keyword { mNames = ns, mTargets = (ETop {}:es) }) = headlessKeywords ns es
+    prettyFrom _ (Keyword { mNames = ns, mTargets = es, mOptionals = os }) =
+        keywords ns es <+> sep (map pretty os)
 
 instance Pretty (Particle Value) where
     prettyFrom _ (Single { mName = n }) = text n
@@ -236,6 +244,29 @@ instance Pretty Delegates where
     prettyFrom _ [] = internal "bottom" empty
     prettyFrom _ [_] = text "1 object"
     prettyFrom _ ds = text $ show (length ds) ++ " objects"
+
+
+instance Pretty Token where
+    prettyFrom _ (TokKeyword k) = text k <> char ':'
+    prettyFrom _ (TokOptional o) = char '&' <> text o <> char ':'
+    prettyFrom _ (TokOperator o) = text o
+    prettyFrom _ (TokIdentifier i) = text i
+    prettyFrom _ (TokParticle ks) = char '@' <> hcat (map (text . keyword) ks)
+    prettyFrom _ (TokPrimitive p) = pretty p
+    prettyFrom _ (TokPunctuation c) = char c
+    prettyFrom _ (TokOpen c) = char c
+    prettyFrom _ (TokClose c) = char c
+    prettyFrom _ (TokReserved r) = text r
+    prettyFrom _ TokEnd = char ';'
+
+instance Pretty TaggedToken where
+    prettyFrom c tt = prettyFrom c (tToken tt)
+
+type Tokens = [TaggedToken]
+
+instance Pretty Tokens where
+    prettyFrom _ ts = hsep (map pretty ts)
+
 
 
 
