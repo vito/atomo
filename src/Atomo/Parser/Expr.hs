@@ -231,12 +231,13 @@ pdOptionals = do
 -- That is, this may end up just being a literal or a parenthesized expression.
 pmSingle :: Parser Expr
 pmSingle = do
-    target <- pSpacedExpr
-
-    let restOf =
-            case target of
-                EDispatch {} -> many
-                _ -> many1
+    (restOf, target) <- do
+        t <- pSpacedExpr
+        case t of
+            EDispatch { eMessage = m } -> do
+                os <- pdOptionals
+                return (many, t { eMessage = m { mOptionals = os } })
+            _ -> return (many1, t)
 
     chain <- option [] (try $ restOf (cSingle <|> cKeyword))
     if null chain
@@ -317,7 +318,10 @@ operatorNext f = do
 
 -- | Chained single message
 cSingle :: Parser Chained
-cSingle = liftM (flip CSingle []) identifier
+cSingle = do
+    n <- identifier
+    os <- pdOptionals
+    return (CSingle n os)
 
 -- | Chained keyword message
 cKeyword :: Parser Chained
