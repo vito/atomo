@@ -36,6 +36,8 @@ load = do
         fn <- getString [$e|fn|]
         Particle m <- here "m" >>= findParticle
 
+        checkExists fn
+
         hdl <- case m of
             Single { mName = "read" } ->
                 liftIO (openFile fn ReadMode)
@@ -154,12 +156,8 @@ load = do
 
     [$p|File delete: (fn: String)|] =: do
         fn <- getString [$e|fn|]
-        b <- liftIO (doesFileExist fn)
-
-        if b
-           then liftIO (removeFile fn)
-           else raise ["file-not-found"] [string fn]
-
+        checkExists fn
+        liftIO (removeFile fn)
         return (particle "ok")
 
     [$p|File move: (from: String) to: (to: String)|] =:::
@@ -167,12 +165,14 @@ load = do
     [$p|File rename: (from: String) to: (to: String)|] =: do
         from <- getString [$e|from|]
         to <- getString [$e|to|]
+        checkExists from
         liftIO (renameFile from to)
         return (particle "ok")
 
     [$p|File copy: (from: String) to: (to: String)|] =: do
         from <- getString [$e|from|]
         to <- getString [$e|to|]
+        checkExists from
         liftIO (copyFile from to)
         return (particle "ok")
 
@@ -195,25 +195,30 @@ load = do
             Nothing -> return (particle "none")
             Just fn -> return (keyParticle ["ok"] [Nothing, Just (string fn)])
 
-    [$p|File readable?: (fn: String)|] =:
-        getString [$e|fn|]
-            >>= liftM (Boolean . readable) . liftIO . getPermissions
+    [$p|File readable?: (fn: String)|] =: do
+        fn <- getString [$e|fn|]
+        checkExists fn
+        liftM (Boolean . readable) $ liftIO (getPermissions fn)
 
-    [$p|File writable?: (fn: String)|] =:
-        getString [$e|fn|]
-            >>= liftM (Boolean . writable) . liftIO . getPermissions
+    [$p|File writable?: (fn: String)|] =: do
+        fn <- getString [$e|fn|]
+        checkExists fn
+        liftM (Boolean . writable) $ liftIO (getPermissions fn)
 
-    [$p|File executable?: (fn: String)|] =:
-        getString [$e|fn|]
-            >>= liftM (Boolean . executable) . liftIO . getPermissions
+    [$p|File executable?: (fn: String)|] =: do
+        fn <- getString [$e|fn|]
+        checkExists fn
+        liftM (Boolean . executable) $ liftIO (getPermissions fn)
 
-    [$p|File searchable?: (fn: String)|] =:
-        getString [$e|fn|]
-            >>= liftM (Boolean . searchable) . liftIO . getPermissions
+    [$p|File searchable?: (fn: String)|] =: do
+        fn <- getString [$e|fn|]
+        checkExists fn
+        liftM (Boolean . searchable) $ liftIO (getPermissions fn)
 
     [$p|File set-readable: (fn: String) to: (b: Boolean)|] =: do
         Boolean r <- here "b" >>= findBoolean
         fn <- getString [$e|fn|]
+        checkExists fn
         ps <- liftIO (getPermissions fn)
         liftIO (setPermissions fn (ps { readable = r }))
         return (particle "ok")
@@ -221,6 +226,7 @@ load = do
     [$p|File set-writable: (fn: String) to: (b: Boolean)|] =: do
         Boolean w <- here "b" >>= findBoolean
         fn <- getString [$e|fn|]
+        checkExists fn
         ps <- liftIO (getPermissions fn)
         liftIO (setPermissions fn (ps { writable = w }))
         return (particle "ok")
@@ -228,6 +234,7 @@ load = do
     [$p|File set-executable: (fn: String) to: (b: Boolean)|] =: do
         Boolean x <- here "b" >>= findBoolean
         fn <- getString [$e|fn|]
+        checkExists fn
         ps <- liftIO (getPermissions fn)
         liftIO (setPermissions fn (ps { executable = x }))
         return (particle "ok")
@@ -235,6 +242,7 @@ load = do
     [$p|File set-searchable: (fn: String) to: (b: Boolean)|] =: do
         Boolean s <- here "b" >>= findBoolean
         fn <- getString [$e|fn|]
+        checkExists fn
         ps <- liftIO (getPermissions fn)
         liftIO (setPermissions fn (ps { searchable = s }))
         return (particle "ok")
@@ -256,11 +264,13 @@ load = do
 
     [$p|Directory remove: (path: String)|] =: do
         path <- getString [$e|path|]
+        checkDirExists path
         liftIO (removeDirectory path)
         return (particle "ok")
 
     [$p|Directory remove-recursive: (path: String)|] =: do
         path <- getString [$e|path|]
+        checkDirExists path
         liftIO (removeDirectoryRecursive path)
         return (particle "ok")
 
@@ -269,18 +279,22 @@ load = do
     [$p|Directory rename: (from: String) to: (to: String)|] =: do
         from <- getString [$e|from|]
         to <- getString [$e|to|]
+        checkDirExists from
         liftIO (renameDirectory from to)
         return (particle "ok")
 
-    [$p|Directory contents: (path: String)|] =:
+    [$p|Directory contents: (path: String)|] =: do
+        path <- getString [$e|path|]
+        checkDirExists path
         liftM (list . map string . filter (`notElem` [".", ".."]))
-            (getString [$e|path|] >>= liftIO . getDirectoryContents)
+            (liftIO (getDirectoryContents path))
 
     [$p|Directory current|] =:
         liftM string $ liftIO getCurrentDirectory
 
-    [$p|Directory current: (path: String)|] =: do
+    [$p|Directory set-current: (path: String)|] =: do
         path <- getString [$e|path|]
+        checkDirExists path
         liftIO (setCurrentDirectory path)
         return (particle "ok")
 
@@ -325,6 +339,20 @@ load = do
             Nothing -> raise' "interrupt"
 
   where
+    checkExists fn = do
+        b <- liftIO (doesFileExist fn)
+
+        if b
+           then return ()
+           else raise ["file-not-found"] [string fn]
+
+    checkDirExists d = do
+        b <- liftIO (doesDirectoryExist d)
+
+        if b
+           then return ()
+           else raise ["directory-not-found"] [string d]
+
     runInput h
         = runInputT (defaultSettings { historyFile = Just h })
         . withInterrupt
