@@ -223,12 +223,9 @@ instance Pretty x => Pretty (Particle x) where
         | all isNothing vs && null os = text . concat $ map keyword ns
         | isNothing (head vs) =
             parens $ headlessKeywords' prettyVal ns (tail vs) <+> sep (map pretty os)
-        | otherwise = parens (keywords' prettyVal ns vs) <+> sep (map pretty os)
+        | otherwise = parens $ keywords' prettyVal ns vs <+> sep (map pretty os)
       where
-        prettyVal me =
-            case me of
-                Nothing -> text "_"
-                Just e -> prettyFrom CKeyword e
+        prettyVal = prettyFrom CKeyword
 
 instance Pretty x => Pretty (Maybe x) where
     prettyFrom _ Nothing = text "_"

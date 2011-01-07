@@ -269,8 +269,8 @@ define !p !e = do
 setSelf :: Value -> Message Pattern -> Message Pattern
 setSelf v (Keyword i ns ps os) =
     Keyword i ns (map (setSelf' v) ps) os
-setSelf v (Single i n t o) =
-    Single i n (setSelf' v t) o
+setSelf v (Single i n t os) =
+    Single i n (setSelf' v t) os
 
 setSelf' :: Value -> Pattern -> Pattern
 setSelf' v (PMatch x) | v == x = PThis
