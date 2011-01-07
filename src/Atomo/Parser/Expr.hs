@@ -267,9 +267,7 @@ pmKeyword = do
         then return t
         else do
 
-    (ns, ts) <- liftM unzip $ many1 (keywordSegment prKeyword)
-    os <- pdOptionals
-    return $ EDispatch Nothing (keyword' ns (t:ts) os)
+    phKeyword t
 
 -- | Headless operator dispatch
 phOperator :: Parser Expr
@@ -280,27 +278,25 @@ phOperator = do
     return (EDispatch Nothing (keyword' [n] [ETop Nothing, t] os))
 
 -- | Headless keyword dispatch
-phKeyword :: Parser Expr
-phKeyword = do
+phKeyword :: Expr -> Parser Expr
+phKeyword t = do
     (ns, ts) <- liftM unzip $ many1 (keywordSegment prKeyword)
     os <- pdOptionals
-    return $ EDispatch Nothing (keyword' ns (ETop Nothing:ts) os)
+    return $ EDispatch Nothing (keyword' ns (t:ts) os)
     
 -- | Keyword (non-first) roles
 prKeyword :: Parser Expr
-prKeyword = phOperator <|> phKeyword <|> pmSingle
+prKeyword = phOperator <|> phKeyword (ETop Nothing) <|> pmSingle
 
 -- | Operator (non-first) roles
 prOperator :: Parser Expr
-prOperator = phOperator <|> phKeyword <|> pmKeyword
+prOperator = phOperator <|> phKeyword (ETop Nothing) <|> pmKeyword
 
 -- | Parse the rest of a keyword dispatch, possibly followed by an operator
 -- dispatch, with a given first role.
 keywordNext :: Expr -> Parser Expr
 keywordNext t = do
-    (ns, ts) <- liftM unzip $ many1 (keywordSegment prKeyword)
-    os <- pdOptionals
-    let keywd = EDispatch Nothing (keyword' ns (t:ts) os)
+    keywd <- phKeyword t
 
     o <- followedBy operator
     if o
