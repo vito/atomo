@@ -7,6 +7,7 @@ import Data.Maybe (isJust)
 import Atomo
 import Atomo.Load
 import Atomo.Method
+import Atomo.Pattern
 import Atomo.Pretty
 
 load :: VM ()
@@ -56,12 +57,13 @@ load = do
         x <- here "x"
         Particle p' <- here "p" >>= findParticle
 
-        let completed =
-                case p' of
-                    Keyword { mNames = ns, mTargets = mvs } -> keyword ns (completeKP mvs [x])
-                    Single { mName = n } -> single n x
+        case p' of
+            Keyword {} ->
+                liftM Boolean (particleMatch p' x)
 
-        liftM (Boolean . isJust) $ findMethod x completed
+            Single { mName = n } ->
+                liftM (Boolean . isJust) . findMethod x $
+                    single n x
 
     [$p|(o: Object) methods|] =: do
         o <- here "o" >>= objectFor
@@ -102,3 +104,19 @@ load = do
 
         return (particle "ok")
 
+particleMatch :: Particle Value -> Value -> VM Bool
+particleMatch p' x = do
+    o <- objectFor x
+    mms <- liftIO (readIORef (oMethods o))
+    is <- gets primitives
+    return . maybe False (maybeMatch is p') $
+        lookupMap (mID p') (methods p' mms)
+  where
+    methods (Single {}) (s, _) = s
+    methods (Keyword {}) (_, k) = k
+
+    maybeMatch is (Single { mTarget = Just t }) ms =
+        any (flip (match is (Just x)) t . mTarget . mPattern) ms
+    maybeMatch is (Keyword { mTargets = ts }) ms =
+        any (all (\(Just v, pat) -> match is (Just x) pat v) . filter (isJust . fst) . zip ts . mTargets . mPattern) ms
+    maybeMatch _ (Single {}) _ = True
