@@ -3,6 +3,7 @@ module Atomo.Helpers where
 
 import Control.Monad.State
 import Data.Dynamic
+import Data.Maybe (isNothing)
 import qualified Data.Text as T
 import qualified Data.Vector as V
 
@@ -311,8 +312,34 @@ tryPattern c e =
 
 -- | Fill in the empty values of a particle. The number of values missing
 -- is expected to be equal to the number of values provided.
-completeKP :: [Maybe Value] -> [Value] -> [Value]
-completeKP [] _ = []
-completeKP (Nothing:mvs') (v:vs') = v : completeKP mvs' vs'
-completeKP (Just v:mvs') vs' = v : completeKP mvs' vs'
-completeKP mvs' vs' = error $ "impossible: completeKP on " ++ show (mvs', vs')
+fillParticle :: [Maybe Value] -> [Option (Maybe Value)] -> [Value] -> ([Value], [Option Value])
+fillParticle = fillParticle' ([], [])
+  where
+    fillParticle' acc [] [] _ = acc
+    fillParticle' (fvs, fos) [] (Option i n (Just v):mos) vs =
+        fillParticle' (fvs, fos ++ [Option i n v]) [] mos vs
+    fillParticle' (fvs, fos) [] (Option i n Nothing:mos) (v:vs) =
+        fillParticle' (fvs, fos ++ [Option i n v]) [] mos vs
+    fillParticle' (fvs, fos) (Just v:mvs) mos vs =
+        fillParticle' (fvs ++ [v], fos) mvs mos vs
+    fillParticle' (fvs, fos) (Nothing:mvs) mos (v:vs) =
+        fillParticle' (fvs ++ [v], fos) mvs mos vs
+    fillParticle' acc mvs mos vs =
+        error $ "impossible: fillParticle' on " ++ show (acc, mvs, mos, vs)
+
+completeParticle :: Particle Value -> [Value] -> VM (Message Value)
+completeParticle (Keyword i ns mts mos) vs
+    | length vs < totalBlanks mts mos =
+        throwError (ParticleArity (totalBlanks mts mos) (length vs))
+    | otherwise = return $ uncurry (Keyword i ns) (fillParticle mts mos vs)
+completeParticle (Single i n mt mos) vs
+    | length vs < totalBlanks [mt] mos =
+        throwError (ParticleArity (totalBlanks [mt] mos) (length vs))
+    | otherwise = return $ Single i n t os
+  where
+    ([t], os) = fillParticle [mt] mos vs
+
+totalBlanks :: [Maybe Value] -> [Option (Maybe Value)] -> Int
+totalBlanks mvs mos
+    = length (filter isNothing mvs)
+    + length (filter (\(Option _ _ mv) -> isNothing mv) mos)

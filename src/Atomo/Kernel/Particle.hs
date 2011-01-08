@@ -45,18 +45,7 @@ load = do
     [$p|(p: Particle) complete: (targets: List)|] =: do
         Particle p <- here "p" >>= findParticle
         vs <- getList [$e|targets|]
-
-        case p of
-            Keyword { mNames = ns, mTargets = mvs } ->
-                let blanks = length (filter (== Nothing) mvs)
-                in
-                    if blanks > length vs
-                        then throwError (ParticleArity blanks (length vs))
-                        else return . Message . keyword ns $ completeKP mvs vs
-            Single { mName = n } ->
-                if null vs
-                    then throwError (ParticleArity 1 0)
-                    else return . Message . single n $ head vs
+        liftM Message (completeParticle p vs)
 
     [$p|c define: (p: Particle) on: v with: (targets: List) as: e|] =: do
         Particle p <- here "p" >>= findParticle
