@@ -1,40 +1,46 @@
-(p: -> Particle) show :=
-  p type match: {
-    @keyword ->
-      { operator?: str := str all?: @(in?: "~!@#$%^&*-_=+./\\|<>?:")
+{ operator?: str := str all?: @(in?: "~!@#$%^&*-_=+./\\|<>?:")
 
-        keywordfy: str :=
-          if: (operator?: str)
-            then: { str }
-            else: { str .. ":" }
-            
-        vs := p values map:
-          { v |
-            v match:
-              { @none -> "_"
-                @(ok: v) -> v show
+  keywordfy: str :=
+    if: (operator?: str)
+      then: { str }
+      else: { str .. ":" }
+
+  slot: @none := "_"
+  slot: @(ok: v) := v show
+
+  (p: -> Particle) show :=
+    { optionals :=
+        p optionals
+          (map: { o | " &" .. o from name .. ": " .. (slot: o to) })
+          join
+
+      p type match: {
+        @keyword ->
+          { vs := p values map: { v | slot: v }
+
+            initial :=
+              vs head match: {
+                "_" -> ""
+                v -> v .. " "
               }
-          }
 
-        initial :=
-          vs head match: {
-            "_" -> ""
-            v -> v .. " "
-          }
+            rest :=
+              (p names zip: vs tail)
+                (map:
+                  { pair |
+                    keywordfy: pair from .. " " .. pair to
+                  })
+                (join: " ")
 
-        rest :=
-          (p names zip: vs tail)
-            (map:
-              { pair |
-                keywordfy: pair from .. " " .. pair to
-              })
-            (join: " ")
+            if: (p values (all?: @(== @none)) && p optionals empty)
+              then: { "@" .. p names (map: { n | keywordfy: n }) join }
+              else: { "@(" .. initial .. rest .. optionals .. ")" }
+          } call
 
-        if: p values (all?: @(== @none))
-          then: { "@" .. p names (map: { n | keywordfy: n }) join }
-          else: { "@(" .. initial .. rest .. ")" }
-      } call
-
-    @single ->
-      ("@" .. p name)
-  }
+        @single ->
+          if: p optionals empty?
+            then: { "@" .. p name }
+            else: { "@(" .. p name .. optionals .. ")" }
+      }
+    } call
+} call
