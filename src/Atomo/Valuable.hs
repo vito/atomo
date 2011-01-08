@@ -1,11 +1,10 @@
 module Atomo.Valuable where
 
 import Control.Monad (liftM)
-import Control.Monad.Trans (liftIO)
-import Data.IORef
 import qualified Data.Text as T
 import qualified Data.Vector as V
 
+import Atomo.Environment
 import Atomo.Types
 
 
@@ -51,3 +50,22 @@ instance Valuable a => Valuable (V.Vector a) where
 instance Valuable T.Text where
     toValue = return . String
     fromValue (String s) = return s
+
+instance Valuable x => Valuable (Maybe x) where
+    toValue (Just x) = liftM (keyParticleN ["ok"] . (:[])) (toValue x)
+    toValue Nothing = return (particle "none")
+
+    fromValue (Particle (Single { mName = "none" })) = return Nothing
+    fromValue (Particle (Keyword { mNames = ["ok"], mTargets = [_, Just v]})) =
+        liftM Just (fromValue v)
+
+instance (Valuable x, Valuable y) => Valuable (x, y) where
+    toValue (x, y) = do
+        xv <- toValue x
+        yv <- toValue y
+        dispatch (keyword ["->"] [xv, yv])
+
+    fromValue v = do
+        x <- dispatch (single "from" v) >>= fromValue
+        y <- dispatch (single "to" v) >>= fromValue
+        return (x, y)
