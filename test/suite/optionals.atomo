@@ -28,4 +28,11 @@ describe: "optionals" as: {
       (foo: 1 bar: 2 &baz: 1) should-be: 1
     }
   }
+
+  describe: "in particles" as: {
+    it: "is completed in sequence after normal arguments" so: {
+      @(foo &baz: _) (complete: [1, 2]) optionals
+        should-be: [@baz -> 2]
+    }
+  }
 }
