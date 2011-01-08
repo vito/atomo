@@ -3,6 +3,7 @@
 module Atomo.Kernel.Particle (load) where
 
 import Atomo
+import Atomo.Valuable
 
 
 load :: VM ()
@@ -28,10 +29,12 @@ load = do
 
     [$p|(p: Particle) values|] =: do
         (Particle (Keyword { mTargets = mvs })) <- here "p" >>= findParticle
-        return . list $
-            map
-                (maybe (particle "none") (keyParticleN ["ok"] . (:[])))
-                mvs
+        liftM list (mapM toValue mvs)
+
+    [$p|(p: Particle) optionals|] =: do
+        Particle p <- here "p" >>= findParticle
+        liftM list $
+            mapM (\(Option _ n mv) -> toValue (particle n, mv)) (mOptionals p)
 
     [$p|(p: Particle) type|] =: do
         Particle p <- here "p" >>= findParticle
