@@ -4,6 +4,9 @@ a -> b := Association clone do: { from = a; to = b }
 (a: Association) show :=
     a from show .. " -> " .. a to show
 
+(a: Association) == (b: Association) :=
+  a from == b from && a to == b to
+
 [] lookup: _ := @none
 (a . as) lookup: k :=
   if: (k == a from)
