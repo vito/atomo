@@ -2,6 +2,7 @@
 module Atomo.Kernel.Message (load) where
 
 import Atomo
+import Atomo.Valuable
 
 
 load :: VM ()
@@ -28,3 +29,8 @@ load = do
     [$p|(m: Message) targets|] =: do
         Message (Keyword { mTargets = ts }) <- here "m" >>= findMessage
         return $ list ts
+
+    [$p|(m: Message) optionals|] =: do
+        Message m <- here "m" >>= findMessage
+        liftM list $
+            mapM (\(Option _ n v) -> toValue (particle n, v)) (mOptionals m)
