@@ -172,7 +172,7 @@ pParticle = tagged (do
   where
     wildcard = EDispatch Nothing (single "_" (ETop Nothing))
 
-    toOpt (Option i n e) = Option i n (Just e)
+    toOpt (Option i n e) = Option i n (toRole e)
 
     toRole (EDispatch { eMessage = Single { mName = "_", mTarget = ETop {} } }) =
         Nothing

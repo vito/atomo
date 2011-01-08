@@ -149,9 +149,9 @@ macroExpand p@(EParticle { eParticle = ep }) =
                     Nothing -> return Nothing
                     Just e -> liftM Just (macroExpand e)
 
-            nos <- forM os $ \(Option i n (Just e)) -> do
-                ne <- macroExpand e
-                return (Option i n (Just ne))
+            nos <- forM os $ \(Option i n me) -> do
+                ne <- maybe (return Nothing) (liftM Just . macroExpand) me
+                return (Option i n ne)
 
             return p { eParticle = keyword' ns nmes nos }
 
