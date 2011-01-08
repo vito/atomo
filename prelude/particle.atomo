@@ -32,7 +32,7 @@
                   })
                 (join: " ")
 
-            if: (p values (all?: @(== @none)) && p optionals empty)
+            if: (p values (all?: @(== @none)) && p optionals empty?)
               then: { "@" .. p names (map: { n | keywordfy: n }) join }
               else: { "@(" .. initial .. rest .. optionals .. ")" }
           } call
