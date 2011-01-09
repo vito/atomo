@@ -106,14 +106,13 @@ load = do
 
         return $ List nvs
 
-    [$p|(x: List) zip: (y: List)|] =::: [$e|x zip: y with: @->|]
-    [$p|(x: List) zip: (y: List) with: b|] =: do
+    [$p|(x: List) zip: (y: List) &zipper: @->|] =: do
         xs <- getVector [$e|x|]
         ys <- getVector [$e|y|]
-        b <- here "b"
+        z <- here "zipper"
 
         nvs <- V.zipWithM (\x y ->
-            dispatch (keyword ["call"] [b, list [x, y]])) xs ys
+            dispatch (keyword ["call"] [z, list [x, y]])) xs ys
 
         return $ List nvs
 

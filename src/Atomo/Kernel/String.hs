@@ -346,22 +346,17 @@ load = do
 
     [$p|(s: String) filter: b|] =::: [$e|s (as: List) (filter: b) to-string|]
 
-    [$p|(x: String) zip: (y: String)|] =::: [$e|x zip: y with: @->|]
-    [$p|(x: String) zip: (y: String) with: z|] =: do
+    [$p|(x: String) zip: (y: String) &zipper: @->|] =: do
         x <- getText [$e|x|]
         y <- getText [$e|y|]
-        z <- here "z"
+        z <- here "zipper"
 
         vs <- forM (T.zip x y) $ \(a, b) ->
             dispatch (keyword ["call"] [z, list [Char a, Char b]])
 
         return $ list vs
 
-    [$p|(x: List) zip: (y: String)|] =::: [$e|x zip: (y as: List)|]
-    [$p|(x: String) zip: (y: List)|] =::: [$e|(x as: List) zip: y|]
-
-    [$p|(x: List) zip: (y: String) with: z|] =:::
-        [$e|x zip: (y as: List) with: z|]
-
-    [$p|(x: String) zip: (y: List) with: z|] =:::
-        [$e|(x as: List) zip: y with: z|]
+    [$p|(x: List) zip: (y: String) &zipper: @->|] =:::
+        [$e|x zip: (y as: List) &zipper: zipper|]
+    [$p|(x: String) zip: (y: List) &zipper: @->|] =:::
+        [$e|(x as: List) zip: y &zipper: zipper|]
