@@ -242,7 +242,6 @@ load = do
     [$p|(x: Integer) up-to: (y: Integer)|] =::: [$e|x to: y by: 1|]
     [$p|(x: Integer) down-to: (y: Integer)|] =::: [$e|x to: y by: -1|]
 
-    -- destructive update
     [$p|(l: List) at: (n: Integer) put: v|] =: do
         vs <- getVector [$e|l|]
 
@@ -262,13 +261,13 @@ load = do
         v <- here "v"
         return (List $ V.cons v vs)
 
-    [$p|(l: List) << v|] =: do
+    [$p|(l: List) push: v|] =: do
         vs <- getVector [$e|l|]
         v <- here "v"
 
         return . List $ V.snoc vs v
 
-    [$p|v >> (l: List)|] =: do
+    [$p|(l: List) cons: v|] =: do
         vs <- getVector [$e|l|]
         v <- here "v"
 

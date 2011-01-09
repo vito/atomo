@@ -1,5 +1,8 @@
 @empty-list describe-error := "list is empty"
 
+macro (a << b) `(~a = ~a push: ~b)
+macro (a >> b) `(~b = ~b cons: ~a)
+
 (l: -> List) show :=
   "[" .. l (map: @show) (join: ", ") .. "]"
 
