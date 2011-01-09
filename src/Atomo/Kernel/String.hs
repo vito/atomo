@@ -138,11 +138,15 @@ load = do
     [$p|(s: String) reverse|] =:
         liftM (String . T.reverse) (getText [$e|s|])
 
-    [$p|(l: List) join|] =::: [$e|l reduce: @.. with: ""|]
+    [$p|(l: List) join|] =: do
+        ts <- getList [$e|l|]
+            >>= mapM (liftM fromString . findString)
+
+        return (String (T.concat ts))
 
     [$p|(l: List) join: (d: String)|] =: do
         ts <- getList [$e|l|]
-            >>= mapM (liftM (\(String t) -> t) . findString)
+            >>= mapM (liftM fromString . findString)
 
         d <- getText [$e|d|]
 
@@ -256,21 +260,21 @@ load = do
     [$p|(s: String) uppercase|] =:
         liftM (String . T.toUpper) (getText [$e|s|])
 
-    [$p|(s: String) left-justify: (length: Integer) with: (c: Char)|] =: do
+    [$p|(s: String) left-justify: (length: Integer) &padding: $ |] =: do
         s <- getText [$e|s|]
         Integer l <- here "length" >>= findInteger
         Char c <- here "c" >>= findChar
 
         return (String (T.justifyLeft (fromIntegral l) c s))
 
-    [$p|(s: String) right-justify: (length: Integer) with: (c: Char)|] =: do
+    [$p|(s: String) right-justify: (length: Integer) &padding: $ |] =: do
         s <- getText [$e|s|]
         Integer l <- here "length" >>= findInteger
         Char c <- here "c" >>= findChar
 
         return (String (T.justifyRight (fromIntegral l) c s))
 
-    [$p|(s: String) center: (length: Integer) with: (c: Char)|] =: do
+    [$p|(s: String) center: (length: Integer) &padding: $ |] =: do
         s <- getText [$e|s|]
         Integer l <- here "length" >>= findInteger
         Char c <- here "c" >>= findChar
