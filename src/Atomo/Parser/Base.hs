@@ -24,32 +24,36 @@ type Parser = ParsecT [TaggedToken] ParserState Identity
 gensym :: Char
 gensym = '!'
 
+showToken :: Token -> String
+showToken TokEnd = "ending"
+showToken t = show (pretty t)
+
+withToken :: (Token -> Maybe a) -> Parser a
+withToken f = tokenPrim (showToken . tToken) (\_ t _ -> tLocation t) (f . tToken)
+
 keyword :: Parser String
-keyword =
-    tokenPrim (show . pretty) (\_ t _ -> tLocation t) $ \t ->
-        case tToken t of
-            TokKeyword n -> Just n
-            _ -> Nothing
+keyword = withToken $ \t ->
+    case t of
+        TokKeyword n -> Just n
+        _ -> Nothing
 
 optionalKeyword :: Parser String
-optionalKeyword =
-    tokenPrim (show . pretty) (\_ t _ -> tLocation t) $ \t ->
-        case tToken t of
-            TokOptional n -> Just n
-            _ -> Nothing
+optionalKeyword = withToken $ \t ->
+    case t of
+        TokOptional n -> Just n
+        _ -> Nothing
 
 operator :: Parser String
-operator =
-    tokenPrim (show . pretty) (\_ t _ -> tLocation t) $ \t ->
-        case tToken t of
-            TokOperator n -> Just n
-            _ -> Nothing
+operator = withToken $ \t ->
+    case t of
+        TokOperator n -> Just n
+        _ -> Nothing
 
 identifier :: Parser String
 identifier = do
     ps <- getState
-    tokenPrim (show . pretty) (\_ t _ -> tLocation t) $ \t ->
-        case tToken t of
+    withToken $ \t ->
+        case t of
             TokIdentifier (c:n) | c == gensym && psInQuote ps ->
                 Just (n ++ ":" ++ show (psClock ps))
             TokIdentifier n ->
@@ -57,45 +61,51 @@ identifier = do
             _ -> Nothing
 
 particle :: Parser Chained
-particle =
-    tokenPrim (show . pretty) (\_ t _ -> tLocation t) $ \t ->
-        case tToken t of
-            TokParticle ns ->
-                Just (CKeyword ns (replicate (length ns) wildcard) [])
-            _ -> Nothing
+particle = withToken $ \t ->
+    case t of
+        TokParticle ns ->
+            Just (CKeyword ns (replicate (length ns) wildcard) [])
+        _ -> Nothing
   where
     wildcard = EDispatch Nothing (T.single "_" (ETop Nothing))
 
 primitive :: Parser Value
-primitive =
-    tokenPrim (show . pretty) (\_ t _ -> tLocation t) $ \t ->
-        case tToken t of
-            TokPrimitive v -> Just v
-            _ -> Nothing
+primitive = withToken $ \t ->
+    case t of
+        TokPrimitive v -> Just v
+        _ -> Nothing
 
 punctuation :: Char -> Parser ()
-punctuation p =
-    tokenPrim (show . pretty) (\_ t _ -> tLocation t) $ \t ->
-        case tToken t of
-            TokPunctuation c | c == p -> Just ()
-            TokOpen c | c == p -> Just ()
-            TokClose c | c == p -> Just ()
-            _ -> Nothing
+punctuation p = withToken $ \t ->
+    case t of
+        TokPunctuation c | c == p -> Just ()
+        TokOpen c | c == p -> Just ()
+        TokClose c | c == p -> Just ()
+        _ -> Nothing
 
 reserved :: String -> Parser ()
-reserved r =
-    tokenPrim (show . pretty) (\_ t _ -> tLocation t) $ \t ->
-        case tToken t of
-            TokReserved n | n == r -> Just ()
-            _ -> Nothing
+reserved r = withToken $ \t ->
+    case t of
+        TokReserved n | n == r -> Just ()
+        _ -> Nothing
 
 end :: Parser ()
-end =
-    tokenPrim (show . pretty) (\_ t _ -> tLocation t) $ \t ->
-        case tToken t of
-            TokEnd -> Just ()
-            _ -> Nothing
+end = withToken $ \t ->
+    case t of
+        TokEnd -> Just ()
+        _ -> Nothing
 
+symbol :: String -> Parser ()
+symbol s = withToken $ \t ->
+    case t of
+        TokIdentifier n | n == s -> Just ()
+        _ -> Nothing
+
+integer :: Parser Integer
+integer = withToken $ \t ->
+    case t of
+        TokPrimitive (Integer i) -> Just i
+        _ -> Nothing
 
 parens :: Parser a -> Parser a
 parens p = do
@@ -118,20 +128,6 @@ braces p = do
     r <- p
     punctuation '}'
     return r
-
-symbol :: String -> Parser ()
-symbol s =
-    tokenPrim (show . pretty) (\_ t _ -> tLocation t) $ \t ->
-        case tToken t of
-            TokIdentifier n | n == s -> Just ()
-            _ -> Nothing
-
-integer :: Parser Integer
-integer =
-    tokenPrim (show . pretty) (\_ t _ -> tLocation t) $ \t ->
-        case tToken t of
-            TokPrimitive (Integer i) -> Just i
-            _ -> Nothing
 
 blockOf :: Parser a -> Parser [a]
 blockOf p = sepEndBy p end

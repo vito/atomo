@@ -73,7 +73,7 @@ pQuasiQuoted = tagged (do
     <?> "quasiquoted expression"
 
 -- | An unquote expression, used inside a quasiquote.
--- 
+--
 -- Examples: @~1@, @~(2 + 2)@
 pUnquoted :: Parser Expr
 pUnquoted = tagged (do
@@ -292,14 +292,16 @@ phKeyword t = do
     (ns, ts) <- liftM unzip $ many1 (keywordSegment prKeyword)
     os <- pdOptionals
     return $ EDispatch Nothing (keyword' ns (t:ts) os)
-    
+
 -- | Keyword (non-first) roles
 prKeyword :: Parser Expr
 prKeyword = phOperator <|> phKeyword (ETop Nothing) <|> pmSingle
+    <?> "keyword role"
 
 -- | Operator (non-first) roles
 prOperator :: Parser Expr
 prOperator = phOperator <|> phKeyword (ETop Nothing) <|> pmKeyword
+    <?> "operand"
 
 -- | Parse the rest of a keyword dispatch, possibly followed by an operator
 -- dispatch, with a given first role.
