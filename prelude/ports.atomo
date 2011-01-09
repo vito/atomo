@@ -48,7 +48,7 @@ String-Port new: (c: String) :=
 
 
 with-output-to: (fn: String) do: b :=
-  { Port (new: fn mode: @write) } wrap: @close do:
+  { Port (new: fn &mode: @write) } wrap: @close do:
     { file |
       with-output-to: file do: b
     }
@@ -57,7 +57,7 @@ with-output-to: (p: Port) do: b :=
   with: *output-port* as: p do: b
 
 with-input-from: (fn: String) do: (b: Block) :=
-  { Port (new: fn mode: @read) } wrap: @close do:
+  { Port (new: fn &mode: @read) } wrap: @close do:
     { file |
       with-input-from: file do: b
     }

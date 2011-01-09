@@ -31,10 +31,9 @@ load = do
         hdl <- getHandle [$e|p handle|] >>= liftIO . hShow
         return (string ("<port " ++ hdl ++ ">"))
 
-    [$p|Port new: (fn: String)|] =::: [$e|Port new: fn mode: @read-write|]
-    [$p|Port new: (fn: String) mode: (m: Particle)|] =: do
+    [$p|Port new: (fn: String) &mode: @read-write|] =: do
         fn <- getString [$e|fn|]
-        Particle m <- here "m" >>= findParticle
+        Particle m <- here "mode" >>= findParticle
 
         checkExists fn
 
@@ -152,7 +151,7 @@ load = do
     [$p|File open: (fn: String)|] =::: [$e|Port new: fn|]
 
     [$p|File read: (fn: String)|] =:::
-        [$e|Port (new: fn mode: @read) ensuring: @close do: @contents|]
+        [$e|Port (new: fn &mode: @read) ensuring: @close do: @contents|]
 
     [$p|File delete: (fn: String)|] =: do
         fn <- getString [$e|fn|]
