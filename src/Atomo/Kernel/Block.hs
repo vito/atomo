@@ -79,11 +79,11 @@ joinWith t (Block s ps bes) as
 
     | null as || null ps =
         case t of
-            o@(Object { oDelegates = ds }) ->
-                withTop (o { oDelegates = ds ++ [s] }) (evalAll bes)
+            Object { oDelegates = ds } ->
+                withTop (t { oDelegates = s:ds }) (evalAll bes)
 
             _ -> do
-                blockScope <- newObject [t, s] noMethods
+                blockScope <- newObject [s, t] noMethods
                 withTop blockScope (evalAll bes)
 
     | otherwise = do
@@ -94,11 +94,11 @@ joinWith t (Block s ps bes) as
             )
 
         case t of
-            o@(Object { oDelegates = ds }) ->
-                withTop (o { oDelegates = args : ds ++ [s] })
+            Object { oDelegates = ds } ->
+                withTop (t { oDelegates = args : s : ds })
                     (evalAll bes)
 
             _ -> do
-                blockScope <- newObject [args, t, s] noMethods
+                blockScope <- newObject [args, s, t] noMethods
                 withTop blockScope (evalAll bes)
 joinWith _ v _ = error $ "impossible: joinWith on " ++ show v
