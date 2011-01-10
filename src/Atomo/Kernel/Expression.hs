@@ -10,6 +10,7 @@ import Atomo.Parser (parseInput)
 import Atomo.Parser.Expand
 import Atomo.Pattern (match)
 import Atomo.Pretty (pretty)
+import Atomo.Valuable
 
 
 load :: VM ()
@@ -50,16 +51,19 @@ load = do
         p <- toDefinePattern' pat
         return (Expression $ EDefine Nothing p e)
 
-    [$p|`Dispatch new: (name: Particle) to: (targets: List)|] =: do
+    [$p|`Dispatch new: (name: Particle) to: (targets: List) &optionals: []|] =: do
         Particle name <- here "name" >>= findParticle
         ts <- getList [$e|targets|] >>= mapM findExpression
+        os <- getList [$e|optionals|] >>= mapM fromValue
+
+        let opts = map (\(Particle (Single { mName = n }), Expression e) -> option n e) os
 
         case name of
             Single { mName = n } ->
-                return $ Expression (EDispatch Nothing (single n (fromExpression (head ts))))
+                return $ Expression (EDispatch Nothing (single' n (fromExpression (head ts)) opts))
 
             Keyword { mNames = ns } ->
-                return $ Expression (EDispatch Nothing (keyword ns (map fromExpression ts)))
+                return $ Expression (EDispatch Nothing (keyword' ns (map fromExpression ts) opts))
 
     [$p|`DefineDynamic new: (name: Expression) as: (root: Expression)|] =: do
         n <- here "name" >>= findExpression >>= toName . fromExpression
@@ -159,6 +163,16 @@ load = do
             EDispatch { eMessage = Single { mTarget = t } } ->
                 return $ list [Expression t]
             _ -> raise ["no-targets-for"] [Expression e]
+
+    [$p|(e: Expression) optionals|] =: do
+        Expression e <- here "e" >>= findExpression
+
+        case e of
+            EDispatch { eMessage = m } ->
+                liftM list $
+                    mapM (\(Option _ n v) -> toValue (particle n, Expression v))
+                        (mOptionals m)
+            _ -> raise ["no-optionals-for"] [Expression e]
 
     [$p|(e: Expression) name|] =: do
         Expression e <- here "e" >>= findExpression
