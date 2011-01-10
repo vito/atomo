@@ -1,3 +1,10 @@
+a <=> b :=
+  condition: {
+    a > b -> 1
+    a < b -> -1
+    otherwise -> 0
+  }
+
 x max: y :=
   if: (x > y) then: { x } else: { y }
 

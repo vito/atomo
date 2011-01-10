@@ -287,16 +287,16 @@ load = do
 
         return $ list (map list (splitWhen (== d) l))
 
-    [$p|(l: List) sort|] =:
-        getList [$e|l|] >>= liftM list . sortVM
+    [$p|(l: List) sort &comparison: @<=>|] =: do
+        cmp <- here "comparison"
+        getList [$e|l|] >>= liftM list . sortVM cmp
 
-    [$p|(l: List) sort-by: cmp|] =: do
+    [$p|(l: List) sort-by: something &comparison: @<=>|] =: do
         vs <- getList [$e|l|]
-        cmp <- here "cmp"
+        something <- here "something"
+        cmp <- here "comparison"
 
-        liftM list $ sortByVM (\a b -> do
-            Boolean t <- dispatch (keyword ["call"] [cmp, list [a, b]]) >>= findBoolean
-            return t) vs
+        liftM list $ sortByVM cmp something vs
 
 
 foldr1MV :: (Value -> Value -> VM Value) -> V.Vector Value -> VM Value
@@ -308,25 +308,33 @@ foldrMV f acc vs = do
     rest <- foldrMV f acc (V.tail vs)
     f (V.head vs) rest
 
-sortVM :: [Value] -> VM [Value]
-sortVM = sortByVM gt
+sortVM :: Value -> [Value] -> VM [Value]
+sortVM cmp = mergesort gt
   where
     gt a b = do
-        Boolean t <- dispatch (keyword [">"] [a, b]) >>= findBoolean
+        Integer t <- dispatch (keyword ["call"] [cmp, list [a, b]])
+            >>= findInteger
         return t
 
-sortByVM :: (Value -> Value -> VM Bool) -> [Value] -> VM [Value]
-sortByVM = mergesort
+sortByVM :: Value -> Value -> [Value] -> VM [Value]
+sortByVM cmp by = mergesort gt
+  where
+    gt a b = do
+        x <- dispatch (keyword ["call"] [by, list [a]])
+        y <- dispatch (keyword ["call"] [by, list [b]])
+        Integer t <- dispatch (keyword ["call"] [cmp, list [x, y]])
+            >>= findInteger
+        return t
 
-mergesort :: (Value -> Value -> VM Bool) -> [Value] -> VM [Value]
+mergesort :: (Value -> Value -> VM Integer) -> [Value] -> VM [Value]
 mergesort cmp = mergesort' cmp . map (: [])
 
-mergesort' :: (Value -> Value -> VM Bool) -> [[Value]] -> VM [Value]
+mergesort' :: (Value -> Value -> VM Integer) -> [[Value]] -> VM [Value]
 mergesort' _ [] = return []
 mergesort' _ [xs] = return xs
 mergesort' cmp xss = mergePairs cmp xss >>= mergesort' cmp
 
-mergePairs :: (Value -> Value -> VM Bool) -> [[Value]] -> VM [[Value]]
+mergePairs :: (Value -> Value -> VM Integer) -> [[Value]] -> VM [[Value]]
 mergePairs _ [] = return []
 mergePairs _ [xs] = return [xs]
 mergePairs cmp (xs:ys:xss) = do
@@ -334,13 +342,13 @@ mergePairs cmp (xs:ys:xss) = do
     zs <- mergePairs cmp xss
     return (z:zs)
 
-merge :: (Value -> Value -> VM Bool) -> [Value] -> [Value] -> VM [Value]
+merge :: (Value -> Value -> VM Integer) -> [Value] -> [Value] -> VM [Value]
 merge _ [] ys = return ys
 merge _ xs [] = return xs
 merge cmp (x:xs) (y:ys) = do
     o <- cmp x y
 
-    if o
+    if o > 0
         then do
             rest <- merge cmp (x:xs) ys
             return (y:rest)
