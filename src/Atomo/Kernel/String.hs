@@ -34,7 +34,7 @@ load = do
             denom = read . tail $ dropWhile (/= '/') s
         return (Rational (num % denom))
 
-    [$p|(l: List) to-string|] =: do
+    [$p|(l: List) to: String|] =: do
         vs <- getList [$e|l|]
 
         if all isChar vs
@@ -327,7 +327,7 @@ load = do
     [$p|(s: String) sort|] =:
         liftM (string . sort) (getString [$e|s|])
 
-    [$p|(s: String) sort-by: cmp|] =::: [$e|s (as: List) (sort-by: cmp) to-string|]
+    [$p|(s: String) sort-by: cmp|] =::: [$e|s (as: List) (sort-by: cmp) to: String|]
 
     [$p|(a: String) is-prefix-of?: (b: String)|] =: do
         a <- getText [$e|a|]
@@ -348,7 +348,7 @@ load = do
     [$p|(a: String) ends-with?: (b: String)|] =::: [$e|b is-suffix-of?: a|]
     [$p|(a: String) includes?: (b: String)|] =::: [$e|b is-infix-of?: a|]
 
-    [$p|(s: String) filter: b|] =::: [$e|s (as: List) (filter: b) to-string|]
+    [$p|(s: String) filter: b|] =::: [$e|s (as: List) (filter: b) to: String|]
 
     [$p|(x: String) zip: (y: String) &zipper: @->|] =: do
         x <- getText [$e|x|]
