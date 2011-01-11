@@ -1,0 +1,58 @@
+module: Ordered: {
+  succ := from-ordering: (ordering + 1)
+  pred := from-ordering: (ordering - 1)
+
+  shift: 0 := me
+  shift: (n: Integer) :=
+    if: (n < 0)
+      then: { pred (shift: (n + 1)) }
+      else: { succ (shift: (n - 1)) }
+
+  to: x by: (diff: Integer) :=
+    condition: {
+      diff < 0 ->
+        if: (ordering < x ordering)
+          then: { [] }
+          else: { me . ((shift: diff) to: x by: diff) }
+
+      diff > 0 ->
+        if: (ordering > x ordering)
+          then: { [] }
+          else: { me . ((shift: diff) to: x by: diff) }
+
+      otherwise ->
+        error: @zero-diff
+    }
+
+  up-to: x := to: x by: 1
+
+  down-to: x := to: x by: -1
+}
+
+class: Integer: {
+  include: Ordered
+
+  ordering := me
+  from-ordering: n := n
+}
+
+class: Char: {
+  include: Ordered
+
+  ordering := ord
+  from-ordering: n := n chr
+}
+
+class: Double: {
+  include: Ordered
+
+  ordering := as: Integer
+  from-ordering: n := n as: Double
+}
+
+class: Rational: {
+  include: Ordered
+
+  ordering := as: Integer
+  from-ordering: n := n as: Rational
+}
