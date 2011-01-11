@@ -10,23 +10,20 @@ module: Ordered: {
 
   to: x by: (diff: Integer) :=
     condition: {
-      diff < 0 ->
-        if: (ordering < x ordering)
-          then: { [] }
-          else: { me . ((shift: diff) to: x by: diff) }
+      diff == 0 ->
+        error: @zero-diff
 
-      diff > 0 ->
-        if: (ordering > x ordering)
-          then: { [] }
-          else: { me . ((shift: diff) to: x by: diff) }
+      ((diff < 0 && ordering < x ordering) ||
+        diff > 0 && ordering > x ordering) ->
+        []
 
       otherwise ->
-        error: @zero-diff
+        me . ((shift: diff) to: x by: diff)
     }
 
-  up-to: x := to: x by: 1
+  up-to: x := me to: x by: 1
 
-  down-to: x := to: x by: -1
+  down-to: x := me to: x by: -1
 }
 
 class: Integer: {
