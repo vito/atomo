@@ -78,5 +78,7 @@ loadPrelude = do
         , "version"
         , "eco"
 
+        , "class-objects"
+
         , "repl"
         ]

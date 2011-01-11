@@ -1,0 +1,75 @@
+for-macro *modules* = []
+
+macro (module: (def: Dispatch))
+  { name = def names head
+    body = def targets at: 1
+    add-module: name as: body contents
+    body
+  } call
+
+for-macro add-module: (name: String) as: (body: List) :=
+  super *modules* = *modules* set: name to: body
+
+macro (target include: (name: Dispatch))
+  include: name name on: target
+
+for-macro include: (name: String) on: target :=
+  *modules* (lookup: name) match: {
+    @none -> error: @(unknown-module: name)
+
+    @(ok: mod) ->
+      { block =
+          `Block new: (expand-body: mod on: `!top)
+            arguments: [`!top]
+
+        `(~target join: ~block with: [~target])
+      } call
+  }
+
+for-macro expand-body: (exprs: List) on: target :=
+  exprs map: { e | expand-expr: e on: target }
+
+for-macro expand-expr: `(~name := ~body) on: target :=
+  { with-me =
+      `Dispatch new: name particle
+        to: (name targets at: 0 put: `(me: { ~target }))
+        &optionals: name optionals
+
+    if: (initializer?: name particle)
+      then: { `(~with-me := ~target clone do: ~body) }
+      else: { `(~with-me := me join: { ~body }) }
+  } call
+
+for-macro expand-expr: `(include: ~(y: Dispatch)) on: target :=
+  include: y name on: target
+
+for-macro expand-expr: e on: _ := e
+
+for-macro initializer?: (name: Particle) :=
+  name type match: {
+    @single -> name == @new
+
+    @keyword ->
+      name names head == "new" ||
+        name names head starts-with?: "new."
+  }
+
+macro (class: (b: Block))
+  `(class: ~b extends: Object)
+
+macro (class: (b: Block) extends: obj)
+  `(~(class-create: b contents) call: [~obj clone])
+
+for-macro class-create: (body: List) :=
+  `Block new: (`(me = !o) . (expand-body: body on: `!o) .. [`!o])
+            arguments: [`!o]
+
+macro (class: (c: Dispatch))
+  { single = Particle new: c names head
+    name = `Dispatch new: single to: ['this]
+    body = c targets at: 1
+
+    `(if: (responds-to?: ~single)
+        then: { ~(class-create: body contents) call: [~name] }
+        else: { ~name = class: ~body } in-context)
+  } call
