@@ -51,7 +51,7 @@ for-macro super Restart = Object clone
 
         "restarts:" print
 
-        *restarts* _? (zip: (0 .. *restarts* _? length)) map:
+        *restarts* _? (zip: (0 .. *restarts* _? length) (as: List)) map:
           { choice |
             [index, name] = [choice to, choice from from]
             ("  :" .. index show .. " -> " .. name name) print

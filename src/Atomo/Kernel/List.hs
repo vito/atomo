@@ -216,34 +216,6 @@ load = do
 
     -- TODO: find
 
-    [$p|(x: Integer) .. (y: Integer)|] =: do
-        Integer x <- here "x" >>= findInteger
-        Integer y <- here "y" >>= findInteger
-
-        if x < y
-            then dispatch (keyword ["up-to"] [Integer x, Integer y])
-            else dispatch (keyword ["down-to"] [Integer x, Integer y])
-
-    [$p|(x: Integer) ... (y: Integer)|] =: do
-        Integer x <- here "x" >>= findInteger
-        Integer y <- here "y" >>= findInteger
-
-        if x < y
-            then dispatch (keyword ["up-to"] [Integer x, Integer (y - 1)])
-            else dispatch (keyword ["down-to"] [Integer x, Integer (y + 1)])
-
-    [$p|(x: Integer) to: (y: Integer) by: (d: Integer)|] =: do
-        Integer x <- here "x" >>= findInteger
-        Integer y <- here "y" >>= findInteger
-        Integer d <- here "d" >>= findInteger
-
-        return . List $ V.generate
-            (fromIntegral $ abs ((y - x) `div` d) + 1)
-            (Integer . (x +) . (* d) . fromIntegral)
-
-    [$p|(x: Integer) up-to: (y: Integer)|] =::: [$e|x to: y by: 1|]
-    [$p|(x: Integer) down-to: (y: Integer)|] =::: [$e|x to: y by: -1|]
-
     [$p|(l: List) at: (n: Integer) put: v|] =: do
         vs <- getVector [$e|l|]
 

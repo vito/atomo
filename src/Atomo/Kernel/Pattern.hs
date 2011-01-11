@@ -55,7 +55,7 @@ load = do
             PMessage (Keyword { mTargets = ts }) -> return $ list (map Pattern ts)
             _ -> raise ["no-targets-for"] [Pattern p]
 
-    [$p|(p: Pattern) matches?: v|] =: do
+    [$p|(p: Pattern) match: v|] =: do
         Pattern p <- here "p" >>= findPattern
         v <- here "v"
         ids <- gets primitives

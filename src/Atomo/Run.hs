@@ -79,6 +79,8 @@ loadPrelude = do
         , "eco"
 
         , "class-objects"
+        , "enumerable"
+        , "range"
 
         , "repl"
         ]
