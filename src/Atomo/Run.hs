@@ -80,7 +80,7 @@ loadPrelude = do
 
         , "class-objects"
         , "enumerable"
-        , "ordering"
+        , "ordered"
         , "range"
 
         , "repl"
