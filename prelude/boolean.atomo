@@ -68,3 +68,12 @@ macro (condition: (bs: Block))
     { `(~test -> ~branch) x |
       `(if: ~test then: { ~branch } else: { ~x })
     } with: `(error: @no-true-branches)
+
+macro (x case-of: (bs: Block))
+  { chain = bs contents reduce-right:
+      { `(~test -> ~branch) x |
+        `(if: (~test matches?: !v) then: { ~branch } else: { ~x })
+      } with: `(error: @no-matches)
+
+    `({ !v | ~chain } call: [~x])
+  } call
