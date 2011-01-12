@@ -8,7 +8,7 @@ module: Ordered: {
       then: { pred (shift: (n + 1)) }
       else: { succ (shift: (n - 1)) }
 
-  to: x by: (diff: Integer) :=
+  to: x by: diff :=
     condition: {
       diff == 0 ->
         error: @zero-diff
@@ -45,6 +45,8 @@ class: Double: {
 
   ordering := as: Integer
   from-ordering: n := n as: Double
+
+  shift: (n: Double) := + n
 }
 
 class: Rational: {
@@ -52,4 +54,6 @@ class: Rational: {
 
   ordering := as: Integer
   from-ordering: n := n as: Rational
+
+  shift: (n: Rational) := + n
 }
