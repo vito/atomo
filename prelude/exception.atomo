@@ -9,7 +9,7 @@ macro (action handle: (branches: Block))
 macro (a handle: (b: Block) ensuring: (c: Block))
   `({ ~a handle: ~b } ensuring: ~c)
 
-(action: Block) catch: (recover: Block) :=
+(action: Block) catch: recover :=
   { cc |
     action bind: {
       Error -> { e | cc yield: (recover call: [e]) }
