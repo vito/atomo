@@ -94,6 +94,9 @@ Restart = Object clone
       )
     } call
 
+  macro (action with-restarts: (restarts: Block) bind: (handlers: Block))
+    `({ ~action with-restarts: ~restarts } bind: ~handlers)
+
   (action: Block) with-restarts: (restarts: List) :=
     modify: *restarts* as: { rs | restarts .. rs } do: action
 
