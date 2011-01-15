@@ -1,4 +1,8 @@
-{ evaluate-all: [] in: _ := error: @no-expressions
+{ *repl* = this
+
+  incomplete-input = ""
+
+  evaluate-all: [] in: _ := error: @no-expressions
   evaluate-all: [e] in: t := t evaluate: e
   evaluate-all: (e . es) in: t :=
     { t evaluate: e
@@ -6,10 +10,32 @@
     } call
 
   do-input: (s: String) in: env :=
-    s parse-expressions match: {
-      [] -> @ok
-      es -> (evaluate-all: es in: env) show print
-    }
+    { parsed =
+        { (incomplete-input .. s) parse-expressions
+        } with-restarts: {
+          incomplete ->
+            { *repl* incomplete-input = incomplete-input .. s .. "\n"
+              []
+            } call
+        } bind: {
+          @(parse-error: (@(unexpected: e) . _) at: _) ->
+            if: (e in?: ["", "ending"])
+              then: { restart: 'incomplete }
+              else: { *repl* incomplete-input = "" }
+
+          @(parse-error: _ at: _) ->
+            (*repl* incomplete-input = "")
+        }
+
+      parsed match: {
+        [] -> @ok
+
+        es ->
+          { *repl* incomplete-input = ""
+            (evaluate-all: es in: env) show print
+          } call
+      }
+    } call
 
   get-value: t :=
     (interaction: "enter value: ") parse-expressions match: {
@@ -76,9 +102,14 @@
 
         { env basic-repl } bind: {
           @prompt ->
-            restart: 'use-prompt with: ["[" .. frame show .. "]> "]
+            restart: 'use-prompt with: [
+              if: incomplete-input empty?
+                then: { "[" .. frame show .. "]> " }
+                else: { "." .. ($. repeat: frame show length) .. ".. " }
+            ]
 
-          @loop -> (super frame = frame + 1)
+          @loop ->
+            (super frame = frame + 1) when: incomplete-input empty?
 
           @(special: "h") ->
             ":h\thelp" print
