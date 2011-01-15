@@ -124,7 +124,7 @@ segment i = do
                     os <- fmap lsInsideOf getState
                     if matchWrap (snd $ head os) c
                         then modifyState $ \ls -> ls { lsInsideOf = tail os }
-                        else fail $ "unmatched " ++ show (c, os)
+                        else fail $ "unmatched " ++ [c]
 
                     if chainContinue (fst (head os)) p || (not (chainContinue (fst (head os)) i) && chainContinue i p)
                         then return [t]
