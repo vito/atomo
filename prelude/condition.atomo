@@ -1,4 +1,4 @@
-for-macro super Restart = Object clone
+Restart = Object clone
 
 { define: *handlers* as: []
   define: *restarts* as: []
@@ -47,11 +47,11 @@ for-macro super Restart = Object clone
           unlines
           print
 
-        halt when: *restarts* _? empty?
+        halt when: *restarts* empty?
 
         "restarts:" print
 
-        *restarts* _? (zip: (0 .. *restarts* _? length) (as: List)) map:
+        *restarts* (zip: (0 .. *restarts* length) (as: List)) map:
           { choice |
             [index, name] = [choice to, choice from from]
             ("  :" .. index show .. " -> " .. name name) print
@@ -63,10 +63,10 @@ for-macro super Restart = Object clone
     }
 
   Restart get: (n: Integer) :=
-    *restarts* _? (at: n) to
+    *restarts* (at: n) to
 
   Restart new: (a: Block) in: (c: Continuation) :=
-    { res = *restarts* _?
+    { res = *restarts*
       Restart clone do:
         { jump: as := with: *restarts* as: res do: { c yield: (a call: as) }
           action = a
@@ -88,7 +88,7 @@ for-macro super Restart = Object clone
       `(
         { cc action pairs |
           restarts = pairs map:
-            { a | a from -> (~Restart new: a to in: cc) }
+            { a | a from -> (Restart new: a to in: cc) }
           action with-restarts: restarts
         } call/cc: [~action, ~(`List new: rs)]
       )
@@ -98,7 +98,7 @@ for-macro super Restart = Object clone
     modify: *restarts* as: { rs | restarts .. rs } do: action
 
   (super) signal: v :=
-    { *handlers* _? map: { h | h (call: [v]) (call: [v]) }
+    { *handlers* map: { h | h (call: [v]) (call: [v]) }
       @ok
     } call
 
@@ -106,8 +106,8 @@ for-macro super Restart = Object clone
   (super) error: (e: Error) :=
     { signal: e
 
-      with-output-to: *error-output* _? do: {
-        *debugger* _? run: e
+      with-output-to: *error-output* do: {
+        *debugger* run: e
       }
     } call
 
@@ -115,7 +115,7 @@ for-macro super Restart = Object clone
   (super) warning: (w: Warning) :=
     { signal: w
 
-      with-output-to: *error-output* _? do: {
+      with-output-to: *error-output* do: {
         ("WARNING: " .. w describe-error) print
       }
 
@@ -127,7 +127,7 @@ for-macro super Restart = Object clone
   (super) restart: name := restart: name with: []
 
   (super) restart: name with: (params: List) :=
-    *restarts* _? (lookup: name) match: {
+    *restarts* (lookup: name) match: {
       @(ok: r) ->
         r jump: params
 
@@ -136,7 +136,7 @@ for-macro super Restart = Object clone
     }
 
   (super) find-restart: name :=
-    *restarts* _? lookup: name
+    *restarts* lookup: name
 
   (super) with-handler: (h: Block) do: (action: Block) :=
     modify: *handlers* as: { hs | h . hs } do: action
