@@ -10,13 +10,14 @@ import Data.Hashable (hash)
 import Data.List (nub)
 import Data.Maybe (listToMaybe)
 import Data.IORef
-import Text.Parsec (ParseError, SourcePos)
+import Text.Parsec (ParseError, SourcePos, sourceName, sourceLine, sourceColumn)
 import Text.PrettyPrint (Doc)
 import qualified Data.IntMap as M
 import qualified Data.Text as T
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
 import qualified Language.Haskell.TH.Syntax as S
+import qualified Text.Parsec.Error as PE
 
 
 -- | The Atomo VM. A Continuation monad wrapping a State monad.
@@ -805,7 +806,22 @@ isString _ = False
 asValue :: AtomoError -> Value
 asValue (Error v) = v
 asValue (ParseError pe) =
-    keyParticleN ["parse-error"] [string (show pe)]
+    keyParticleN ["parse-error", "at"]
+        [ list (map msgValue (PE.errorMessages pe))
+        , spValue (PE.errorPos pe)
+        ]
+  where
+    msgValue (PE.SysUnExpect s) = keyParticleN ["unexpected"] [string s]
+    msgValue (PE.UnExpect s) = keyParticleN ["unexpected"] [string s]
+    msgValue (PE.Expect s) = keyParticleN ["expected"] [string s]
+    msgValue (PE.Message s) = string s
+
+    spValue s =
+        keyParticleN ["source", "line", "column"]
+            [ string (sourceName s)
+            , Integer (fromIntegral $ sourceLine s)
+            , Integer (fromIntegral $ sourceColumn s)
+            ]
 asValue (DidNotUnderstand m) =
     keyParticleN ["did-not-understand"] [Message m]
 asValue (Mismatch pat v) =
