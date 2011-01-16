@@ -38,7 +38,14 @@ source-repository   head
     type:           hg
     location:       http://bitbucket.org/alex/atomo
 
+flag lib
+    description:   Install the Atomo library.
+    default:       False
+
 library
+  if !flag(lib)
+    buildable: False
+
   hs-source-dirs:    src
 
   build-depends:
