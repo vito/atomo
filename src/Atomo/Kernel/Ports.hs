@@ -12,6 +12,7 @@ import qualified Data.Text.IO as TIO
 import Atomo
 import Atomo.Parser
 import Atomo.Pretty
+import Atomo.Valuable
 
 
 load :: VM ()
@@ -50,6 +51,15 @@ load = do
                 error $ "unknown port mode: " ++ show (pretty m) ++ ", must be one of: @read, @write, @append, @read-write"
 
         portObj hdl
+
+    [$p|(p: Port) buffering|] =:
+        getHandle [$e|p handle|] >>= liftIO . hGetBuffering >>= toValue
+
+    [$p|(p: Port) set-buffering: mode|] =: do
+        h <- getHandle [$e|p handle|]
+        m <- here "mode" >>= fromValue
+        liftIO (hSetBuffering h m)
+        return (particle "ok")
 
     [$p|(p: Port) print: x|] =: do
         x <- here "x"
@@ -413,3 +423,15 @@ load = do
             else do
                 cs <- hGetUntil h x
                 return (c:cs)
+
+instance Valuable BufferMode where
+    toValue (BlockBuffering Nothing) = return (particle "block")
+    toValue (BlockBuffering (Just i)) = return (keyParticleN ["block"] [Integer (fromIntegral i)])
+    toValue LineBuffering = return (particle "line")
+    toValue NoBuffering = return (particle "none")
+
+    fromValue (Particle (Single { mName = "block" })) = return (BlockBuffering Nothing)
+    fromValue (Particle (Keyword { mNames = ["block"], mTargets = [Nothing, Just (Integer i)] })) =
+        return (BlockBuffering (Just (fromIntegral i)))
+    fromValue (Particle (Single { mName = "line" })) = return LineBuffering
+    fromValue (Particle (Single { mName = "none" })) = return NoBuffering
