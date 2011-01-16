@@ -344,7 +344,7 @@ targets' is (PPMKeyword {}) = return [idParticle is]
 targets' is (PExpr _) = return [idExpression is]
 targets' is (PInstance p) = targets' is p
 targets' is (PStrict p) = targets' is p
-targets' is (PVariable p) = return []
+targets' is (PVariable _) = return [idObject is]
 targets' is (PMessage m) = targets is m
 targets' _ p = error $ "no targets for " ++ show p
 
