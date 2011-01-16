@@ -2,6 +2,7 @@
 module Atomo.Kernel.Nucleus where
 
 import Data.IORef
+import Data.Hashable (hash)
 import Data.Maybe (isJust)
 
 import Atomo
@@ -64,6 +65,12 @@ load = do
             Single { mName = n } ->
                 liftM (Boolean . isJust) . findMethod x $
                     single n x
+
+    [$p|x has-slot?: (name: String)|] =: do
+        x <- here "x" >>= objectFor
+        n <- getString [$e|name|]
+        (ss, _) <- liftIO (readIORef (oMethods x))
+        return (Boolean (memberMap (hash n) ss))
 
     [$p|(o: Object) methods|] =: do
         o <- here "o" >>= objectFor

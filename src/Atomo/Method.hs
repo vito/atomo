@@ -5,6 +5,7 @@ module Atomo.Method
     , insertMethod
     , insertMap
     , lookupMap
+    , memberMap
     , noMethods
     , nullMap
     , toMethods
@@ -166,6 +167,11 @@ nullMap = M.null
 -- | All of the methods in a MethodMap.
 elemsMap :: MethodMap -> [[Method]]
 elemsMap = M.elems
+
+-- | Is a key set in a map?
+memberMap :: Int -> MethodMap -> Bool
+memberMap = M.member
+
 
 -- | Insert a method into a MethodMap, replacing all other methods with the
 -- same ID.
