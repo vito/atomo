@@ -63,6 +63,9 @@ eval (EBlock { eArguments = as, eContents = es }) = do
 eval (EList { eContents = es }) = do
     vs <- mapM eval es
     return (list vs)
+eval (ETuple { eContents = es }) = do
+    vs <- mapM eval es
+    return (tuple vs)
 eval (EMacro {}) = return (particle "ok")
 eval (EForMacro {}) = return (particle "ok")
 eval (EParticle { eParticle = Single i n _ os }) = do
@@ -120,6 +123,9 @@ eval (EQuote { eExpr = qe }) = do
     unquote n l@(EList { eContents = es }) = do
         nes <- mapM (unquote n) es
         return l { eContents = nes }
+    unquote n t@(ETuple { eContents = es }) = do
+        nes <- mapM (unquote n) es
+        return t { eContents = nes }
     unquote n m@(EMacro { eExpr = e }) = do
         ne <- unquote n e
         return m { eExpr = ne }
@@ -308,6 +314,7 @@ matchable' PThis = liftM PMatch (gets top)
 matchable' (PObject oe) = liftM PMatch (eval oe)
 matchable' (PInstance p) = liftM PInstance (matchable' p)
 matchable' (PStrict p) = liftM PStrict (matchable' p)
+matchable' (PVariable p) = liftM PVariable (matchable' p)
 matchable' (PNamed n p') = liftM (PNamed n) (matchable' p')
 matchable' (PMessage m) = liftM PMessage (matchable m)
 matchable' p' = return p'
@@ -325,6 +332,7 @@ targets' _ (PMatch v) = liftM (: []) (objectFor v)
 targets' is (PNamed _ p) = targets' is p
 targets' is PAny = return [idObject is]
 targets' is (PList _) = return [idList is]
+targets' is (PTuple _) = return [idTuple is]
 targets' is (PHeadTail h t) = do
     ht <- targets' is h
     tt <- targets' is t
@@ -335,6 +343,7 @@ targets' is (PPMKeyword {}) = return [idParticle is]
 targets' is (PExpr _) = return [idExpression is]
 targets' is (PInstance p) = targets' is p
 targets' is (PStrict p) = targets' is p
+targets' is (PVariable p) = return []
 targets' is (PMessage m) = targets is m
 targets' _ p = error $ "no targets for " ++ show p
 

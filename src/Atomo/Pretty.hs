@@ -49,6 +49,9 @@ instance Pretty Value where
     prettyFrom _ (List l) =
         brackets . hsep . punctuate comma $ map (prettyFrom CList) vs
       where vs = V.toList l
+    prettyFrom _ (Tuple l) =
+        parens . hsep . punctuate comma $ map (prettyFrom CList) vs
+      where vs = V.toList l
     prettyFrom _ (Message m) = internal "message" $ pretty m
     prettyFrom _ (Method (Slot p _)) = internal "slot" $ parens (pretty p)
     prettyFrom _ (Method (Responder p _ _)) =
@@ -98,7 +101,9 @@ instance Pretty Pattern where
         parens $ pretty h <+> text "." <+> pretty t
     prettyFrom c (PMessage m) = prettyFrom c m
     prettyFrom _ (PList ps) =
-        brackets . sep $ punctuate comma (map pretty ps)
+        brackets . sep $ punctuate comma (map (prettyFrom CList) ps)
+    prettyFrom _ (PTuple ps) =
+        parens . sep $ punctuate comma (map (prettyFrom CList) ps)
     prettyFrom _ (PMatch v) = prettyFrom CPattern v
     prettyFrom _ (PNamed n PAny) = text n
     prettyFrom _ (PNamed n p) = parens $ text n <> colon <+> pretty p
@@ -136,6 +141,7 @@ instance Pretty Pattern where
     prettyFrom _ PEPrimitive = text "Primitive"
     prettyFrom _ PEBlock = text "Block"
     prettyFrom _ PEList = text "List"
+    prettyFrom _ PETuple = text "Tuple"
     prettyFrom _ PEMacro = text "Macro"
     prettyFrom _ PEParticle = text "Particle"
     prettyFrom _ PETop = text "Top"
@@ -167,6 +173,8 @@ instance Pretty Expr where
     prettyFrom _ (EVM { ePretty = Just d }) = d
     prettyFrom _ (EList _ es) =
         brackets . sep . punctuate comma $ map (prettyFrom CList) es
+    prettyFrom _ (ETuple _ es) =
+        parens . sep . punctuate comma $ map (prettyFrom CList) es
     prettyFrom _ (EMacro _ p e) =
         text "macro" <+> parens (pretty p) <++> pretty e
     prettyFrom _ (EForMacro { eExpr = e }) = text "for-macro" <+> pretty e

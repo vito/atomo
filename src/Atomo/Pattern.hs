@@ -48,6 +48,8 @@ match ids r (PInstance p) (Object { oDelegates = ds }) =
 match ids r (PInstance p) v = match ids r p v
 match _ _ (PStrict (PMatch x)) v = x == v
 match ids r (PStrict p) v = match ids r p v
+match ids r (PVariable p) (Tuple t) = match ids r p (List t)
+match ids r (PVariable p) v = match ids r p (list [v])
 match ids r (PNamed _ p) v = match ids r p v
 match _ _ PAny _ = True
 match ids r (PList ps) (List v) = matchAll ids r ps (V.toList v)
@@ -58,6 +60,7 @@ match ids r (PHeadTail hp tp) (List vs) =
     t = List (V.tail vs)
 match ids r (PHeadTail hp tp) (String t) | not (T.null t) =
     match ids r hp (Char (T.head t)) && match ids r tp (String (T.tail t))
+match ids r (PTuple ps) (Tuple v) = matchAll ids r ps (V.toList v)
 match ids r (PPMKeyword ans aps) (Particle (Keyword { mNames = bns, mTargets = mvs })) =
     ans == bns && matchParticle ids r aps mvs
 match ids r p (Object { oDelegates = ds }) =
@@ -71,6 +74,7 @@ macroMatch PEOperator (EOperator {}) = True
 macroMatch PEPrimitive (EPrimitive {}) = True
 macroMatch PEBlock (EBlock {}) = True
 macroMatch PEList (EList {}) = True
+macroMatch PETuple (ETuple {}) = True
 macroMatch PEMacro (EMacro {}) = True
 macroMatch PEParticle (EParticle {}) = True
 macroMatch PETop (ETop {}) = True
@@ -111,6 +115,8 @@ matchExpr n (EDispatch { eMessage = am@(Single {}) }) (EDispatch { eMessage = bm
 matchExpr n (EBlock { eArguments = aps, eContents = as }) (EBlock { eArguments = bps, eContents = bs }) =
     aps == bps && length as == length bs && and (zipWith (matchExpr n) as bs)
 matchExpr n (EList { eContents = as }) (EList { eContents = bs }) =
+    length as == length bs && and (zipWith (matchExpr n) as bs)
+matchExpr n (ETuple { eContents = as }) (ETuple { eContents = bs }) =
     length as == length bs && and (zipWith (matchExpr n) as bs)
 matchExpr n (EMacro { emPattern = ap', eExpr = a }) (EMacro { emPattern = bp, eExpr = b }) =
     ap' == bp && matchExpr n a b
@@ -154,11 +160,14 @@ bindings' (PHeadTail hp tp) (List vs) =
     t = List (V.tail vs)
 bindings' (PHeadTail hp tp) (String t) | not (T.null t) =
     bindings' hp (Char (T.head t)) ++ bindings' tp (String (T.tail t))
+bindings' (PTuple ps) (Tuple vs) = concat (zipWith bindings' ps (V.toList vs))
 bindings' (PExpr a) (Expression b) = exprBindings 0 a b
 bindings' (PInstance p) (Object { oDelegates = ds }) =
     concatMap (bindings' p) ds
 bindings' (PInstance p) v = bindings' p v
 bindings' (PStrict p) v = bindings' p v
+bindings' (PVariable p) (Tuple t) = bindings' p (List t)
+bindings' (PVariable p) v = bindings' p (list [v])
 bindings' p (Object { oDelegates = ds }) =
     concatMap (bindings' p) ds
 bindings' _ _ = []
@@ -183,6 +192,8 @@ exprBindings n (EBlock { eContents = as }) (EBlock { eContents = bs }) =
     concat $ zipWith (exprBindings n) as bs
 exprBindings n (EList { eContents = as }) (EList { eContents = bs }) =
     concat $ zipWith (exprBindings n) as bs
+exprBindings n (ETuple { eContents = as }) (ETuple { eContents = bs }) =
+    concat $ zipWith (exprBindings n) as bs
 exprBindings n (EMacro { eExpr = a }) (EMacro { eExpr = b }) =
     exprBindings n a b
 exprBindings n (EParticle { eParticle = ap' }) (EParticle { eParticle = bp }) =
@@ -206,6 +217,8 @@ toPattern (EDispatch { eMessage = Keyword { mNames = ["->"], mTargets = [ETop {}
     liftM PInstance (toPattern o)
 toPattern (EDispatch { eMessage = Keyword { mNames = ["=="], mTargets = [ETop {}, o] } }) = do
     liftM PStrict (toPattern o)
+toPattern (EDispatch { eMessage = Keyword { mNames = ["..."], mTargets = [ETop {}, o] } }) = do
+    liftM PVariable (toPattern o)
 toPattern (EDispatch { eMessage = Keyword { mNames = [n], mTargets = [ETop {}, x] } }) = do
     p <- toPattern x
     return (PNamed n p)
@@ -220,6 +233,9 @@ toPattern (EDispatch { eMessage = Single { mTarget = d@(EDispatch {}), mName = n
 toPattern (EList { eContents = es }) = do
     ps <- mapM toPattern es
     return (PList ps)
+toPattern (ETuple { eContents = es }) = do
+    ps <- mapM toPattern es
+    return (PTuple ps)
 toPattern (EParticle { eParticle = Single { mName = n } }) =
     return (PMatch (particle n))
 toPattern (EParticle { eParticle = Keyword { mNames = ns, mTargets = mes } }) = do
@@ -254,6 +270,8 @@ toRolePattern (EDispatch { eMessage = Keyword { mNames = ["->"], mTargets = [ETo
     liftM PInstance (toRolePattern o)
 toRolePattern (EDispatch { eMessage = Keyword { mNames = ["=="], mTargets = [ETop {}, o] } }) = do
     liftM PStrict (toRolePattern o)
+toRolePattern (EDispatch { eMessage = Keyword { mNames = ["..."], mTargets = [ETop {}, o] } }) = do
+    liftM PVariable (toPattern o)
 toRolePattern (EDispatch { eMessage = Keyword { mNames = [n], mTargets = [ETop {}, x] } }) = do
     p <- toRolePattern x
     return (PNamed n p)
@@ -282,6 +300,7 @@ toMacroRole (EDispatch _ (Single { mName = "Operator" })) = Just PEOperator
 toMacroRole (EDispatch _ (Single { mName = "Primitive" })) = Just PEPrimitive
 toMacroRole (EDispatch _ (Single { mName = "Block" })) = Just PEBlock
 toMacroRole (EDispatch _ (Single { mName = "List" })) = Just PEList
+toMacroRole (EDispatch _ (Single { mName = "Tuple" })) = Just PETuple
 toMacroRole (EDispatch _ (Single { mName = "Macro" })) = Just PEMacro
 toMacroRole (EDispatch _ (Single { mName = "Particle" })) = Just PEParticle
 toMacroRole (EDispatch _ (Single { mName = "Top" })) = Just PETop

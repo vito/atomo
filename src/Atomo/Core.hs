@@ -70,6 +70,7 @@ initCore = do
         , ("Pattern", \is r -> is { idPattern = r })
         , ("Rational", \is r -> is { idRational = r })
         , ("String", \is r -> is { idString = r })
+        , ("Tuple", \is r -> is { idTuple = r })
         ]
 
 

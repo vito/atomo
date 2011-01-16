@@ -132,6 +132,9 @@ braces p = do
 blockOf :: Parser a -> Parser [a]
 blockOf p = sepEndBy p end
 
+blockOf1 :: Parser a -> Parser [a]
+blockOf1 p = sepEndBy1 p end
+
 keywordSegment :: Parser a -> Parser (String, a)
 keywordSegment p = do
     name <- keyword

@@ -78,6 +78,9 @@ data Value
 
     -- | A string value; Data.Text.Text.
     | String { fromString :: !T.Text }
+
+    -- | An arbitrary grouping of values
+    | Tuple VVector
     deriving (Show, Typeable)
 
 -- | Methods: responders, slots, and macro.
@@ -159,6 +162,9 @@ data Pattern
     -- | Matches a list of a given length, also pattern-matching its contents.
     | PList [Pattern]
 
+    -- | Matches a tuple of a given length, also pattern-matching its contents.
+    | PTuple [Pattern]
+
     -- | Matches a specific value. When matching objects, the delegates are
     -- checked as well.
     | PMatch Value
@@ -171,6 +177,9 @@ data Pattern
 
     -- | Matches a value strictly; delegates are not checked.
     | PStrict Pattern
+
+    -- | Matches a value strictly; delegates are not checked.
+    | PVariable Pattern
 
     -- | Gives a name to a pattern; this introduces a binding when
     -- pattern-matching.
@@ -205,6 +214,9 @@ data Pattern
 
     -- | Matches any @EList@ expression.
     | PEList
+
+    -- | Matches any @ETuple@ expression.
+    | PETuple
 
     -- | Matches any @EMacro@ expression.
     | PEMacro
@@ -256,6 +268,10 @@ data Expr
         , eContents :: [Expr]
         }
     | EList
+        { eLocation :: Maybe SourcePos
+        , eContents :: [Expr]
+        }
+    | ETuple
         { eLocation :: Maybe SourcePos
         , eContents :: [Expr]
         }
@@ -370,6 +386,7 @@ data IDs =
         , idPattern :: Value
         , idRational :: Value
         , idString :: Value
+        , idTuple :: Value
         }
     deriving (Show, Typeable)
 
@@ -439,6 +456,7 @@ instance Eq Value where
     (==) (Rational a) (Rational b) = a == b
     (==) (Object _ am) (Object _ bm) = am == bm
     (==) (String a) (String b) = a == b
+    (==) (Tuple a) (Tuple b) = a == b
     (==) _ _ = False
 
 instance Eq Pattern where
@@ -559,6 +577,7 @@ instance S.Lift Pattern where
     lift (PExpr e) = [| PExpr e |]
     lift (PInstance p) = [| PInstance p |]
     lift (PStrict p) = [| PStrict p |]
+    lift (PVariable p) = [| PVariable p |]
 
 
 -- | Initial "empty" parser state.
@@ -588,6 +607,7 @@ startEnv = Env
             , idPattern = error "idPattern not set"
             , idRational = error "idRational not set"
             , idString = error "idString not set"
+            , idTuple = error "idTuple not set"
             }
     , channel = error "channel not set"
     , halt = error "halt not set"
@@ -672,6 +692,11 @@ list :: [Value] -> Value
 {-# INLINE list #-}
 list = List . V.fromList
 
+-- | Convert a tuple of values into a tuple Value.
+tuple :: [Value] -> Value
+{-# INLINE tuple #-}
+tuple = Tuple . V.fromList
+
 -- | Convert a Text string into a String.
 fromText :: T.Text -> String
 {-# INLINE fromText #-}
@@ -681,6 +706,11 @@ fromText = T.unpack
 fromList :: Value -> [Value]
 fromList (List vr) = V.toList vr
 fromList v = error $ "no fromList for: " ++ show v
+
+-- | Convert a Tuple Value into a list of Values.
+fromTuple :: Value -> [Value]
+fromTuple (Tuple vr) = V.toList vr
+fromTuple v = error $ "no fromTuple for: " ++ show v
 
 -- | Create a single message with a given name and target.
 single :: String -> v -> Message v
@@ -802,6 +832,12 @@ isString :: Value -> Bool
 isString (String _) = True
 isString _ = False
 
+-- | Is a value a `Tuple'?
+isTuple :: Value -> Bool
+isTuple (Tuple _) = True
+isTuple _ = False
+
+
 -- | Convert an AtomoError into the Value we want to error with.
 asValue :: AtomoError -> Value
 asValue (Error v) = v
@@ -872,3 +908,4 @@ objectFrom ids (Process _ _) = idProcess ids
 objectFrom ids (Pattern _) = idPattern ids
 objectFrom ids (Rational _) = idRational ids
 objectFrom ids (String _) = idString ids
+objectFrom ids (Tuple _) = idTuple ids

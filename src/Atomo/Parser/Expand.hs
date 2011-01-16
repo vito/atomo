@@ -31,6 +31,8 @@ doPragmas (EBlock { eContents = es }) = do
     mapM_ doPragmas es
 doPragmas (EList { eContents = es }) = do
     mapM_ doPragmas es
+doPragmas (ETuple { eContents = es }) = do
+    mapM_ doPragmas es
 doPragmas (EMacro { emPattern = p, eExpr = e }) = do
     {-e' <- doPragmas e-}
     macroExpand e >>= addMacro p
@@ -138,6 +140,9 @@ macroExpand b@(EBlock { eContents = es }) = do
 macroExpand l@(EList { eContents = es }) = do
     nes <- mapM macroExpand es
     return l { eContents = nes }
+macroExpand t@(ETuple { eContents = es }) = do
+    nes <- mapM macroExpand es
+    return t { eContents = nes }
 macroExpand m@(EMacro { eExpr = e }) = do -- TODO: is this sane?
     e' <- macroExpand e
     return m { eExpr = e' }

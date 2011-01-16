@@ -30,6 +30,7 @@ pLiteral = choice
     [ pThis
     , pBlock
     , pList
+    , pTuple
     , pParticle
     , pQuoted
     , pQuasiQuoted
@@ -185,6 +186,21 @@ pParticle = tagged (do
 pList :: Parser Expr
 pList = tagged (liftM (EList Nothing) (brackets (blockOf pExpr)))
     <?> "list"
+
+-- | A comma-separated list of zero or two or more expressions, surrounded by
+-- parentheses.
+--
+-- Examples: @(1, $a)@
+pTuple :: Parser Expr
+pTuple = (tagged . liftM (ETuple Nothing) . try . parens $ choice
+    [ do
+        v <- pExpr
+        end
+        vs <- blockOf1 pExpr
+        return (v:vs)
+    , return []
+    ])
+    <?> "tuple"
 
 -- | A block of expressions, surrounded by braces and optionally having
 -- arguments.
