@@ -1,0 +1,23 @@
+target set!: (name: Pattern) to: v :=
+  if: (target has-slot?: name name)
+    then: {
+      target match: name on: v
+      v
+    }
+    else: {
+      { done |
+        target delegates map: { d |
+          when: (d has-slot?: name name) do: {
+            d match: name on: v
+            done yield: v
+          }
+        }
+
+        error: @(undefined: name)
+      } call/cc
+    }
+
+macro ((name: Dispatch) set!: v)
+  { msg = `Dispatch new: name particle to: ['this]
+    `(~(name target) set!: ~(msg as: Pattern) to: ~v)
+  } call

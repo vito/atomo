@@ -61,6 +61,7 @@ loadPrelude = do
         , "boolean"
         , "association"
         , "string"
+        , "set"
 
         , "condition"
         , "errors"
