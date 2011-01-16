@@ -27,6 +27,10 @@ load = do
         es <- getList [$e|es|] >>= mapM findExpression
         return (Expression (EList Nothing (map fromExpression es)))
 
+    [$p|`Tuple new: (es: List)|] =: do
+        es <- getList [$e|es|] >>= mapM findExpression
+        return (Expression (ETuple Nothing (map fromExpression es)))
+
     [$p|`Match new: (branches: List) on: (value: Expression)|] =: do
         pats <- liftM (map fromExpression) $ getList [$e|branches map: @from|] >>= mapM findExpression
         exprs <- liftM (map fromExpression) $ getList [$e|branches map: @to|] >>= mapM findExpression
@@ -130,6 +134,7 @@ load = do
             EBlock {} -> return (particle "block")
             EVM {} -> return (particle "vm")
             EList {} -> return (particle "list")
+            ETuple {} -> return (particle "tuple")
             EMacro {} -> return (particle "macro")
             EForMacro {} -> return (particle "for-macro")
             ETop {} -> return (particle "top")
@@ -223,6 +228,8 @@ load = do
             EBlock { eContents = es } ->
                 return (list (map Expression es))
             EList { eContents = es } ->
+                return (list (map Expression es))
+            ETuple { eContents = es } ->
                 return (list (map Expression es))
             _ -> raise ["no-contents-for"] [Expression e]
 

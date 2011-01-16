@@ -258,10 +258,10 @@ toPattern _ = Nothing
 toDefinePattern :: Expr -> Maybe (Message Pattern)
 toDefinePattern (EDispatch { eMessage = Single { mName = n, mTarget = t, mOptionals = os } }) = do
     p <- toRolePattern t
-    return (single' n p (map (\(Option i n e) -> Option i n (PObject e)) os))
+    return (single' n p (map (\(Option oi on oe) -> Option oi on (PObject oe)) os))
 toDefinePattern (EDispatch { eMessage = Keyword { mNames = ns, mTargets = ts, mOptionals = os } }) = do
     ps <- mapM toRolePattern ts
-    return (keyword' ns ps (map (\(Option i n e) -> Option i n (PObject e)) os))
+    return (keyword' ns ps (map (\(Option oi on oe) -> Option oi on (PObject oe)) os))
 toDefinePattern _ = Nothing
 
 -- | Convert an expression into a pattern-match for use as a message's role.

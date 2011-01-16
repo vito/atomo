@@ -52,6 +52,9 @@ data Value
     -- | A vector of Values.
     | List VVector
 
+    -- | An arbitrary grouping of Values.
+    | Tuple VVector
+
     -- | A message value.
     | Message { fromMessage :: Message Value }
 
@@ -78,9 +81,6 @@ data Value
 
     -- | A string value; Data.Text.Text.
     | String { fromString :: !T.Text }
-
-    -- | An arbitrary grouping of values
-    | Tuple VVector
     deriving (Show, Typeable)
 
 -- | Methods: responders, slots, and macro.
@@ -379,6 +379,7 @@ data IDs =
         , idHaskell :: Value
         , idInteger :: Value
         , idList :: Value
+        , idTuple :: Value
         , idMessage :: Value
         , idMethod :: Value
         , idParticle :: Value
@@ -386,7 +387,6 @@ data IDs =
         , idPattern :: Value
         , idRational :: Value
         , idString :: Value
-        , idTuple :: Value
         }
     deriving (Show, Typeable)
 
@@ -449,6 +449,7 @@ instance Eq Value where
     (==) (Haskell _) (Haskell _) = False
     (==) (Integer a) (Integer b) = a == b
     (==) (List a) (List b) = a == b
+    (==) (Tuple a) (Tuple b) = a == b
     (==) (Message a) (Message b) = a == b
     (==) (Method a) (Method b) = a == b
     (==) (Particle a) (Particle b) = a == b
@@ -456,7 +457,6 @@ instance Eq Value where
     (==) (Rational a) (Rational b) = a == b
     (==) (Object _ am) (Object _ bm) = am == bm
     (==) (String a) (String b) = a == b
-    (==) (Tuple a) (Tuple b) = a == b
     (==) _ _ = False
 
 instance Eq Pattern where
@@ -519,6 +519,7 @@ instance S.Lift Expr where
     lift (EBlock _ as es) = [| EBlock Nothing as es |]
     lift (EVM {}) = error "cannot lift EVM"
     lift (EList _ es) = [| EList Nothing es |]
+    lift (ETuple _ es) = [| ETuple Nothing es |]
     lift (ETop _) = [| ETop Nothing |]
     lift (EParticle _ p) = [| EParticle Nothing p |]
     lift (EMacro _ p e) = [| EMacro Nothing p e |]
@@ -559,6 +560,7 @@ instance S.Lift Pattern where
     lift (PHeadTail h t) = [| PHeadTail h t |]
     lift (PMessage m) = [| PMessage m |]
     lift (PList ps) = [| PList ps |]
+    lift (PTuple ps) = [| PTuple ps |]
     lift (PMatch v) = [| PMatch v |]
     lift (PNamed n p) = [| PNamed n p |]
     lift (PObject e) = [| PObject e |]
@@ -569,6 +571,7 @@ instance S.Lift Pattern where
     lift PEPrimitive = [| PEPrimitive |]
     lift PEBlock = [| PEBlock |]
     lift PEList = [| PEList |]
+    lift PETuple = [| PETuple |]
     lift PEMacro = [| PEMacro |]
     lift PEParticle = [| PEParticle |]
     lift PETop = [| PETop |]
