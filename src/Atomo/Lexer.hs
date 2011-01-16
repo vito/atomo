@@ -85,7 +85,7 @@ lEnd = do
     return TokEnd
 
 lexer :: Lexer [TaggedToken]
-lexer = getPosition >>= subLexer
+lexer = whiteSpace >> getPosition >>= subLexer
 
 subLexer :: SourcePos -> Lexer [TaggedToken]
 subLexer start = do
