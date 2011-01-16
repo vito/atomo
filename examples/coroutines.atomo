@@ -1,16 +1,15 @@
 -- A port of http://en.wikipedia.org/wiki/Continuation#Coroutines,
--- using a Parameter instead of a global variable
 
-queue* = Parameter new: []
+*queue* = []
 
-empty-queue? := queue* _? empty?
+empty-queue? := *queue* empty?
 
 enqueue: x :=
-  queue* =! (queue* _? .. [x])
+  *queue* set!: (*queue* .. [x])
 
 dequeue :=
-  { x = queue* _? head
-    queue* =! queue* _? tail
+  { x = *queue* head
+    *queue* set!: *queue* tail
     x
   } call
 
