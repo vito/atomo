@@ -24,8 +24,11 @@ load = do
         callBlock b []
 
     [$p|(b: Block) repeat|] =: do
-        b@(Block c _ _) <- here "b" >>= findBlock
-        withTop c (forever (callBlock b []))
+        Block c as es <- here "b" >>= findBlock
+
+        when (length as > 0) (throwError (BlockArity 0 (length as)))
+
+        withTop c (forever (evalAll es))
 
     [$p|(b: Block) call: (l: List)|] =: do
         b <- here "b" >>= findBlock
