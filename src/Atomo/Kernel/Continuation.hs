@@ -27,10 +27,10 @@ load = do
     [$p|(c: Continuation) yield|] =::: [$e|c yield: @ok|]
     [$p|(c: Continuation) call|] =::: [$e|c yield: @ok|]
 
-    [$p|(o: Object) call/cc|] =::: [$e|o call/cc: []|]
-    [$p|(o: Object) call/cc: (as: List)|] =: callCC $ \c -> do
+    [$p|(o: Object) call/cc|] =::: [$e|o call/cc: ()|]
+    [$p|(o: Object) call/cc: (... args)|] =: callCC $ \c -> do
         o <- here "o"
-        as <- getList [$e|as|]
+        as <- getList [$e|args|]
         cr <- mkContinuation c
         dispatch (keyword ["call"] [o, tuple (Continuation cr:as)])
 

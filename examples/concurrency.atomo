@@ -5,7 +5,7 @@ process =
     "waiting for 1 second..." print
     Timer sleep: 1 second
     sender <- @(got: x)
-  } spawn: [self]
+  } spawn: self
 
 process <- "hello, world!"
 

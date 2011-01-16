@@ -90,7 +90,7 @@ Restart = Object clone
           restarts = pairs map:
             { a | a from -> (Restart new: a to in: cc) }
           action with-restarts: restarts
-        } call/cc: [~action, ~(`List new: rs)]
+        } call/cc: (~action, ~(`List new: rs))
       )
     } call
 

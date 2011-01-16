@@ -4,7 +4,7 @@ volley: (n: Integer) :=
     proc =
       { notify |
         pong: notify
-      } spawn: [self]
+      } spawn: self
 
     -- start up the pinger
     { ping: n ponger: proc } spawn
