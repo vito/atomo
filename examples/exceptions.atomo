@@ -2,7 +2,7 @@ Panicker = Object clone do:
   { yield: v := error: v
   }
 
-handler = Parameter new: Panicker
+define: handler as: Panicker
 
 try: action catch: rescue :=
   { cc |
