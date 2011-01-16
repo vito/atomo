@@ -125,6 +125,7 @@ instance Pretty Pattern where
     prettyFrom _ (PObject e) = parens $ pretty e
     prettyFrom _ (PInstance p) = parens $ text "->" <+> pretty p
     prettyFrom _ (PStrict p) = parens $ text "==" <+> pretty p
+    prettyFrom _ (PVariable p) = parens $ text "..." <+> pretty p
     prettyFrom _ (PPMKeyword ns ps)
         | all isAny ps = char '@' <> text (concatMap keyword ns)
         | isAny (head ps) =
@@ -267,6 +268,9 @@ instance Pretty Tokens where
     prettyFrom _ ts = hsep (map pretty ts)
 
 
+instance Pretty AtomoError where
+    prettyFrom _ (Mismatch a b) = text "mismatch:" $$ nest 2 (pretty a) $$ nest 2 (pretty b)
+    prettyFrom _ x = text (show x)
 
 
 internal :: String -> Doc -> Doc

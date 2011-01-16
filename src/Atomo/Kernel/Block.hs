@@ -30,9 +30,9 @@ load = do
 
         withTop c (forever (evalAll es))
 
-    [$p|(b: Block) call: (l: List)|] =: do
+    [$p|(b: Block) call: (... args)|] =: do
         b <- here "b" >>= findBlock
-        vs <- getList [$e|l|]
+        vs <- getList [$e|args|]
         callBlock b vs
 
     [$p|(b: Block) call-in: c|] =: do
@@ -57,10 +57,10 @@ load = do
         b <- here "b" >>= findBlock
         joinWith v b []
         return v
-    [$p|v do: (b: Block) with: (l: List)|] =: do
+    [$p|v do: (b: Block) with: (... args)|] =: do
         v <- here "v"
         b <- here "b" >>= findBlock
-        as <- getList [$e|l|]
+        as <- getList [$e|args|]
         joinWith v b as
         return v
 
@@ -68,10 +68,10 @@ load = do
         v <- here "v"
         b <- here "b" >>= findBlock
         joinWith v b []
-    [$p|v join: (b: Block) with: (l: List)|] =: do
+    [$p|v join: (b: Block) with: (... args)|] =: do
         v <- here "v"
         b <- here "b" >>= findBlock
-        as <- getList [$e|l|]
+        as <- getList [$e|args|]
         joinWith v b as
 
 

@@ -54,7 +54,7 @@
 
             { basic-repl } bind: {
               @prompt ->
-                restart: 'use-prompt with: ["[!]> "]
+                restart: 'use-prompt with: "[!]> "
 
               @(special: n) ->
                 when: (n all?: @digit?) do: {
@@ -102,11 +102,11 @@
 
         { env basic-repl } bind: {
           @prompt ->
-            restart: 'use-prompt with: [
+            restart: 'use-prompt with: (
               if: incomplete-input empty?
                 then: { "[" .. frame show .. "]> " }
                 else: { "." .. ($. repeat: frame show length) .. ".. " }
-            ]
+             )
 
           @loop ->
             (super frame = frame + 1) when: incomplete-input empty?

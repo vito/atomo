@@ -31,7 +31,7 @@ describe: "optionals" as: {
 
   describe: "in particles" as: {
     it: "is completed in sequence after normal arguments" so: {
-      @(foo &baz: _) (complete: [1, 2]) optionals
+      @(foo &baz: _) (complete: (1, 2)) optionals
         should-be: [@baz -> 2]
     }
   }

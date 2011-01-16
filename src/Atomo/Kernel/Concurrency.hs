@@ -30,9 +30,9 @@ load = do
             then throwError (BlockArity (length as) 0)
             else spawn (doBlock emptyMap s bes)
 
-    [$p|(b: Block) spawn: (l: List)|] =: do
+    [$p|(b: Block) spawn: (... args)|] =: do
         b@(Block _ as _) <- here "b" >>= findBlock
-        vs <- getList [$e|l|]
+        vs <- getList [$e|args|]
 
         if length as > length vs
             then throwError (BlockArity (length as) (length vs))

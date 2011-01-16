@@ -75,5 +75,5 @@ macro (x case-of: (bs: Block))
         `(if: (~test matches?: !v) then: { ~branch } else: { ~x })
       } with: `(error: @no-matches)
 
-    `({ !v | ~chain } call: [~x])
+    `({ !v | ~chain } call: ~x)
   } call

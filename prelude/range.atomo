@@ -25,7 +25,7 @@ class: Range: {
       last = if: exclusive? then: { end - 1 } else: { end }
       current = begin
       while: { current <= last } do: {
-        result << action call: [current]
+        result << action call: current
         current = current succ
       }
       result
@@ -36,7 +36,7 @@ class: Range: {
       last = if: exclusive? then: { end - 1 } else: { end }
       current = begin
       while: { current <= last } do: {
-        result << action call: [current]
+        result << action call: current
         current = current next: size
       }
       result

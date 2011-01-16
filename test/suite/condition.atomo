@@ -34,7 +34,7 @@ describe: "condition" as: {
       res =
         { { signal: @foo } with-restarts: { ok -> { r | r } }
         } bind: {
-          @foo -> restart: 'ok with: [@restarted]
+          @foo -> restart: 'ok with: @restarted
         }
 
       res should-be: @restarted
@@ -48,7 +48,7 @@ describe: "condition" as: {
             use-value -> { r | r }
           }
         } bind: {
-          Error -> { restart: 'use-value with: ["!"] }
+          Error -> { restart: 'use-value with: "!" }
         }
 
       res should-be: "!?"

@@ -21,7 +21,7 @@ load = do
         liftIO (readIORef c) >>= ($ v)
 
     -- this enables call/cc as well
-    [$p|(c: Continuation) call: [v]|] =::: [$e|c yield: v|]
+    [$p|(c: Continuation) call: (... (v . _))|] =::: [$e|c yield: v|]
 
     -- effectively just "jumping" to a continuation
     [$p|(c: Continuation) yield|] =::: [$e|c yield: @ok|]
@@ -32,7 +32,7 @@ load = do
         o <- here "o"
         as <- getList [$e|as|]
         cr <- mkContinuation c
-        dispatch (keyword ["call"] [o, list (Continuation cr:as)])
+        dispatch (keyword ["call"] [o, tuple (Continuation cr:as)])
 
     [$p|(v: Block) before: (b: Block) after: (a: Block)|] =: do
         v <- here "v"

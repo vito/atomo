@@ -103,7 +103,7 @@ load = do
 
         let takeWhileM [] = return []
             takeWhileM (x:xs) =
-                ifVM (dispatch (keyword ["call"] [t, list [Char x]]))
+                ifVM (dispatch (keyword ["call"] [t, Char x]))
                     (liftM (x:) (takeWhileM xs))
                     (return [])
 
@@ -115,7 +115,7 @@ load = do
 
         let dropWhileM [] = return []
             dropWhileM (x:xs) =
-                ifVM (dispatch (keyword ["call"] [t, list [Char x]]))
+                ifVM (dispatch (keyword ["call"] [t, Char x]))
                     (dropWhileM xs)
                     (return (x:xs))
 
@@ -225,7 +225,7 @@ load = do
         b <- here "b"
 
         vs <- forM s $ \c ->
-            dispatch (keyword ["call"] [b, list [Char c]])
+            dispatch (keyword ["call"] [b, Char c])
 
         if all isChar vs
             then return (string (map (\(Char c) -> c) vs))
@@ -356,7 +356,7 @@ load = do
         z <- here "zipper"
 
         vs <- forM (T.zip x y) $ \(a, b) ->
-            dispatch (keyword ["call"] [z, list [Char a, Char b]])
+            dispatch (keyword ["call"] [z, tuple [Char a, Char b]])
 
         return $ list vs
 

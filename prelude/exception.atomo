@@ -12,7 +12,7 @@ macro (a handle: (b: Block) ensuring: (c: Block))
 (action: Block) catch: recover :=
   { cc |
     action bind: {
-      Error -> { e | cc yield: (recover call: [e]) }
+      Error -> { e | cc yield: (recover call: e) }
     }
   } call/cc
 
@@ -23,4 +23,4 @@ macro (a catch: (b: Block) ensuring: (c: Block))
   action after: cleanup
 
 v ensuring: p do: b :=
-  { b call: [v] } ensuring: { p call: [v] }
+  { b call: v } ensuring: { p call: v }

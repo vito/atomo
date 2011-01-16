@@ -10,7 +10,7 @@ Restart = Object clone
 
             "!> " display
 
-            Restart (get: read) jump: []
+            Restart (get: read) jump: ()
           } call
       }
 
@@ -101,7 +101,7 @@ Restart = Object clone
     modify: *restarts* as: { rs | restarts .. rs } do: action
 
   (super) signal: v :=
-    { *handlers* map: { h | h (call: [v]) (call: [v]) }
+    { *handlers* map: { h | h (call: v) (call: v) }
       @ok
     } call
 
@@ -127,9 +127,9 @@ Restart = Object clone
       muffle-warning -> @ok
     }
 
-  (super) restart: name := restart: name with: []
+  (super) restart: name := restart: name with: ()
 
-  (super) restart: name with: (params: List) :=
+  (super) restart: name with: params :=
     *restarts* (lookup: name) match: {
       @(ok: r) ->
         r jump: params
@@ -156,6 +156,6 @@ Restart = Object clone
 
       `({ h a |
           with-handler: h do: a
-        } call: [{ !c | super = super; !c match: ~handler }, ~a])
+        } call: ({ !c | super = super; !c match: ~handler }, ~a))
     } call
 } call

@@ -22,7 +22,7 @@ for-macro include: (name: String) on: target :=
           `Block new: (expand-body: mod on: `!top)
             arguments: [`!top]
 
-        `(~target join: ~block with: [~target])
+        `(~target join: ~block with: ~target)
       } call
   }
 
@@ -58,7 +58,7 @@ macro (class: (b: Block))
   `(class: ~b extends: Object)
 
 macro (class: (b: Block) extends: obj)
-  `(~(class-create: b contents) call: [~obj clone])
+  `(~(class-create: b contents) call: ~obj clone)
 
 for-macro class-create: (body: List) :=
   `Block new: (`(me = !o) . (expand-body: body on: `!o) .. [`!o])
@@ -70,6 +70,6 @@ macro (class: (c: Dispatch))
     body = c targets at: 1
 
     `(if: (responds-to?: ~single)
-        then: { ~(class-create: body contents) call: [~name] }
+        then: { ~(class-create: body contents) call: ~name }
         else: { ~name = class: ~body } in-context)
   } call

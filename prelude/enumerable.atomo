@@ -1,13 +1,13 @@
 module: Enumerable: {
   all?: test :=
     { return |
-      collect: { v | (return yield: False) when: test (call: [v]) not }
+      collect: { v | (return yield: False) when: test (call: v) not }
       True
     } call/cc
 
   any?: test :=
     { return |
-      collect: { v | (return yield: True) when: test (call: [v]) not }
+      collect: { v | (return yield: True) when: test (call: v) not }
       False
     } call/cc
 
@@ -27,27 +27,27 @@ module: Enumerable: {
 
   count: test :=
     { n = 0
-      collect: { v | (super n += 1) when: (test in-context call: [v]) }
+      collect: { v | (super n += 1) when: (test in-context call: v) }
       n
     } call
 
   cycle: action :=
-    { collect: { v | action in-context call: [v] }
+    { collect: { v | action in-context call: v }
     } repeat
 
   cycle: action times: (n: Integer) :=
-    { collect: { v | action in-context call: [v] }
+    { collect: { v | action in-context call: v }
     } repeat: n
 
   detect: test :=
     { return |
-      collect: { v | (return yield: @(ok: v)) when: (test call: [v]) }
+      collect: { v | (return yield: @(ok: v)) when: (test call: v) }
       @none
     } call/cc
 
   detect: test or: default :=
     { return |
-      collect: { v | (return yield: v) when: (test call: [v]) }
+      collect: { v | (return yield: v) when: (test call: v) }
       default
     } call/cc
 
@@ -57,7 +57,7 @@ module: Enumerable: {
   find-all: test :=
     { result = []
       collect: { v |
-        (super result << v) when: (test call: [v])
+        (super result << v) when: (test call: v)
       }
       result
     } call
@@ -68,7 +68,7 @@ module: Enumerable: {
   reject: test :=
     { result = []
       collect: { v |
-        (super result << v) unless: (test call: [v])
+        (super result << v) unless: (test call: v)
       }
       result
     } call
@@ -80,7 +80,7 @@ module: Enumerable: {
     { return |
       n = 0
       collect: { v |
-        (return yield: @(ok: n)) when: (test call: [v])
+        (return yield: @(ok: n)) when: (test call: v)
         super n += 1
       }
       @none
@@ -91,7 +91,7 @@ module: Enumerable: {
       is = []
       n = 0
       collect: { v |
-        (super is << n) when: (test call: [v])
+        (super is << n) when: (test call: v)
         super n += 1
       }
       is
@@ -104,7 +104,7 @@ module: Enumerable: {
   grep: pattern &do: { v | v } :=
     { result = []
       collect: { v |
-        (super super result << do call: [v]) when: (pattern === v)
+        (super super result << do call: v) when: (pattern === v)
       }
       result
     } call
@@ -112,7 +112,7 @@ module: Enumerable: {
   group-by: action :=
     { result = []
       collect: { v |
-        res = action call: [v]
+        res = action call: v
         result (lookup: res) match: {
           @none ->
             (super super result =
@@ -140,7 +140,7 @@ module: Enumerable: {
       result = []
 
       collect: { v |
-        (done yield: result) unless: (test call: [v])
+        (done yield: result) unless: (test call: v)
         super result << v
       }
 
@@ -157,7 +157,7 @@ module: Enumerable: {
       until: { next count < n } do: {
         cur = next take: n
         next = next tail
-        action in-context call: [cur]
+        action in-context call: cur
       }
       me
     } call
@@ -166,7 +166,7 @@ module: Enumerable: {
     { next = me
       { cur = next take: n
         next = next drop: n
-        action in-context call: [cur]
+        action in-context call: cur
       } until: { next empty? }
       me
     } call
@@ -174,7 +174,7 @@ module: Enumerable: {
   each-with-index: action :=
     { n = 0
       collect: { v |
-        action in-context call: [v, n]
+        action in-context call: (v, n)
         super n += 1
       }
       me
@@ -204,7 +204,7 @@ module: Enumerable: {
         super initial =
           if: (initial == @undefined)
             then: { v }
-            else: { a call: [v, initial] }
+            else: { a call: (v, initial) }
       }
 
       if: (initial == @undefined)
@@ -217,28 +217,28 @@ module: Enumerable: {
 
   maximum &comparison: @<=> :=
     reduce: { a b |
-      if: (comparison call: [a, b] > 0)
+      if: (comparison call: (a, b) > 0)
         then: { a }
         else: { b }
     }
 
   maximum-by: comparing :=
     reduce: { a b |
-      if: (comparing call: [a] <=> comparing call: [b] > 0)
+      if: (comparing call: a <=> comparing call: b > 0)
         then: { a }
         else: { b }
     }
 
   minimum &comparison: @<=> :=
     reduce: { a b |
-      if: (comparison call: [a, b] < 0)
+      if: (comparison call: (a, b) < 0)
         then: { a }
         else: { b }
     }
 
   minimum-by: comparing :=
     reduce: { a b |
-      if: (comparing call: [a] <=> comparing call: [b] < 0)
+      if: (comparing call: a <=> comparing call: b < 0)
         then: { a }
         else: { b }
     }

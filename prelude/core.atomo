@@ -28,7 +28,7 @@ macro (with: (bs: List) do: action)
   `NewDynamic new: (bs contents map: { `(~a -> ~b) | a -> b }) do: `(~action call)
 
 macro (modify: param as: change do: action)
-  `(with: ~param as: (~change call: [~param _?]) do: ~action)
+  `(with: ~param as: (~change call: ~param _?) do: ~action)
 
 macro (target slurp: filename)
   { src = File read: (super evaluate: filename)

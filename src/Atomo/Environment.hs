@@ -8,6 +8,7 @@ import Data.List (nub)
 
 import Atomo.Method
 import Atomo.Pattern
+import Atomo.Pretty
 import Atomo.Types
 
 
@@ -478,7 +479,7 @@ throwError e = gets top >>= \t -> do
         then do
             dispatch (msg t)
             error ("panic: error returned normally for: " ++ show e)
-        else error ("panic: " ++ show e)
+        else error ("panic: " ++ show (pretty e))
   where
     msg t = keyword ["error"] [t, asValue e]
 

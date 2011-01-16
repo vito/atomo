@@ -8,7 +8,7 @@ try: action catch: rescue :=
   { cc |
     with: handler as: cc do: action
   } call/cc match: {
-    @(exception: x) -> rescue call: [x]
+    @(exception: x) -> rescue call: x
     ok -> ok
   }
 

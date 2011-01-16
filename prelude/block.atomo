@@ -15,7 +15,7 @@ context Block: (es: List) arguments: (as: List) :=
     n = start
 
     while: { (n - diff - end) abs >= diff abs } do: {
-      b call: [n]
+      b call: n
       n = n + diff
     }
   } call/cc

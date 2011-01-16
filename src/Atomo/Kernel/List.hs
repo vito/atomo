@@ -102,7 +102,7 @@ load = do
         b <- here "b"
 
         nvs <- V.mapM (\v ->
-            dispatch (keyword ["call"] [b, list [v]])) vs
+            dispatch (keyword ["call"] [b, v])) vs
 
         return $ List nvs
 
@@ -112,7 +112,7 @@ load = do
         z <- here "zipper"
 
         nvs <- V.zipWithM (\x y ->
-            dispatch (keyword ["call"] [z, list [x, y]])) xs ys
+            dispatch (keyword ["call"] [z, tuple [x, y]])) xs ys
 
         return $ List nvs
 
@@ -121,7 +121,7 @@ load = do
         b <- here "b"
 
         nvs <- V.filterM (\v -> do
-            Boolean t <- dispatch (keyword ["call"] [b, list [v]]) >>= findBoolean
+            Boolean t <- dispatch (keyword ["call"] [b, v]) >>= findBoolean
             return t) vs
 
         return $ List nvs
@@ -132,7 +132,7 @@ load = do
         b <- here "b"
 
         V.fold1M (\x acc ->
-            dispatch (keyword ["call"] [b, list [x, acc]])) vs
+            dispatch (keyword ["call"] [b, tuple [x, acc]])) vs
 
     [$p|(l: List) reduce: b with: v|] =: do
         vs <- getVector [$e|l|]
@@ -140,7 +140,7 @@ load = do
         v <- here "v"
 
         V.foldM (\x acc ->
-            dispatch (keyword ["call"] [b, list [x, acc]])) v vs
+            dispatch (keyword ["call"] [b, tuple [x, acc]])) v vs
 
     [$p|[] reduce-right: b|] =::: [$e|error: @empty-list|]
     [$p|(l: List) reduce-right: b|] =: do
@@ -148,7 +148,7 @@ load = do
         b <- here "b"
 
         foldr1MV (\x acc ->
-            dispatch (keyword ["call"] [b, list [x, acc]])) vs
+            dispatch (keyword ["call"] [b, tuple [x, acc]])) vs
 
     [$p|(l: List) reduce-right: b with: v|] =: do
         vs <- getVector [$e|l|]
@@ -156,7 +156,7 @@ load = do
         v <- here "v"
 
         foldrMV (\x acc ->
-            dispatch (keyword ["call"] [b, list [x, acc]])) v vs
+            dispatch (keyword ["call"] [b, tuple [x, acc]])) v vs
 
     [$p|(l: List) concat|] =::: [$e|l reduce: @.. with: []|]
     [$p|(l: List) sum|] =::: [$e|l reduce: @+ with: 0|]
@@ -169,7 +169,7 @@ load = do
         b <- here "b"
 
         nvs <- V.mapM (\v -> do
-            Boolean t <- dispatch (keyword ["call"] [b, list [v]]) >>= findBoolean
+            Boolean t <- dispatch (keyword ["call"] [b, v]) >>= findBoolean
             return t) vs
 
         return $ Boolean (V.and nvs)
@@ -179,7 +179,7 @@ load = do
         b <- here "b"
 
         nvs <- V.mapM (\v -> do
-            Boolean t <- dispatch (keyword ["call"] [b, list [v]]) >>= findBoolean
+            Boolean t <- dispatch (keyword ["call"] [b, v]) >>= findBoolean
             return t) vs
 
         return $ Boolean (V.or nvs)
@@ -193,7 +193,7 @@ load = do
 
         let takeWhileM [] = return []
             takeWhileM (x:xs) =
-                ifVM (dispatch (keyword ["call"] [t, list [x]]))
+                ifVM (dispatch (keyword ["call"] [t, x]))
                     (liftM (x:) (takeWhileM xs))
                     (return [])
 
@@ -205,7 +205,7 @@ load = do
 
         let dropWhileM [] = return []
             dropWhileM (x:xs) =
-                ifVM (dispatch (keyword ["call"] [t, list [x]]))
+                ifVM (dispatch (keyword ["call"] [t, x]))
                     (dropWhileM xs)
                     (return (x:xs))
 
@@ -284,7 +284,7 @@ sortVM :: Value -> [Value] -> VM [Value]
 sortVM cmp = mergesort gt
   where
     gt a b = do
-        Integer t <- dispatch (keyword ["call"] [cmp, list [a, b]])
+        Integer t <- dispatch (keyword ["call"] [cmp, tuple [a, b]])
             >>= findInteger
         return t
 
@@ -292,9 +292,9 @@ sortByVM :: Value -> Value -> [Value] -> VM [Value]
 sortByVM cmp by = mergesort gt
   where
     gt a b = do
-        x <- dispatch (keyword ["call"] [by, list [a]])
-        y <- dispatch (keyword ["call"] [by, list [b]])
-        Integer t <- dispatch (keyword ["call"] [cmp, list [x, y]])
+        x <- dispatch (keyword ["call"] [by, a])
+        y <- dispatch (keyword ["call"] [by, b])
+        Integer t <- dispatch (keyword ["call"] [cmp, tuple [x, y]])
             >>= findInteger
         return t
 

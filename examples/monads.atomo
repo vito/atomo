@@ -5,7 +5,7 @@ Nothing = Maybe clone do: { show = "Nothing" }
 Just: a := Maybe clone do: { value = a; show := "Just: " .. value show }
 
 Nothing >>= _ := Nothing
-(j: Maybe) >>= f := f call: [j value]
+(j: Maybe) >>= f := f call: j value
 
 macro (x >> y) `(~x >>= { ~y })
 
