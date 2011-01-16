@@ -61,11 +61,11 @@ loadPrelude = do
         , "boolean"
         , "association"
         , "string"
-        , "set"
 
         , "condition"
         , "errors"
         , "exception"
+        , "set"
 
         , "block"
         , "comparable"

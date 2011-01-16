@@ -7,9 +7,10 @@ target set!: (name: Pattern) to: v :=
     else: {
       { done |
         target delegates map: { d |
-          when: (d has-slot?: name name) do: {
-            d match: name on: v
+          { d set!: name to: v
             done yield: v
+          } handle: {
+            @(undefined: _) -> @ok
           }
         }
 
