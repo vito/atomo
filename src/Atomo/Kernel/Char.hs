@@ -47,8 +47,8 @@ load = do
     onInteger :: (Integer -> a) -> VM a
     onInteger f = here "i" >>= liftM (f . Atomo.fromInteger) . findInteger
 
-    c UppercaseLetter = keyParticleN ["letter"] [particle "lowercase"]
-    c LowercaseLetter = keyParticleN ["letter"] [particle "uppercase"]
+    c UppercaseLetter = keyParticleN ["letter"] [particle "uppercase"]
+    c LowercaseLetter = keyParticleN ["letter"] [particle "lowercase"]
     c TitlecaseLetter = keyParticleN ["letter"] [particle "titlecase"]
     c ModifierLetter = keyParticleN ["letter"] [particle "modified"]
     c OtherLetter = keyParticleN ["letter"] [particle "other"]
