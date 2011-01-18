@@ -453,6 +453,7 @@ instance Eq Value where
     (==) (Message a) (Message b) = a == b
     (==) (Method a) (Method b) = a == b
     (==) (Particle a) (Particle b) = a == b
+    (==) (Pattern a) (Pattern b) = a == b
     (==) (Process _ a) (Process _ b) = a == b
     (==) (Rational a) (Rational b) = a == b
     (==) (Object _ am) (Object _ bm) = am == bm
