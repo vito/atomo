@@ -62,10 +62,8 @@ instance Pretty Value where
     prettyFrom _ (Process _ tid) =
         internal "process" $ text (words (show tid) !! 1)
     prettyFrom CNone (Object { oDelegates = ds, oMethods = ms }) =
-        vcat
-            [ internal "object" $ parens (text "delegates to" <+> pretty ds)
-            , nest 2 (pretty ms)
-            ]
+        hang (internal "object" (parens (text "delegates to" <+> pretty ds))) 2
+            (pretty ms)
     prettyFrom _ (Rational r) =
         integer (numerator r) <> char '/' <> integer (denominator r)
     prettyFrom _ (Object {}) = internal "object" empty
@@ -129,8 +127,8 @@ instance Pretty Pattern where
     prettyFrom _ (PPMKeyword ns ps)
         | all isAny ps = char '@' <> text (concatMap keyword ns)
         | isAny (head ps) =
-            char '@' <> parens (headlessKeywords' (prettyFrom CKeyword) ns (tail ps))
-        | otherwise = char '@' <> parens (keywords' (prettyFrom CKeyword) ns ps)
+            char '@' <> parens (headlessKeywords ns (tail ps))
+        | otherwise = char '@' <> parens (keywords ns ps)
       where
         isAny PAny = True
         isAny _ = False
@@ -199,10 +197,14 @@ instance Pretty x => Pretty (Option x) where
     prettyFrom _ (Option _ n x) = char '&' <> text n <> char ':' <+> pretty x
 
 instance Pretty (Message Pattern) where
+    prettyFrom _ (Single { mName = n, mTarget = PThis, mOptionals = os }) =
+        text n <+> sep (map pretty os)
     prettyFrom _ (Single { mName = n, mTarget = (PObject ETop {}), mOptionals = os }) =
         text n <+> sep (map pretty os)
     prettyFrom _ (Single { mName = n, mTarget = p, mOptionals = os }) =
         pretty p <+> text n <+> sep (map pretty os)
+    prettyFrom _ (Keyword { mNames = ns, mTargets = (PThis:vs), mOptionals = os }) =
+        headlessKeywords ns vs <+> sep (map pretty os)
     prettyFrom _ (Keyword { mNames = ns, mTargets = (PObject ETop {}:vs), mOptionals = os }) =
         headlessKeywords ns vs <+> sep (map pretty os)
     prettyFrom _ (Keyword { mNames = ns, mTargets = vs, mOptionals = os }) =
@@ -231,10 +233,8 @@ instance Pretty x => Pretty (Particle x) where
     prettyFrom _ (Keyword { mNames = ns, mTargets = vs, mOptionals = os })
         | all isNothing vs && null os = text . concat $ map keyword ns
         | isNothing (head vs) =
-            parens $ headlessKeywords' prettyVal ns (tail vs) <+> sep (map pretty os)
-        | otherwise = parens $ keywords' prettyVal ns vs <+> sep (map pretty os)
-      where
-        prettyVal = prettyFrom CKeyword
+            parens $ headlessKeywords ns (tail vs) <+> sep (map pretty os)
+        | otherwise = parens $ keywords ns vs <+> sep (map pretty os)
 
 instance Pretty x => Pretty (Maybe x) where
     prettyFrom _ Nothing = text "_"
@@ -269,7 +269,7 @@ instance Pretty Tokens where
 
 
 instance Pretty AtomoError where
-    prettyFrom _ (Mismatch a b) = text "mismatch:" $$ nest 2 (pretty a) $$ nest 2 (pretty b)
+    prettyFrom _ (Mismatch a b) = hang (text "mismatch:") 2 (pretty a $$ pretty b)
     prettyFrom _ x = text (show x)
 
 
@@ -323,7 +323,7 @@ infixr 4 <++>, <+++>
 -- similar to <+>, but the second half will be nested to prevent long lines
 (<++>) :: Doc -> Doc -> Doc
 (<++>) a b
-    | length (show a ++ show b) > 80 = a $$ nest 2 b
+    | length (show a ++ show b) > 80 = hang a 2 b
     | otherwise = a <+> b
 
 -- similar to <++>, but without nesting
