@@ -64,8 +64,8 @@ load = do
             then do
                 bs <- eval [$e|Object clone|]
                 withTop bs (set p v)
-                return (keyParticle ["yes"] [Nothing, Just bs])
-            else return (particle "no")
+                return (keyParticleN ["ok"] [bs])
+            else return (particle "none")
 
     [$p|top match: (p: Pattern) on: v|] =: do
         p <- here "p" >>= findPattern >>= matchable' . fromPattern
