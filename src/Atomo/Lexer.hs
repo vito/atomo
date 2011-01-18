@@ -122,7 +122,7 @@ segment i = do
                         else return (t:n)
                 TokClose c -> do
                     os <- fmap lsInsideOf getState
-                    if matchWrap (snd $ head os) c
+                    if not (null os) && matchWrap (snd $ head os) c
                         then modifyState $ \ls -> ls { lsInsideOf = tail os }
                         else fail $ "unmatched " ++ [c]
 
