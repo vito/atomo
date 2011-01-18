@@ -13,9 +13,9 @@ lToken = choice
     [ lKeyword
     , lReserved
     , lOptional
+    , lPrimitive
     , lOperator
     , lParticle
-    , lPrimitive
     , lIdentifier
     , lPunctuation
     , lEnd
@@ -66,6 +66,7 @@ lPrimitive :: Lexer Token
 lPrimitive = liftM TokPrimitive $ choice
     [ lvChar
     , lvString
+    , lvRegexp
     , try lvRational
     , try lvDouble
     , try lvInteger

@@ -5,6 +5,7 @@ import Control.Concurrent (ThreadId)
 import Control.Concurrent.Chan
 import Control.Monad.Cont
 import Control.Monad.State
+import Data.Bits
 import Data.Dynamic
 import Data.Hashable (hash)
 import Data.List (nub)
@@ -12,6 +13,7 @@ import Data.Maybe (listToMaybe)
 import Data.IORef
 import Text.Parsec (ParseError, SourcePos, sourceName, sourceLine, sourceColumn)
 import Text.PrettyPrint (Doc)
+import Text.Regex.PCRE
 import qualified Data.IntMap as M
 import qualified Data.Text as T
 import qualified Data.Vector as V
@@ -52,26 +54,11 @@ data Value
     -- | A vector of Values.
     | List VVector
 
-    -- | An arbitrary grouping of Values.
-    | Tuple VVector
-
     -- | A message value.
     | Message { fromMessage :: Message Value }
 
     -- | A method value.
     | Method { fromMethod :: Method }
-
-    -- | A particle value.
-    | Particle { fromParticle :: Particle Value }
-
-    -- | A process; a communications channel and the thread's ID.
-    | Process Channel ThreadId
-
-    -- | A pattern value.
-    | Pattern { fromPattern :: Pattern }
-
-    -- | A rational value.
-    | Rational Rational
 
     -- | An object reference.
     | Object
@@ -79,9 +66,31 @@ data Value
         , oMethods :: !Methods
         }
 
+    -- | A particle value.
+    | Particle { fromParticle :: Particle Value }
+
+    -- | A pattern value.
+    | Pattern { fromPattern :: Pattern }
+
+    -- | A process; a communications channel and the thread's ID.
+    | Process Channel ThreadId
+
+    -- | A rational value.
+    | Rational Rational
+
+    -- | A compiled regular expression.
+    | Regexp
+        { rCompiled :: !Regex
+        , rString :: String
+        , rOptions :: String
+        }
+
     -- | A string value; Data.Text.Text.
     | String { fromString :: !T.Text }
-    deriving (Show, Typeable)
+
+    -- | An arbitrary grouping of Values.
+    | Tuple VVector
+    deriving Typeable
 
 -- | Methods: responders, slots, and macro.
 data Method
@@ -379,14 +388,15 @@ data IDs =
         , idHaskell :: Value
         , idInteger :: Value
         , idList :: Value
-        , idTuple :: Value
         , idMessage :: Value
         , idMethod :: Value
         , idParticle :: Value
-        , idProcess :: Value
         , idPattern :: Value
+        , idProcess :: Value
         , idRational :: Value
+        , idRegexp :: Value
         , idString :: Value
+        , idTuple :: Value
         }
     deriving (Show, Typeable)
 
@@ -449,15 +459,16 @@ instance Eq Value where
     (==) (Haskell _) (Haskell _) = False
     (==) (Integer a) (Integer b) = a == b
     (==) (List a) (List b) = a == b
-    (==) (Tuple a) (Tuple b) = a == b
     (==) (Message a) (Message b) = a == b
     (==) (Method a) (Method b) = a == b
+    (==) (Object _ am) (Object _ bm) = am == bm
     (==) (Particle a) (Particle b) = a == b
     (==) (Pattern a) (Pattern b) = a == b
     (==) (Process _ a) (Process _ b) = a == b
     (==) (Rational a) (Rational b) = a == b
-    (==) (Object _ am) (Object _ bm) = am == bm
+    (==) (Regexp _ a ao) (Regexp _ b bo) = a == b && ao == bo
     (==) (String a) (String b) = a == b
+    (==) (Tuple a) (Tuple b) = a == b
     (==) _ _ = False
 
 instance Eq Pattern where
@@ -494,15 +505,47 @@ instance Eq Expr where
     (==) (EVM {}) (EVM {}) = False
     (==) _ _ = False
 
-
-instance Show Channel where
-    show _ = "Channel"
-
-instance Show Methods where
-    show _ = "Methods"
-
-instance Show Continuation where
-    show _ = "Continuation"
+-- | A prettier Show instance. Note that some are not entirely accurate
+-- constructors, e.g. Process, Continuation, and Object.
+instance Show Value where
+    show (Block v as es) =
+        "Block (" ++ show v ++ ") " ++ show as ++ " " ++ show es
+    show (Boolean x) =
+        "Boolean " ++ show x
+    show (Char x) =
+        "Char " ++ show x
+    show (Continuation _) =
+        "Continuation"
+    show (Double x) =
+        "Double " ++ show x
+    show (Expression x) =
+        "Expression (" ++ show x ++ ")"
+    show (Haskell x) =
+        "Haskell " ++ show x
+    show (Integer x) =
+        "Integer " ++ show x
+    show (List x) =
+        "List (" ++ show x ++ ")"
+    show (Message x) =
+        "Message (" ++ show x ++ ")"
+    show (Method x) =
+        "Method (" ++ show x ++ ")"
+    show (Object ds _) =
+        "Object " ++ show ds
+    show (Particle x) =
+        "Particle (" ++ show x ++ ")"
+    show (Pattern x) =
+        "Pattern (" ++ show x ++ ")"
+    show (Process _ t) =
+        "Process (" ++ show t ++ ")"
+    show (Rational x) =
+        "Rational (" ++ show x ++ ")"
+    show (Regexp _ x o) =
+        "Regexp " ++ show x ++ " " ++ show o
+    show (String x) =
+        "String " ++ show x
+    show (Tuple x) =
+        "Tuple (" ++ show x ++ ")"
 
 instance Show (VM a) where
     show _ = "VM"
@@ -607,9 +650,10 @@ startEnv = Env
             , idMessage = error "idMessage not set"
             , idMethod = error "idMethod not set"
             , idParticle = error "idParticle not set"
-            , idProcess = error "idProcess not set"
             , idPattern = error "idPattern not set"
+            , idProcess = error "idProcess not set"
             , idRational = error "idRational not set"
+            , idRegexp = error "idRegexp not set"
             , idString = error "idString not set"
             , idTuple = error "idTuple not set"
             }
@@ -680,6 +724,34 @@ keyParticle ns vs = Particle $ keyword ns vs
 keyParticleN :: [String] -> [Value] -> Value
 {-# INLINE keyParticleN #-}
 keyParticleN ns vs = keyParticle ns (Nothing:map Just vs)
+
+-- | Create a Regex value.
+regex :: Monad m => String -> String -> m Regex
+regex p fs = do
+    os <- opt fs
+    makeRegexOptsM os defaultExecOpt p
+  where
+    base
+        | 'U' `elem` fs = compBlank
+        | otherwise = compUTF8
+
+    opt [] = return base
+    opt (o:os) = liftM2 (.|.) (toOpt o) (opt os)
+
+    -- standard Perl
+    toOpt 'm' = return compMultiline
+    toOpt 's' = return compDotAll
+    toOpt 'i' = return compCaseless
+    toOpt 'x' = return compExtended
+
+    -- additional
+    toOpt 'a' = return compAnchored
+    toOpt 'G' = return compUngreedy
+    toOpt 'e' = return compDollarEndOnly
+    toOpt 'f' = return compFirstLine
+    toOpt 'C' = return compNoAutoCapture
+
+    toOpt c = fail $ "unknown regex flag " ++ show c
 
 -- | Convert a String into a Value.
 string :: String -> Value
@@ -806,6 +878,11 @@ isMethod :: Value -> Bool
 isMethod (Method _) = True
 isMethod _ = False
 
+-- | Is a value a `Object'?
+isObject :: Value -> Bool
+isObject (Object {}) = True
+isObject _ = False
+
 -- | Is a value a `Particle'?
 isParticle :: Value -> Bool
 isParticle (Particle _) = True
@@ -826,10 +903,10 @@ isRational :: Value -> Bool
 isRational (Rational _) = True
 isRational _ = False
 
--- | Is a value a `Object'?
-isObject :: Value -> Bool
-isObject (Object {}) = True
-isObject _ = False
+-- | Is a value a `Regexp'?
+isRegexp :: Value -> Bool
+isRegexp (Regexp _ _ _) = True
+isRegexp _ = False
 
 -- | Is a value a `String'?
 isString :: Value -> Bool
@@ -908,8 +985,9 @@ objectFrom ids (List _) = idList ids
 objectFrom ids (Message _) = idMessage ids
 objectFrom ids (Method _) = idMethod ids
 objectFrom ids (Particle _) = idParticle ids
-objectFrom ids (Process _ _) = idProcess ids
 objectFrom ids (Pattern _) = idPattern ids
+objectFrom ids (Process _ _) = idProcess ids
 objectFrom ids (Rational _) = idRational ids
+objectFrom ids (Regexp _ _ _) = idRegexp ids
 objectFrom ids (String _) = idString ids
 objectFrom ids (Tuple _) = idTuple ids

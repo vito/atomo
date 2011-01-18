@@ -154,6 +154,12 @@ findObject v
     | isObject v = return v
     | otherwise = findValue "Object" isObject v
 
+-- | `findValue' for `Regexp'
+findRegexp :: Value -> VM Value
+findRegexp v
+    | isRegexp v = return v
+    | otherwise = findValue "Regexp" isRegexp v
+
 -- | `findValue' for `String'
 findString :: Value -> VM Value
 findString v

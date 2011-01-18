@@ -68,6 +68,11 @@ instance Pretty Value where
         integer (numerator r) <> char '/' <> integer (denominator r)
     prettyFrom _ (Object {}) = internal "object" empty
     prettyFrom _ (String s) = text (show s)
+    prettyFrom _ (Regexp _ s o) = char '/' <> text (escape s) <> char '/' <> text o
+      where
+        escape "" = ""
+        escape ('/':cs) = "\\/" ++ escape cs
+        escape (c:cs) = c : escape cs
 
 instance Pretty Methods where
     prettyFrom _ ms = vcat

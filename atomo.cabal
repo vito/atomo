@@ -50,6 +50,7 @@ library
 
   build-depends:
     base >= 4 && < 5,
+    bytestring,
     containers,
     directory,
     filepath,
@@ -58,6 +59,7 @@ library
     mtl,
     parsec >= 3.0.0,
     pretty,
+    regex-pcre,
     template-haskell,
     text >= 0.11.0.0,
     time,
@@ -107,6 +109,7 @@ library
     Atomo.Kernel.Environment,
     Atomo.Kernel.Continuation,
     Atomo.Kernel.Char,
+    Atomo.Kernel.Regexp,
     Paths_atomo
 
 
@@ -120,6 +123,7 @@ executable atomo
 
   build-depends:
     base >= 4 && < 5,
+    bytestring,
     containers,
     directory,
     filepath,
@@ -129,6 +133,7 @@ executable atomo
     mtl,
     parsec >= 3.0.0,
     pretty,
+    regex-pcre,
     template-haskell,
     text >= 0.11.0.0,
     time,

@@ -108,6 +108,25 @@ float = do
 natural :: Lexer Integer
 natural = zeroNumber <|> decimal
 
+regexLiteral :: Lexer (String, String)
+regexLiteral = do
+    str <-
+        between
+            (char '/')
+            (char '/' <?> "end of regex")
+            (many regexChar)
+
+    opts <- many (satisfy isAlpha)
+
+    return (str, opts)
+  where
+    regexChar = choice
+        [ try $ do
+            char '\\'
+            char '/'
+        , satisfy (\c -> (c /= '/') && (c > '\026'))
+        ]
+
 stringLiteral :: Lexer String
 stringLiteral = do
     str <-

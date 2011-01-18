@@ -20,6 +20,7 @@ import qualified Atomo.Kernel.Time as Time
 import qualified Atomo.Kernel.Environment as Environment
 import qualified Atomo.Kernel.Continuation as Continuation
 import qualified Atomo.Kernel.Char as Char
+import qualified Atomo.Kernel.Regexp as Regexp
 
 load :: VM ()
 load = do
@@ -40,3 +41,4 @@ load = do
     Environment.load
     Continuation.load
     Char.load
+    Regexp.load

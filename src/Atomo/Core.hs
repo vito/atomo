@@ -69,6 +69,7 @@ initCore = do
         , ("Process", \is r -> is { idProcess = r })
         , ("Pattern", \is r -> is { idPattern = r })
         , ("Rational", \is r -> is { idRational = r })
+        , ("Regexp", \is r -> is { idRegexp = r })
         , ("String", \is r -> is { idString = r })
         , ("Tuple", \is r -> is { idTuple = r })
         ]
