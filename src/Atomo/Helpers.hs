@@ -160,6 +160,12 @@ findString v
     | isString v = return v
     | otherwise = findValue "String" isString v
 
+-- | `findValue' for `Tuple'
+findTuple :: Value -> VM Value
+findTuple v
+    | isTuple v = return v
+    | otherwise = findValue "Tuple" isTuple v
+
 -- | Find a String given an expression to evaluate.
 getString :: Expr -> VM String
 getString e = eval e >>= liftM (fromText . fromString) . findString
