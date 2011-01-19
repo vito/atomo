@@ -72,7 +72,16 @@ macro (condition: (bs: Block))
 macro (x case-of: (bs: Block))
   { chain = bs contents reduce-right:
       { `(~test -> ~branch) x |
-        `(if: (~test matches?: !v) then: { ~branch } else: { ~x })
+        if: (test type == @primitive && (evaluate: test) is-a?: Regexp)
+          then: {
+            `((~test match: !v) match: {
+                @none -> ~x
+                @(ok: !b) -> !b bindings join: { ~branch }
+              })
+          }
+          else: {
+            `(if: (~test matches?: !v) then: { ~branch } else: { ~x })
+          }
       } with: `(error: @no-matches)
 
     `({ !v | ~chain } call: ~x)
