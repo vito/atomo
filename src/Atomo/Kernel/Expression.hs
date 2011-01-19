@@ -238,7 +238,17 @@ load = do
                 return (list (map Expression es))
             ETuple { eContents = es } ->
                 return (list (map Expression es))
+            EMagicQuote { eRaw = r } ->
+                return (string r)
             _ -> raise ["no-contents-for"] [Expression e]
+
+    [$p|(e: Expression) flags|] =: do
+        Expression e <- here "e" >>= findExpression
+
+        case e of
+            EMagicQuote { eFlags = fs } ->
+                return (list (map Char fs))
+            _ -> raise ["no-flags-for"] [Expression e]
 
     [$p|(e: Expression) arguments|] =: do
         Expression e <- here "e" >>= findExpression
