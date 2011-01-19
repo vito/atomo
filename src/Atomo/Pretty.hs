@@ -195,12 +195,7 @@ instance Pretty Expr where
     prettyFrom _ (EGetDynamic { eName = n }) =
         internal "get-dynamic" $ text n
     prettyFrom _ (EMagicQuote _ n r f) =
-        text n <> char '{' <> text (escape r) <> char '}' <> text f
-      where
-        escape "" = ""
-        escape ('{':cs) = "\\{" ++ escape cs
-        escape ('}':cs) = "\\}" ++ escape cs
-        escape (c:cs) = c : escape cs
+        text n <> char '{' <> text (magicEscape r) <> char '}' <> text f
 
 instance Pretty [Expr] where
     prettyFrom _ es = sep . punctuate (text ";") $ map pretty es
@@ -264,12 +259,8 @@ instance Pretty Token where
     prettyFrom _ (TokKeyword k) = text k <> char ':'
     prettyFrom _ (TokOptional o) = char '&' <> text o <> char ':'
     prettyFrom _ (TokOperator o) = text o
-    prettyFrom _ (TokMagicQuote n r f) = text n <> char '{' <> text (escape r) <> char '}' <> text f
-      where
-        escape "" = ""
-        escape ('{':cs) = "\\{" ++ escape cs
-        escape ('}':cs) = "\\}" ++ escape cs
-        escape (c:cs) = c : escape cs
+    prettyFrom _ (TokMagicQuote n r f) =
+        text n <> char '{' <> text (magicEscape r) <> char '}' <> text f
     prettyFrom _ (TokIdentifier i) = text i
     prettyFrom _ (TokParticle ks) = char '@' <> hcat (map (text . keyword) ks)
     prettyFrom _ (TokPrimitive p) = pretty p
@@ -298,6 +289,12 @@ internal n d = char '<' <> text n <+> d <> char '>'
 
 braces :: Doc -> Doc
 braces d = char '{' <+> d <+> char '}'
+
+magicEscape :: String -> String
+magicEscape "" = ""
+magicEscape ('{':cs) = "\\{" ++ magicEscape cs
+magicEscape ('}':cs) = "\\}" ++ magicEscape cs
+magicEscape (c:cs) = c : magicEscape cs
 
 headlessKeywords' :: (a -> Doc) -> [String] -> [a] -> Doc
 headlessKeywords' p (k:ks) (v:vs) =
