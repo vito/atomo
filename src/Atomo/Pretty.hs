@@ -280,7 +280,10 @@ instance Pretty Tokens where
 
 
 instance Pretty AtomoError where
-    prettyFrom _ (Mismatch a b) = hang (text "mismatch:") 2 (pretty a $$ pretty b)
+    prettyFrom _ (Mismatch a b) =
+        hang (text "mismatch:") 2 (pretty a $$ pretty b)
+    prettyFrom _ (DidNotUnderstand m) =
+        text "message not understood:" <+> pretty m
     prettyFrom _ x = text (show x)
 
 
