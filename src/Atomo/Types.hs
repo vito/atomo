@@ -8,13 +8,14 @@ import Control.Monad.State
 import Data.Bits
 import Data.Dynamic
 import Data.Hashable (hash)
+import Data.IORef
 import Data.List (nub)
 import Data.Maybe (listToMaybe)
-import Data.IORef
 import Text.Parsec (ParseError, SourcePos, sourceName, sourceLine, sourceColumn)
 import Text.PrettyPrint (Doc)
 import Text.Regex.PCRE
 import qualified Data.IntMap as M
+import qualified Data.Set as S
 import qualified Data.Text as T
 import qualified Data.Vector as V
 import qualified Language.Haskell.Interpreter as H
@@ -83,6 +84,7 @@ data Value
         { rCompiled :: !Regex
         , rString :: String
         , rOptions :: String
+        , rNamed :: [(String, Int)]
         }
 
     -- | A string value; Data.Text.Text.
@@ -466,7 +468,8 @@ instance Eq Value where
     (==) (Pattern a) (Pattern b) = a == b
     (==) (Process _ a) (Process _ b) = a == b
     (==) (Rational a) (Rational b) = a == b
-    (==) (Regexp _ a ao) (Regexp _ b bo) = a == b && ao == bo
+    (==) (Regexp _ a ao _) (Regexp _ b bo _) =
+        a == b && S.fromList ao == S.fromList bo
     (==) (String a) (String b) = a == b
     (==) (Tuple a) (Tuple b) = a == b
     (==) _ _ = False
@@ -540,7 +543,7 @@ instance Show Value where
         "Process (" ++ show t ++ ")"
     show (Rational x) =
         "Rational (" ++ show x ++ ")"
-    show (Regexp _ x o) =
+    show (Regexp _ x o _) =
         "Regexp " ++ show x ++ " " ++ show o
     show (String x) =
         "String " ++ show x
@@ -753,6 +756,20 @@ regex p fs = do
 
     toOpt c = fail $ "unknown regex flag " ++ show c
 
+-- | Scan a regular expression to determine the index for named captures.
+namedCaptures :: String -> [(String, Int)]
+namedCaptures = cap 0
+  where
+    cap _ "" = []
+    cap n ('\\':_:cs) = cap n cs
+    cap n ('[':cs) = cap n (dropWhile (/= ']') cs)
+    cap n ('(':'?':'<':cs) = (name, n) : cap (n + 1) rest
+      where
+        (name, _:rest) = span (/= '>') cs
+    cap n ('(':'?':cs) = cap n cs
+    cap n ('(':cs) = cap (n + 1) cs
+    cap n (_:cs) = cap n cs
+
 -- | Convert a String into a Value.
 string :: String -> Value
 {-# INLINE string #-}
@@ -905,7 +922,7 @@ isRational _ = False
 
 -- | Is a value a `Regexp'?
 isRegexp :: Value -> Bool
-isRegexp (Regexp _ _ _) = True
+isRegexp (Regexp {}) = True
 isRegexp _ = False
 
 -- | Is a value a `String'?
@@ -988,6 +1005,6 @@ objectFrom ids (Particle _) = idParticle ids
 objectFrom ids (Pattern _) = idPattern ids
 objectFrom ids (Process _ _) = idProcess ids
 objectFrom ids (Rational _) = idRational ids
-objectFrom ids (Regexp _ _ _) = idRegexp ids
+objectFrom ids (Regexp {}) = idRegexp ids
 objectFrom ids (String _) = idString ids
 objectFrom ids (Tuple _) = idTuple ids

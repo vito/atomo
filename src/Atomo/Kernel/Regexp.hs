@@ -12,25 +12,33 @@ byteString = String . decodeUtf8
 
 load :: VM ()
 load = do
+    ([$p|RegexpBindings|] =::) =<< eval [$e|Object clone|]
     ([$p|RegexpMatch|] =::) =<< eval [$e|Object clone|]
 
     [$p|(r: Regexp) matches?: (s: String)|] =: do
-        Regexp r _ _ <- here "r" >>= findRegexp
+        Regexp { rCompiled = r } <- here "r" >>= findRegexp
         t <- getText [$e|s|]
         return (Boolean (match r (encodeUtf8 t)))
 
     [$p|(r: Regexp) match: (s: String)|] =: do
-        Regexp r _ _ <- here "r" >>= findRegexp
+        Regexp { rCompiled = r, rNamed = ns } <- here "r" >>= findRegexp
         t <- getText [$e|s|]
         let mr = match r (encodeUtf8 t) :: MatchResult BS.ByteString
         if BS.null (mrMatch mr)
             then return (particle "none")
             else do
+                bs <- [$e|RegexpBindings|] `newWith` concat
+                    [ [("\\0", byteString (mrMatch mr))]
+                    , zipWith (\n m -> ("\\" ++ show n, byteString m)) [1 :: Int ..] (mrSubList mr)
+                    , map (\(n, o) -> ("\\" ++ n, byteString (mrSubList mr !! o))) ns
+                    ]
+
                 rm <- [$e|RegexpMatch|] `newWith`
                     [ ("before", byteString (mrBefore mr))
                     , ("match", byteString (mrMatch mr))
                     , ("after", byteString (mrAfter mr))
                     , ("captures", list (map byteString (mrSubList mr)))
+                    , ("bindings", bs)
                     ]
 
                 return (keyParticleN ["ok"] [rm])
