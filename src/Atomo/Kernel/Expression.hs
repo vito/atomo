@@ -32,8 +32,11 @@ load = do
         return (Expression (ETuple Nothing (map fromExpression es)))
 
     [$p|`Match new: (branches: List) on: (value: Expression)|] =: do
-        pats <- liftM (map fromExpression) $ getList [$e|branches map: @from|] >>= mapM findExpression
-        exprs <- liftM (map fromExpression) $ getList [$e|branches map: @to|] >>= mapM findExpression
+        bs <- getList [$e|branches|]
+
+        let pats = map (fromExpression . head . fromTuple) bs
+            exprs = map (fromExpression . (!! 1) . fromTuple) bs
+
         Expression value <- here "value" >>= findExpression
 
         ps <- mapM toRolePattern' pats

@@ -2,7 +2,7 @@ operator right 0 = := =!
 operator right 1 ->
 
 macro (x match: (ts: Block))
-  `Match new: (ts contents map: { `(~p -> ~e) | p -> e expand }) on: x expand
+  `Match new: (ts contents map: { `(~p -> ~e) | (p, e expand) }) on: x expand
 
 macro (p = e)
   `Set new: p to: e
