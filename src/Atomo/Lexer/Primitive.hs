@@ -20,15 +20,6 @@ lvChar = liftM Char charLiteral
 lvString :: Lexer Value
 lvString = liftM T.string stringLiteral
 
--- | Regexp literal.
---
--- Examples: @//@, @/foo/@, @/foo\s+bar/@
-lvRegexp :: Lexer Value
-lvRegexp = do
-    (p, o) <- try regexLiteral
-    r <- regex p o
-    return (Regexp r p o)
-
 -- | Double literal.
 --
 -- Examples: @1.0@, @4.6e10@, @-1.0@

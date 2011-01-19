@@ -334,6 +334,12 @@ data Expr
         { eLocation :: Maybe SourcePos
         , eName :: String
         }
+    | EMagicQuote
+        { eLocation :: Maybe SourcePos
+        , eName :: String
+        , eRaw :: String
+        , eFlags :: [Char]
+        }
     deriving (Show, Typeable)
 
 -- | Atomo's VM state.
@@ -577,6 +583,7 @@ instance S.Lift Expr where
     lift (ESetDynamic _ n e) = [| ESetDynamic Nothing n e |]
     lift (EDefineDynamic _ n e) = [| EDefineDynamic Nothing n e |]
     lift (EGetDynamic _ n) = [| EGetDynamic Nothing n |]
+    lift (EMagicQuote _ n r fs) = [| EMagicQuote Nothing n r fs |]
 
 instance S.Lift Assoc where
     lift ALeft = [| ALeft |]

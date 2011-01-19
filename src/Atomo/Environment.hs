@@ -161,6 +161,7 @@ eval (EQuote { eExpr = qe }) = do
     unquote _ o@(EOperator {}) = return o
     unquote _ f@(EForMacro {}) = return f
     unquote _ g@(EGetDynamic {}) = return g
+    unquote _ q@(EMagicQuote {}) = return q
 eval (ENewDynamic { eBindings = bes, eExpr = e }) = do
     bvs <- forM bes $ \(n, b) -> do
         v <- eval b
@@ -187,6 +188,7 @@ eval (ESetDynamic { eName = n, eExpr = e }) = do
 eval (EGetDynamic { eName = n }) = do
     mv <- gets (getDynamic n . dynamic)
     maybe (raise ["unknown-dynamic"] [string n]) return mv
+eval (EMagicQuote {}) = error "impossible: eval EMagicQuote"
 
 -- | Evaluate multiple expressions, returning the last result.
 evalAll :: [Expr] -> VM Value

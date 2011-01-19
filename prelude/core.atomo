@@ -36,3 +36,9 @@ macro (target slurp: filename)
     blk = `Block new: exprs
     `(~blk call-in: ~target)
   } call
+
+for-macro quote: s as: q &flags: fs :=
+  error: @(unknown-quoter: q for: s &flags: fs)
+
+for-macro quote: s as: @r &flags: [] :=
+  Regexp new: s &flags: (flags to: String)

@@ -29,6 +29,7 @@ pLiteral :: Parser Expr
 pLiteral = choice
     [ pThis
     , pBlock
+    , pMagicQuote
     , pList
     , pTuple
     , pParticle
@@ -218,6 +219,11 @@ pBlock = tagged . braces $ do
     as <- option [] (try $ manyTill pSpacedExpr (punctuation '|' >> optional end))
     es <- blockOf pExpr
     return (EBlock Nothing (map (fromJust . toPattern) as) es)
+
+pMagicQuote :: Parser Expr
+pMagicQuote = tagged $ do
+    (name, raw, flags) <- magicQuote
+    return (EMagicQuote Nothing name raw flags)
 
 -- | Parse an expression possibly up to an operator dispatch.
 --

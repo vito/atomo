@@ -150,6 +150,7 @@ load = do
             ESetDynamic {} -> return (particle "set-dynamic")
             EDefineDynamic {} -> return (particle "define-dynamic")
             EGetDynamic {} -> return (particle "get-dynamic")
+            EMagicQuote {} -> return (particle "magic-quote")
 
     [$p|(e: Expression) target|] =: do
         Expression e <- here "e" >>= findExpression

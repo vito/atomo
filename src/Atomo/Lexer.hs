@@ -2,6 +2,7 @@
 module Atomo.Lexer where
 
 import Control.Monad.State
+import Data.Char (isAlpha)
 import Text.Parsec
 
 import Atomo.Lexer.Base
@@ -13,9 +14,10 @@ lToken = choice
     [ lKeyword
     , lReserved
     , lOptional
-    , lPrimitive
     , lOperator
     , lParticle
+    , lPrimitive
+    , lMagicQuote
     , lIdentifier
     , lPunctuation
     , lEnd
@@ -66,7 +68,6 @@ lPrimitive :: Lexer Token
 lPrimitive = liftM TokPrimitive $ choice
     [ lvChar
     , lvString
-    , lvRegexp
     , try lvRational
     , try lvDouble
     , try lvInteger
@@ -84,6 +85,30 @@ lEnd :: Lexer Token
 lEnd = do
     oneOf ",;"
     return TokEnd
+
+lMagicQuote :: Lexer Token
+lMagicQuote = try $ do
+    name <- identExcept "</"
+    str <- delimited "({[</\""
+    flags <- many (satisfy isAlpha)
+    return (TokMagicQuote name str flags)
+  where
+    delimited ds = do
+        o <- oneOf ds
+        cs <- many $ choice
+            [ try $ do
+                char '\\'
+                oneOf [o, close o]
+            , satisfy (\c -> c `notElem` [o, close o] && c > '\026')
+            ]
+        char (close o)
+        return cs
+
+    close '(' = ')'
+    close '{' = '}'
+    close '[' = ']'
+    close '<' = '>'
+    close x = x
 
 lexer :: Lexer [TaggedToken]
 lexer = whiteSpace >> getPosition >>= subLexer
