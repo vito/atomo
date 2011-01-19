@@ -187,8 +187,11 @@ load = do
         Expression e <- here "e" >>= findExpression
 
         case e of
-            EParticle _ (Single { mName = n }) -> return (string n)
+            EParticle _ (Single { mName = n }) ->
+                return (string n)
             EDispatch { eMessage = Single { mName = n } } ->
+                return (string n)
+            EMagicQuote { eName = n } ->
                 return (string n)
             _ -> raise ["no-name-for"] [Expression e]
 
