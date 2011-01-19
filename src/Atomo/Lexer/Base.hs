@@ -64,21 +64,6 @@ def = P.LanguageDef
 eol :: Lexer ()
 eol = newline >> return ()
 
-identExcept :: [Char] -> Lexer String
-identExcept no = try $ do
-    c <- P.identStart def
-    cs <- many . try $ do
-        x <- P.identLetter def
-        if x `elem` no
-            then fail "blacklisted"
-            else return x
-
-    if isOperator (c:cs)
-        then unexpected "operator"
-        else do
-
-    return (c:cs)
-
 anyIdent :: Lexer String
 anyIdent = try $ do
     c <- P.identStart def

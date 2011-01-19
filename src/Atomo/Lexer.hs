@@ -88,8 +88,8 @@ lEnd = do
 
 lMagicQuote :: Lexer Token
 lMagicQuote = try $ do
-    name <- identExcept "</"
-    str <- delimited "({[</\""
+    name <- ident
+    str <- delimited "({[\"$|`'~@"
     flags <- many (satisfy isAlpha)
     return (TokMagicQuote name str flags)
   where
