@@ -188,7 +188,13 @@ eval (ESetDynamic { eName = n, eExpr = e }) = do
 eval (EGetDynamic { eName = n }) = do
     mv <- gets (getDynamic n . dynamic)
     maybe (raise ["unknown-dynamic"] [string n]) return mv
-eval (EMagicQuote {}) = error "impossible: eval EMagicQuote"
+eval (EMagicQuote { eName = n, eRaw = r, eFlags = fs }) = do
+    t <- gets (psEnvironment . parserState)
+    dispatch $
+        keyword'
+            ["quote", "as"]
+            [t, string r, particle n]
+            [option "flags" (list (map Char fs))]
 
 -- | Evaluate multiple expressions, returning the last result.
 evalAll :: [Expr] -> VM Value
