@@ -18,7 +18,6 @@ lToken = choice
     , lParticle
     , lPrimitive
     , lMagicQuote
-    , lIdentifier
     , lPunctuation
     , lEnd
     ]
@@ -61,9 +60,6 @@ lOperator = try $ do
     whiteSpace1 <|> eof <|> (lookAhead (lEnd <|> lPunctuation) >> return ())
     return (TokOperator o)
 
-lIdentifier :: Lexer Token
-lIdentifier = liftM TokIdentifier ident
-
 lPrimitive :: Lexer Token
 lPrimitive = liftM TokPrimitive $ choice
     [ lvChar
@@ -86,12 +82,17 @@ lEnd = do
     oneOf ",;"
     return TokEnd
 
+-- | Parse an identifier, possibly followed by a magic quote segment.
 lMagicQuote :: Lexer Token
-lMagicQuote = try $ do
+lMagicQuote = do
     name <- ident
-    str <- delimited "({[\"$|`'~@"
-    flags <- many (satisfy isAlpha)
-    return (TokMagicQuote name str flags)
+    choice
+        [ do
+            str <- delimited "({[\"$|`'~@"
+            flags <- many (satisfy isAlpha)
+            return (TokMagicQuote name str flags)
+        , return (TokIdentifier name)
+        ]
   where
     delimited ds = do
         o <- oneOf ds
