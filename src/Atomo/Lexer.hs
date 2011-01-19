@@ -99,7 +99,7 @@ lMagicQuote = try $ do
             [ try $ do
                 char '\\'
                 oneOf [o, close o]
-            , satisfy (\c -> c `notElem` [o, close o] && c > '\026')
+            , satisfy (`notElem` [o, close o])
             ]
         char (close o)
         return cs
