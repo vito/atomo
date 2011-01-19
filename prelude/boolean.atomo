@@ -72,7 +72,7 @@ macro (condition: (bs: Block))
 macro (x case-of: (bs: Block))
   { chain = bs contents reduce-right:
       { `(~test -> ~branch) x |
-        if: (test type == @primitive && (evaluate: test) is-a?: Regexp)
+        if: (regexp?: test)
           then: {
             `((~test match: !v) match: {
                 @none -> ~x
@@ -86,3 +86,12 @@ macro (x case-of: (bs: Block))
 
     `({ !v | ~chain } call: ~x)
   } call
+
+for-macro regexp?: e :=
+  e type match: {
+    @primitive ->
+      ((evaluate: e) is-a?: Regexp) print
+
+    @magic-quote ->
+      (e name == "r") print
+  }
