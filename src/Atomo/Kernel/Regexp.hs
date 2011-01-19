@@ -15,6 +15,12 @@ load = do
     ([$p|RegexpBindings|] =::) =<< eval [$e|Object clone|]
     ([$p|RegexpMatch|] =::) =<< eval [$e|Object clone|]
 
+    [$p|Regexp new: (s: String) &flags: ""|] =: do
+        s <- getString [$e|s|]
+        fs <- getString [$e|flags|]
+        r <- regex s fs
+        return (Regexp r s fs (namedCaptures s))
+
     [$p|(r: Regexp) matches?: (s: String)|] =: do
         Regexp { rCompiled = r } <- here "r" >>= findRegexp
         t <- getText [$e|s|]
