@@ -232,9 +232,11 @@ instance Pretty (Message Expr) where
         keywords ns es <+> sep (map pretty os)
 
 instance Pretty x => Pretty (Particle x) where
-    prettyFrom _ (Single { mName = n, mOptionals = [] }) = text n
-    prettyFrom _ (Single { mName = n, mOptionals = os }) =
+    prettyFrom _ (Single { mName = n, mTarget = Nothing, mOptionals = [] }) = text n
+    prettyFrom _ (Single { mName = n, mTarget = Nothing, mOptionals = os }) =
         parens (text n <+> sep (map pretty os))
+    prettyFrom _ (Single { mName = n, mTarget = Just t, mOptionals = os }) =
+        parens (pretty t <+> text n <+> sep (map pretty os))
     prettyFrom _ (Keyword { mNames = ns, mTargets = vs, mOptionals = os })
         | all isNothing vs && null os = text . concat $ map keyword ns
         | isNothing (head vs) =

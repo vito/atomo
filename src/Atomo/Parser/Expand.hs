@@ -44,6 +44,9 @@ doPragmas (EParticle { eParticle = ep }) =
                     Nothing -> return ()
                     Just e -> doPragmas e
 
+        Single { mTarget = Just e } ->
+            doPragmas e
+
         _ -> return ()
 doPragmas (EOperator {}) = return ()
 doPragmas (EPrimitive {}) = return ()
@@ -146,19 +149,23 @@ macroExpand t@(ETuple { eContents = es }) = do
 macroExpand m@(EMacro { eExpr = e }) = do -- TODO: is this sane?
     e' <- macroExpand e
     return m { eExpr = e' }
-macroExpand p@(EParticle { eParticle = ep }) =
+macroExpand p@(EParticle { eParticle = ep }) = do
+    nos <- forM (mOptionals ep) $ \(Option i n me) -> do
+        ne <- maybe (return Nothing) (liftM Just . macroExpand) me
+        return (Option i n ne)
+
     case ep of
-        Keyword { mNames = ns, mTargets = mes, mOptionals = os } -> do
+        Keyword { mNames = ns, mTargets = mes } -> do
             nmes <- forM mes $ \me ->
                 case me of
                     Nothing -> return Nothing
                     Just e -> liftM Just (macroExpand e)
 
-            nos <- forM os $ \(Option i n me) -> do
-                ne <- maybe (return Nothing) (liftM Just . macroExpand) me
-                return (Option i n ne)
-
             return p { eParticle = keyword' ns nmes nos }
+
+        Single { mName = n, mTarget = Just e } -> do
+            ne <- macroExpand e
+            return p { eParticle = single' n (Just ne) nos }
 
         _ -> return p
 macroExpand s@(ESetDynamic { eExpr = e }) = do

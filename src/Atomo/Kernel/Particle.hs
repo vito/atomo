@@ -16,6 +16,7 @@ load = do
         ns <- liftM (map (fromText . fromString)) $ getList [$e|names|]
         return (keyParticle ns (replicate (length ns + 1) Nothing))
 
+    [$p|(p: Particle) call|] =::: [$e|p call: ()|]
     [$p|(p: Particle) call: targets|] =:::
         [$e|(p complete: targets) dispatch|]
 
@@ -27,9 +28,13 @@ load = do
         Particle (Keyword { mNames = ns }) <- here "p" >>= findParticle
         return $ list (map string ns)
 
-    [$p|(p: Particle) values|] =: do
-        (Particle (Keyword { mTargets = mvs })) <- here "p" >>= findParticle
-        liftM list (mapM toValue mvs)
+    [$p|(p: Particle) target|] =: do
+        (Particle (Single { mTarget = mt })) <- here "p" >>= findParticle
+        toValue mt
+
+    [$p|(p: Particle) targets|] =: do
+        (Particle (Keyword { mTargets = mts })) <- here "p" >>= findParticle
+        liftM list (mapM toValue mts)
 
     [$p|(p: Particle) optionals|] =: do
         Particle p <- here "p" >>= findParticle
@@ -42,6 +47,7 @@ load = do
             Keyword {} -> return (particle "keyword")
             Single {} -> return (particle "single")
 
+    [$p|(p: Particle) complete|] =::: [$e|p complete: ()|]
     [$p|(p: Particle) complete: (... targets)|] =: do
         Particle p <- here "p" >>= findParticle
         vs <- getList [$e|targets|]

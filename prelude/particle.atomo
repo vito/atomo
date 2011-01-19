@@ -16,7 +16,7 @@
 
       p type match: {
         @keyword ->
-          { vs := p values map: { v | slot: v }
+          { vs := p targets map: { v | slot: v }
 
             initial :=
               vs head match: {
@@ -32,15 +32,24 @@
                   })
                 (join: " ")
 
-            if: (p values (all?: @(== @none)) && p optionals empty?)
+            if: (p targets (all?: @(== @none)) && p optionals empty?)
               then: { "@" .. p names (map: { n | keywordfy: n }) join }
               else: { "@(" .. initial .. rest .. optionals .. ")" }
           } call
 
         @single ->
-          if: p optionals empty?
-            then: { "@" .. p name }
-            else: { "@(" .. p name .. optionals .. ")" }
+          condition: {
+            (p optionals empty? && p target == @none) ->
+              "@" .. p name
+
+            p target == @none ->
+              "@(" .. p name .. optionals .. ")"
+
+            otherwise ->
+              { @(ok: t) = p target
+                "@(" .. t show .. " " .. p name .. optionals .. ")"
+              } call
+          }
       }
     } call
 } call

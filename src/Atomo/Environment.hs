@@ -69,21 +69,23 @@ eval (ETuple { eContents = es }) = do
     return (tuple vs)
 eval (EMacro {}) = return (particle "ok")
 eval (EForMacro {}) = return (particle "ok")
-eval (EParticle { eParticle = Single i n _ os }) = do
+eval (EParticle { eParticle = Single i n mt os }) = do
     nos <- forM os $ \(Option oi on me) ->
         liftM (Option oi on)
             (maybe (return Nothing) (liftM Just . eval) me)
 
-    return (Particle $ Single i n Nothing nos)
-eval (EParticle { eParticle = Keyword i ns mes os }) = do
-    mvs <- forM mes $
+    nmt <- maybe (return Nothing) (liftM Just . eval) mt
+
+    return (Particle $ Single i n nmt nos)
+eval (EParticle { eParticle = Keyword i ns mts os }) = do
+    nmts <- forM mts $
         maybe (return Nothing) (liftM Just . eval)
 
     nos <- forM os $ \(Option oi on me) ->
         liftM (Option oi on)
             (maybe (return Nothing) (liftM Just . eval) me)
 
-    return (Particle $ Keyword i ns mvs nos)
+    return (Particle $ Keyword i ns nmts nos)
 eval (ETop {}) = gets top
 eval (EVM { eAction = x }) = x
 eval (EUnquote { eExpr = e }) = raise ["out-of-quote"] [Expression e]

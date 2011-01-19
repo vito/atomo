@@ -156,24 +156,31 @@ pOperator = tagged (do
 -- Examples: @\@foo@, @\@(bar: 2)@, @\@bar:@, @\@(foo: 2 bar: _)@
 pParticle :: Parser Expr
 pParticle = tagged (do
-    chained <- choice
+    msg <- choice
         [ do
             punctuation '@'
-            cSingle <|> cKeyword
-        , particle
+            liftM toMsg (cSingle <|> try cKeyword) <|> filledHead
+        , liftM toMsg particle
         ]
 
-    case chained of
-        CSingle n os ->
-            return (EParticle Nothing $ single' n Nothing (map toOpt os))
-        CKeyword ns es os ->
-            return (EParticle Nothing $
-                keyword' ns (map toRole (wildcard:es)) (map toOpt os)))
+    return (EParticle Nothing msg))
     <?> "particle"
   where
-    wildcard = EDispatch Nothing (single "_" (ETop Nothing))
+    filledHead = do
+        p <- parens pDispatch
+        case p of
+            EDispatch { eMessage = Single i n t os } ->
+                return (Single i n (toRole t) (map toOpt os))
+            EDispatch { eMessage = Keyword i ns ts os } ->
+                return (Keyword i ns (map toRole ts) (map toOpt os))
+            _ -> fail "non-message in particle"
 
     toOpt (Option i n e) = Option i n (toRole e)
+
+    toMsg (CSingle n os) =
+        single' n Nothing (map toOpt os)
+    toMsg (CKeyword ns es os) =
+        keyword' ns (Nothing:map toRole es) (map toOpt os)
 
     toRole (EDispatch { eMessage = Single { mName = "_", mTarget = ETop {} } }) =
         Nothing
