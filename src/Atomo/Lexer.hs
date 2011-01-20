@@ -100,7 +100,7 @@ lMagicQuote = do
             [ try $ do
                 char '\\'
                 oneOf [o, close o]
-            , satisfy (`notElem` [o, close o])
+            , noneOf [o, close o]
             ]
         char (close o)
         return cs
