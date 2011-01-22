@@ -81,7 +81,6 @@ library
     Atomo.Parser.Expand,
     Atomo.Pattern,
     Atomo.Pretty,
-    Atomo.PrettyVM,
     Atomo.QuasiQuotes,
     Atomo.Run,
     Atomo.Spawn,
@@ -110,6 +109,7 @@ library
     Atomo.Kernel.Continuation,
     Atomo.Kernel.Char,
     Atomo.Kernel.Regexp,
+    Atomo.Kernel.Pretty,
     Paths_atomo
 
 

@@ -8,7 +8,6 @@ import Atomo
 import Atomo.Core
 import Atomo.Load
 import Atomo.Parser
-import Atomo.PrettyVM
 import Atomo.Run
 import qualified Atomo.Kernel as Kernel
 
@@ -68,3 +67,6 @@ primRepl = do
     d <- prettyVM r
     liftIO (putStrLn d)
     primRepl
+
+prettyVM :: Value -> VM String
+prettyVM = liftM (fromText . fromString) . dispatch . single "show"
