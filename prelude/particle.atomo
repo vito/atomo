@@ -41,7 +41,7 @@
               char: $@ <> text: p name
 
             p target == @none ->
-              char: $@ <> parens: (p name <+> optionals)
+              char: $@ <> parens: (text: p name <+> optionals)
 
             otherwise ->
               { @(ok: t) = p target
