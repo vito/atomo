@@ -30,7 +30,7 @@ tested-with:         GHC >= 6 && < 7
 
 cabal-version:       >= 1.6
 
-extra-source-files: bin/eco
+extra-source-files: bin/eco lib/pcre/*
 
 data-files:         prelude/*.atomo
 
@@ -138,3 +138,27 @@ executable atomo
     text >= 0.11.0.0,
     time,
     vector
+
+  cc-options:        -DHAVE_CONFIG_H
+  include-dirs:      lib/pcre
+  includes:          pcre.h
+  c-sources:
+    lib/pcre/pcre_compile.c
+    lib/pcre/pcre_config.c
+    lib/pcre/pcre_dfa_exec.c
+    lib/pcre/pcre_exec.c
+    lib/pcre/pcre_fullinfo.c
+    lib/pcre/pcre_get.c
+    lib/pcre/pcre_globals.c
+    lib/pcre/pcre_info.c
+    lib/pcre/pcre_maketables.c
+    lib/pcre/pcre_newline.c
+    lib/pcre/pcre_ord2utf8.c
+    lib/pcre/pcre_refcount.c
+    lib/pcre/pcre_study.c
+    lib/pcre/pcre_tables.c
+    lib/pcre/pcre_try_flipped.c
+    lib/pcre/pcre_ucd.c
+    lib/pcre/pcre_valid_utf8.c
+    lib/pcre/pcre_version.c
+    lib/pcre/pcre_xclass.c
