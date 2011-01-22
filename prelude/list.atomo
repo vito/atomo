@@ -3,8 +3,9 @@
 macro (a << b) `(~a = ~a push: ~b)
 macro (a >> b) `(~b = ~b cons: ~a)
 
-(l: -> List) show :=
-  "[" .. l (map: @show) (join: ", ") .. "]"
+(l: -> List) pretty :=
+  { brackets: (sep: (comma punctuate: (l map: @pretty)))
+  } doc
 
 (l: List) each: (b: Block) :=
   { l map: b in-context

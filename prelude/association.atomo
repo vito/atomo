@@ -1,8 +1,9 @@
 Association = Object clone
 a -> b := Association clone do: { from = a; to = b }
 
-(a: Association) show :=
-  a from show .. " -> " .. a to show
+(a: Association) pretty :=
+  { a from pretty-parens <+> text: "->" <+> a to pretty-parens
+  } doc
 
 (a: Association) == (b: Association) :=
   a from == b from && a to == b to

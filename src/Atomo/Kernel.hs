@@ -21,6 +21,7 @@ import qualified Atomo.Kernel.Environment as Environment
 import qualified Atomo.Kernel.Continuation as Continuation
 import qualified Atomo.Kernel.Char as Char
 import qualified Atomo.Kernel.Regexp as Regexp
+import qualified Atomo.Kernel.Pretty as Pretty
 
 load :: VM ()
 load = do
@@ -42,3 +43,4 @@ load = do
     Continuation.load
     Char.load
     Regexp.load
+    Pretty.load

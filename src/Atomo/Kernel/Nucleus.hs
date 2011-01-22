@@ -9,7 +9,6 @@ import Atomo
 import Atomo.Load
 import Atomo.Method
 import Atomo.Pattern
-import Atomo.Pretty
 
 load :: VM ()
 load = do
@@ -92,8 +91,7 @@ load = do
 
     [$p|(x: Object) as: String|] =::: [$e|x show|]
 
-    [$p|(x: Object) show|] =:
-        liftM (string . show . pretty) (here "x")
+    [$p|(x: Object) show|] =::: [$e|x pretty render|]
 
     [$p|(t: Object) load: (fn: String)|] =: do
         t <- here "t"

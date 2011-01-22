@@ -2,54 +2,52 @@
 
   keywordfy: str :=
     if: (operator?: str)
-      then: { str }
-      else: { str .. ":" }
+      then: { Pretty text: str }
+      else: { Pretty text: (str .. ":") }
 
-  slot: @none := "_"
-  slot: @(ok: v) := v show
+  slot: @none := Pretty text: "_"
+  slot: @(ok: v) := v pretty
 
-  (p: -> Particle) show :=
-    { optionals :=
+  (p: -> Particle) pretty :=
+    { optionals := hsep:
         p optionals
-          (map: { o | " &" .. o from name .. ": " .. (slot: o to) })
-          join
+          (map: { o | char: $& <> text: o from name <> colon <+> slot: o to })
 
       p type match: {
         @keyword ->
           { vs := p targets map: { v | slot: v }
 
             initial :=
-              vs head match: {
-                "_" -> ""
-                v -> v .. " "
+              p targets head match: {
+                @none -> empty
+                @(ok: v) -> v pretty
               }
 
-            rest :=
+            rest := hsep:
               (p names zip: vs tail)
                 (map:
                   { pair |
-                    keywordfy: pair from .. " " .. pair to
+                    keywordfy: pair from <+> pair to
                   })
-                (join: " ")
 
             if: (p targets (all?: @(== @none)) && p optionals empty?)
-              then: { "@" .. p names (map: { n | keywordfy: n }) join }
-              else: { "@(" .. initial .. rest .. optionals .. ")" }
+              then: { char: $@ <> hcat: (p names map: { n | keywordfy: n }) }
+              else: { char: $@ <> parens: (initial <+> rest <+> optionals) }
           } call
 
         @single ->
           condition: {
             (p optionals empty? && p target == @none) ->
-              "@" .. p name
+              char: $@ <> text: p name
 
             p target == @none ->
-              "@(" .. p name .. optionals .. ")"
+              char: $@ <> parens: (p name <+> optionals)
 
             otherwise ->
               { @(ok: t) = p target
-                "@(" .. t show .. " " .. p name .. optionals .. ")"
+                char: $@ <> parens: (t pretty <+> text: p name <+> optionals)
               } call
           }
       }
-    } call
+    } doc
 } call
