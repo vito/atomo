@@ -6,7 +6,7 @@ start: token :=
     h = (503 .. 2) reduce:
       { pid id |
         { roundtrip: id next: pid } spawn
-      } with: self
+      } &initial: self
 
     h <- token
 

@@ -4,19 +4,21 @@
 (u: List) eval-A-times :=
   (0 ... u length) map:
     { i |
-      (0 ... u length) (map:
-        { j |
-          i eval-A: j * u at: j
-        }) sum
+      (0 ... u length)
+        (map:
+          { j |
+            i eval-A: j * u at: j
+          }) sum
     }
 
 (u: List) eval-At-times :=
   (0 ... u length) map:
     { i |
-      (0 ... u length) (map:
-        { j |
-          j eval-A: i * u at: j
-        }) sum
+      (0 ... u length)
+        (map:
+          { j |
+            j eval-A: i * u at: j
+          }) sum
     }
 
 (u: List) eval-AtA-times :=
