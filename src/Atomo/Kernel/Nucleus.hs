@@ -12,6 +12,8 @@ import Atomo.Pattern
 
 load :: VM ()
 load = do
+    [$p|x id|] =::: [$e|x|]
+
     [$p|(x: Object) clone|] =: do
         x <- here "x"
         newObject [x] noMethods
