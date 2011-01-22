@@ -107,10 +107,6 @@ load = do
         Expression e <- here "e" >>= findExpression
         liftM Expression $ macroExpand e
 
-    [$p|(e: Expression) pretty|] =: do
-        Expression e <- here "e" >>= findExpression
-        return (string (show (pretty e)))
-
     [$p|(e: Expression) location|] =: do
         Expression e <- here "e" >>= findExpression
 
