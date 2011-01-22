@@ -190,7 +190,7 @@ module: Enumerable: {
   sort-by: something &comparison: @<=> :=
     (as: List) sort-by: something &comparison: comparison
 
-  zip: b &zipper: @-> :=
+  zip: b &zipper: @id :=
     (as: List) zip: (b as: List) &zipper: zipper
 
   first :=

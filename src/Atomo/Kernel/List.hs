@@ -108,15 +108,17 @@ load = do
 
         return $ List nvs
 
-    [$p|(x: List) zip: (y: List) &zipper: @->|] =: do
+    [$p|(x: List) zip: (... ys) &zipper: @id|] =: do
         xs <- getVector [$e|x|]
-        ys <- getVector [$e|y|]
+        yss <- getList [$e|ys|] >>= mapM (liftM (\(List v) -> v) . findList)
         z <- here "zipper"
 
-        nvs <- V.zipWithM (\x y ->
-            dispatch (keyword ["call"] [z, tuple [x, y]])) xs ys
+        let zipped = zipN (xs:yss)
 
-        return $ List nvs
+        if z == particle "id"
+            then return (list (map list zipped))
+            else liftM list $ forM zipped $ \vs ->
+                dispatch (keyword ["call"] [z, tuple vs])
 
     [$p|(l: List) filter: b|] =: do
         vs <- getVector [$e|l|]
@@ -346,3 +348,7 @@ splitOn d vs' = splitOn' vs' []
         | d `isPrefixOf` a = acc : splitOn' (drop (length d) a) []
         | otherwise = splitOn' vs (acc ++ [v])
 
+zipN :: [VVector] -> [[Value]]
+zipN vs
+    | any V.null vs = []
+    | otherwise = (map V.head vs) : zipN (map V.tail vs)

@@ -26,8 +26,8 @@
             rest := hsep:
               (p names zip: vs tail)
                 (map:
-                  { pair |
-                    keywordfy: pair from <+> pair to
+                  { [name, value] |
+                    keywordfy: name <+> value
                   })
 
             if: (p targets (all?: @(== @none)) && p optionals empty?)
