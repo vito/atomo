@@ -7,6 +7,10 @@ macro (a >> b) `(~b = ~b cons: ~a)
   { brackets: (sep: (comma punctuate: (l map: @pretty)))
   } doc
 
+(t: -> Tuple) pretty :=
+  { parens: (sep: (comma punctuate: (List (new: t) (map: @pretty))))
+  } doc
+
 (l: List) each: (b: Block) :=
   { l map: b in-context
     l
