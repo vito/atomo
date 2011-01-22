@@ -62,8 +62,8 @@ instance Pretty Value where
     prettyFrom _ (Process _ tid) =
         internal "process" $ text (words (show tid) !! 1)
     prettyFrom CNone (Object { oDelegates = ds, oMethods = ms }) =
-        hang (internal "object" (parens (text "delegates to" <+> pretty ds))) 2
-            (pretty ms)
+        internal "object" (parens (text "delegates to" <+> pretty ds)) $$
+            nest 2 (pretty ms)
     prettyFrom _ (Rational r) =
         integer (numerator r) <> char '/' <> integer (denominator r)
     prettyFrom _ (Object {}) = internal "object" empty
@@ -281,7 +281,7 @@ instance Pretty Tokens where
 
 instance Pretty AtomoError where
     prettyFrom _ (Mismatch a b) =
-        hang (text "mismatch:") 2 (pretty a $$ pretty b)
+        text "mismatch:" $$ nest 2 (pretty a $$ pretty b)
     prettyFrom _ (DidNotUnderstand m) =
         text "message not understood:" <+> pretty m
     prettyFrom _ x = text (show x)
@@ -343,7 +343,7 @@ infixr 4 <++>, <+++>
 -- similar to <+>, but the second half will be nested to prevent long lines
 (<++>) :: Doc -> Doc -> Doc
 (<++>) a b
-    | length (show a ++ show b) > 80 = hang a 2 b
+    | length (show a ++ show b) > 80 = a $$ nest 2 b
     | otherwise = a <+> b
 
 -- similar to <++>, but without nesting
