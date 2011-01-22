@@ -4,7 +4,6 @@ module Atomo.Environment where
 import Control.Monad.Cont
 import Control.Monad.State
 import Data.IORef
-import Data.List (nub)
 
 import Atomo.Method
 import Atomo.Pattern
@@ -268,14 +267,7 @@ define !p !e = do
     is <- gets primitives
     newp <- matchable p
     m <- method newp e
-
-    os <-
-        case p of
-            Keyword { mTargets = (PObject (ETop {}):_) } ->
-                targets' is (head (mTargets newp))
-
-            _ -> targets is newp
-
+    os <- targets is newp
     forM_ os (flip defineOn m)
   where
     method p' (EPrimitive _ v) = return (Slot p' v)
@@ -333,9 +325,7 @@ matchable' p' = return p'
 -- | Find the target objects for a message pattern.
 targets :: IDs -> Message Pattern -> VM [Value]
 targets is (Single { mTarget = p }) = targets' is p
-targets is (Keyword { mTargets = ps }) = do
-    ts <- mapM (targets' is) ps
-    return (nub (concat ts))
+targets is (Keyword { mTargets = ps }) = targets' is (head ps)
 
 -- | Find the target objects for a pattern.
 targets' :: IDs -> Pattern -> VM [Value]
@@ -371,16 +361,16 @@ targets' _ p = error $ "no targets for " ++ show p
 -- @\@did-not-understand:@ error is raised.
 dispatch :: Message Value -> VM Value
 dispatch !m = do
-    find <- findFirstMethod m (vs m)
+    find <- findMethod (target m) m
     case find of
         Just method -> runMethod method m
         Nothing ->
-            case vs m of
-                [v] -> sendDNU v
-                _ -> sendDNUs (vs m) 0
+            case m of
+                Single { mTarget = t } -> sendDNU t
+                Keyword { mTargets = ts } -> sendDNUs ts 0
   where
-    vs (Single { mTarget = t }) = [t]
-    vs (Keyword { mTargets = ts }) = ts
+    target (Single { mTarget = t }) = t
+    target (Keyword { mTargets = ts }) = head ts
 
     sendDNU v = do
         find <- findMethod v (dnuSingle v)

@@ -92,4 +92,17 @@ describe: "dispatch" as: {
       } call
     }
   }
+
+  it: "should find the most precise definition if starting on less-precise target" so: {
+    A = Object clone
+    B = Object clone
+
+    A foo: B := @ok
+    A foo: _ := @not-ok
+
+    (A foo: B) should-be: @ok
+    (A clone foo: B) should-be: @ok
+    A clone (with-delegates: [A, this]) (foo: B) should-be: @ok
+    A clone (with-delegates: [this, A]) (foo: B) should-be: @ok
+  }
 }
