@@ -21,9 +21,6 @@ import Atomo.Types
 
 
 -- | Check if a value matches a given pattern.
---
--- Note that this is much faster when pure, so it uses unsafePerformIO
--- to check things like delegation matches.
 match :: IDs -> Maybe Value -> Pattern -> Value -> Bool
 {-# NOINLINE match #-}
 match ids (Just r) PThis y@(Object { oDelegates = ds }) =
