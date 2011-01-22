@@ -11,6 +11,8 @@ load :: VM ()
 load = do
     eval [$e|operator right .|]
 
+    [$p|List new: (... contents)|] =::: [$e|contents|]
+
     [$p|(l: List) length|] =:
         liftM (Integer . fromIntegral . V.length) (getVector [$e|l|])
 
