@@ -92,19 +92,6 @@
 }
 
 #define:{
-  o id
-  > o
-}body:{
-  Trivial method that returns its target.
-
-  #example:{
-    1 id
-    @id id
-    @id call: @ok
-  }
-}
-
-#define:{
     o new
     > is-a?: o
 }body:{
@@ -120,6 +107,19 @@
     Similar to #hl:{new}, but with an additional argument used for initialization.
 
     Note: this method, along with #hl:{new}, is just listed here so that links in the documentation will point to these more general descriptions rather than a more specific, but wrong, definition. It is not defined for #hl:{Object}.
+}
+
+#define:{
+  o id
+  > o
+}body:{
+  Trivial method that returns its target.
+
+  #example:{
+    1 id
+    @id id
+    @id call: @ok
+  }
 }
 
 #define:{
