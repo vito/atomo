@@ -8,6 +8,20 @@
 }
 
 #define:{
+  a == b
+  | a is-a?: Association
+  | b is-a?: Association
+  > Boolean
+}body:{
+  Perform a deep equality check.
+
+  #example:{
+    (1 -> 2) == (1 -> 2)
+    (1 -> $2) == ("one" -> 2)
+  }
+}
+
+#define:{
     a -> b
     > Association
 }body:{
