@@ -30,7 +30,34 @@ macro (with: (bs: List) do: action)
 macro (modify: param as: change do: action)
   `(with: ~param as: (~change call: ~param _?) do: ~action)
 
-macro (target slurp: filename)
+for-macro regexp?: e :=
+  e type match: {
+    @primitive ->
+      (evaluate: e) is-a?: Regexp
+
+    @magic-quote ->
+      e name == "r"
+  }
+
+macro (x case-of: (bs: Block))
+  { chain = bs contents reduce-right:
+      { `(~test -> ~branch) x |
+        if: (regexp?: test)
+          then: {
+            `((~test match: !v) match: {
+                @none -> ~x
+                @(ok: !b) -> !b bindings join: { ~branch }
+              })
+          }
+          else: {
+            `(if: (~test matches?: !v) then: { ~branch } else: { ~x })
+          }
+      } with: `(error: @no-matches)
+
+    `({ !v | ~chain } call: ~x)
+  } call
+
+macro (target slurp: (filename: Primitive))
   { src = File read: (super evaluate: filename)
     exprs = src parse-expressions
     blk = `Block new: exprs
