@@ -125,7 +125,7 @@ These methods are specific to errors, and provide a system similar to that of tr
 #define:{
   action catch: recover
   | action is-a?: Block
-  | recover is-a?: Block
+  | recover responds-to?: @call:
   > any
 }body:{
   Execute #hl:{action call}, catching any errors and passing them to #hl:{recover} for handling.
@@ -135,6 +135,7 @@ These methods are specific to errors, and provide a system similar to that of tr
   #example:{
     { error: @error } catch: { e | @(got: e) }
     { @ok } catch: { @caught }
+    { error: "hi" } catch: @print
   }
 }
 
