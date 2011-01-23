@@ -82,15 +82,6 @@ load = do
         Integer n <- here "n" >>= findInteger
         return . List $ V.replicate (fromIntegral n) v
 
-    [$p|(b: Block) repeat: (n: Integer)|] =: do
-        Block c as cs <- here "b" >>= findBlock
-
-        when (length as > 0) (throwError (BlockArity 0 (length as)))
-
-        Integer n <- here "n" >>= findInteger
-        vs <- V.replicateM (fromIntegral n) (withTop c (evalAll cs))
-        return $ List vs
-
     [$p|(a: List) .. (b: List)|] =: do
         as <- getVector [$e|a|]
         bs <- getVector [$e|b|]

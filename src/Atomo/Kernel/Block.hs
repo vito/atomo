@@ -2,6 +2,8 @@
 {-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.Kernel.Block (load) where
 
+import qualified Data.Vector as V
+
 import Atomo
 import Atomo.Method
 import Atomo.Pattern (bindings')
@@ -29,6 +31,15 @@ load = do
         when (length as > 0) (throwError (BlockArity 0 (length as)))
 
         withTop c (forever (evalAll es))
+
+    [$p|(b: Block) repeat: (n: Integer)|] =: do
+        Block c as cs <- here "b" >>= findBlock
+
+        when (length as > 0) (throwError (BlockArity 0 (length as)))
+
+        Integer n <- here "n" >>= findInteger
+        vs <- V.replicateM (fromIntegral n) (withTop c (evalAll cs))
+        return $ List vs
 
     [$p|(b: Block) call: (... args)|] =: do
         b <- here "b" >>= findBlock

@@ -259,3 +259,18 @@
 }body:{
     Repeatedly sends #hl:{call} to #hl:{b in-context}. Never returns.
 }
+
+#define:{
+    b repeat: n
+    | b is-a?: Block
+    | n is-a?: Integer
+    > List
+}body:{
+    Returns a list containing the results of #hl:{n} #hl:{call}s of #hl:{b in-context}.
+
+    #example:{
+        with-input-from: "doc/main/lists.atomo" do: { { read-line } repeat: 3 }
+    }
+
+    Here we're reading 3 lines of text from the file #hl:{"doc/main/lists.atomo"} (the source for the documentation you're reading).
+}
