@@ -222,28 +222,19 @@
 }
 
 #define:{
-    x zip: y
+    x zip: (... ys) &zipper: @id
     | x is-a?: List
-    | y is-a?: List
+    | zipper responds-to?: @call:
     > List
 }body:{
-    Yields #hl:{x zip: y with: @->}, i.e. an association list.
-}
+    "Zips" up the lists #hl:{x} and #hl:{ys}. If #hl:{zipper} is not #hl:{@id}, it is #hl:{call:}ed with each zipped value as an argument.
 
-#define:{
-    x zip: y with: a
-    | x is-a?: List
-    | y is-a?: List
-    | a responds-to?: @call:
-    > List
-}body:{
-    "Zips" up the two lists #hl:{x} and #hl:{y} but calling #hl:{a} with the respective values of each list.
-
-    The list it returns is as long as the shorter list.
+    The list it returns is as long as the shortest list.
 
     #example:{
-        [1, 2, 3] zip: [4, 5, 6] with: { a b | a * b }
-        [1, 7, 4] zip: [4, 5, 6, 0] with: @min:
+        [1, 2, 3] zip: [4, 5, 6] &zipper: @*
+        [1, 2, 3] zip: (["a", "b", "c"], [$a, $b, $c])
+        [1, 2, 3] zip: (["a", "b", "c"], [$a, $b, $c]) &zipper: { a b c | a -> b -> c }
     }
 }
 
