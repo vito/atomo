@@ -36,10 +36,9 @@ load = do
         fn <- getString [$e|fn|]
         Particle m <- here "mode" >>= findParticle
 
-        checkExists fn
-
         hdl <- case m of
-            Single { mName = "read" } ->
+            Single { mName = "read" } -> do
+                checkExists fn
                 liftIO (openFile fn ReadMode)
             Single { mName = "write" } ->
                 liftIO (openFile fn WriteMode)
