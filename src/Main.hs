@@ -67,6 +67,3 @@ primRepl = do
     d <- prettyVM r
     liftIO (putStrLn d)
     primRepl
-
-prettyVM :: Value -> VM String
-prettyVM = liftM (fromText . fromString) . dispatch . single "show"

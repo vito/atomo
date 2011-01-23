@@ -355,3 +355,6 @@ totalBlanks :: [Maybe Value] -> [Option (Maybe Value)] -> Int
 totalBlanks mvs mos
     = length (filter isNothing mvs)
     + length (filter (\(Option _ _ mv) -> isNothing mv) mos)
+
+prettyVM :: Value -> VM String
+prettyVM = liftM (fromText . fromString) . dispatch . single "show"
