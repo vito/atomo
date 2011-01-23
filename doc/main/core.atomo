@@ -92,6 +92,19 @@
 }
 
 #define:{
+  o id
+  > o
+}body:{
+  Trivial method that returns its target.
+
+  #example:{
+    1 id
+    @id id
+    @id call: @ok
+  }
+}
+
+#define:{
     o new
     > is-a?: o
 }body:{
@@ -225,6 +238,7 @@
 }body:{
     Like #hl:{load:}, but loaded files are remembered (by their canonicalized, absolute path), so subsequent attempts to require them will be a no-op, returning #hl:{@ok}.
 }
+
 #define:{
   v match: branches
   | branches is-a?: Block
