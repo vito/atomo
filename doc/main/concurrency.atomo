@@ -27,7 +27,7 @@ Atomo uses message-passing concurrency akin to Erlang. Processes are very cheap 
     Waits for a message, blocking until one is received.
 
     #example:{
-        { main | "hello!" print; main <- @done } spawn: [self]
+        { main | "hello!" print; main <- @done } spawn: self
         receive
     }
 }
@@ -45,15 +45,14 @@ Atomo uses message-passing concurrency akin to Erlang. Processes are very cheap 
 }
 
 #define:{
-    b spawn: l
+    b spawn: (... args)
     | b is-a?: Block
-    | l is-a?: List
     > Process
 }body:{
-    Like #hl:{spawn}, but executes #hl:{b call: l} instead.
+    Like #hl:{spawn}, but executes #hl:{b call: args} instead.
 
     #example:{
-        { a | (a + 1) print } spawn: [41]
+        { a | (a + 1) print } spawn: 41
     }
 }
 

@@ -30,6 +30,16 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
 }
 
 #define:{
+    o call/cc: (... args)
+    | o responds-to?: @call:
+    > any
+}body:{
+    Like #hl:{call/cc}, but sends some additional arguments along to the block.
+
+    The continuation is the first argument, followed by #hl:{args}.
+}
+
+#define:{
     c yield: v
     | c is-a?: Continuation
     > any
@@ -60,15 +70,8 @@ NOTE: #italic:{A few of these examples need to use blocks to get around limitati
 
     #example:{
         yield!: c := when: (c is-a?: Continuation) do: { c yield }
-
         x := { "in" print; current-continuation } before: { "pre" print } after: { "post" print }
-
-
-        {
-            cont = x
-            cont print
-            yield!: cont
-        } call
+        { cont = x; cont print; yield!: cont } call
     }
 }
 

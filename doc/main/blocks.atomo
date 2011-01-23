@@ -61,9 +61,8 @@
 }
 
 #define:{
-    b call: l
+    b call: (... args)
     | b is-a?: Block
-    | l is-a?: List
     > any
 }body:{
     Like #hl:{call}, but passes some extra arguments along to #hl:{b}. Any number of arguments may be passed to the block; it can use however many it wants.
@@ -71,17 +70,17 @@
     Sending #hl:{call:} to an empty block raises a #hl:{@no-expressions} error.
 
     #example:{
-        { a b | a + b } call: [1, 4]
-        { a | a + 1 } call: [1]
-        { 1 + 1 } call: [42]
-        {} call: [42]
+        { a b | a + b } call: (1, 4)
+        { a | a + 1 } call: 1
+        { 1 + 1 } call: 42
+        {} call: 42
     }
 
     Note that the arguments also do not affect the outer scope:
 
     #example:{
         a = 42
-        { a | a + 1 } call: [10]
+        { a | a + 1 } call: 10
         a
     }
 }
@@ -111,9 +110,8 @@
 }
 
 #define:{
-    v join: b with: l
+    v join: b with: (... args)
     | b is-a?: Block
-    | l is-a?: List
     > any
 }body:{
     Like #hl:{join:}, but with arguments passed to the block.
@@ -121,7 +119,8 @@
     Note that #hl:{v}'s methods take priority over both the arguments and the block's context.
 
     #example:{
-        1 join: { a | + a } with: [2]
+        1 join: { a | + a } with: 2
+        1 join: { a b | + a * b } with: (2, 3)
     }
 }
 
@@ -138,15 +137,14 @@
 }
 
 #define:{
-    v do: b with: l
+    v do: b with: (... args)
     | b is-a?: Block
-    | l is-a?: List
     > v
 }body:{
     Like #hl:{do:}, but with arguments passed to the block.
 
     #example:{
-        X = Object clone do: { a | x = a; y := a + 1 } with: [1]
+        X = Object clone do: { a | x = a; y := a + 1 } with: 1
         X y
     }
 }

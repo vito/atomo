@@ -37,19 +37,6 @@ Atomo uses a condition system very similar to Common Lisp's.
   }
 }
 
-#define:{
-  restart: name
-  | name is-a?: Expression
-  > any
-}body:{
-  Finds restart #hl:{name} and jumps to it.
-
-  #example:{
-    action := { signal: @foo; "hi" print } with-restarts: { skip -> @skipped }
-    { action } bind: { @foo -> restart: 'skip }
-  }
-}
-
 #section:{Handlers}
 
 #define:{
@@ -93,16 +80,28 @@ Atomo uses a condition system very similar to Common Lisp's.
 }
 
 #define:{
-  restart: name with: arguments
+  restart: name
   | name is-a?: Expression
-  | arguments is-a?: List
   > any
 }body:{
-  Invokes restart #hl:{name} with #hl:{arguments} passed to the block.
+  Finds restart #hl:{name} and jumps to it.
+
+  #example:{
+    action := { signal: @foo; "hi" print } with-restarts: { skip -> @skipped }
+    { action } bind: { @foo -> restart: 'skip }
+  }
+}
+
+#define:{
+  restart: name with: (... args)
+  | name is-a?: Expression
+  > any
+}body:{
+  Invokes restart #hl:{name} with #hl:{args} passed to the block.
 
   #example:{
     action := { signal: @foo; "hi" print } with-restarts: { use-value -> { v | v } }
-    { action } bind: { @foo -> restart: 'use-value with: [42] }
+    { action } bind: { @foo -> restart: 'use-value with: 42 }
   }
 }
 

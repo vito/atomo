@@ -45,32 +45,30 @@
 }
 
 #define:{
-    p complete: l
+    p complete: (... targets)
     | p is-a?: Particle
-    | l is-a?: List
     > Message
 }body:{
-    Complete the particle #hl:{p} by taking values from #hl:{l}, in order. If there are not enough values in the list to complete the particle, #hl:{@particle-needed:given:} is thrown.
+    Complete the particle #hl:{p} by filling it in with values from #hl:{values}, in order. If there are not enough values in the list to complete the particle, #hl:{@particle-needed:given:} is thrown.
 
     #example:{
-        @sqrt complete: [10]
-        @+ complete: [1, 2]
-        @+ complete: [1]
+        @sqrt complete: 10
+        @+ complete: (1, 2)
+        @+ complete: 1
     }
 }
 
 #define:{
-    p call: l
+    p call: (... values)
     | p is-a?: Particle
-    | l is-a?: List
     > any
 }body:{
-    Complete the particle #hl:{p} by taking values from #hl:{l}, in order, and #hl:{send}s the completed message.
+    Complete the particle #hl:{p} by filling it in with values from #hl:{values}, in order, and #hl:{dispatch} the completed message.
 
     #example:{
-        @sqrt call: [10]
-        @+ call: [1, 2]
-        @+ call: [1]
+        @sqrt call: 10
+        @+ call: (1, 2)
+        @+ call: 2
     }
 }
 
