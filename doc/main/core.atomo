@@ -197,14 +197,16 @@
     | p is-a?: Particle
     > Boolean
 }body:{
-    Check if object #hl:{x} would respond to the partial message #hl:{p} (completed with #hl:{x} to form a #hl:{Message}).
+    Check if object #hl:{x} would respond to the partial message #hl:{p}.
+
+    The particle can have any number of roles missing; the first slot is filled and a "partial match" is done. That is, when searching for a method, only the filled-in roles are matched with; empty slots are a match for any role in a method's message pattern.
 
     #example:{
         X = Object clone
         X responds-to?: @foo
         X foo = 42
         X responds-to?: @foo
-
+        1 responds-to?: @+
         1 responds-to?: @(+ 2)
         1 responds-to?: @(+ "foo")
     }
