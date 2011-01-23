@@ -22,8 +22,6 @@
 
 #define:{
     p := e
-    | p is-a?: Expression
-    | e is-a?: Expression
     > @ok
 }body:{
     Defines #hl:{e} to be evaluated when the message described by #hl:{p} is dispatched to any of its targets. Returns #hl:{@ok}. See #reference:{definition-syntax}.
@@ -55,7 +53,6 @@
 
 #define:{
     p = v
-    | p is-a?: Expression
     > v
 }body:{
     Pattern-match #hl:{p} on #hl:{v}, inserting the bindings from the match into the current scope. Returns the value it's matching on (#hl:{v}). See #reference:{pattern-syntax}.
@@ -75,6 +72,35 @@
         X b = a + 2
         X b
     }
+}
+
+#define:{
+  x set!: y
+  > y
+}body:{
+  A macro for #hl:{set!:to:}; updates a slot to a given value. Will not add a new slot, as #hl:{=} would in nested scopes, and panics if the slot isn't found.
+
+  #example:{
+    a = 1
+    { a set!: 2 } call
+    a
+    b set!: @uh-oh
+  }
+}
+
+#define:{
+  x set!: name to: value
+  | name is-a?: String
+  > value
+}body:{
+  Update slot #hl:{name} on #hl:{x} to #hl:{value}, searching for where the slot is defined (following delegates) to ensure it is updated rather than overridden. If the slot is not found, it panics.
+
+  #example:{
+    a = 1
+    { set!: "a" to: 2 } call
+    a
+    set!: "b" to: 2
+  }
 }
 
 #define:{
