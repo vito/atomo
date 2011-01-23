@@ -37,6 +37,8 @@ for-macro regexp?: e :=
 
     @magic-quote ->
       e name == "r"
+
+    _ -> False
   }
 
 macro (x case-of: (bs: Block))
