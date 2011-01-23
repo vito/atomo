@@ -111,6 +111,9 @@ lMagicQuote = do
     close '<' = '>'
     close x = x
 
+lIdentifier :: Lexer Token
+lIdentifier = liftM TokIdentifier ident
+
 lexer :: Lexer [TaggedToken]
 lexer = whiteSpace >> getPosition >>= subLexer
 

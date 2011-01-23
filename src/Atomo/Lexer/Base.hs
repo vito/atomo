@@ -81,6 +81,18 @@ ident = do
         then unexpected ("reserved word " ++ show name)
         else return name
 
+lexeme :: Lexer a -> Lexer a
+lexeme l = do
+    r <- l
+    whiteSpace
+    return r
+
+symbol :: String -> Lexer String
+symbol = lexeme . string
+
+identifier :: Lexer String
+identifier = lexeme ident
+
 operator :: Lexer String
 operator = try $ do
     c <- P.opStart def
