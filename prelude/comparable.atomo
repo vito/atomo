@@ -12,3 +12,34 @@ x max: y :=
 
 x min: y :=
   if: (x < y) then: { x } else: { y }
+
+for-macro regexp?: e :=
+  e type match: {
+    @primitive ->
+      (evaluate: e) is-a?: Regexp
+
+    @magic-quote ->
+      e name == "r"
+
+    _ -> False
+  }
+
+macro (x case-of: (bs: Block))
+  { chain = bs contents reduce-right:
+      { `(~test -> ~branch) x |
+        condition: {
+          regexp?: test ->
+            `((~test match: !v) match: {
+                @none -> ~x
+                @(ok: !b) -> !b bindings join: { ~branch }
+              })
+
+          test == '_ -> branch
+
+          otherwise ->
+            `(if: (~test matches?: !v) then: { ~branch } else: { ~x })
+        }
+      } with: '@ok
+
+    `({ !v | ~chain } call: ~x)
+  } call
