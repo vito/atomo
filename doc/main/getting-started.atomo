@@ -13,10 +13,10 @@ Atomo may be installed through the #link:{Cabal}to:{http://www.haskell.org/cabal
 
 #verbatim:{cabal install atomo}
 
-Alternatively, you can install it from the repository at #link:{github}to:{http://github.com/vito/atomo}:
+Alternatively, you can install it from the repository at #link:{darcsden}to:{http://darcsden.com/alex/atomo}:
 
 #verbatim:{
-    git clone git://github.com/vito/atomo.git
+    darcs get http://darcsden.com/alex/atomo
     cd atomo
     cabal install
 }
