@@ -73,6 +73,13 @@ load = do
         (ss, _) <- liftIO (readIORef (oMethods x))
         return (Boolean (memberMap (hash n) ss))
 
+    [$p|x set-slot: (name: String) to: v|] =: do
+        x <- here "x"
+        n <- getString [$e|name|]
+        v <- here "v"
+        define (single n (PMatch x)) (EPrimitive Nothing v)
+        return v
+
     [$p|(o: Object) methods|] =: do
         o <- here "o" >>= objectFor
         (ss, ks) <- liftIO (readIORef (oMethods o))

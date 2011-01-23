@@ -1,7 +1,7 @@
-target set!: (name: Pattern) to: v :=
-  if: (target has-slot?: name name)
+target set!: (name: String) to: v :=
+  if: (target has-slot?: name)
     then: {
-      target match: name on: v
+      target set-slot: name to: v
       v
     }
     else: {
@@ -20,5 +20,5 @@ target set!: (name: Pattern) to: v :=
 
 macro ((name: Dispatch) set!: v)
   { msg = `Dispatch new: name particle to: ['this]
-    `(~(name target) set!: ~(msg as: Pattern) to: ~v)
+    `(~(name target) set!: ~(msg name) to: ~v)
   } call
