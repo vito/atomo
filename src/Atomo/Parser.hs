@@ -1,5 +1,7 @@
+{-# LANGUAGE FlexibleContexts #-}
 module Atomo.Parser where
 
+import Control.Monad.Identity
 import Control.Monad.State
 import Text.Parsec
 
@@ -25,7 +27,7 @@ parseInput s = continue lexer parser "<input>" s >>= nextPhase
 
 -- | Given a Parser action, a source, and the input, perform that action
 -- passing the parser state between VM and Parser.
-continue :: Lexer [TaggedToken] -> Parser a -> String -> String -> VM a
+continue :: Stream x Identity t => Lexer x -> ParserOf x a -> String -> String -> VM a
 continue l p s i = do
     ps <- gets parserState
     case runParser l (LexerState []) s i of

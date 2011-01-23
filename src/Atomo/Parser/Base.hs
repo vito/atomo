@@ -18,7 +18,8 @@ data Chained
     | CKeyword [String] [Expr] [Option Expr]
     deriving Show
 
-type Parser = ParsecT [TaggedToken] ParserState Identity
+type ParserOf a = ParsecT a ParserState Identity
+type Parser = ParserOf [TaggedToken]
 
 
 gensym :: Char
