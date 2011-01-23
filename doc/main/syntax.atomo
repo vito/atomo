@@ -173,6 +173,13 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
         #example:{
           `~~(2 + 2)
         }
+
+        Identifiers beginning with #code:{!} inside of a quasiquote are decorated with a clock value to ensure name collision does not occur in a macro's expansion. This is similar to Common Lisp's #hl:{gensym} mechanism, but it is automated and more implicit.
+
+        #example:{
+          a = '{ x + 2 }
+          `{ !x | ~a } expand
+        }
       }
     }
   }
