@@ -299,3 +299,23 @@
     [1, 2] match: { [1, b] -> @(got: b) }
   }
 }
+
+#define:{
+  v case-of: branches
+  | branches is-a?: Block
+  > any
+}body:{
+  Similar to #hl:{match:}, but performs some case-specific matching via #hl:{matches?:}. For example, a #hl:{Range} matches if a value is within the range, and a #hl:{Regexp} test will perform the match on the string.
+
+  Using #hl:{_} as the test acts as a catch-all.
+
+  Yields #hl:{@ok} if none of the branches match the value.
+
+  #example:{
+    1 case-of: { 1 -> $1; 2 -> $2 }
+    2 case-of: { 1 -> $1; 2 -> $2 }
+    1 case-of: { 2 -> $2 }
+    1 case-of: { 2 -> $2; _ -> @unknown }
+    5 case-of: { (0 .. 4) -> "0-4"; (0 .. 10) -> "0-10" }
+  }
+}
