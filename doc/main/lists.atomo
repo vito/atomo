@@ -527,7 +527,7 @@
 }
 
 #define:{
-    l << v
+    l push: v
     | l is-a?: List
     > List
 }body:{
@@ -535,12 +535,12 @@
 
     #example:{
         a = [1, 2, 3]
-        a << 4
+        a push: 4
     }
 }
 
 #define:{
-    v >> l
+    l cons: v
     | l is-a?: List
     > List
 }body:{
@@ -548,8 +548,36 @@
 
     #example:{
         a = [1, 2, 3]
-        4 >> a
+        a cons: 4
     }
+}
+
+#define:{
+  a << b
+  > is-a?: a
+}body:{
+  A macro for #hl:{push:} with destructive update.
+
+  #example:{
+    a = [1, 2, 3]
+    a << 4
+    a
+    '(a << 5) expand
+  }
+}
+
+#define:{
+  a >> b
+  > is-a?: b
+}body:{
+  A macro for #hl:{cons:} with destructive update.
+
+  #example:{
+    a = [1, 2, 3]
+    0 >> a
+    a
+    '(-1 >> a) expand
+  }
 }
 
 #define:{
