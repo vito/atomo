@@ -80,6 +80,16 @@ Atomo uses a condition system very similar to Common Lisp's.
 }
 
 #define:{
+  action with-restarts: restarts bind: handlers
+  | action is-a?: Block
+  | restarts is-a?: Block
+  | handlers is-a?: Block
+  > any
+}body:{
+  Trivial macro which just expands to #hl:{with-restarts:} and #hl:{bind:}.
+}
+
+#define:{
   restart: name
   | name is-a?: Expression
   > any
