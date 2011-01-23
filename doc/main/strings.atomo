@@ -27,6 +27,19 @@ Strings are immutable, efficient, Unicode sequences of characters.
 }
 
 #define:{
+  l to: String
+  | l is-a?: List
+  > String
+}body:{
+  Attempts to convert a list to a string. If the list does not contain only #hl:{Char}s, #hl:{@list-not-homogenous} is signaled.
+
+  #example:{
+    [$a, $b, $c] to: String
+    [$a, 1, $c] to: String
+  }
+}
+
+#define:{
     s length
     | s is-a?: String
     > Integer
