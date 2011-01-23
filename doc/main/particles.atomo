@@ -39,9 +39,13 @@
 
     In this case, the values fill up the empty slots in the particle (in order), and the "completed" message is dispatched, yielding its result.
 
-    There are two kinds of particles: single particles and keyword particles. Single particles are simple names, like #hl:{@sqrt}. Keyword particles may contain more "filled-in" values, such as #hl:{@(+ 2)} or #hl:{@foo:}. Single particles only have one unfilled value; keyword particles can have any number of them, but they are keyword-delimited.
+    There are two kinds of particles: single particles and keyword particles, which reflects the two types of messages.
 
-    Keyword particles have varying forms of syntax. #code:{@+} is equivalent to #code:{@(+ _)}. #code:{@foo:bar:} is equivalent to #code:{@(foo: _ bar: _)}.
+    Single particles are simple names, like #hl:{@sqrt}, or if the target is filled, #hl:{@(1 sqrt)}.
+
+    Keyword particles may contain more "filled-in" values, such as #hl:{@(+ 2)} or #hl:{@foo:} or even #hl:{@(1 + 1)}. Single particles only have one unfilled value; keyword particles can have any number of them, but they are keyword-delimited.
+
+    Keyword particles have varying forms of syntax. #hl:{@+} is equivalent to #hl:{@(_ + _)}. #hl:{@foo:bar:} is equivalent to #hl:{@(_ foo: _ bar: _)}. #hl:{@(foo: 2)} is equivalent to #hl:{@(_ foo: 2)}.
 }
 
 #define:{
@@ -98,16 +102,30 @@
 }
 
 #define:{
-    p values
+    p target
+    | p is-a?: Particle
+    > any
+}body:{
+    Returns the single particle #hl:{p}'s target wrapped in #hl:{@ok:}, or #hl:{none} if it does not exist.
+
+    #example:{
+        @foo target
+        @(1 sqrt) target
+    }
+}
+
+#define:{
+    p targets
     | p is-a?: Particle
     > List
 }body:{
-    Returns a list of the keyword particle #hl:{p}'s values, indicating the absense of a value with #hl:{@none} and wrapping existing values in #hl:{@ok:}.
+    Returns a list of the keyword particle #hl:{p}'s targets, indicating the absense of a value with #hl:{@none} and wrapping existing values in #hl:{@ok:}.
 
     #example:{
-        @+ values
-        @(+ 2) values
-        @(foo: _ bar: $a) values
+        @+ targets
+        @(+ 2) targets
+        @(foo: _ bar: $a) targets
+        @(1 + 2) targets
     }
 }
 
