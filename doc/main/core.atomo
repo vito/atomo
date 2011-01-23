@@ -211,6 +211,23 @@
 }
 
 #define:{
+  x has-slot?: name
+  | name is-a?: String
+  > Boolean
+}body:{
+  Check if object #hl:{x} directly (that is, not through delegates) contains a slot called #hl:{name}.
+
+  Implies #hl:{x replies-to?: (Particle new: name)}.
+
+  #example:{
+    x = Object clone
+    x a = 1
+    x has-slot?: "a"
+    x clone has-slot?: "a"
+  }
+}
+
+#define:{
     x show
     > String
 }body:{
