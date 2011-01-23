@@ -30,7 +30,11 @@ showToken TokEnd = "ending"
 showToken t = show (pretty t)
 
 withToken :: (Token -> Maybe a) -> Parser a
-withToken f = tokenPrim (showToken . tToken) (\_ t _ -> tLocation t) (f . tToken)
+withToken f =
+    tokenPrim
+        (showToken . tToken)
+        (\_ t _ -> tLocation t)
+        (f . tToken)
 
 keyword :: Parser String
 keyword = withToken $ \t ->
@@ -94,6 +98,12 @@ reserved :: String -> Parser ()
 reserved r = withToken $ \t ->
     case t of
         TokReserved n | n == r -> Just ()
+        _ -> Nothing
+
+anyReserved :: Parser String
+anyReserved = withToken $ \t ->
+    case t of
+        TokReserved n -> Just n
         _ -> Nothing
 
 end :: Parser ()

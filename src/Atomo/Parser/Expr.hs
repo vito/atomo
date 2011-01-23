@@ -358,9 +358,9 @@ operatorNext f = do
 -- | Chained single message
 cSingle :: Parser Chained
 cSingle = choice
-    [ liftM (flip CSingle []) identifier
+    [ liftM (flip CSingle []) (anyReserved <|> identifier)
     , try . parens $ do
-        n <- identifier
+        n <- anyReserved <|> identifier
         os <- pdOptionals
         return (CSingle n os)
     ]
