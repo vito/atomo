@@ -183,7 +183,7 @@ The #hl:{beats?:} method has two #italic:{roles} - the first one is being checke
 
 Hooray! It works! Above we defined the three winning cases, and left all the other cases to fall into the catch-all - the one defined with #hl:{_} in place of both roles. This method is the least precise out of all of them, so it only gets chosen if none of the other, more specific, definitions match the dispatch. Hence, all losing combinations yield #hl:{False}.
 
-Just for fun, let's take a peek at what the objects themselves look like now.
+You may be wondering where these methods actually end up when they involve multiple roles. Let's take a peek:
 
 #interaction:{
   Rock
@@ -191,7 +191,9 @@ Just for fun, let's take a peek at what the objects themselves look like now.
   Scissors
 }on:rps
 
-As you can see, the #hl:{beats?:} method is placed on all roles involved.
+As you can see, our definitions were only placed on the first role involved, rather than duplicated for each object. This is because searching for a method always begins with the first role, and from then on it's just pattern-matching for the rest of the roles. It's not very clear here, since it just says #code:{<object>} for the other roles, but the second roles are #hl:{Scissors}, #hl:{Rock}, and #hl:{Paper}, respectively. Our catch-all, #hl:{_ beats?: _} ended up being placed on #hl:{Object}, which is a bit too large to just "take a peek."
+
+In a cleaner system you would use something like #hl:{RPS} as the "catch-all", and define each object in the game as a clone of that, rather than #hl:{Object}.
 
 
 #section:{Wrapping Up}
