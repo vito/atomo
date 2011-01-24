@@ -25,4 +25,4 @@ But things can go very wrong when you try to use them as data:
 
 What happened here was that when we called #hl:{@pretty} on each value of the list, the tuple was used as a variadic role value, rather than some "tuple" value. So, do not confuse tuples with how they're used in Python or even Haskell - they are strictly for temporary groupings of data. When used persistently, it is often the case that you will end up with only some of the data contained in them.
 
-And that's really all there is to Atomo's tuples. There isn't a huge method list here because there isn't really anything you should be doing with them. In fact, the only method defined on Tuple is #hl{@pretty}, for pretty-printing.
+And that's really all there is to Atomo's tuples. There isn't a huge method list here because there isn't really anything you should be doing with them. In fact, the only method defined on Tuple is #hl:{@pretty}, for pretty-printing.
