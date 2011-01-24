@@ -486,16 +486,35 @@ instance Eq Pattern where
     (==) PAny PAny = True
     (==) (PHeadTail ah at) (PHeadTail bh bt) =
         ah == bh && at == bt
-    (==) (PMessage a) (PMessage b) = a == b
     (==) (PList aps) (PList bps) =
         length aps == length bps && and (zipWith (==) aps bps)
+    (==) (PTuple aps) (PTuple bps) =
+        length aps == length bps && and (zipWith (==) aps bps)
     (==) (PMatch a) (PMatch b) = a == b
+    (==) (PMessage a) (PMessage b) = a == b
+    (==) (PInstance a) (PInstance b) = a == b
+    (==) (PStrict a) (PStrict b) = a == b
+    (==) (PVariable a) (PVariable b) = a == b
     (==) (PNamed _ a) (PNamed _ b) = a == b
     (==) (PNamed _ a) b = a == b
     (==) a (PNamed _ b) = a == b
+    (==) (PObject a) (PObject b) = a == b
+    -- TODO: ignore names in unquotes
+    (==) (PExpr a) (PExpr b) = a == b
     (==) (PPMKeyword ans aps) (PPMKeyword bns bps) =
         ans == bns && and (zipWith (==) aps bps)
     (==) PThis PThis = True
+    (==) PEDispatch PEDispatch = True
+    (==) PEOperator PEOperator = True
+    (==) PEPrimitive PEPrimitive = True
+    (==) PEBlock PEBlock = True
+    (==) PEList PEList = True
+    (==) PETuple PETuple = True
+    (==) PEMacro PEMacro = True
+    (==) PEParticle PEParticle = True
+    (==) PETop PETop = True
+    (==) PEQuote PEQuote = True
+    (==) PEUnquote PEUnquote = True
     (==) _ _ = False
 
 instance Eq Expr where
@@ -508,9 +527,23 @@ instance Eq Expr where
     (==) (EBlock _ aas aes) (EBlock _ bas bes) =
         aas == bas && aes == bes
     (==) (EList _ aes) (EList _ bes) = aes == bes
+    (==) (ETuple _ aes) (ETuple _ bes) = aes == bes
+    (==) (EMacro _ am ae) (EMacro _ bm be) = am == bm && ae == be
+    (==) (EForMacro _ ae) (EForMacro _ be) = ae == be
     (==) (EParticle _ ap') (EParticle _ bp) = ap' == bp
     (==) (ETop _) (ETop _) = True
     (==) (EVM {}) (EVM {}) = False
+    (==) (EQuote _ ae) (EQuote _ be) = ae == be
+    (==) (EUnquote _ ae) (EUnquote _ be) = ae == be
+    (==) (ENewDynamic _ ab ae) (ENewDynamic _ bb be) =
+        ab == bb && ae == be
+    (==) (EDefineDynamic _ an ae) (EDefineDynamic _ bn be) =
+        an == bn && ae == be
+    (==) (ESetDynamic _ an ae) (ESetDynamic _ bn be) =
+        an == bn && ae == be
+    (==) (EGetDynamic _ an) (EGetDynamic _ bn) = an == bn
+    (==) (EMagicQuote _ an ac afs) (EMagicQuote _ bn bc bfs) =
+        an == bn && ac == bc && afs == bfs
     (==) _ _ = False
 
 instance Eq a => Eq (Message a) where
