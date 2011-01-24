@@ -561,3 +561,63 @@ An omitted associativity implies left, and an omitted precedence implies 5 (the 
 }
 
 Operator expressions, when evaluated, just return #hl:{@ok}.
+
+
+#section:{Macro Quotes}tag:{macro-quotes}
+
+Macro-quotes are a generalized string quotation mechanism similar to Haskell's #code:{QuasiQuotes} extension. They are used for creating arbitrary values from a given string at macroexpansion time, and are very cheap to use. They can make code very clear and concise, so their use is encouraged for creating simple literal values like URLs, paths, byte strings, regular expressions and much more.
+
+That being said, please do not write entire DSLs inside of a macro-quote; it's much better to just use the language itself.
+
+The syntax is as follows:
+
+#verbatim:{
+  name{content*}[flag*]
+    where
+      name = identifier
+      content = arbitrary, raw text
+      flag = case-sensitive alphabetic character
+}
+
+Here we're using #code:{{}} as our delimiters, but the following may also be used: #code:{()}, #code:{{}}, #code:{[]}, #code:{"}, #code:{$}, #code:{|}, #code:{`}, #code:{'}, #code:{~}, and #code:{@}. The content between the delimiters is parsed as a raw string, with only the delimiters as escapes.
+
+#example:{
+  w{foo bar baz}
+  r`"\d+"`m
+}
+
+During the macroexpansion phase, these two macro-quotes send the following messages, respectively:
+
+#atomo:{
+  quote: "foo bar baz" as: @w
+  quote: "\"\\d+\"" as: @r &flags: [$m]
+}
+
+To define a magic-quoter, simply define this method, matching on the #hl:{as:} part, with #hl:{for-macro}. The result can be any arbitrary value. For example, the #code:{w} macro-quoter expands into a list of the words in the string:
+
+#interaction:{
+  w{foo bar baz}
+}
+
+The #code:{r} macro-quoter expands into a #hl:{Regexp} value (which pretty-prints as a magic-quote):
+
+#interaction:{
+  r`"\d+"`m
+  r`"\d+"`m == r{"\d+"}m
+  r{"\d+"}m is-a?: Regexp
+}
+
+Both of these quoters are implemented trivially in #code:{prelude/core.atomo} like so:
+
+#atomo:{
+  for-macro quote: s as: @w := s words
+
+  for-macro quote: s as: @r &flags: [] :=
+    Regexp new: s &flags: (flags to: String)
+}
+
+If a macro-quoter is not found, #hl:{@unknown-quoter:for:&flags:} is yielded:
+
+#interaction:{
+  foo{bar}baz
+}
