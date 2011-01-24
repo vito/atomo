@@ -770,6 +770,8 @@ namedCaptures = cap 0
     cap _ "" = []
     cap n ('\\':_:cs) = cap n cs
     cap n ('[':cs) = cap n (dropWhile (/= ']') cs)
+    cap n ('(':'?':'<':'=':cs) = cap n cs
+    cap n ('(':'?':'<':'!':cs) = cap n cs
     cap n ('(':'?':'<':cs) = (name, n) : cap (n + 1) rest
       where
         (name, _:rest) = span (/= '>') cs
