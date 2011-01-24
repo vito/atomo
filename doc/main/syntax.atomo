@@ -541,14 +541,14 @@ A macro's role patterns are as follows:
 
 #section:{Operator Precedence & Associativity}tag:"operator-syntax"
 
-You can control how Atomo parses binary operators like #hl:{+} and #hl:{->} via the #code:{operator} keyword. The basic syntax is as follows (square brackets indicating an optional segment, ellipses indicating 1 or more):
+You can control how Atomo parses binary operators like #hl:{+} and #hl:{->} via the #code:{operator} keyword. The syntax is as follows:
 
 #verbatim:{
   operator [associativity] [precedence] operators
     where
-      associativity = right | left
+      associativity = "right" | "left"
       precedence = integer
-      operators = operator ...
+      operators = operator +
 }
 
 An omitted associativity implies left, and an omitted precedence implies 5 (the default). One of the two must be provided.
