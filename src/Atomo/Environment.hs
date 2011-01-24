@@ -160,7 +160,7 @@ eval (EQuote { eExpr = qe }) = do
     unquote _ o@(EOperator {}) = return o
     unquote _ f@(EForMacro {}) = return f
     unquote _ g@(EGetDynamic {}) = return g
-    unquote _ q@(EMagicQuote {}) = return q
+    unquote _ q@(EMacroQuote {}) = return q
 eval (ENewDynamic { eBindings = bes, eExpr = e }) = do
     bvs <- forM bes $ \(n, b) -> do
         v <- eval b
@@ -187,7 +187,7 @@ eval (ESetDynamic { eName = n, eExpr = e }) = do
 eval (EGetDynamic { eName = n }) = do
     mv <- gets (getDynamic n . dynamic)
     maybe (raise ["unknown-dynamic"] [string n]) return mv
-eval (EMagicQuote { eName = n, eRaw = r, eFlags = fs }) = do
+eval (EMacroQuote { eName = n, eRaw = r, eFlags = fs }) = do
     t <- gets (psEnvironment . parserState)
     dispatch $
         keyword'

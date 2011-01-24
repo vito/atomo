@@ -68,7 +68,7 @@ instance Pretty Value where
         integer (numerator r) <> char '/' <> integer (denominator r)
     prettyFrom _ (Object {}) = internal "object" empty
     prettyFrom _ (String s) = text (show s)
-    prettyFrom _ (Regexp _ s o _) = text "r{" <> text (magicEscape s) <> char '}' <> text o
+    prettyFrom _ (Regexp _ s o _) = text "r{" <> text (macroEscape s) <> char '}' <> text o
 
 instance Pretty Methods where
     prettyFrom _ ms = vcat
@@ -190,8 +190,8 @@ instance Pretty Expr where
         internal "set-dynamic" $ text n <+> pretty e
     prettyFrom _ (EGetDynamic { eName = n }) =
         internal "get-dynamic" $ text n
-    prettyFrom _ (EMagicQuote _ n r f) =
-        text n <> char '{' <> text (magicEscape r) <> char '}' <> text f
+    prettyFrom _ (EMacroQuote _ n r f) =
+        text n <> char '{' <> text (macroEscape r) <> char '}' <> text f
 
 instance Pretty [Expr] where
     prettyFrom _ es = sep . punctuate (text ";") $ map pretty es
@@ -255,8 +255,8 @@ instance Pretty Token where
     prettyFrom _ (TokKeyword k) = text k <> char ':'
     prettyFrom _ (TokOptional o) = char '&' <> text o <> char ':'
     prettyFrom _ (TokOperator o) = text o
-    prettyFrom _ (TokMagicQuote n r f) =
-        text n <> char '{' <> text (magicEscape r) <> char '}' <> text f
+    prettyFrom _ (TokMacroQuote n r f) =
+        text n <> char '{' <> text (macroEscape r) <> char '}' <> text f
     prettyFrom _ (TokIdentifier i) = text i
     prettyFrom _ (TokParticle ks) = char '@' <> hcat (map (text . keyword) ks)
     prettyFrom _ (TokPrimitive p) = pretty p
@@ -289,11 +289,11 @@ internal n d = char '<' <> text n <+> d <> char '>'
 braces :: Doc -> Doc
 braces d = char '{' <+> d <+> char '}'
 
-magicEscape :: String -> String
-magicEscape "" = ""
-magicEscape ('{':cs) = "\\{" ++ magicEscape cs
-magicEscape ('}':cs) = "\\}" ++ magicEscape cs
-magicEscape (c:cs) = c : magicEscape cs
+macroEscape :: String -> String
+macroEscape "" = ""
+macroEscape ('{':cs) = "\\{" ++ macroEscape cs
+macroEscape ('}':cs) = "\\}" ++ macroEscape cs
+macroEscape (c:cs) = c : macroEscape cs
 
 headlessKeywords' :: (a -> Doc) -> [String] -> [a] -> Doc
 headlessKeywords' p (k:ks) (v:vs) =

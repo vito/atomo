@@ -149,7 +149,7 @@ load = do
             ESetDynamic {} -> return (particle "set-dynamic")
             EDefineDynamic {} -> return (particle "define-dynamic")
             EGetDynamic {} -> return (particle "get-dynamic")
-            EMagicQuote {} -> return (particle "magic-quote")
+            EMacroQuote {} -> return (particle "macro-quote")
 
     [$p|(e: Expression) target|] =: do
         Expression e <- here "e" >>= findExpression
@@ -187,7 +187,7 @@ load = do
                 return (string n)
             EDispatch { eMessage = Single { mName = n } } ->
                 return (string n)
-            EMagicQuote { eName = n } ->
+            EMacroQuote { eName = n } ->
                 return (string n)
             _ -> raise ["no-name-for"] [Expression e]
 
@@ -234,7 +234,7 @@ load = do
                 return (list (map Expression es))
             ETuple { eContents = es } ->
                 return (list (map Expression es))
-            EMagicQuote { eRaw = r } ->
+            EMacroQuote { eRaw = r } ->
                 return (string r)
             _ -> raise ["no-contents-for"] [Expression e]
 
@@ -242,7 +242,7 @@ load = do
         Expression e <- here "e" >>= findExpression
 
         case e of
-            EMagicQuote { eFlags = fs } ->
+            EMacroQuote { eFlags = fs } ->
                 return (list (map Char fs))
             _ -> raise ["no-flags-for"] [Expression e]
 

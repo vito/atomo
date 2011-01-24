@@ -67,7 +67,7 @@ doPragmas (ENewDynamic { eBindings = bs, eExpr = e }) = do
     mapM_ (\(_, b) -> doPragmas b) bs
     doPragmas e
 doPragmas (EGetDynamic {}) = return ()
-doPragmas (EMagicQuote {}) = return ()
+doPragmas (EMacroQuote {}) = return ()
 
 
 -- | Defines a macro, given its pattern and expression.
@@ -132,7 +132,7 @@ macroExpand d@(EDispatch { eMessage = em }) = do
             Keyword i ns ts os -> Keyword i ns (map Expression ts) (map exprOpt os)
 
     exprOpt (Option i n e) = Option i n (Expression e)
-macroExpand e@(EMagicQuote { eName = n, eRaw = r, eFlags = fs }) = do
+macroExpand e@(EMacroQuote { eName = n, eRaw = r, eFlags = fs }) = do
     t <- gets (psEnvironment . parserState)
     liftM (EPrimitive (eLocation e)) . dispatch $
         keyword'

@@ -247,8 +247,8 @@ data Pattern
     -- | Matches any @EUnquote@ expression.
     | PEUnquote
 
-    -- | Matches any @EMagicQuote@ expression.
-    | PEMagicQuote
+    -- | Matches any @EMacroQuote@ expression.
+    | PEMacroQuote
     deriving (Show, Typeable)
 
 -- | Expressions; the nodes in a syntax tree.
@@ -338,7 +338,7 @@ data Expr
         { eLocation :: Maybe SourcePos
         , eName :: String
         }
-    | EMagicQuote
+    | EMacroQuote
         { eLocation :: Maybe SourcePos
         , eName :: String
         , eRaw :: String
@@ -520,7 +520,7 @@ instance Eq Pattern where
     (==) PETop PETop = True
     (==) PEQuote PEQuote = True
     (==) PEUnquote PEUnquote = True
-    (==) PEMagicQuote PEMagicQuote = True --
+    (==) PEMacroQuote PEMacroQuote = True --
     (==) _ _ = False
 
 instance Eq Expr where
@@ -548,7 +548,7 @@ instance Eq Expr where
     (==) (ESetDynamic _ an ae) (ESetDynamic _ bn be) =
         an == bn && ae == be
     (==) (EGetDynamic _ an) (EGetDynamic _ bn) = an == bn
-    (==) (EMagicQuote _ an ac afs) (EMagicQuote _ bn bc bfs) =
+    (==) (EMacroQuote _ an ac afs) (EMacroQuote _ bn bc bfs) =
         an == bn && ac == bc && afs == bfs
     (==) _ _ = False
 
@@ -631,7 +631,7 @@ instance S.Lift Expr where
     lift (ESetDynamic _ n e) = [| ESetDynamic Nothing n e |]
     lift (EDefineDynamic _ n e) = [| EDefineDynamic Nothing n e |]
     lift (EGetDynamic _ n) = [| EGetDynamic Nothing n |]
-    lift (EMagicQuote _ n r fs) = [| EMagicQuote Nothing n r fs |]
+    lift (EMacroQuote _ n r fs) = [| EMacroQuote Nothing n r fs |]
 
 instance S.Lift Assoc where
     lift ALeft = [| ALeft |]
@@ -680,7 +680,7 @@ instance S.Lift Pattern where
     lift PETop = [| PETop |]
     lift PEQuote = [| PEQuote |]
     lift PEUnquote = [| PEUnquote |]
-    lift PEMagicQuote = [| PEMagicQuote |]
+    lift PEMacroQuote = [| PEMacroQuote |]
     lift (PExpr e) = [| PExpr e |]
     lift (PInstance p) = [| PInstance p |]
     lift (PStrict p) = [| PStrict p |]

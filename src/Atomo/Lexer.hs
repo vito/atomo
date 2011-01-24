@@ -17,7 +17,7 @@ lToken = choice
     , lOperator
     , lParticle
     , lPrimitive
-    , lMagicQuote
+    , lMacroQuote
     , lPunctuation
     , lEnd
     ]
@@ -82,15 +82,15 @@ lEnd = do
     oneOf ",;"
     return TokEnd
 
--- | Parse an identifier, possibly followed by a magic quote segment.
-lMagicQuote :: Lexer Token
-lMagicQuote = do
+-- | Parse an identifier, possibly followed by a macro-quote segment.
+lMacroQuote :: Lexer Token
+lMacroQuote = do
     name <- ident
     choice
         [ do
             str <- delimited "({[\"$|`'~@"
             flags <- many (satisfy isAlpha)
-            return (TokMagicQuote name str flags)
+            return (TokMacroQuote name str flags)
         , return (TokIdentifier name)
         ]
   where

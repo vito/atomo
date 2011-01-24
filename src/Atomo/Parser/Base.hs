@@ -80,10 +80,10 @@ primitive = withToken $ \t ->
         TokPrimitive v -> Just v
         _ -> Nothing
 
-magicQuote :: Parser (String, String, [Char])
-magicQuote = withToken $ \t ->
+macroQuote :: Parser (String, String, [Char])
+macroQuote = withToken $ \t ->
     case t of
-        TokMagicQuote n r fs -> Just (n, r, fs)
+        TokMacroQuote n r fs -> Just (n, r, fs)
         _ -> Nothing
 
 punctuation :: Char -> Parser ()

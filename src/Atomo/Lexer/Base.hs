@@ -18,7 +18,7 @@ data Token
     = TokKeyword String
     | TokOptional String
     | TokOperator String
-    | TokMagicQuote String String [Char]
+    | TokMacroQuote String String [Char]
     | TokIdentifier String
     | TokParticle [String]
     | TokPrimitive Value
