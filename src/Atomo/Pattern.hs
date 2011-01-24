@@ -299,10 +299,12 @@ toMacroRole (EDispatch _ (Single { mName = "Block" })) = Just PEBlock
 toMacroRole (EDispatch _ (Single { mName = "List" })) = Just PEList
 toMacroRole (EDispatch _ (Single { mName = "Tuple" })) = Just PETuple
 toMacroRole (EDispatch _ (Single { mName = "Macro" })) = Just PEMacro
+toMacroRole (EDispatch _ (Single { mName = "ForMacro" })) = Just PEForMacro
 toMacroRole (EDispatch _ (Single { mName = "Particle" })) = Just PEParticle
 toMacroRole (EDispatch _ (Single { mName = "Top" })) = Just PETop
 toMacroRole (EDispatch _ (Single { mName = "Quote" })) = Just PEQuote
 toMacroRole (EDispatch _ (Single { mName = "Unquote" })) = Just PEUnquote
+toMacroRole (EDispatch _ (Single { mName = "MagicQuote" })) = Just PEMagicQuote
 toMacroRole (EDispatch { eMessage = Keyword { mNames = [n], mTargets = [ETop {}, x] } }) = do
     p <- toMacroRole x
     return (PNamed n p)

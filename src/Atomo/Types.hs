@@ -232,6 +232,9 @@ data Pattern
     -- | Matches any @EMacro@ expression.
     | PEMacro
 
+    -- | Matches any @EForMacro@ expression.
+    | PEForMacro
+
     -- | Matches any @EParticle@ expression.
     | PEParticle
 
@@ -244,7 +247,8 @@ data Pattern
     -- | Matches any @EUnquote@ expression.
     | PEUnquote
 
-    -- TODO: others
+    -- | Matches any @EMagicQuote@ expression.
+    | PEMagicQuote
     deriving (Show, Typeable)
 
 -- | Expressions; the nodes in a syntax tree.
@@ -511,15 +515,17 @@ instance Eq Pattern where
     (==) PEList PEList = True
     (==) PETuple PETuple = True
     (==) PEMacro PEMacro = True
+    (==) PEForMacro PEForMacro = True --
     (==) PEParticle PEParticle = True
     (==) PETop PETop = True
     (==) PEQuote PEQuote = True
     (==) PEUnquote PEUnquote = True
+    (==) PEMagicQuote PEMagicQuote = True --
     (==) _ _ = False
 
 instance Eq Expr where
-    (==) (EDefine _ ap' ae) (EDefine _ bp be) = ap' == bp && ae == be
-    (==) (ESet _ ap' ae) (ESet _ bp be) = ap' == bp && ae == be
+    (==) (EDefine _ am ae) (EDefine _ bm be) = am == bm && ae == be
+    (==) (ESet _ am ae) (ESet _ bm be) = am == bm && ae == be
     (==) (EDispatch _ am) (EDispatch _ bm) = am == bm
     (==) (EOperator _ ans aa ap') (EOperator _ bns ba bp) =
         ans == bns && aa == ba && ap' == bp
@@ -669,10 +675,12 @@ instance S.Lift Pattern where
     lift PEList = [| PEList |]
     lift PETuple = [| PETuple |]
     lift PEMacro = [| PEMacro |]
+    lift PEForMacro = [| PEForMacro |]
     lift PEParticle = [| PEParticle |]
     lift PETop = [| PETop |]
     lift PEQuote = [| PEQuote |]
     lift PEUnquote = [| PEUnquote |]
+    lift PEMagicQuote = [| PEMagicQuote |]
     lift (PExpr e) = [| PExpr e |]
     lift (PInstance p) = [| PInstance p |]
     lift (PStrict p) = [| PStrict p |]
