@@ -134,7 +134,7 @@ addMethod m mm =
 insertMethod :: Method -> [Method] -> [Method]
 insertMethod x [] = [x]
 insertMethod x (y:ys)
-    | mPattern x == mPattern y = x : ys
+    | mPattern x `samePattern` mPattern y = x : ys
     | otherwise =
         case comparePrecision (PMessage (mPattern x)) (PMessage (mPattern y)) of
             -- stop at LT so it's after all of the definitons before this one
@@ -142,6 +142,16 @@ insertMethod x (y:ys)
 
             -- keep looking if we're EQ or GT
             _ -> y : insertMethod x ys
+
+-- | Like ==, but ignore optionals.
+samePattern :: Message Pattern -> Message Pattern -> Bool
+samePattern (Single { mID = ai, mTarget = at })
+            (Single { mID = bi, mTarget = bt }) =
+    ai == bi && at == bt
+samePattern (Keyword { mID = ai, mTargets = ats })
+            (Keyword { mID = bi, mTargets = bts }) =
+    ai == bi && ats == bts
+samePattern _ _ = False
 
 -- | Convert a list of slots to a MethodMap.
 toMethods :: [(Message Pattern, Value)] -> MethodMap

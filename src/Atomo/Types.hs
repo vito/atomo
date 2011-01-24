@@ -134,11 +134,11 @@ data Message v
         , mTarget :: v
         , mOptionals :: ![Option v]
         }
-    deriving (Eq, Show, Typeable)
+    deriving (Show, Typeable)
 
 -- | A named optional value.
 data Option v = Option !Int String v
-    deriving (Eq, Show, Typeable)
+    deriving (Show, Typeable)
 
 -- | Partial messages.
 type Particle v = Message (Maybe v)
@@ -498,7 +498,6 @@ instance Eq Pattern where
     (==) PThis PThis = True
     (==) _ _ = False
 
-
 instance Eq Expr where
     (==) (EDefine _ ap' ae) (EDefine _ bp be) = ap' == bp && ae == be
     (==) (ESet _ ap' ae) (ESet _ bp be) = ap' == bp && ae == be
@@ -513,6 +512,16 @@ instance Eq Expr where
     (==) (ETop _) (ETop _) = True
     (==) (EVM {}) (EVM {}) = False
     (==) _ _ = False
+
+instance Eq a => Eq (Message a) where
+    (==) (Single ai _ at aos) (Single bi _ bt bos) =
+        ai == bi && at == bt && aos == bos
+    (==) (Keyword ai _ ats aos) (Keyword bi _ bts bos) =
+        ai == bi && ats == bts && aos == bos
+    (==) _ _ = False
+
+instance Eq a => Eq (Option a) where
+    (==) (Option ai _ av) (Option bi _ bv) = ai == bi && av == bv
 
 -- | A prettier Show instance. Note that some are not entirely accurate
 -- constructors, e.g. Process, Continuation, and Object.
