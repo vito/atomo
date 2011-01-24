@@ -16,6 +16,8 @@ load = do
     [$p|(o: Object) pretty|] =:
         here "o" >>= mkPretty . pretty
 
+    [$p|(p: -> Pretty) pretty|] =::: [$e|p|]
+
     -- Converting values to documents
     [$p|Pretty char: (c: Char)|] =:
         here "c" >>= findChar >>= mkPretty . char . fromChar
@@ -132,8 +134,6 @@ load = do
         liftM (Boolean . isEmpty) (here "p" >>= fromPretty)
 
     -- Rendering documents
-    [$p|(p: -> Pretty) show|] =::: [$e|p render|]
-
     [$p|(p: -> Pretty) render &mode: @page &line-length: 100 &ribbons-per-line: 1.5|] =: do
         d <- here "p" >>= fromPretty
         m <- here "mode" >>= findParticle
