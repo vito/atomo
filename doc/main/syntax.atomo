@@ -141,6 +141,12 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
 
   #item:{lists}is:{#hl:{[]}, #hl:{[1, 2]}, #hl:{[1, $2, "three"]}, ...}
 
+  #item:{tuples}is:{
+    #hl:{()}, #hl:{(1, 2)}, #hl:{(1, $2, "three")}, ...
+
+    Note that there is no such thing as a tuple with only one value.
+  }
+
   #item:{expressions}is:{
     #definitions:{
       #item:{quoted}is:{
@@ -301,8 +307,20 @@ The #hl:{=} operator macro performs pattern-matching; the left-hand side is the 
     Matches a list of fixed length, recursively matching each #hl:{pattern} on each of its values.
 
     #example:{
+      [] = []
       [a, b] = [1, 2]
       [c, 4] = [3, 4]
+      [a, b, c]
+    }
+  }
+
+  #item:{#hl:{()}, #hl:{(pattern, pattern-2)}, ...}is:{
+    Matches a tuple, recursively matching each #hl:{pattern} on each of its values.
+
+    #example:{
+      () = ()
+      (a, b) = (1, 2)
+      (c, 4) = (3, 4)
       [a, b, c]
     }
   }
@@ -352,6 +370,19 @@ The #hl:{=} operator macro performs pattern-matching; the left-hand side is the 
       X = Object clone
       X match: { (== X) -> @yep }
       X clone match: { (== X) -> @yep; _ -> @nope }
+    }
+  }
+
+  #item:{#hl:{... pattern}}is:{
+    Matches a variadic role, matching the list of values as #hl:{pattern}.
+
+    That is, with a single value given for a variadic role, #hl:{pattern} will be pattern-matching a list with that single value. A role with more than one value given, via tuples, is matched as a list containing all of the values. A role with zero values (the empty tuple, #hl:{()}) is matched as an empty list.
+
+    #example:{
+      () match: { (... vs) -> vs }
+      () match: { (... []) -> "no values!" }
+      1 match: { (... vs) -> vs }
+      (2, 3) match: { (... vs) -> vs }
     }
   }
 
@@ -407,6 +438,7 @@ The targets implied by the respective patterns in a definition are as follows:
   #item:{#hl:{foo: pattern}}is:{target of #code:{pattern}}
   #item:{#hl:{-> pattern}}is:{target of #code:{pattern}}
   #item:{#hl:{== pattern}}is:{target of #code:{pattern}}
+  #item:{#hl:{... pattern}}is:{#hl:{Object}}
   #item:{#hl:{Foo}, #hl:{Foo bar}, #hl:{{ expr; expr-2 }}, ...}is:{the object itself, or the object yielded by the block's execution}
 }
 
@@ -431,7 +463,7 @@ Keyword messages are slightly different in that they have more than one target, 
 #example:{
   3 divides?: 12
   1 + 2
-  (0 .. 10) from: 3 to: 5
+  (0 .. 10) (as: List) from: 3 to: 5
 }
 
 Keyword message dispatch normally requires parentheses to chain multiple message sends, starting from the start of the chain to the end of the current dispatch. This leads to a lot of jumping around whenever you want to add another keyword dispatch:

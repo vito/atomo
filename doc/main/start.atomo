@@ -9,6 +9,7 @@
 #include-section:"core.atomo"
 #include-section:"dynamic.atomo"
 #include-section:"lists.atomo"
+#include-section:"tuples.atomo"
 #include-section:"strings.atomo"
 #include-section:"blocks.atomo"
 #include-section:"concurrency.atomo"
