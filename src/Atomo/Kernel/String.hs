@@ -213,12 +213,12 @@ load = do
         return $ list (map String (T.words s))
 
     [$p|(l: List) unlines|] =: do
-        l <- getList [$e|l|]
-        return $ String (T.unlines (map fromString l))
+        l <- getList [$e|l|] >>= mapM (liftM fromString . findString)
+        return $ String (T.unlines l)
 
     [$p|(l: List) unwords|] =: do
-        l <- getList [$e|l|]
-        return $ String (T.unwords (map fromString l))
+        l <- getList [$e|l|] >>= mapM (liftM fromString . findString)
+        return $ String (T.unwords l)
 
     [$p|(s: String) map: b|] =: do
         s <- getString [$e|s|]
