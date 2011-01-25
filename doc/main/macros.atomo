@@ -1,0 +1,122 @@
+#title:{Macros!}tag:"macros"
+
+Atomo sports a macro system similar to that of Common Lisp, in addition to a fancy macro-quoting system similar to Haskell's #code:{QuasiQuotes} extension.
+
+#section:{Defining Macros}tag:"defining-macros"
+
+To define a macro, you use the #hl:{macro} keyword, followed by its dispatch pattern in parentheses, and then the body of the macro (an expression). See also #reference:{macro-syntax}.
+
+The entire Atomo runtime is usable during macro expansion; you can do whatever you want in a macro method's body, as long as it yields an #hl:{Expression} value.
+
+A macro's dispatch pattern is very similar to definition message patterns, except (and perhaps obviously) it can only match expressions in the message's roles. If a macro's role patterns do not match the expressions in a dispatch, the macro isn't found, so nothing happens and the dispatch is left alone.
+
+A macro's role patterns are as follows:
+
+#definitions:{
+  #item:{#hl:{_}, #hl:{foo}, ...}is:{
+    Possibly-named wildcard matches.
+
+    #example:{
+      macro (x squared) `(~x * ~x)
+      '(42 squared) expand
+      42 squared
+    }
+  }
+
+  #item:{#hl:{foo: pattern}}is:{
+    A named pattern-match. Matches #hl:{pattern}, binding the expression it matches to #hl:{foo}.
+
+    #interaction:{
+      macro ((x: Primitive) square-root) `(~x ^ (1.0 / 2.0))
+      2 square-root
+      [1] square-root
+    }
+  }
+
+  #item:{#hl:{Dispatch}, #hl:{Operator}, #hl:{Primitive}, #hl:{Block}, #hl:{List}, #hl:{Macro}, #hl:{ForMacro}, #hl:{Particle}, #hl:{Top}, #hl:{Quote}, #hl:{Unquote}, #hl:{MacroQuote}}is:{
+    Match on the type of the expression.
+
+    #interaction:{
+      macro (Top foo) `10
+      foo
+      $a foo
+    }
+  }
+
+  #item:{#hl:{`a}, #hl:{`(1 + ~b)}, ...}is:{
+    Structurally matches an expression recursively. Unquotes serve as named wildcard patterns, with the same recursive semantics as quasiquotation.
+
+    #example:{
+      macro (`(~a -> ~b) from) a
+      (1 -> $a) from
+      (1 + 2) from
+    }
+  }
+}
+
+
+#section:{Macro Environment}tag:{macro-environment}
+
+Macro expansion is performed in a separate environment from the runtime, in a clone of #hl:{Lobby}. The bodies of macro methods are evaluated here, as a kind of sandbox from the "real world."
+
+Often you may want to specify some variables for your macros to use during expansion, or just evaluate some expression before everything gets going. Enter #hl:{for-macro}. This simple reserved word tells Atomo to evaluate an arbitrary expression in the macro environment, one step before macro expansion begins.
+
+#example-segment:{
+  for-macro 1 print
+  for-macro Foo = Object clone
+
+  -- "escaping" the macro area and defining A in the Lobby
+  for-macro super A = Object clone
+}
+
+
+#section:{Macro Quotes}tag:{macro-quotes}
+
+Macro-quotes are a generalized string quotation mechanism similar to Haskell's #code:{QuasiQuotes} extension. They are used for creating arbitrary values from a given string at macroexpansion time, and are very cheap to use. They can make code very clear and concise, so their use is encouraged for creating simple literal values like URLs, paths, byte strings, regular expressions and much more.
+
+That being said, please do not write entire DSLs inside of a macro-quote; it's much better to just use the language itself.
+
+Let's take a look at two common macro-quoters, #code:{w} (word list) and #code:{r} (regular expression):
+
+#atomo:{
+  w{foo bar baz}
+  r`"\d+"`m
+}
+
+During the macroexpansion phase, these two macro-quotes send the following messages, respectively:
+
+#atomo:{
+  quote: "foo bar baz" as: @w
+  quote: "\"\\d+\"" as: @r &flags: [$m]
+}
+
+To define a magic-quoter, use #hl:{for-macro} to define #hl:{quote:as:}, pattern-matching the quoter's name as a particle for the #hl:{as:} role. The value yielded by this method will be what the macro-quote expands to. For example, the #code:{w} macro-quoter expands into a list of the words in the string:
+
+#interaction:{
+  w{foo bar baz}
+}
+
+The #code:{r} macro-quoter expands into a #hl:{Regexp} value (which pretty-prints as a magic-quote):
+
+#interaction:{
+  r`"\d+"`m
+  r`"\d+"`m == r{"\d+"}m
+  r{"\d+"}m is-a?: Regexp
+}
+
+Both of these quoters are implemented trivially in #code:{prelude/core.atomo} like so:
+
+#atomo:{
+  for-macro quote: s as: @w := s words
+
+  for-macro quote: s as: @r &flags: [] :=
+    Regexp new: s &flags: (flags to: String)
+}
+
+Note that the #code:{r} macro-quoter makes use of the flags added to the end of the literal, by sending them along to #hl:{Regexp new: _ &flags: _}.
+
+If a macro-quoter is not found, an #hl:{@unknown-quoter:for:&flags:} error is signaled:
+
+#interaction:{
+  foo{bar}baz
+}

@@ -1,0 +1,91 @@
+#title:{Defining Methods}tag:"defining"
+
+Atomo packs a lot of information into the #hl:{:=} operator's left-hand side. Not only does it define the name of the method, but it also specifies which object it targets, what patterns it matches, including any variadic roles and optional roles with their default value.
+
+See also: #reference:{Patterns}.
+
+
+#section:{Variadic Roles}tag:"variadic"
+
+Atomo uses the #hl:{Tuple} data type for variadic roles, using the #hl:{... foo} pattern-match. Here, #hl:{foo} is another pattern, which matches a list. This list contains all of the values provided for the role, which may be zero, one, or any number of values.
+
+#example:{
+  fizz: (... []) := @no-args!
+  fizz: (... args) := @(got: args)
+  fizz: 1
+  fizz: (1, 2, 3)
+  fizz: ()
+}
+
+Previously, lists would be used for this, but tuples were introduced to make things a bit cleaner. For example, previously you might say "if this role is a list, consider it to be containing any number of values to use, otherwise consider it to be just one value to act on."
+
+#(fooing = Lobby clone)
+
+#example:{
+  foo: (xs: List) := @(acting-on-multiple: xs)
+  foo: x := @(acting-on-one: x)
+  foo: 1
+  foo: [1, 2]
+}on:fooing
+
+The problem with this comes in when you want to pass a list as one value - you would actually have to place it in another list:
+
+#interaction:{
+  foo: [[1, 2]]
+}on:fooing
+
+So, to avoid that, we'd just use lists for everything - for example, #hl:{call:} would take a list of values to send to a block, which was often just one value. This works, but it's noisy.
+
+This is where tuples come in. You can specify zero arguments with #hl:{()}, and one value by just sending the value itself, and multiple values by grouping them together as a tuple. There is no ambiguity - you'll never be sending a single "tuple" value, because that's explicitly what they're #italic:{not} used for. All three of these variations - zero, one, or multiple values, are handled by the same method definition.
+
+
+#section:{Optional Roles}tag:"optionals"
+
+Message patterns may also specify optional roles, via a keyword prefixed with a #code:{&} (ampersand, read as "with") paired with a role which represents the default value.
+
+#example:{
+  (x: Double) foo &epsilon: 0.01 := x rationalize: epsilon
+  10.56 foo
+  10.56 foo &epsilon: 0.0
+  a foo: b &c: 2 := a + b * c
+  1 foo: 2
+  1 foo: 2 &c: 3
+}
+
+When the method is evaluated, the name of the optional is bound to its value. Above, #hl:{epsilon} and #hl:{c} are provided via the #hl:{&epsilon: 0.0} and #hl:{&c: 2} optionals, respectively. Note that an optional role must specify a default value.
+
+The default value for optionals is actually an expression, which will be evaluated in the method body's context if no value is provided. Therefore, it can use bindings provided by patterns in other roles:
+
+#example:{
+  a foo: b &c: (a + b) := [a, b, c]
+  1 foo: 2
+  1 foo: 2 &c: 4
+}
+
+
+#section:{Redefining Methods}tag:"redefining"
+
+When defining a method, certain factors are taken into account to determine if you're replacing an already-defined method or just adding another one alongside, with e.g. alternative patterns matched.
+
+The basic criteria is that the patterns are checked for "equivalence," and optional arguments are ignored when determining this. Two patterns are equivalent if they are of the same type and the same structure, ignoring names for wildcard matches.
+
+For example, all of the following are considered equivalent:
+
+#atomo:{
+  _
+  a
+  (a: _)
+  (a: b)
+}
+
+While the following are not:
+
+#atomo:{
+  _ . _
+  [_, _]
+  ... _
+}
+
+This second group of patterns are all of different types, which match different things. While #hl:{_ . _} and #hl:{[_, _]} both match list values, the lists they match are different (one just requires it to be non-empty, the other requires it to contain two values); thus, they are not equivalent.
+
+When a method is defined with a message pattern that is equivalent to one already inserted, it replaces it. Incidentally, this is the same for whether you use #hl:{:=} for defining a method or #hl:{=} for inserting slots - both are just inserting methods (one as a "responder" and one as a "slot"), so they both replace preexisting definitions the same way.

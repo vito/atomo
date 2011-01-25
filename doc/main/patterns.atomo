@@ -1,0 +1,180 @@
+#title:{Patterns}tag:"patterns"
+
+The following is a list of expressions that have special meaning when treated as a pattern, whether they're used in a message pattern role, or #hl:{match:}, or with #hl:{=}. They are always parsed as normal expressions, and usually converted into a #hl:{Pattern} at the macroexpansion phase, via #hl:{to: Pattern}.
+
+See also: #hl:{=}, #hl:{:=}, #reference:{defining}.
+
+#section:{Types of Patterns}tag:"types"
+
+#definitions:{
+  #item:{#hl:{_}, #hl:{foo}, ...}is:{
+    Possibly-named wildcard matches.
+
+    #example:{
+      _ = 1
+      a = 2
+      a
+    }
+  }
+
+  #item:{#hl:{1}, #hl:{2/3}, #hl:{4.0}, #hl:{$a}, #hl:{True}, #hl:{False}, #hl:{"foo"}, ...}is:{
+    Primitive literal values match only on themselves.
+
+    #example:{
+      1 = 1
+      1 = 2
+      $a = $a
+      2/3 = 2/3
+      4.0 = 4.0
+      4.0 = 4.000000000001
+      "foo" = "foo"
+    }
+  }
+
+  #item:{#hl:{foo: pattern}}is:{
+    A named pattern-match. Matches #hl:{pattern}, binding the value it matches to #hl:{foo}.
+
+    #example:{
+      (foo: 2) = 2
+      foo
+      (foo: 2) = 1
+    }
+  }
+
+  #item:{#hl:{head . tail}}is:{
+    Matches a non-empty list, matching its first value on #hl:{head} and the rest of it on #hl:{tail}.
+
+    #example:{
+      (x . xs) = [1, 2, 3]
+      x
+      xs
+    }
+  }
+
+  #item:{#hl:{[]}, #hl:{[pattern, pattern-2]}, ...}is:{
+    Matches a list of fixed length, recursively matching each #hl:{pattern} on each of its values.
+
+    #example:{
+      [] = []
+      [a, b] = [1, 2]
+      [c, 4] = [3, 4]
+      [a, b, c]
+    }
+  }
+
+  #item:{#hl:{()}, #hl:{(pattern, pattern-2)}, ...}is:{
+    Matches a tuple, recursively matching each #hl:{pattern} on each of its values.
+
+    #example:{
+      () = ()
+      (a, b) = (1, 2)
+      (c, 4) = (3, 4)
+      [a, b, c]
+    }
+  }
+
+  #item:{#hl:{@foo}, #hl:{@(foo: x)}, #hl:{@(foo: x bar: _)}, ...}is:{
+    Matches a particle value. If it's a single particle, it does regular equality checking; if it's a keyword particle, it recursively pattern-matches the particle's values. A wildcard in a particle pattern matches placeholders, but no other pattern will.
+
+    #example:{
+      @foo = @foo
+      @foo = @bar
+      @(foo: x) = @(foo: 2)
+      x
+      @(foo: _) = @(foo: _)
+      @(foo: _) = @(foo: 2)
+      @(foo: 2) = @(foo: _)
+    }
+  }
+
+  #item:{#hl:{`a}, #hl:{`(1 + ~b)}, ...}is:{
+    Matches expression values recursively. Unquotes serve as named wildcard patterns, with the same recursive semantics as quasiquotation.
+
+    #example:{
+      `a = `a
+      `(1 + ~b) = '(1 + 2)
+      ``(1 + ~~c) = ``(1 + ~3)
+      [b, c]
+    }
+  }
+
+  #item:{#hl:{-> pattern}}is:{
+    Matches any object delegating to something matching #code:{pattern}. Often used to check if something is an "instance" of some object.
+
+    For primitive values, it checks if the value itself matches the pattern, so #hl:{[1, 2]} will match #code:{(-> List)}.
+
+    NOTE: This is only really useful in #hl:{match:} and in message patterns; when used with #hl:{=} the objects aren't evaluated.
+
+    #example:{
+      1 match: { (-> Double) -> @nope; (-> Integer) -> @yep }
+      [1, 2] match: { (-> [a, b]) -> @(yep: [b, a]) }
+    }
+  }
+
+  #item:{#hl:{== pattern}}is:{
+    Matches with strict equality only. This is different from regular matching as it doesn't follow delegates to see if objects match.
+
+    #example:{
+      X = Object clone
+      X match: { (== X) -> @yep }
+      X clone match: { (== X) -> @yep; _ -> @nope }
+    }
+  }
+
+  #item:{#hl:{... pattern}}is:{
+    Matches a variadic role, matching the list of values as #hl:{pattern}.
+
+    That is, with a single value given for a variadic role, #hl:{pattern} will be pattern-matching a list with that single value. A role with more than one value given, via tuples, is matched as a list containing all of the values. A role with zero values (the empty tuple, #hl:{()}) is matched as an empty list.
+
+    #example:{
+      () match: { (... vs) -> vs }
+      () match: { (... []) -> "no values!" }
+      1 match: { (... vs) -> vs }
+      (2, 3) match: { (... vs) -> vs }
+    }
+  }
+}
+
+
+#section:{A Pattern's Object}tag:"definition-target"
+
+The object onto which a method is inserted is determined by the type of the pattern in its message pattern's first role:
+
+#definitions:{
+  #item:{#hl:{_}, #hl:{foo}, #hl:{bar}, ...}is:{#hl:{Object}}
+  #item:{#hl:{1}, #hl:{2}, ...}is:{#hl:{Integer}}
+  #item:{#hl:{$a}, #hl:{$b}, ...}is:{#hl:{Char}}
+  #item:{#hl:{True}, #hl:{False}}is:{#hl:{Boolean}}
+  #item:{#hl:{1.0}, #hl:{2.0}, ...}is:{#hl:{Double}}
+  #item:{#hl:{1/2}, #hl:{3/4}, ...}is:{#hl:{Rational}}
+  #item:{#hl:{""}, #hl:{"foo"}, ...}is:{#hl:{String}}
+  #item:{#hl:{head . tail}, #hl:{[]}, #hl:{[pattern, pattern-2]}, ...}is:{#hl:{List}}
+  #item:{#hl:{`x}, #hl:{`(1 + ~y)}, ...}is:{#hl:{Expression}}
+  #item:{#hl:{@foo}, #hl:{@(bar: 2 baz: _)}, ...}is:{#hl:{Particle}}
+  #item:{#hl:{foo: pattern}}is:{target of #code:{pattern}}
+  #item:{#hl:{-> pattern}}is:{target of #code:{pattern}}
+  #item:{#hl:{== pattern}}is:{target of #code:{pattern}}
+  #item:{#hl:{... pattern}}is:{#hl:{Object}}
+  #item:{#hl:{Foo}, #hl:{Foo bar}, #hl:{{ expr; expr-2 }}, ...}is:{the object itself, or the object yielded by the block's execution}
+}
+
+Thus, #hl:{1 foo: $a := x} is a definition placed on #hl:{Integer}, while #hl:{(... args) foo} is inserted on #hl:{Object}.
+
+Note that roles beginning with a capital letter are assumed to be targeting a particular object. That is, #hl:{Foo} means the same as #hl:{{ Foo }}, while #hl:{foo} is just a named wildcard targeting #hl:{Object}.
+
+#example-segment:{
+  Foo bar := 1
+  Foo bar: baz := 1
+}
+
+Above, the first definition is placed on the particular object #hl:{Foo} (assuming it's defined), while the second definition is placed on the #hl:{Foo} object as well as #hl:{Object} (the second role, a named wildcard), binding the second role value as #hl:{baz}.
+
+To define on a particular object that isn't capitalized, wrap it in a block:
+
+#example-segment:{
+  foo bar := 1
+  { foo } bar := 2
+  { "hi" print; 1 + 1 } bar: Foo := 3
+}
+
+As in the first example, #hl:{foo bar} matches any object, while #hl:{{ foo } bar} is only defined on #hl:{foo} (the result of the block's execution). #hl:{{ 1 + 1 } bar: Foo} is defined on #hl:{2} and #hl:{Foo}.

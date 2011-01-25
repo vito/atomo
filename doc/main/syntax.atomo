@@ -26,32 +26,7 @@ is equivalent to:
   { "hi" print; goodbye; 2 + 2 } call
 }
 
-Two spaces for indentation is highly recommended, as it commonly aligns things perfectly on one column. For example, a block's arguments, its contents, and the message sent to the block all end up on the same column:
-
-#atomo:{
-  { foo |
-    do-something: foo
-    foo * 2
-    [ foo
-      foo + 1
-      foo * 2
-    ] length
-  } call: [2]
-}
-
-Using this convention you also avoid stray closing braces, which would be common with the main alternative indentation style.
-
-Don't do this:
-
-#atomo:{
-  foo := [1, 2, 3] map: { n |
-    -- ...
-  }
-}
-
-as it indicates the final closing brace is somehow related to #hl:{foo}, when really it's just the ending delimiter for the block passed to #hl:{map:}.
-
-Whitespace can also be used for chained message sends:
+With these simple line-continuing rules in place, you can spread a single chain of messages across multiple lines:
 
 #atomo:{
   something
@@ -62,9 +37,9 @@ Whitespace can also be used for chained message sends:
 
 Which is parsed as:
 
-#atomo:{ something foo (+ 2) sqrt }
+#atomo:{something foo (+ 2) sqrt}
 
-Multiple-keyword messages can also be continued via indentation:
+The same goes for keyword messages:
 
 #atomo:{
   if: x
@@ -72,24 +47,26 @@ Multiple-keyword messages can also be continued via indentation:
     else: { z }
 }
 
-Note that to continue the keyword message the next keywords must be indented more than the initial keyword.
+It is recommended that continued keyword roles are indented relative to the initial keyword, though this is not necessary. As long as it is indented more than the first role, the message is "continued."
+
+These are all OK:
 
 #atomo:{
   0 up-to: 5
-      do: { n | n print } -- OK; "do:" is indented more than "up-to:"
+      do: { n | n print }
 
   something up-to: 5
-    do: { n | n print } -- NOT OK; "do:" is deindented
+    do: { n | n print }
 
   something up-to: 5
-              do: { n | n print } -- OK
+              do: { n | n print }
 
   something
     up-to: 5
-      do: { n | n print } -- OK
+      do: { n | n print }
 }
 
-Any whitespace following an operator or keyword is skipped, so you can start a new line and indent from there if you like:
+The same rules apply to operators, which are equivalent to keywords:
 
 #atomo:{
   x foo =
@@ -103,19 +80,56 @@ Which is parsed as:
 #atomo:{ x foo = { a = 1; a + 1 } call }
 
 
+#section:{Indentation Guidelines}tag:"guidelines"
+
+Two spaces for indentation is highly recommended, as it often aligns things neatly on one column. For example, a block's arguments, its contents, and the message sent to the block all end up on the same column:
+
+#atomo:{
+  { foo |
+    do-something: foo
+    foo * 2
+    [ foo
+      foo + 1
+      foo * 2
+    ] length
+  } call: 2
+}
+
+Using this convention you also avoid stray closing braces, which would be common with other indentation styles.
+
+Usually, don't do this:
+
+#atomo:{
+  foo := [1, 2, 3] map: { n |
+    -- ...
+  }
+}
+
+as it indicates the final closing brace is somehow related to #hl:{foo}, when really it's just the ending delimiter for the block passed to #hl:{map:}.
+
+There are some exceptions, though; for example, if a block's body is more important than the message being sent, or if it's used structurally as part of a DSL, it is highly recommended to just use the hanging-brace style, so you don't have to indent too far. #hl:{match:}, #hl:{condition:}, #hl:{case-of:} and many more are examples of these. Another "rule of thumb" is, if the block takes arguments, you should use the two-space-indentation style. Otherwise, it's fair game.
+
+
 #section:{Comments}
 
-Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments, #code:{{- -}} for block comments (which can be nested).
+Atomo uses the same comment syntax as Haskell: #hl:{--} for linewise comments, #hl:{{- -}} for block comments (which can be nested).
+
+#atomo:{
+  1 -- The number, "one."
+  ({- Blah blah blah, {- yo dawg -}, fizz buzz! -} "foo") print
+}
 
 
 #section:{Literals}tag:"literals-syntax"
 
 #definitions:{
   #item:{integers}is:{
-    #hl:{1}, #hl:{2}, #hl:{-1}, ..., plus hexadecimal notation (e.g. #code:{0xdeadbeef})
+    #hl:{1}, #hl:{-1}, #hl:{0xdeadbeef}, #hl:{0o644}, #hl:{-0x10}, #hl:{-0o10} ...
   }
 
-  #item:{doubles}is:{#hl:{1.0}, #hl:{2.0}, #hl:{-1.5}, ..., plus scientific notation (e.g. #code:{1.5e10})}
+  #item:{doubles}is:{
+    #hl:{1.0}, #hl:{-1.5}, #hl:{1.5e10}, #hl:{1.4e-3}, #hl:{-1.4e4}...
+  }
 
   #item:{characters}is:{
     #hl:{$a}, #hl:{$b}, #hl:{$\n}, #hl:{$\1234} (unicode number)...
@@ -133,13 +147,35 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
     }
   }
 
-  #item:{rationals}is:{#hl:{1/2}, #hl:{30/500}, #hl:{-1/2}, ...}
+  #item:{rationals}is:{#hl:{1/2}, #hl:{30/500}, #hl:{-1/2}, #hl:{1/-2}, ...}
 
   #item:{strings}is:{#hl:{""}, #hl:{"foo"}, #hl:{"fizz \"buzz\""}, containing the above-mentioned escape codes}
 
+  #item:{macro-quotes}is:{
+    #hl:{r{\d+}m}, #hl:{w{foo bar}}, ...
+
+    See #reference:{macro-quotes}.
+
+    General format:
+
+    #verbatim:{
+      name(d1)content*(d2)[flag*]
+        where
+          name = identifier
+          content = arbitrary, raw text
+          flag = case-sensitive alphabetic character
+          (d1) = one of (\{["$|`'~@
+          (d2) = the matching delimiter for (d1)
+    }
+
+    Note that a large number of delimiters may be used; these are punctuation characters that are already reserved for other uses, so that the #code:{name} will not "flow" into them, because they're not valid characters for use in an identifier. That is, allowing #code:{/} as a delimiter, for example, would lead to parsing ambiguity with #hl:{foo/ bar/}.
+
+    The content between the delimiters is parsed with no escapes except for the delimiters. That is, #hl:{r"foo\"bar"} is the same as #hl:{r{foo"bar}}, and #hl:{r"foo\bar"} is sent with #hl:{"foo\\bar"} as the contents.
+  }
+
   #item:{boolean}is:{#hl:{True} and #hl:{False}}
 
-  #item:{lists}is:{#hl:{[]}, #hl:{[1, 2]}, #hl:{[1, $2, "three"]}, ...}
+  #item:{lists}is:{#hl:{[]}, #hl:{[1]}, #hl:{[1, 2]}, #hl:{[1, $2, "three"]}, ...}
 
   #item:{tuples}is:{
     #hl:{()}, #hl:{(1, 2)}, #hl:{(1, $2, "three")}, ...
@@ -193,39 +229,51 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
   #item:{particles}is:{
     Particles begin with an at-sign (#code:{@}), followed by a "partial message."
 
-    For single-messages, a particle always looks like this:
+    Regular single messages look like this:
 
     #atomo:{
       @foo
       @fizz-buzz
     }
 
-    Keyword particles are more complex, and may contain placeholders (#code:{_}):
+    The message's target can be specified, in which case the message isn't actually "partial":
+
+    #atomo:{
+      @(1 foo)
+      @("whatever" bar)
+    }
+
+    Optional roles in single particles require parentheses surrounding the message portion:
+
+    #atomo:{
+      @(foo &bar: 2)
+      @(1 sqrt &fizz: _)
+    }
+
+    Keyword particles are similar:
 
     #atomo:{
       @(print: "hi!")
       @(+ 2)
       @(from: _ to: 3)
+      @(1 + 2 &foo: 2 &bar: _)
+      @(this foo: _ &bar: 100)
     }
 
-    Additionally, the value parts may be omitted entirely, leaving only selector names:
+    Additionally, the roles in a keyword particle may be omitted entirely, leaving only selector names:
 
     #atomo:{
       @from:to:
       @+
     }
 
-    These are equivalent to #code:{@(from: _ to: _)} and #code:{@(+ _)}, respectively.
-
-    Particles represent messages that are missing the initial role; hence, when you say #hl:{@(+ 2)}, you're representing a message like #hl:{_ + 2}, where #hl:{_} is filled in with a value to form a message like #hl:{1 + 2}.
-
-    Note that, at the moment, all particles are missing an initial role. Hence, they are always partial. There is no such thing as #code:{@(2 foo)} or #code:{@(1 + 2)}. While support for that would be trivial (the parser would just need to be updated), there are other implications that need to be considered - for example, when you have a completed #hl:{Particle}, it's essentially a #hl:{Message}, but having the parser determine what you mean when you write #code:{@(2 + 2)} is tricky.
+    These are equivalent to #hl:{@(from: _ to: _)} and #hl:{@(+ _)}, respectively. Note that #hl:{@(from: _)} means #hl:{@(_ from: _)}, not #hl:{@(this from: _)}.
   }
 
   #item:{blocks}is:{
     Blocks are surrounded by curly braces (#code:{{ }}) and contain 0 or more expressions separated by semicolons or whitespace.
     
-    A block may have arguments, which are pattern-matches separated by spaces. The arguments are placed after the opening brace, and are terminated by a pipe (#code:{|}), followed by the block's contents (if any).
+    A block may have arguments, which are patterns separated by spaces. The arguments are placed after the opening brace, and are terminated by a pipe (#code:{|}), followed by the block's contents (if any).
 
     #example-segment:{
       { 1 + 1 }
@@ -241,7 +289,7 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
   }
 
   #item:{scope}is:{
-    #hl:{this} always refers to the current toplevel object.
+    #hl:{this} is a reserved word that always refers to the current toplevel object.
 
     #example:{
       { a = 1; this } call
@@ -252,199 +300,6 @@ Atomo uses the same comment syntax as Haskell: #code:{--} for linewise comments,
 }
 
 
-#section:{Pattern-Matching & Inserting Slots}tag:"pattern-syntax"
-
-Atomo's pattern-match syntax shares the same syntax as Expressions in the language. In many cases these are recursive.
-
-The #hl:{=} operator macro performs pattern-matching; the left-hand side is the pattern and the right-hand side is an expression whose resulting value should match the pattern.
-
-#definitions:{
-  #item:{#hl:{_}, #hl:{foo}, ...}is:{
-    Possibly-named wildcard matches.
-
-    #example:{
-      _ = 1
-      a = 2
-      a
-    }
-  }
-
-  #item:{#hl:{1}, #hl:{2/3}, #hl:{4.0}, #hl:{$a}, #hl:{True}, #hl:{False}, #hl:{"foo"}, ...}is:{
-    Primitive literal values match only on themselves.
-
-    #example:{
-      1 = 1
-      1 = 2
-      $a = $a
-      2/3 = 2/3
-      4.0 = 4.0
-      4.0 = 4.000000000001
-      "foo" = "foo"
-    }
-  }
-
-  #item:{#hl:{foo: pattern}}is:{
-    A named pattern-match. Matches #hl:{pattern}, binding the value it matches to #hl:{foo}.
-
-    #example:{
-      (foo: 2) = 2
-      foo
-      (foo: 2) = 1
-    }
-  }
-
-  #item:{#hl:{head . tail}}is:{
-    Matches a non-empty list, matching its first value on #hl:{head} and the rest of it on #hl:{tail}.
-
-    #example:{
-      (x . xs) = [1, 2, 3]
-      x
-      xs
-    }
-  }
-
-  #item:{#hl:{[]}, #hl:{[pattern, pattern-2]}, ...}is:{
-    Matches a list of fixed length, recursively matching each #hl:{pattern} on each of its values.
-
-    #example:{
-      [] = []
-      [a, b] = [1, 2]
-      [c, 4] = [3, 4]
-      [a, b, c]
-    }
-  }
-
-  #item:{#hl:{()}, #hl:{(pattern, pattern-2)}, ...}is:{
-    Matches a tuple, recursively matching each #hl:{pattern} on each of its values.
-
-    #example:{
-      () = ()
-      (a, b) = (1, 2)
-      (c, 4) = (3, 4)
-      [a, b, c]
-    }
-  }
-
-  #item:{#hl:{@foo}, #hl:{@(foo: x)}, #hl:{@(foo: x bar: _)}, ...}is:{
-    Matches a particle value. If it's a single particle, it does regular equality checking; if it's a keyword particle, it recursively pattern-matches the particle's values. A wildcard in a particle pattern matches placeholders, but no other pattern will.
-
-    #example:{
-      @foo = @foo
-      @foo = @bar
-      @(foo: x) = @(foo: 2)
-      x
-      @(foo: _) = @(foo: _)
-      @(foo: _) = @(foo: 2)
-      @(foo: 2) = @(foo: _)
-    }
-  }
-
-  #item:{#hl:{`a}, #hl:{`(1 + ~b)}, ...}is:{
-    Matches expression values recursively. Unquotes serve as named wildcard patterns, with the same recursive semantics as quasiquotation.
-
-    #example:{
-      `a = `a
-      `(1 + ~b) = '(1 + 2)
-      ``(1 + ~~c) = ``(1 + ~3)
-      [b, c]
-    }
-  }
-
-  #item:{#hl:{-> pattern}}is:{
-    Matches any object delegating to something matching #code:{pattern}. Often used to check if something is an "instance" of some object.
-
-    For primitive values, it checks if the value itself matches the pattern, so #hl:{[1, 2]} will match #code:{(-> List)}.
-
-    NOTE: This is only really useful in #hl:{match:} and in message patterns; when used with #hl:{=} the objects aren't evaluated.
-
-    #example:{
-      1 match: { (-> Double) -> @nope; (-> Integer) -> @yep }
-      [1, 2] match: { (-> [a, b]) -> @(yep: [b, a]) }
-    }
-  }
-
-  #item:{#hl:{== pattern}}is:{
-    Matches with strict equality only. This is different from regular matching as it doesn't follow delegates to see if objects match.
-
-    #example:{
-      X = Object clone
-      X match: { (== X) -> @yep }
-      X clone match: { (== X) -> @yep; _ -> @nope }
-    }
-  }
-
-  #item:{#hl:{... pattern}}is:{
-    Matches a variadic role, matching the list of values as #hl:{pattern}.
-
-    That is, with a single value given for a variadic role, #hl:{pattern} will be pattern-matching a list with that single value. A role with more than one value given, via tuples, is matched as a list containing all of the values. A role with zero values (the empty tuple, #hl:{()}) is matched as an empty list.
-
-    #example:{
-      () match: { (... vs) -> vs }
-      () match: { (... []) -> "no values!" }
-      1 match: { (... vs) -> vs }
-      (2, 3) match: { (... vs) -> vs }
-    }
-  }
-
-  The #hl:{=} operator can also be used to define methods, but its use is more limited than #hl:{:=} in that it can only insert slots on objects; it cannot pattern-match message roles, and the right-hand side is always pre-evaluated.
-
-  #example:{
-    a = Object clone
-    a foo: self = 10
-    a foo: self
-    a foo: { @ok } spawn
-    a foo: self = "Hello, world!" print
-    a foo: self
-  }
-}
-
-
-#section:{Definitions}tag:"definition-syntax"
-
-Method definitions use the #hl:{:=} operator macro; the left-hand side is a "message pattern," which matches on messages sent to any of the roles involved in it. The right-hand side is the expression to be evaluated when the message pattern is matched.
-
-Message patterns can contain the patterns listed above as their roles, with the sole exception that capitalized identifiers in role patterns are assumed to be objects.
-
-#example-segment:{
-  Foo bar := 1
-  Foo bar: baz := 1
-}
-
-Above, the first definition is placed on the particular object #hl:{Foo} (assuming it's defined), while the second definition is placed on the #hl:{Foo} object as well as #hl:{Object} (the second role, a named wildcard), binding the second role value as #hl:{baz}.
-
-To define on a particular object that isn't capitalized, wrap it in a block:
-
-#example-segment:{
-  foo bar := 1
-  { foo } bar := 2
-  { "hi" print; 1 + 1 } bar: Foo := 3
-}
-
-As in the first example, #hl:{foo bar} matches any object, while #hl:{{ foo } bar} is only defined on #hl:{foo} (the result of the block's execution). #hl:{{ 1 + 1 } bar: Foo} is defined on #hl:{2} and #hl:{Foo}.
-
-The targets implied by the respective patterns in a definition are as follows:
-
-#definitions:{
-  #item:{#hl:{_}, #hl:{foo}, #hl:{bar}, ...}is:{#hl:{Object}}
-  #item:{#hl:{1}, #hl:{2}, ...}is:{#hl:{Integer}}
-  #item:{#hl:{$a}, #hl:{$b}, ...}is:{#hl:{Char}}
-  #item:{#hl:{True}, #hl:{False}}is:{#hl:{Boolean}}
-  #item:{#hl:{1.0}, #hl:{2.0}, ...}is:{#hl:{Double}}
-  #item:{#hl:{1/2}, #hl:{3/4}, ...}is:{#hl:{Rational}}
-  #item:{#hl:{""}, #hl:{"foo"}, ...}is:{#hl:{String}}
-  #item:{#hl:{head . tail}, #hl:{[]}, #hl:{[pattern, pattern-2]}, ...}is:{#hl:{List}}
-  #item:{#hl:{`x}, #hl:{`(1 + ~y)}, ...}is:{#hl:{Expression}}
-  #item:{#hl:{@foo}, #hl:{@(bar: 2 baz: _)}, ...}is:{#hl:{Particle}}
-  #item:{#hl:{foo: pattern}}is:{target of #code:{pattern}}
-  #item:{#hl:{-> pattern}}is:{target of #code:{pattern}}
-  #item:{#hl:{== pattern}}is:{target of #code:{pattern}}
-  #item:{#hl:{... pattern}}is:{#hl:{Object}}
-  #item:{#hl:{Foo}, #hl:{Foo bar}, #hl:{{ expr; expr-2 }}, ...}is:{the object itself, or the object yielded by the block's execution}
-}
-
-Thus, #hl:{1 foo: $a := x} is a definition placed on #hl:{Integer} and #hl:{Char}.
-
-
 #section:{Dispatch}tag:"dispatch-syntax"
 
 Atomo's dispatch syntax is similar to the Smalltalk family, naming conventions aside. There are two types of messages to dispatch: single messages and keyword messages.
@@ -453,7 +308,7 @@ To dispatch a single message to some target, the message name is placed after th
 
 #example-segment:{
   1 foo
-  { 1 + 1 } call
+  { 1 sqrt } call
 }
 
 If there is no "target" for the message, the implied target is #hl:{this} (the toplevel object representing the current scope).
@@ -463,6 +318,7 @@ Keyword messages are slightly different in that they have more than one target, 
 #example:{
   3 divides?: 12
   1 + 2
+  delegating-to: Integer
   (0 .. 10) (as: List) from: 3 to: 5
 }
 
@@ -478,70 +334,49 @@ Atomo remedies this by allowing parentheses to be used inside the chain of sends
   1 (x: a) (y: b) (z: c) foo
 }
 
+Messages can also have optional roles, which have the same syntax as keyword roles but are prefixed by a #code:{&} (ampersand).
 
-#section:{Defining Macros}tag:"macro-syntax"
+#example:{
+  [1, 2, 3] zip: [2, 3, 4] &zipper: @*
+  1 sqrt &foo: 2
+}
 
-To define macros, use the #code:{macro} keyword, followed by the macro's dispatch pattern wrapped in parentheses, and then the expression to evaluate to yield the replacement expression.
+This also works in chained message dispatches which requires parentheses to disambiguate it from the other messages:
 
-A macro's dispatch pattern is very similar to definition message patterns, except (and perhaps obviously) it can only match expressions. If a macro's role patterns do not match the expressions, it simply isn't called; the macro isn't found, so nothing happens.
+#atomo:{
+  1 sqrt (+ 3 &fizz: @buzz) (sqrt &foo: 1 &bar: 2)
+}
 
-A macro's role patterns are as follows:
+#section:{#hl:{macro}}tag:"macro-syntax"
 
-#definitions:{
-  #item:{#hl:{_}, #hl:{foo}, ...}is:{
-    Possibly-named wildcard matches.
+The #hl:{macro} keyword is used to define macros; the format is as follows:
 
-    #example:{
-      macro (x squared) `(~x * ~x)
-      '(42 squared) expand
-      42 squared
-    }
-  }
+See #reference:{defining-macros}.
 
-  #item:{#hl:{foo: pattern}}is:{
-    A named pattern-match. Matches #hl:{pattern}, binding the expression it matches to #hl:{foo}.
-
-    #interaction:{
-      macro ((x: Primitive) square-root) `(~x ^ (1.0 / 2.0))
-      2 square-root
-      [1] square-root
-    }
-  }
-
-  #item:{#hl:{Dispatch}, #hl:{Operator}, #hl:{Primitive}, #hl:{Block}, #hl:{List}, #hl:{Macro}, #hl:{Particle}, #hl:{Top}, #hl:{Quote}, #hl:{Unquote}}is:{
-    Match on the type of the expression.
-
-    #interaction:{
-      macro (Top foo) `10
-      foo
-      $a foo
-    }
-  }
-
-  #item:{#hl:{`a}, #hl:{`(1 + ~b)}, ...}is:{
-    Matches expression recursively. Unquotes serve as named wildcard patterns, with the same recursive semantics as quasiquotation.
-
-    #example:{
-      macro (`(~a -> ~b) from) a
-      (1 -> $a) from
-      (1 + 2) from
-    }
-  }
-
-  The entire Atomo runtime is usable during macro expansion; you can do whatever you want in a macro defintion, so long as the macro's result is an #hl:{Expression} value.
-
-  Another keyword is provided, which evaluates an expression as soon as the parser runs into it; often for use with macros. It is aptly named #code:{for-macro}.
-
-  #example-segment:{
-    for-macro 1 print
-    for-macro Foo = Object clone
-  }
+#verbatim:{
+  macro (pattern) expression
+    where
+      pattern = a message pattern
+      expression = the macro's body
 }
 
 
-#section:{Operator Precedence & Associativity}tag:"operator-syntax"
+#section:{#hl:{for-macro}}tag:"for-macro-syntax"
 
-You can control how Atomo parses binary operators like #hl:{+} and #hl:{->} via the #code:{operator} keyword. The syntax is as follows:
+The #hl:{for-macro} keyword is used to specify that an expression should be evaluated before the macroexpansion phase. The format is as follows:
+
+See #reference:{macro-environment}.
+
+#verbatim:{
+  for-macro expression
+    where
+      expression = the expression to evaluate
+}
+
+
+#section:{#hl:{operator}}tag:"operator-syntax"
+
+You can control how Atomo parses binary operators like #hl:{+} and #hl:{->} via the #hl:{operator} keyword. The syntax is as follows:
 
 #verbatim:{
   operator [associativity] [precedence] operators
@@ -561,63 +396,3 @@ An omitted associativity implies left, and an omitted precedence implies 5 (the 
 }
 
 Operator expressions, when evaluated, just return #hl:{@ok}.
-
-
-#section:{Macro Quotes}tag:{macro-quotes}
-
-Macro-quotes are a generalized string quotation mechanism similar to Haskell's #code:{QuasiQuotes} extension. They are used for creating arbitrary values from a given string at macroexpansion time, and are very cheap to use. They can make code very clear and concise, so their use is encouraged for creating simple literal values like URLs, paths, byte strings, regular expressions and much more.
-
-That being said, please do not write entire DSLs inside of a macro-quote; it's much better to just use the language itself.
-
-The syntax is as follows:
-
-#verbatim:{
-  name{content*}[flag*]
-    where
-      name = identifier
-      content = arbitrary, raw text
-      flag = case-sensitive alphabetic character
-}
-
-Here we're using #code:{{}} as our delimiters, but the following may also be used: #code:{()}, #code:{{}}, #code:{[]}, #code:{"}, #code:{$}, #code:{|}, #code:{`}, #code:{'}, #code:{~}, and #code:{@}. The content between the delimiters is parsed as a raw string, with only the delimiters as escapes.
-
-#example:{
-  w{foo bar baz}
-  r`"\d+"`m
-}
-
-During the macroexpansion phase, these two macro-quotes send the following messages, respectively:
-
-#atomo:{
-  quote: "foo bar baz" as: @w
-  quote: "\"\\d+\"" as: @r &flags: [$m]
-}
-
-To define a magic-quoter, simply define this method, matching on the #hl:{as:} part, with #hl:{for-macro}. The result can be any arbitrary value. For example, the #code:{w} macro-quoter expands into a list of the words in the string:
-
-#interaction:{
-  w{foo bar baz}
-}
-
-The #code:{r} macro-quoter expands into a #hl:{Regexp} value (which pretty-prints as a magic-quote):
-
-#interaction:{
-  r`"\d+"`m
-  r`"\d+"`m == r{"\d+"}m
-  r{"\d+"}m is-a?: Regexp
-}
-
-Both of these quoters are implemented trivially in #code:{prelude/core.atomo} like so:
-
-#atomo:{
-  for-macro quote: s as: @w := s words
-
-  for-macro quote: s as: @r &flags: [] :=
-    Regexp new: s &flags: (flags to: String)
-}
-
-If a macro-quoter is not found, #hl:{@unknown-quoter:for:&flags:} is yielded:
-
-#interaction:{
-  foo{bar}baz
-}
