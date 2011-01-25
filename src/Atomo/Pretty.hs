@@ -143,10 +143,12 @@ instance Pretty Pattern where
     prettyFrom _ PEList = text "List"
     prettyFrom _ PETuple = text "Tuple"
     prettyFrom _ PEMacro = text "Macro"
+    prettyFrom _ PEForMacro = text "ForMacro"
     prettyFrom _ PEParticle = text "Particle"
     prettyFrom _ PETop = text "Top"
     prettyFrom _ PEQuote = text "Quote"
     prettyFrom _ PEUnquote = text "Unquote"
+    prettyFrom _ PEMacroQuote = text "MacroQuote"
 
 
 instance Pretty Expr where
