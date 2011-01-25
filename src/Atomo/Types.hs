@@ -1000,7 +1000,7 @@ asValue :: AtomoError -> Value
 asValue (Error v) = v
 asValue (ParseError pe) =
     keyParticleN ["parse-error", "at"]
-        [ list (map msgValue (PE.errorMessages pe))
+        [ list (nub $ map msgValue (PE.errorMessages pe))
         , spValue (PE.errorPos pe)
         ]
   where

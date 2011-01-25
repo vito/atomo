@@ -12,9 +12,21 @@
   }
 
 @(parse-error: d at: @(source: n line: l column: c)) describe-error :=
-  [ "parse error (" .. n .. ":" .. l show .. ":" .. c show .. "):"
-    d unlines indent: 2
-  ] join: "\n"
+  { explain: x :=
+      x match: {
+        String -> x
+
+        @(unexpected: u) ->
+          "unexpected " .. u
+
+        @(expected: e) ->
+          "expected " .. e
+      }
+
+    [ "parse error (" .. n .. ":" .. l show .. ":" .. c show .. "):"
+      d (map: @(this explain: _)) unlines indent: 2
+    ] join: "\n"
+  } call
 
 @(pattern: p did-not-match: v) describe-error :=
   v show .. " did not match pattern: " .. p show
