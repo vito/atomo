@@ -53,10 +53,10 @@ class: Range: {
       result
     } call
 
-  show :=
+  pretty :=
     if: exclusive?
-      then: { begin show .. " ... " .. end show }
-      else: { begin show .. " .. " .. end show }
+      then: { begin pretty <+> text: "..." <+> end pretty }
+      else: { begin pretty <+> text: ".." <+> end pretty }
 }
 
 x .. y := Range new.begin: x end: y

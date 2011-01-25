@@ -35,8 +35,10 @@ Restart = Object clone
   Simple-Warning new: v :=
     Simple-Warning clone (delegating-to: v) do: { value = v }
 
-  (e: Simple-Error) show := "<error " .. e value show .. ">"
-  (e: Simple-Warning) show := "<warning " .. e value show .. ">"
+  (e: Simple-Error) pretty :=
+    text: "<error" <+> e value pretty <> text: ">"
+  (e: Simple-Warning) pretty :=
+    text: "<warning" <+> e value pretty <> text: ">"
 
   Restart show-options-for: e :=
     { { $- (repeat: 78) print
@@ -73,7 +75,8 @@ Restart = Object clone
         }
     } call
 
-  (r: -> Restart) show := "<restart " .. r action show .. ">"
+  (r: -> Restart) pretty :=
+    text: "<restart" <+> r action pretty <> text: ">"
 
   macro (action with-restarts: (restarts: Block))
     { rs = restarts contents map:

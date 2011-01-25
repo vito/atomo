@@ -58,9 +58,6 @@ until: (test: Block) do: (action: Block) :=
     until: test do: action
   } call
 
-True show := "True"
-False show := "False"
-
 otherwise := True
 
 macro (condition: (bs: Block))

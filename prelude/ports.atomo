@@ -18,7 +18,7 @@ eof? := *input-port* _? eof?
 
 String-Port = Port clone
 
-String-Port show := "<port {string}>"
+String-Port pretty := text: "<port {string}>"
 
 String-Port new := String-Port new: ""
 String-Port new: (c: String) :=
