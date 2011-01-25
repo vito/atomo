@@ -72,9 +72,9 @@ Often you may want to specify some variables for your macros to use during expan
 
 #section:{Macro Quotes}tag:{macro-quotes}
 
-Macro-quotes are a generalized string quotation mechanism similar to Haskell's #code:{QuasiQuotes} extension. They are used for creating arbitrary values from a given string at macroexpansion time, and are very cheap to use. They can make code very clear and concise, so their use is encouraged for creating simple literal values like URLs, paths, byte strings, regular expressions and much more.
+Macro-quotes are a generalized string quotation mechanism similar to Haskell's #code:{QuasiQuotes} extension. They are used for creating arbitrary values from a given string at macroexpansion time, and are very cheap.
 
-That being said, please do not write entire DSLs inside of a macro-quote; it's much better to just use the language itself.
+They can make code very clear and concise, adding "almost literal" syntax for things like URLs, paths, byte strings, and regular expressions. That being said, please do not write entire DSLs using them; it's much better to just use the language itself.
 
 Let's take a look at two common macro-quoters, #code:{w} (word list) and #code:{r} (regular expression):
 
@@ -83,20 +83,20 @@ Let's take a look at two common macro-quoters, #code:{w} (word list) and #code:{
   r`"\d+"`m
 }
 
-During the macroexpansion phase, these two macro-quotes send the following messages, respectively:
+During the macroexpansion phase, these macro-quotes send the following messages, respectively:
 
 #atomo:{
   quote: "foo bar baz" as: @w
   quote: "\"\\d+\"" as: @r &flags: [$m]
 }
 
-To define a magic-quoter, use #hl:{for-macro} to define #hl:{quote:as:}, pattern-matching the quoter's name as a particle for the #hl:{as:} role. The value yielded by this method will be what the macro-quote expands to. For example, the #code:{w} macro-quoter expands into a list of the words in the string:
+To define a macro-quoter, use #hl:{for-macro} to define #hl:{quote:as:}, pattern-matching the quoter's name as a particle for the #hl:{as:} role. The value yielded by this method will be what the macro-quote expands to. For example, the #code:{w} macro-quoter expands into a list of the words in the string:
 
 #interaction:{
   w{foo bar baz}
 }
 
-The #code:{r} macro-quoter expands into a #hl:{Regexp} value (which pretty-prints as a magic-quote):
+The #code:{r} macro-quoter expands into a #hl:{Regexp} value (which pretty-prints as a macro-quote):
 
 #interaction:{
   r`"\d+"`m
