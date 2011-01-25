@@ -298,7 +298,7 @@ stringChar = choice
     <?> "string character"
 
 stringLetter :: Lexer Char
-stringLetter = satisfy (\c -> (c /= '"') && (c /= '\\') && (c > '\026'))
+stringLetter = satisfy (`notElem` "\"\\")
 
 stringEscape :: Lexer (Maybe Char)
 stringEscape = char '\\' >> choice
