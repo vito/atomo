@@ -36,6 +36,17 @@ withToken f =
         (\_ t _ -> tLocation t)
         (f . tToken)
 
+someToken :: Parser Token
+someToken = withToken Just
+
+endOfFile :: Parser ()
+endOfFile = try $ choice
+    [ do
+        t <- someToken
+        unexpected (showToken t)
+    , return ()
+    ]
+
 keyword :: Parser String
 keyword = withToken $ \t ->
     case t of

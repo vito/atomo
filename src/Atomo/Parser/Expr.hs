@@ -412,5 +412,5 @@ opChain _ ns ts oss = error $ "opChain: " ++ show (ns, ts, oss)
 parser :: Parser [Expr]
 parser = do
     es <- blockOf pExpr
-    eof
+    endOfFile
     return es
