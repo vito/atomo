@@ -10,6 +10,15 @@ import Atomo
 byteString :: BS.ByteString -> Value
 byteString = String . decodeUtf8
 
+data MkRegex a = RegexOK a | Failed String
+
+instance Monad MkRegex where
+    return = RegexOK
+    fail = Failed
+
+    Failed x >>= _ = Failed x
+    RegexOK a >>= f = f a
+
 load :: VM ()
 load = do
     ([$p|RegexpBindings|] =::) =<< eval [$e|Object clone|]
@@ -18,8 +27,12 @@ load = do
     [$p|Regexp new: (s: String) &flags: ""|] =: do
         s <- getString [$e|s|]
         fs <- getString [$e|flags|]
-        r <- regex s fs
-        return (Regexp r s fs (namedCaptures s))
+
+        case regex s fs of
+            RegexOK re ->
+                return (Regexp re s fs (namedCaptures s))
+            Failed x ->
+                raise ["regexp-failed"] [string x]
 
     [$p|(r: Regexp) matches?: (s: String)|] =: do
         Regexp { rCompiled = r } <- here "r" >>= findRegexp
