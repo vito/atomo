@@ -59,6 +59,7 @@ loadPrelude = do
         [ "core"
 
         , "boolean"
+        , "comparable"
         , "association"
         , "string"
         , "pretty"
@@ -69,7 +70,6 @@ loadPrelude = do
         , "set"
 
         , "block"
-        , "comparable"
         , "continuation"
         , "list"
         , "numeric"
