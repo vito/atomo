@@ -36,9 +36,9 @@ Restart = Object clone
     Simple-Warning clone (delegating-to: v) do: { value = v }
 
   (e: Simple-Error) pretty :=
-    text: "<error" <+> e value pretty <> text: ">"
+    { text: "<error" <+> e value pretty <> text: ">" } doc
   (e: Simple-Warning) pretty :=
-    text: "<warning" <+> e value pretty <> text: ">"
+    { text: "<warning" <+> e value pretty <> text: ">" } doc
 
   Restart show-options-for: e :=
     { { $- (repeat: 78) print
