@@ -19,7 +19,7 @@ data Segment
     | SString
 
     -- | %d
-    | SInteger
+    | SDecimal
 
     -- | %x
     | SHex
@@ -124,7 +124,7 @@ instance Pretty Flag where
 instance Pretty Segment where
     prettyFrom _ (SChunk _) = error "pretty-printing a Chunk segment"
     prettyFrom _ SString = char 's'
-    prettyFrom _ SInteger = char 'd'
+    prettyFrom _ SDecimal = char 'd'
     prettyFrom _ SHex = char 'x'
     prettyFrom _ SOctal = char 'o'
     prettyFrom _ SBinary = char 'b'

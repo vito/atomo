@@ -58,7 +58,7 @@ sString :: Parser Segment
 sString = char 's' >> return SString
 
 sInteger :: Parser Segment
-sInteger = char 'd' >> return SInteger
+sInteger = char 'd' >> return SDecimal
 
 sHex :: Parser Segment
 sHex = char 'h' >> return SHex
