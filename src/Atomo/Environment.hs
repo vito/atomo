@@ -472,6 +472,7 @@ raise' = throwError . Error . particle
 
 -- | Convert an AtomoError into a value and raise it as an error.
 throwError :: AtomoError -> VM a
+{-throwError e = error ("panic: " ++ show (pretty e))-}
 throwError e = gets top >>= \t -> do
     r <- dispatch (keyword ["responds-to?"] [t, particle "Error"])
 
