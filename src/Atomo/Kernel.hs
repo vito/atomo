@@ -22,6 +22,7 @@ import qualified Atomo.Kernel.Continuation as Continuation
 import qualified Atomo.Kernel.Char as Char
 import qualified Atomo.Kernel.Regexp as Regexp
 import qualified Atomo.Kernel.Pretty as Pretty
+import qualified Atomo.Kernel.Format as Format
 
 load :: VM ()
 load = do
@@ -44,3 +45,4 @@ load = do
     Char.load
     Regexp.load
     Pretty.load
+    Format.load

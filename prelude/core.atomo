@@ -44,3 +44,5 @@ for-macro quote: s as: @r &flags: [] :=
   Regexp new: s &flags: (flags to: String)
 
 for-macro quote: s as: @w := s words
+
+for-macro quote: s as: @f := Formatting new: s
