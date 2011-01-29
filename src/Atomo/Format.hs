@@ -8,7 +8,7 @@ import Data.Char (intToDigit)
 import Numeric
 import qualified Data.Text as T
 
-import Atomo
+import Atomo hiding (p, e)
 import Atomo.Format.Types
 
 
@@ -17,11 +17,11 @@ format = do
     fs <- ask
     case fs of
         [] -> return ()
-        ((SBreak, _) : fs) -> do
-            i <- get
-            case i of
-                (is, p) | p == length is -> return ()
-                _ -> local tail format
+        ((SBreak, _) : _) -> do
+            is <- inputs
+            if null is
+                then return ()
+                else local tail format
         (f : _) -> do
             process f
             local tail format
@@ -48,11 +48,11 @@ process (SAsString, ms) = do
     s <- lift (here "String")
     i <- input
     String x <- lift (dispatch (keyword ["as"] [i, s]) >>= findString)
-    tell x
+    justifyL ms x >>= tell
 process (SAny, ms) = do
     i <- input
     String x <- lift (dispatch (single "show" i) >>= findString)
-    tell x
+    justifyL ms x >>= tell
 process (SPluralize fs mp, ms) = do
     w <- censor (const "") (liftM snd (listen (with fs format)))
     Integer n <-
@@ -70,13 +70,13 @@ process (SPluralize fs mp, ms) = do
             tell p
         Just p ->
             with p format
-process (SLowercase fs, ms) =
+process (SLowercase fs, _) =
     censor T.toLower (with fs format)
-process (SCapitalize fs, ms) =
+process (SCapitalize fs, _) =
     censor cap (with fs format)
   where
     cap t = T.toUpper (T.take 1 t) `T.append` (T.drop 1 t)
-process (SUppercase fs, ms) =
+process (SUppercase fs, _) =
     censor T.toUpper (with fs format)
 process (SSkip, ms) = do
     n <- liftM (maybe 1 id) (fNumber ms)
@@ -109,8 +109,7 @@ process (SIterate fs, ms) = do
     ois <- get
     ins <- inputs
 
-    let num = maybe (length ins) id n
-        sub = fSymbol ms '.'
+    let sub = fSymbol ms '.'
         alwaysRun = fSymbol ms '+'
 
     if null ins && alwaysRun && n /= Just 0
@@ -149,7 +148,7 @@ process (SIterate fs, ms) = do
             _ -> do
                 with fs format
                 iterMax (n - 1)
-process (SBreak, ms) = return ()
+process (SBreak, _) = return ()
 process (SConditional fss md, ms) = do
     case (fSymbol ms '?', fss) of
         (True, (t:f:_)) -> do
@@ -177,7 +176,7 @@ input = do
     i <- inputs
     case i of
         [] -> lift (raise' "incomplete-input")
-        (x:xs) -> do
+        (x:_) -> do
             modify (second succ)
             return x
 
@@ -247,9 +246,9 @@ justify fs ts = do
             Just w -> justifyTo w ts
 
 justifyTo :: Int -> [T.Text] -> T.Text
-justifyTo w ts = done ts
+justifyTo to ts = done ts
   where
-    need = w - sum (map T.length ts)
+    need = to - sum (map T.length ts)
     naiveAvg = need `div` (length ts - 1)
 
     -- special case; e.g. 5 `div` 3 is 1, so we end up with 1|1|3;
