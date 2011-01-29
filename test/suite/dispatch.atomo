@@ -9,16 +9,16 @@ describe: "dispatch" as: {
     describe: "pattern-matching" as: {
       on: default match: targets :=
         { targets init (zip: [1, 2]) each:
-            { t |
-              (t from) foo = t to
+            { [x, res] |
+              x foo = res
             }
 
           (default) foo = 3
 
 
           targets (zip: [1, 2, 3]) each:
-            { p |
-              p from foo should-be: p to
+            { [x, res] |
+              x foo should-be: res
             }
         } call
 
