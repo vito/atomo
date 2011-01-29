@@ -72,8 +72,10 @@ process (SPluralize fs mp, ms) = do
             with p format
 process (SLowercase fs, _) =
     censor T.toLower (with fs format)
-process (SCapitalize fs, _) =
-    censor cap (with fs format)
+process (SCapitalize fs, ms) = do
+    mn <- fNumber ms
+    let fn = maybe (map cap) (\n ws -> map cap (take n ws) ++ drop n ws) mn
+    censor (T.unwords . fn . T.words) (with fs format)
   where
     cap t = T.toUpper (T.take 1 t) `T.append` (T.drop 1 t)
 process (SUppercase fs, _) =
