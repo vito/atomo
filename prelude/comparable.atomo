@@ -18,7 +18,7 @@ for-macro regexp?: e :=
     @primitive ->
       (evaluate: e) is-a?: Regexp
 
-    @magic-quote ->
+    @macro-quote ->
       e name == "r"
 
     _ -> False
