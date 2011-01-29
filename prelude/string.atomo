@@ -31,3 +31,27 @@
       }
     } call
 } call
+
+(s: String) plural :=
+  s case-of: {
+    r"o$"i ->
+      s .. "es"
+    r"[aeiou]$"i ->
+      s .. "s"
+    r"(?<root>.+[aeiou])y$"i ->
+      s .. "s"
+    r"(lay-by|stand-by)$"i ->
+      s .. "s"
+    r"(?<root>.+)y$"i ->
+      \root .. "ies"
+    r"(?<root>.+)us$"i ->
+      \root .. "i"
+    r"(?<root>.+)sis$"i ->
+      \root .. "es"
+    r"(?<root>.+)(ex|ix)$"i ->
+      \root .. "ices"
+    r"(?<root>.+)(ss|sh|ch|dge)$"i ->
+      s .. "es"
+    _ ->
+      s .. "s"
+  }
