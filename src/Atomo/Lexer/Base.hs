@@ -46,7 +46,7 @@ isOperator :: String -> Bool
 isOperator "" = False
 isOperator cs = head cs `notElem` "@$~" && all isOpLetter cs
 
-def :: P.GenLanguageDef String LexerState Identity
+def :: P.GenLanguageDef String u Identity
 def = P.LanguageDef
     { P.commentStart = "{-"
     , P.commentEnd = "-}"
@@ -61,10 +61,10 @@ def = P.LanguageDef
     , P.caseSensitive = True
     }
 
-eol :: Lexer ()
+eol :: ParsecT String u Identity ()
 eol = newline >> return ()
 
-anyIdent :: Lexer String
+anyIdent :: ParsecT String u Identity String
 anyIdent = try $ do
     c <- P.identStart def
     cs <- many (P.identLetter def)
@@ -74,26 +74,26 @@ anyIdent = try $ do
 
     return (c:cs)
 
-ident :: Lexer String
+ident :: ParsecT String u Identity String
 ident = do
     name <- anyIdent
     if isReservedName name
         then unexpected ("reserved word " ++ show name)
         else return name
 
-lexeme :: Lexer a -> Lexer a
+lexeme :: ParsecT String u Identity a -> ParsecT String u Identity a
 lexeme l = do
     r <- l
     whiteSpace
     return r
 
-symbol :: String -> Lexer String
+symbol :: String -> ParsecT String u Identity String
 symbol = lexeme . string
 
-identifier :: Lexer String
+identifier :: ParsecT String u Identity String
 identifier = lexeme ident
 
-operator :: Lexer String
+operator :: ParsecT String u Identity String
 operator = try $ do
     c <- P.opStart def
     cs <- many (P.opLetter def)
@@ -101,27 +101,27 @@ operator = try $ do
         then unexpected ("reserved operator " ++ show (c:cs))
         else return (c:cs)
 
-reserved :: String -> Lexer ()
+reserved :: String -> ParsecT String u Identity ()
 reserved n = try $ do
     string n
     notFollowedBy (P.identLetter def) <?> "end of " ++ show n
 
-integer :: Lexer Integer
+integer :: ParsecT String u Identity Integer
 integer = do
     f <- sign
     n <- natural
     return (f n)
 
-float :: Lexer Double
+float :: ParsecT String u Identity Double
 float = do
     f <- sign
     n <- floating
     return (f n)
 
-natural :: Lexer Integer
+natural :: ParsecT String u Identity Integer
 natural = zeroNumber <|> decimal
 
-stringLiteral :: Lexer String
+stringLiteral :: ParsecT String u Identity String
 stringLiteral = do
     str <-
         between
@@ -131,13 +131,13 @@ stringLiteral = do
 
     return (foldr (maybe id (:)) "" str)
 
-charLiteral :: Lexer Char
+charLiteral :: ParsecT String u Identity Char
 charLiteral = do
     char '$'
     charEscape <|> charLetter
     <?> "literal character"
 
-tagged :: Lexer Token -> Lexer TaggedToken
+tagged :: ParsecT String u Identity Token -> ParsecT String u Identity TaggedToken
 tagged p = do
     pos <- getPosition
     r <- p
@@ -167,33 +167,33 @@ isReserved names name
 -- Numeric ------------------------------------------------------------------
 -----------------------------------------------------------------------------
 
-decimal :: Lexer Integer
+decimal :: ParsecT String u Identity Integer
 decimal = number 10 digit
 
-number :: Integer -> Lexer Char -> Lexer Integer
+number :: Integer -> ParsecT String u Identity Char -> ParsecT String u Identity Integer
 number base baseDigit = do
     digits <- many1 baseDigit
     let n = foldl (\x d -> base * x + toInteger (digitToInt d)) 0 digits
     n `seq` (return n)
 
-zeroNumber :: Lexer Integer
+zeroNumber :: ParsecT String u Identity Integer
 zeroNumber = do
     char '0'
     hexadecimal <|> octal <|> decimal <|> return 0
     <?> "zeroNumber"
 
-hexadecimal :: Lexer Integer
+hexadecimal :: ParsecT String u Identity Integer
 hexadecimal = oneOf "xX" >> number 16 hexDigit
 
-octal :: Lexer Integer
+octal :: ParsecT String u Identity Integer
 octal = oneOf "oO" >> number 8 octDigit
 
-floating :: Lexer Double
+floating :: ParsecT String u Identity Double
 floating = do
     n <- decimal
     fractExponent n
 
-fractExponent :: Integer -> Lexer Double
+fractExponent :: Integer -> ParsecT String u Identity Double
 fractExponent n = choice
     [ do
         fract <- fraction
@@ -204,7 +204,7 @@ fractExponent n = choice
         return (fromInteger n * expo)
     ]
 
-fraction :: Lexer Double
+fraction :: ParsecT String u Identity Double
 fraction = do
     char '.'
     digits <- many1 digit <?> "fraction"
@@ -213,7 +213,7 @@ fraction = do
     where
     op d f  = (f + fromIntegral (digitToInt d)) / 10.0
 
-exponent' :: Lexer Double
+exponent' :: ParsecT String u Identity Double
 exponent' = do
     oneOf "eE"
     f <- sign
@@ -224,7 +224,7 @@ exponent' = do
     power e  | e < 0      = 1.0 / power(-e)
             | otherwise  = fromInteger (10 ^ e)
 
-sign :: Num a => Lexer (a -> a)
+sign :: Num a => ParsecT String u Identity (a -> a)
 sign = choice
     [ char '-' >> return negate
     , char '+' >> return id
@@ -235,22 +235,22 @@ sign = choice
 -- Whitespace & Comments ----------------------------------------------------
 -----------------------------------------------------------------------------
 
-whiteSpace :: Lexer ()
+whiteSpace :: ParsecT String u Identity ()
 whiteSpace = do
     spacing
     skipMany (try $ spacing >> newline)
     spacing
 
-whiteSpace1 :: Lexer ()
+whiteSpace1 :: ParsecT String u Identity ()
 whiteSpace1 = (space <|> newline) >> whiteSpace
 
-simpleSpace :: Lexer ()
+simpleSpace :: ParsecT String u Identity ()
 simpleSpace = skipMany1 $ satisfy (`elem` " \t\f\v\xa0")
 
-spacing :: Lexer ()
+spacing :: ParsecT String u Identity ()
 spacing = skipMany spacing1
 
-spacing1 :: Lexer ()
+spacing1 :: ParsecT String u Identity ()
 spacing1 = choice
     [ simpleSpace
     , oneLineComment
@@ -258,17 +258,17 @@ spacing1 = choice
     ]
     <?> "whitespace or commend"
 
-oneLineComment :: Lexer ()
+oneLineComment :: ParsecT String u Identity ()
 oneLineComment = do
     try (string (P.commentLine def))
     skipMany (satisfy (/= '\n'))
 
-multiLineComment :: Lexer ()
+multiLineComment :: ParsecT String u Identity ()
 multiLineComment = do
     try (string (P.commentStart def))
     inComment
 
-inComment :: Lexer ()
+inComment :: ParsecT String u Identity ()
 inComment = choice
     [ try (string (P.commentEnd def)) >> return ()
     , multiLineComment >> inComment
@@ -284,33 +284,33 @@ inComment = choice
 -- Character Escaping -------------------------------------------------------
 -----------------------------------------------------------------------------
 
-charEscape :: Lexer Char
+charEscape :: ParsecT String u Identity Char
 charEscape = char '\\' >> escapeCode
 
-charLetter :: Lexer Char
+charLetter :: ParsecT String u Identity Char
 charLetter = satisfy (\c -> (c /= '\\') && (c > '\026'))
 
-stringChar :: Lexer (Maybe Char)
+stringChar :: ParsecT String u Identity (Maybe Char)
 stringChar = choice
     [ fmap Just stringLetter
     , stringEscape
     ]
     <?> "string character"
 
-stringLetter :: Lexer Char
+stringLetter :: ParsecT String u Identity Char
 stringLetter = satisfy (`notElem` "\"\\")
 
-stringEscape :: Lexer (Maybe Char)
+stringEscape :: ParsecT String u Identity (Maybe Char)
 stringEscape = char '\\' >> choice
     [ escapeGap >> return Nothing
     , escapeEmpty >> return Nothing
     , fmap Just escapeCode
     ]
 
-escapeEmpty :: Lexer Char
+escapeEmpty :: ParsecT String u Identity Char
 escapeEmpty = char '&'
 
-escapeGap :: Lexer Char
+escapeGap :: ParsecT String u Identity Char
 escapeGap = do
     many1 space
     char '\\' <?> "end of string gap"
@@ -336,17 +336,17 @@ ascii2 = "\b\t\n\v\f\r\SO\SI\EM\FS\GS\RS\US "
 ascii3 :: [Char]
 ascii3 = "\NUL\SOH\STX\ETX\EOT\ENQ\ACK\a\DLE\DC1\DC2\DC3\DC4\NAK\SYN\ETB\CAN\SUB\ESC\DEL"
 
-escapeCode :: Lexer Char
+escapeCode :: ParsecT String u Identity Char
 escapeCode = charEsc <|> charNum <|> charAscii <|> charControl
     <?> "escape code"
 
-charControl :: Lexer Char
+charControl :: ParsecT String u Identity Char
 charControl = do
     char '^'
     code <- upper
     return (toEnum (fromEnum code - fromEnum 'A'))
 
-charNum :: Lexer Char
+charNum :: ParsecT String u Identity Char
 charNum = do
     code <- choice
         [ decimal
@@ -356,12 +356,12 @@ charNum = do
 
     return (toEnum (fromInteger code))
 
-charEsc :: Lexer Char
+charEsc :: ParsecT String u Identity Char
 charEsc = choice (map parseEsc escMap)
   where
     parseEsc (c, code) = char c >> return code
 
-charAscii :: Lexer Char
+charAscii :: ParsecT String u Identity Char
 charAscii = choice (map parseAscii asciiMap)
   where
     parseAscii (asc, code) = try (string asc >> return code)
