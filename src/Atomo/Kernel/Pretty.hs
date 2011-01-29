@@ -1,13 +1,11 @@
-{-# LANGUAGE DeriveDataTypeable, StandaloneDeriving, QuasiQuotes #-}
+{-# LANGUAGE QuasiQuotes #-}
 module Atomo.Kernel.Pretty (load) where
 
-import Data.Typeable
 import Text.PrettyPrint
 
 import Atomo as A
 import Atomo.Pretty
 
-deriving instance Typeable Doc
 
 load :: VM ()
 load = do
@@ -167,9 +165,9 @@ load = do
 
         return (string (renderStyle (Style sm sl sr) d))
   where
-    mkPretty :: Doc -> VM Value
+    mkPretty :: Prettied -> VM Value
     mkPretty d =
         [$e|Pretty|] `newWith` [("doc", haskell d)]
 
-    fromPretty :: Value -> VM Doc
+    fromPretty :: Value -> VM Prettied
     fromPretty v = dispatch (single "doc" v) >>= fromHaskell

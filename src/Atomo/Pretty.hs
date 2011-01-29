@@ -1,10 +1,11 @@
-{-# LANGUAGE FlexibleInstances, TypeSynonymInstances #-}
-module Atomo.Pretty (Pretty(..)) where
+{-# LANGUAGE DeriveDataTypeable, FlexibleInstances, StandaloneDeriving, TypeSynonymInstances #-}
+module Atomo.Pretty (Pretty(..), Prettied) where
 
 import Data.Char (isUpper)
 import Data.IORef
 import Data.Maybe (isNothing)
 import Data.Ratio
+import Data.Typeable
 import System.IO.Unsafe
 import Text.PrettyPrint hiding (braces)
 import qualified Data.Vector as V
@@ -23,11 +24,15 @@ data Context
     | CPattern
     | CList
 
+type Prettied = Doc
+
+deriving instance Typeable Prettied
+
 class Pretty a where
     -- | Pretty-print a value into a Doc. Typically this should be parseable
     -- back into the original value, or just a nice user-friendly output form.
-    pretty :: a -> Doc
-    prettyFrom :: Context -> a -> Doc
+    pretty :: a -> Prettied
+    prettyFrom :: Context -> a -> Prettied
 
     pretty = prettyFrom CNone
 
