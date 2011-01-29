@@ -103,12 +103,13 @@ Restart = Object clone
     modify: *restarts* as: { rs | restarts .. rs } do: action
 
   (super) signal: v :=
-    { *handlers* map:
-        { h |
-          modify: *handlers* as: @tail do: {
+    { modify: *handlers* as: @id do: {
+        *handlers* map:
+          { h |
+            *handlers* =! *handlers* tail
             h (call: v) (call: v)
           }
-        }
+      }
 
       @ok
     } call
