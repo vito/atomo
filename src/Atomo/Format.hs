@@ -12,6 +12,9 @@ import Atomo hiding (p, e)
 import Atomo.Format.Types
 
 
+i2d :: Int -> Char
+i2d = (!!) (['0'..'9'] ++ ['a'..'z'])
+
 format :: Formatter ()
 format = do
     fs <- ask
@@ -37,7 +40,7 @@ process (SOctal, ms) = integer ms showOct
 process (SBinary, ms) = integer ms (showIntAtBase 2 intToDigit)
 process (SRadix, ms) = do
     n <- orIntegerInput (fPrecision ms)
-    integer ms (showIntAtBase (fromIntegral n) intToDigit)
+    integer ms (showIntAtBase (fromIntegral n) i2d)
 process (SFloat, ms) = float ms showFFloat
 process (SExponent, ms) = float ms showEFloat
 process (SGeneral, ms) = float ms showGFloat
