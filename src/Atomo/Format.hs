@@ -105,7 +105,6 @@ process (SIndirection, ms) = do
 process (SIterate fs, ms) = do
     let rest = fSymbol ms '*'
 
-    n <- fNumber ms
     is <-
         if rest
             then get
@@ -114,18 +113,19 @@ process (SIterate fs, ms) = do
                 return (fromList i, 0)
 
     ois <- get
-    ins <- inputs
 
     let sub = fSymbol ms '.'
         alwaysRun = fSymbol ms '+'
 
-    if null ins && alwaysRun && n /= Just 0
+    n <- fNumber ms
+
+    if snd is == length (fst is) && alwaysRun && n /= Just 0
         then with fs format
         else do
 
     case n of
-        Nothing | sub -> do
-            forM_ ins $ \i -> do
+        Nothing | sub ->
+            forM_ (fst is) $ \i -> do
                 put (fromList i, 0)
                 with fs format
         Nothing -> do
@@ -136,7 +136,7 @@ process (SIterate fs, ms) = do
             iterMax m
 
     if rest
-        then modify (second (const (length ins)))
+        then modify (second (const (length (fst is))))
         else put ois
   where
     iter = do
