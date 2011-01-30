@@ -13,7 +13,9 @@ import Atomo.Format.Types
 
 
 i2d :: Int -> Char
-i2d = (!!) (['0'..'9'] ++ ['a'..'z'])
+i2d x
+    | x `elem` [0..36] = (['0'..'9'] ++ ['a'..'z']) !! x
+    | otherwise = error "radix must be between 0 and 36"
 
 format :: Formatter ()
 format = do
