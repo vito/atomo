@@ -66,7 +66,7 @@ process (SPluralize fs mp, ms) = do
     if n == 1
         then tell w
         else do
-        
+
     case mp of
         Nothing -> do
             String p <- lift (dispatch (single "plural" (String w)) >>= findString)
@@ -94,7 +94,7 @@ process (SIndirection, ms) = do
     if fSymbol ms '*'
         then with fs format
         else do
-    
+
     is <- input >>= liftM fromList . (lift . findList)
     old <- get
     put (is, 0)
@@ -173,7 +173,7 @@ process (SJustify fss, ms) = do
     ts <- forM fss $ \fs -> censor (const "") $ do
         (_, o) <- listen (with fs format)
         return o
-    
+
     justify ms ts >>= tell
 
 input :: Formatter Value

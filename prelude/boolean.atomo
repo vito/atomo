@@ -1,4 +1,5 @@
-@no-true-branches describe-error := "no tests in condition: block were true"
+@no-true-branches describe-error :=
+  "no tests in condition: block were true"
 
 False and: _ := False
 True and: (b: Block) := b call
