@@ -61,7 +61,7 @@ sInteger :: Parser Segment
 sInteger = char 'd' >> return SDecimal
 
 sHex :: Parser Segment
-sHex = char 'h' >> return SHex
+sHex = char 'x' >> return SHex
 
 sOctal :: Parser Segment
 sOctal = char 'o' >> return SOctal
