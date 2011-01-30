@@ -82,7 +82,7 @@ process (SCapitalize fs, ms) = do
     let fn = maybe (map cap) (\n ws -> map cap (take n ws) ++ drop n ws) mn
     censor (T.unwords . fn . T.words) (with fs format)
   where
-    cap t = T.toUpper (T.take 1 t) `T.append` (T.drop 1 t)
+    cap t = T.toUpper (T.take 1 t) `T.append` (T.toLower (T.drop 1 t))
 process (SUppercase fs, _) =
     censor T.toUpper (with fs format)
 process (SSkip, ms) = do
