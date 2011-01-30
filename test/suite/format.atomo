@@ -238,9 +238,9 @@ describe: "formatting" as: {
   }
 
   describe: "iteration (%{...})" as: {
-  	it: "executes a format over a list of inputs" so: {
-  	  (f"%{%d, }" % [1, 2, 3]) should-be: "1, 2, 3, "
-  	}
+    it: "executes a format over a list of inputs" so: {
+      (f"%{%d, }" % [1, 2, 3]) should-be: "1, 2, 3, "
+    }
 
     it: "accepts a * flag for acting on the rest of the inputs" so: {
       (f"%*{%d, }" % (1, 2, 3)) should-be: "1, 2, 3, "
