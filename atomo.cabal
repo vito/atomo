@@ -70,6 +70,9 @@ library
     Atomo,
     Atomo.Core,
     Atomo.Environment,
+    Atomo.Format,
+    Atomo.Format.Parser,
+    Atomo.Format.Types,
     Atomo.Helpers,
     Atomo.Load,
     Atomo.Lexer,
@@ -111,6 +114,7 @@ library
     Atomo.Kernel.Char,
     Atomo.Kernel.Regexp,
     Atomo.Kernel.Pretty,
+    Atomo.Kernel.Format,
     Paths_atomo
 
 
