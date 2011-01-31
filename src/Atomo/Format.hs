@@ -1,7 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Atomo.Format where
 
-import Control.Arrow
 import Control.Monad.Identity
 import Control.Monad.RWS
 import Data.Char (intToDigit)
@@ -22,6 +21,11 @@ format = do
     fs <- ask
     case fs of
         [] -> return ()
+        ((SBreak, ms) : _) | fSymbol ms '.' -> do
+            iter <- gets fsIterating
+            if null iter
+                then modify $ \s -> s { fsStop = True }
+                else local tail format
         ((SBreak, _) : _) -> do
             is <- inputs
             if null is
@@ -87,7 +91,9 @@ process (SUppercase fs, _) =
     censor T.toUpper (with fs format)
 process (SSkip, ms) = do
     n <- liftM (maybe 1 id) (fNumber ms)
-    modify (second (+ (if back then -n else n)))
+    modify $ \fs -> fs
+        { fsPosition = fsPosition fs + (if back then -n else n)
+        }
   where
     back = fSymbol ms '<'
 process (SIndirection, ms) = do
@@ -99,7 +105,7 @@ process (SIndirection, ms) = do
 
     is <- input >>= liftM fromList . (lift . findList)
     old <- get
-    put (is, 0)
+    put (startState is)
     with fs format
     put old
 process (SIterate fs, ms) = do
@@ -107,10 +113,10 @@ process (SIterate fs, ms) = do
 
     is <-
         if rest
-            then get
+            then inputs
             else do
                 i <- input >>= lift . findList
-                return (fromList i, 0)
+                return (fromList i)
 
     ois <- get
 
@@ -119,42 +125,52 @@ process (SIterate fs, ms) = do
 
     n <- fNumber ms
 
-    if snd is == length (fst is) && alwaysRun && n /= Just 0
+    if null is && alwaysRun && n /= Just 0
         then with fs format
         else do
 
     case n of
-        Nothing | sub ->
-            forM_ (fst is) $ \i -> do
-                put (fromList i, 0)
+        Nothing | sub -> do
+            modify $ \s -> s { fsIterating = is }
+            forM_ is $ \i -> do
+                modify $ \s -> s
+                    { fsInput = fromList i
+                    , fsPosition = 0
+                    , fsIterating = tail (fsIterating s)
+                    }
+
                 with fs format
         Nothing -> do
-            put is
+            setInput is
             iter
         Just m -> do
-            put is
+            setInput is
             iterMax m
 
     if rest
-        then modify (second (const (length (fst is))))
+        then modify $ \s -> s
+            { fsPosition = length (fsInput s)
+            }
         else put ois
   where
     iter = do
         is <- inputs
+        s <- gets fsStop
         case is of
-            [] -> return ()
-            _ -> do
+            (_:_) | not s -> do
                 with fs format
                 iter
+            _ -> return ()
 
     iterMax 0 = return ()
     iterMax n = do
         is <- inputs
+        s <- gets fsStop
         case is of
-            [] -> return ()
-            _ -> do
+            (_:_) | not s -> do
                 with fs format
                 iterMax (n - 1)
+            _ -> return ()
 process (SBreak, _) = return ()
 process (SConditional fss md, ms) = do
     case (fSymbol ms '?', fss) of
@@ -184,13 +200,16 @@ input = do
     case i of
         [] -> lift (raise' "incomplete-input")
         (x:_) -> do
-            modify (second succ)
+            modify $ \fs -> fs { fsPosition = succ (fsPosition fs) }
             return x
+
+setInput :: [Value] -> Formatter ()
+setInput vs = modify (\s -> s { fsInput = vs, fsPosition = 0 })
 
 inputs :: Formatter [Value]
 inputs = do
     i <- get
-    return (drop (snd i) (fst i))
+    return (drop (fsPosition i) (fsInput i))
 
 orIntegerInput :: Maybe Int -> Formatter Int
 orIntegerInput =

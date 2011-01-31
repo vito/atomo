@@ -29,7 +29,7 @@ load = do
     [$p|(f: Formatting) % (... inputs)|] =: do
         fs <- eval [$e|f format|] >>= fromHaskell
         is <- getList [$e|inputs|]
-        (_, f) <- evalRWST format fs (is, 0)
+        (_, f) <- evalRWST format fs (startState is)
         return (String f)
 
     [$p|(f: Formatting) pretty|] =: do

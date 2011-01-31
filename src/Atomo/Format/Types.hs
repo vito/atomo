@@ -85,7 +85,7 @@ data Segment
 -- Various modifiers, for our segments.
 data Flag
     -- | FNumber
-    -- The Maybe is Nothing if they used #, in which case we use the number 
+    -- The Maybe is Nothing if they used #, in which case we use the number
     -- of remaining values.
     = FNumber (Maybe Int)
 
@@ -99,9 +99,17 @@ data Flag
     | FPrecision Int
     deriving (Eq, Show, Typeable)
 
+data FormatState =
+    FormatState
+        { fsInput :: [Value]
+        , fsPosition :: Int
+        , fsStop :: Bool
+        , fsIterating :: [Value]
+        }
+
 type Flagged = (Segment, [Flag])
 
-type FormatterT = RWST Format T.Text ([Value], Int)
+type FormatterT = RWST Format T.Text FormatState
 
 type Formatter = FormatterT VM
 
@@ -151,3 +159,7 @@ instance Pretty Segment where
         hcat (map (brackets . pretty) bs) <> parens (pretty d)
     prettyFrom _ (SJustify fs) =
         char 'j' <> hcat (map (parens . pretty) fs)
+
+
+startState :: [Value] -> FormatState
+startState vs = FormatState vs 0 False []
