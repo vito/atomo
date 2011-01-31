@@ -45,7 +45,7 @@ for-macro quote: s as: @r &flags: [] :=
 
 for-macro quote: s as: @w := s words
 
-for-macro quote: s as: @f := Formatting new: s
+for-macro quote: s as: @f := Formatter new: s
 
 macro (a \ (b: Dispatch))
   { set-head: y to: x :=
