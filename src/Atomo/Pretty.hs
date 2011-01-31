@@ -284,11 +284,28 @@ instance Pretty Tokens where
 
 
 instance Pretty AtomoError where
-    prettyFrom _ (Mismatch a b) =
-        text "mismatch:" $$ nest 2 (pretty a $$ pretty b)
+    prettyFrom _ (Error v) =
+        text "error:" <+> pretty v
+    prettyFrom _ (ParseError e) =
+        text "parse error:" <+> text (show e)
     prettyFrom _ (DidNotUnderstand m) =
         text "message not understood:" <+> pretty m
-    prettyFrom _ x = text (show x)
+    prettyFrom _ (Mismatch a b) =
+        text "mismatch:" $$ nest 2 (pretty a $$ pretty b)
+    prettyFrom _ (ImportError e) =
+        text "haskell interpreter:" <+> text (show e)
+    prettyFrom _ (FileNotFound fn) =
+        text "file not found:" <+> text fn
+    prettyFrom _ (ParticleArity e g) =
+        text ("particle needed " ++ show e ++ " values to complete, given " ++ show g)
+    prettyFrom _ (BlockArity e g) =
+        text ("block expected " ++ show e ++ " arguments, given " ++ show g)
+    prettyFrom _ NoExpressions =
+        text "no expressions to evaluate"
+    prettyFrom _ (ValueNotFound d v) =
+        text "could not find a" <+> text d <+> text "in" <+> pretty v
+    prettyFrom _ (DynamicNeeded t) =
+        text "expected dynamic value of type" <+> text t
 
 
 internal :: String -> Doc -> Doc
