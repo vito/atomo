@@ -815,7 +815,7 @@ regex p fs = do
 
 -- | Scan a regular expression to determine the index for named captures.
 namedCaptures :: String -> [(String, Int)]
-namedCaptures = cap 0
+namedCaptures = cap 1
   where
     cap _ "" = []
     cap n ('\\':_:cs) = cap n cs

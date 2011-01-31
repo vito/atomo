@@ -49,6 +49,7 @@ library
   hs-source-dirs:    src
 
   build-depends:
+    array,
     base >= 4 && < 5,
     bytestring,
     containers,
@@ -121,6 +122,7 @@ executable atomo
   ghc-options:       -Wall -threaded -fno-warn-unused-do-bind
 
   build-depends:
+    array,
     base >= 4 && < 5,
     bytestring,
     containers,
