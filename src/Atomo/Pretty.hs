@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable, FlexibleInstances, StandaloneDeriving, TypeSynonymInstances #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Atomo.Pretty (Pretty(..), Prettied) where
 
 import Data.Char (isUpper)
