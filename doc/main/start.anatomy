@@ -14,6 +14,7 @@
 #include-section:"lists.anatomy"
 #include-section:"tuples.anatomy"
 #include-section:"strings.anatomy"
+#include-section:"regexp.anatomy"
 #include-section:"formatting.anatomy"
 #include-section:"blocks.anatomy"
 #include-section:"concurrency.anatomy"
