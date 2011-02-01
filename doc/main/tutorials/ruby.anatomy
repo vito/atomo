@@ -14,7 +14,7 @@
   Here we use #hl:{for-macro}, a reserved word that tells the parser to evaluate this expression before the macroexpansion phase. We'll also use it later to define helper methods for our macros to use.
 }is:{
   for-macro *modules* = []
-}on:this
+}
 
 #row:{
   Next, we'll need a nice syntax for defining modules. We can use a neat trick with Atomo's parser here - #hl:{a: b: c} is parsed as #hl:{a: (b: c)} - that is, one keyword dispatch #hl:{a:} with another, #hl:{b: c}, as its second target (the first being the implicit toplevel object).
@@ -39,14 +39,14 @@
       add-module: name as: body contents
       body
     } call
-}on:this
+}
 
 #row:{
   #hl:{add-module:as:} is a small helper method for registering a module. We're using #hl:{super} here to specifically redefine the #hl:{*modules*} we created earlier.
 }is:{
   for-macro add-module: (name: String) as: (body: List) :=
     super *modules* = *modules* set: name to: body
-}on:this
+}
 
 #row:{
   Now when we say #hl:{module: A: { b := 2 }}, a module #hl:{A} will be inserted into #hl:{*modules*}, associated with #hl:{['(b := 2)]} - a list of its contents.
@@ -59,7 +59,7 @@
 }is:{
   macro (target include: (name: Dispatch))
     include: name name on: target
-}on:this
+}
 
 #row:{
   Search for a module by name, panicking if it isn't registered. Returns an expression for defining the module's body onto the target.
@@ -69,12 +69,14 @@
       @none -> error: @(unknown-module: name)
 
       @(ok: mod) ->
-        { body = expand-body: mod on: `!top
-          `(~(`Block new: body arguments: [`!top])
-              call: [~target])
+        { block =
+            `Block new: (expand-body: mod on: `!top)
+              arguments: [`!top]
+
+          `(~target join: ~block with: ~target)
         } call
     }
-}on:this
+}
 
 #row:{
   It's important to note that we're using special names here, notably #hl:{!top}, to avoid name collision. These names are guaranteed to be safe; each time the macro expands, identifiers in a quasiquote beginning with an exclamation mark are decorated with a clock value, so there's no way for it to be confused with some other name from outside the expansion.
@@ -82,12 +84,10 @@
 
 #row:{
   Maps over a given list of expressions, expanding its contents into their module or class forms.
-
-  Note that methods defined with #hl:{:=} are exported and evaluated with the target as their implicit toplevel value, while slots inserted with #hl:{=} are kept internal.
 }is:{
   for-macro expand-body: (exprs: List) on: target :=
     exprs map: { e | expand-expr: e on: target }
-}on:this
+}
 
 #row:{
   Come up with a method definition expression that has a the current instance as the method body's context. Ruby and Java use #code:{self} or #code:{this} for explicitly referring to this value, but both of these names are taken in Atomo, so we'll go with #hl:{me}.
@@ -125,26 +125,27 @@
   for-macro expand-expr: `(~name := ~body) on: target :=
     { with-me =
         `Dispatch new: name particle
-                    to: (name targets at: 0 put: `(me: { ~target }))
+          to: (name targets at: 0 put: `(me: { ~target }))
+          &optionals: name optionals
 
       if: (initializer?: name particle)
-        then: { `(~with-me := me clone do: ~body) }
+        then: { `(~with-me := ~target clone do: ~body) }
         else: { `(~with-me := me join: { ~body }) }
     } call
-}on:this
+}
 
 #row:{
   Expands an #hl:{include:} expression into the module's body, executed onto the given target (the class object or another module).
 }is:{
   for-macro expand-expr: `(include: ~(y: Dispatch)) on: target :=
     include: y name on: target
-}on:this
+}
 
 #row:{
   Leave everything else alone.
 }is:{
   for-macro expand-expr: e on: _ := e
-}on:this
+}
 
 #row:{
   Determine if a given method name looks like an initializer. True if the name is #code:{new}, or if the first keyword is #code:{new} or starts with #code:{new.}.
@@ -157,7 +158,9 @@
         name names head == "new" ||
           name names head starts-with?: "new."
     }
-}on:this
+}
+
+#(math = Lobby clone)
 
 #row:{
   We already have a pretty usably module system, so let's give it a whirl!
@@ -171,13 +174,13 @@
       pi := 3.14
       x := some-helper
     }
-  }on:this
+  }on:math
 
   #interaction:{
     include: Math
     pi
     x
-  }
+  }on:math
 
   Ok, that seems to work. But that's very basic. Let's try including one module into another.
 
@@ -189,20 +192,20 @@
 
       pi*2 := another-helper * 2
     }
-  }on:this
+  }on:math
 
   #interaction:{
     include: MoreMath
     pi
     x
     pi*2
-  }
+  }on:math
 
   And what happens when we include some unknown module?
 
   #interaction:{
     include: FooBar
-  }
+  }on:math
 
   Hooray! Seems to all be in working order. So let's move on to classes.
 }
@@ -214,7 +217,7 @@
     `(class: ~b extends: Object)
 
   macro (class: (b: Block) extends: obj)
-    `(~(class-create: b contents) call: [~obj clone])
+    `(~(class-create: b contents) call: ~obj clone)
 }on:this
 
 #row:{
@@ -229,6 +232,7 @@
               arguments: [`!o]
 }on:this
 
+#(greeter = Lobby clone)
 #row:{
   So now we have fully-functional (anonymous) classes with mixins. We can play around with this a bit already:
 
@@ -238,11 +242,11 @@
         new: x := { name = x }
         say-hi := (name .. ": Hi!") print
       }
-  }on:this
+  }on:greeter
 
   #interaction:{
     Greeter (new: "John Smith") say-hi
-  }on:this
+  }on:greeter
 }
 
 #row:{
@@ -258,10 +262,10 @@
       body = c targets at: 1
 
       `(if: (responds-to?: ~single)
-          then: { ~(class-create: body contents) call: [~name] }
+          then: { ~(class-create: body contents) call: ~name }
           else: { ~name = class: ~body } in-context)
     } call
-}on:this
+}
 
 #row:{
   Note that this works perfectly fine with arbitrary objects that weren't defined using our system. Everything expands to regular ol' objects and method definition - there is very little magic going on.
@@ -276,23 +280,24 @@
 
   #interaction:{
     1 plus: 2
-  }on:this
+  }
 
   Ta-da!
 
   So far I've shown classes working and modules working, but not classes and modules working. So let's give that a shot.
 
+  #(enum = Lobby clone)
   #atomo:{
-    module: Enumerable: {
+    module: MyEnumerable: {
       all?: p :=
         { done |
-          each: { x | (done yield: False) unless: (p call: [x]) }
+          each: { x | (done yield: False) unless: (p call: x) }
           True
         } call/cc
     }
 
     class: LinkedList: {
-      include: Enumerable
+      include: MyEnumerable
 
       new := { empty? = True }
 
@@ -310,7 +315,7 @@
         if: empty?
           then: { @ok }
           else: {
-            f call: [head]
+            f call: head
             tail each: f
           }
 
@@ -321,7 +326,7 @@
             "(" .. head show .. " : " .. tail show .. ")"
           }
     }
-  }on:this
+  }on:enum
 
   Here I've implemented a (very) small subset of the #code:{Enumerable} module found in Ruby, and a basic linked list class. This class provides the necessary #hl:{each:} method, and includes the #hl:{Enumerable} module. Let's see if this works:
 
@@ -330,7 +335,7 @@
     x each: { x | @(value: x) print }
     x all?: @(is-a?: Integer)
     x all?: @odd?
-  }on:this
+  }on:enum
 
   Looks good to me! Now that we have everything working, let's see what exactly these macros expand to.
 }
@@ -358,13 +363,13 @@
   #interaction:{
     `(include: Math) expand
     `(include: MoreMath) expand
-  }
+  }on:math
 
   We see that including modules defines the module's contents onto a given target (in this case the toplevel object, #hl:{this}), with values defined with #hl:{=} unexported. They're kept within the block the methods are defined in, so they're still in-scope for them, but they're left alone. Including one module in another does the same as anything else, but what about including a module into a class definition?
 
   #interaction:{
-    `(class: { include: Enumerable }) expand
-  }
+    `(class: { include: MyEnumerable }) expand
+  }on:enum
 
   Earlier we actually made #hl:{include:} inside of a class expand into something slightly different from the normal macro. The only thing we changed was that its target is the class object being built, rather than the context of the building. It's a bit tricky to explain, but basically we're making it so that #hl:{include: SomeModule} inside of a class body acts like #hl:{me include: SomeModule}.
 }
