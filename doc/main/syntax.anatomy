@@ -135,7 +135,7 @@ Atomo uses the same comment syntax as Haskell: #hl:{--} for linewise comments, #
     #hl:{$a}, #hl:{$b}, #hl:{$\n}, #hl:{$\1234} (unicode number)...
 
     Escape codes supported (in addition to numeric escapes):
-    
+
     #verbatim:{
       ascii-2:
         \b \t \n \v \f \r \SO \SI \EM \FS \GS \RS \US ␣ (space)
@@ -187,7 +187,7 @@ Atomo uses the same comment syntax as Haskell: #hl:{--} for linewise comments, #
     #definitions:{
       #item:{quoted}is:{
         An apostrophe (#code:{'}) before an expression "quotes" it, turning it into an expression literal:
-        
+
         #example-segment:{
           '1
           'a
@@ -272,7 +272,7 @@ Atomo uses the same comment syntax as Haskell: #hl:{--} for linewise comments, #
 
   #item:{blocks}is:{
     Blocks are surrounded by curly braces (#code:{{ }}) and contain 0 or more expressions separated by semicolons or whitespace.
-    
+
     A block may have arguments, which are patterns separated by spaces. The arguments are placed after the opening brace, and are terminated by a pipe (#code:{|}), followed by the block's contents (if any).
 
     #example-segment:{
