@@ -3,6 +3,7 @@
 #table-of-contents
 
 #include-section:"getting-started.anatomy"
+#include-section:"repl.anatomy"
 #include-section:"tutorials.anatomy"
 #include-section:"syntax.anatomy"
 #include-section:"patterns.anatomy"
