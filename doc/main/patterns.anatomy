@@ -178,3 +178,156 @@ To define on a particular object that isn't capitalized, wrap it in a block:
 }
 
 As in the first example, #hl:{foo bar} matches any object, while #hl:{{ foo } bar} is only defined on #hl:{foo} (the result of the block's execution). #hl:{{ 1 + 1 } bar: Foo} is defined on #hl:{2} and #hl:{Foo}.
+
+
+#section:{Pattern Objects}
+
+On occasion you'll want to create a pattern-match from an expression, or use patterns manually, usually in macros you define. The following methods should come in handy.
+
+#define:{
+  Pattern
+  > Object
+}body:{
+  A pattern you can use to match and deconstruct values.
+}
+
+#define:{
+  Pattern Role
+  > Object
+}body:{
+  A pattern for use in a message pattern.
+}
+
+#define:{
+  Pattern Define
+  > Object
+}body:{
+  A message pattern for use in a definition.
+}
+
+#define:{
+  expr to: Pattern
+  | expr is-a?: Expression
+  > Pattern
+}body:{
+  Convert an expression to the pattern-match it represents.
+
+  If the expression cannot represent a pattern, #hl:{@unknown-pattern:} is signaled.
+
+  #example:{
+    '1 to: Pattern
+    '(foo: [1, 2, x]) to: Pattern
+    'r"foo" to: Pattern
+  }
+}
+
+#define:{
+  expr to: Pattern Role
+  | expr is-a?: Expression
+  > Pattern
+}body:{
+  Convert an expression to the pattern-match it represents, as if it were a role in a message pattern. The main difference is that a capitalized dispatch is considered a "particlar object" rather than a named wildcard. See #reference:{syntax}.
+
+  If the expression cannot represent a pattern, #hl:{@unknown-pattern:} is signaled.
+
+  #example:{
+    '1 to: Pattern
+    'Integer to: Pattern
+    '(foo: Integer) to: Pattern
+  }
+}
+
+#define:{
+  expr to: Pattern Define
+  | expr is-a?: Expression
+  > Pattern
+}body:{
+  Convert an expression to a message pattern for a definition, using #hl:{@(to: Pattern Role)} for its targets.
+
+  If the expression cannot represent a message pattern, #hl:{@unknown-pattern:} is signaled.
+
+  #example:{
+    '(Integer + Double) to: Pattern Define
+    '(1 sqrt) to: Pattern Define
+    '1 to: Pattern Define
+  }
+}
+
+#define:{
+  pat name
+  | pat is-a?: Pattern
+  > String
+}body:{
+  Yields the name of a named wildcard match or a single message pattern.
+
+  #example:{
+    ('a to: Pattern) name
+    ('(1 sqrt) to: Pattern Define) name
+  }
+}
+
+#define:{
+  pat names
+  | pat is-a?: Pattern
+  > List
+}body:{
+  Yields the names in a keyword message pattern.
+
+  #example:{
+    ('(1 plus: Integer) to: Pattern Define) names
+  }
+}
+
+#define:{
+  pat target
+  | pat is-a?: Pattern
+  > Pattern
+}body:{
+  Yields the target of a single message pattern.
+
+  #example:{
+    ('(1 sqrt) to: Pattern Define) target
+  }
+}
+
+#define:{
+  pat targets
+  | pat is-a?: Pattern
+  > List
+}body:{
+  Yields the targets of a keyword message pattern.
+
+  #example:{
+    ('(1 plus: Integer) to: Pattern Define) targets
+  }
+}
+
+#define:{
+  pat match: v
+  | pat is-a?: Patterh
+  > in?: [@(ok: bindings), @none]
+}body:{
+  Attempts to match the value #hl:{v} with pattern #hl:{pat}. If value matches, the bindings from the match are yielded, wrapped in #hl:{@ok:}. Otherwise, #hl:{@none} is yielded.
+
+  #example:{
+    ('1 to: Pattern) match: 1
+    ('1 to: Pattern) match: 2
+    ('[1, 2, a] to: Pattern) match: [1, 2, 3]
+  }
+}
+
+#define:{
+  top match: pat on: v
+  | pat is-a?: Pattern
+  > v
+}body:{
+  Pattern-match #hl:{pat} on #hl:{v}, inserting the bindings into #hl:{top}. Similar to #hl:{=} and #hl:{match:}.
+
+  If the pattern-match fails, #hl:{@pattern:did-not-match:} is signaled.
+
+  #example:{
+    match: ('[1, a, b] to: Pattern) on: [1, 2, 3]
+    this
+    match: ('[1, a, b] to: Pattern) on: 2
+  }
+}
