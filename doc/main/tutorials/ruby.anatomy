@@ -348,7 +348,7 @@
   }
 
   As you can see, anonymous classes expand into a call to a class-creation block; the block is called with the cloned parent as an argument, and any methods are defined on it. The block then returns the class object.
-  
+
   We can also see that our bang-identifiers are being sprinkled with a bit of pixi dust that keeps them from colliding with other identifiers. In fact, the parser rejects these names, but they're well past the parsing stage.
 
   NOTE: Those numbers aren't quite right, which seems to be a bug in Anatomy, the tool that created this document. Normally you'd see different numbers with every expansion. Not a huge deal, but I'm looking into it.

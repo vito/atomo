@@ -43,6 +43,9 @@ load = do
             Failed x ->
                 raise ["regexp-failed"] [string x]
 
+    [$p|(r: Regexp) =~ (s: String)|] =::: [$e|r matches?: s|]
+    [$p|(s: String) =~ (r: Regexp)|] =::: [$e|r matches?: s|]
+
     [$p|(r: Regexp) matches?: (s: String)|] =: do
         Regexp { rCompiled = re } <- here "r" >>= findRegexp
         t <- getText [$e|s|]
@@ -96,9 +99,6 @@ load = do
         format <- getText [$e|format|]
         t <- getText [$e|s|]
         doReplaceAll re t (reReplace (replacements format) ns)
-
-    [$p|(r: Regexp) =~ (s: String)|] =::: [$e|r matches?: s|]
-    [$p|(s: String) =~ (r: Regexp)|] =::: [$e|r matches?: s|]
 
 doReplace :: Regex -> T.Text -> ([BS.ByteString] -> VM T.Text) -> VM Value
 doReplace re t f =
