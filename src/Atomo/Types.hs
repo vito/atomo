@@ -35,7 +35,7 @@ data Value
     | Boolean { fromBoolean :: !Bool }
 
     -- | A character value.
-    | Char { fromChar :: {-# UNPACK #-} !Char }
+    | Character { fromCharacter :: {-# UNPACK #-} !Char }
 
     -- | A continuation reference.
     | Continuation { fromContinuation :: Continuation }
@@ -393,7 +393,7 @@ data IDs =
         { idObject :: Value
         , idBlock :: Value
         , idBoolean :: Value
-        , idChar :: Value
+        , idCharacter :: Value
         , idContinuation :: Value
         , idDouble :: Value
         , idExpression :: Value
@@ -464,7 +464,7 @@ instance Eq Value where
     (==) (Block at aps aes) (Block bt bps bes) =
         at == bt && aps == bps && aes == bes
     (==) (Boolean a) (Boolean b) = a == b
-    (==) (Char a) (Char b) = a == b
+    (==) (Character a) (Character b) = a == b
     (==) (Continuation a) (Continuation b) = a == b
     (==) (Double a) (Double b) = a == b
     (==) (Expression a) (Expression b) = a == b
@@ -569,8 +569,8 @@ instance Show Value where
         "Block (" ++ show v ++ ") " ++ show as ++ " " ++ show es
     show (Boolean x) =
         "Boolean " ++ show x
-    show (Char x) =
-        "Char " ++ show x
+    show (Character x) =
+        "Character " ++ show x
     show (Continuation _) =
         "Continuation"
     show (Double x) =
@@ -647,7 +647,7 @@ instance (S.Lift v) => S.Lift (Option v) where
 instance S.Lift Value where
     lift (Block s as es) = [| Block s as es |]
     lift (Boolean b) = [| Boolean b |]
-    lift (Char c) = [| Char c |]
+    lift (Character c) = [| Character c |]
     lift (Double d) = [| Double $(return $ S.LitE (S.RationalL (toRational d))) |]
     lift (Expression e) = [| Expression e |]
     lift (Integer i) = [| Integer i |]
@@ -700,7 +700,7 @@ startEnv = Env
             { idObject = error "idObject not set"
             , idBlock = error "idBlock not set"
             , idBoolean = error "idBoolean not set"
-            , idChar = error "idChar not set"
+            , idCharacter = error "idCharacter not set"
             , idContinuation = error "idContinuation not set"
             , idDouble = error "idDouble not set"
             , idExpression = error "idExpression not set"
@@ -909,10 +909,10 @@ isBoolean :: Value -> Bool
 isBoolean (Boolean _) = True
 isBoolean _ = False
 
--- | Is a value a `Char'?
-isChar :: Value -> Bool
-isChar (Char _) = True
-isChar _ = False
+-- | Is a value a `Character'?
+isCharacter :: Value -> Bool
+isCharacter (Character _) = True
+isCharacter _ = False
 
 -- | Is a value a `Continuation'?
 isContinuation :: Value -> Bool
@@ -1051,7 +1051,7 @@ objectFrom :: IDs -> Value -> Value
 objectFrom _ o@(Object {}) = o
 objectFrom ids (Block _ _ _) = idBlock ids
 objectFrom ids (Boolean _) = idBoolean ids
-objectFrom ids (Char _) = idChar ids
+objectFrom ids (Character _) = idCharacter ids
 objectFrom ids (Continuation _) = idContinuation ids
 objectFrom ids (Double _) = idDouble ids
 objectFrom ids (Expression _) = idExpression ids

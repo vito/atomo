@@ -11,8 +11,8 @@ import Atomo.Types as T
 -- | Character literal.
 --
 -- Examples: @$a@, @$ @, @$\\EOT@, @$\\n@
-lvChar :: Lexer Value
-lvChar = liftM Char charLiteral
+lvCharacter :: Lexer Value
+lvCharacter = liftM Character charLiteral
 
 -- | String literal.
 --

@@ -50,8 +50,8 @@ process (SRadix, ms) = do
 process (SFloat, ms) = float ms showFFloat
 process (SExponent, ms) = float ms showEFloat
 process (SGeneral, ms) = float ms showGFloat
-process (SChar, ms) = do
-    Char c <- input >>= lift . findChar
+process (SCharacter, ms) = do
+    Character c <- input >>= lift . findCharacter
     justifyL ms (T.singleton c) >>= tell
 process (SAsString, ms) = do
     s <- lift (here "String")

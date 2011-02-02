@@ -19,7 +19,7 @@ import qualified Atomo.Kernel.Ports as Ports
 import qualified Atomo.Kernel.Time as Time
 import qualified Atomo.Kernel.Environment as Environment
 import qualified Atomo.Kernel.Continuation as Continuation
-import qualified Atomo.Kernel.Char as Char
+import qualified Atomo.Kernel.Character as Character
 import qualified Atomo.Kernel.Regexp as Regexp
 import qualified Atomo.Kernel.Pretty as Pretty
 import qualified Atomo.Kernel.Format as Format
@@ -42,7 +42,7 @@ load = do
     Time.load
     Environment.load
     Continuation.load
-    Char.load
+    Character.load
     Regexp.load
     Pretty.load
     Format.load

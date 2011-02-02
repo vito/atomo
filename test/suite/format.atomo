@@ -151,7 +151,7 @@ describe: "formatting" as: {
 
     it: "fails with non-character input" so: {
       { f"%c" % 1 } should-error:
-        @(could-not-find: "Char" in: 1)
+        @(could-not-find: "Character" in: 1)
     }
   }
 

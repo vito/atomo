@@ -17,8 +17,8 @@ load = do
     [$p|(p: -> Pretty) pretty|] =::: [$e|p|]
 
     -- Converting values to documents
-    [$p|Pretty char: (c: Char)|] =:
-        here "c" >>= findChar >>= mkPretty . char . fromChar
+    [$p|Pretty char: (c: Character)|] =:
+        here "c" >>= findCharacter >>= mkPretty . char . fromCharacter
 
     [$p|Pretty text: (s: String)|] =:
         getString [$e|s|] >>= mkPretty . text

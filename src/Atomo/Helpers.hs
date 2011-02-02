@@ -70,11 +70,11 @@ findBoolean v
     | isBoolean v = return v
     | otherwise = findValue "Boolean" isBoolean v
 
--- | `findValue' for `Char'
-findChar :: Value -> VM Value
-findChar v
-    | isChar v = return v
-    | otherwise = findValue "Char" isChar v
+-- | `findValue' for `Character'
+findCharacter :: Value -> VM Value
+findCharacter v
+    | isCharacter v = return v
+    | otherwise = findValue "Character" isCharacter v
 
 -- | `findValue' for `Continuation'
 findContinuation :: Value -> VM Value

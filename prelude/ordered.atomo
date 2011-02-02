@@ -33,7 +33,7 @@ class: Integer: {
   from-ordering: n := n
 }
 
-class: Char: {
+class: Character: {
   include: Ordered
 
   ordering := ord

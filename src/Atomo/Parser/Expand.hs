@@ -138,7 +138,7 @@ macroExpand e@(EMacroQuote { eName = n, eRaw = r, eFlags = fs }) = do
         keyword'
             ["quote", "as"]
             [t, string r, particle n]
-            [option "flags" (list (map Char fs))]
+            [option "flags" (list (map Character fs))]
 macroExpand d@(EDefine { eExpr = e }) = do
     e' <- macroExpand e
     return d { eExpr = e' }

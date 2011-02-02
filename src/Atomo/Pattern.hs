@@ -56,7 +56,7 @@ match ids r (PHeadTail hp tp) (List vs) =
     h = V.head vs
     t = List (V.tail vs)
 match ids r (PHeadTail hp tp) (String t) | not (T.null t) =
-    match ids r hp (Char (T.head t)) && match ids r tp (String (T.tail t))
+    match ids r hp (Character (T.head t)) && match ids r tp (String (T.tail t))
 match ids r (PTuple ps) (Tuple v) = matchAll ids r ps (V.toList v)
 match ids r (PPMKeyword ans aps) (Particle (Keyword { mNames = bns, mTargets = mvs })) =
     ans == bns && matchParticle ids r aps mvs
@@ -156,7 +156,7 @@ bindings' (PHeadTail hp tp) (List vs) =
     h = V.head vs
     t = List (V.tail vs)
 bindings' (PHeadTail hp tp) (String t) | not (T.null t) =
-    bindings' hp (Char (T.head t)) ++ bindings' tp (String (T.tail t))
+    bindings' hp (Character (T.head t)) ++ bindings' tp (String (T.tail t))
 bindings' (PTuple ps) (Tuple vs) = concat (zipWith bindings' ps (V.toList vs))
 bindings' (PExpr a) (Expression b) = exprBindings 0 a b
 bindings' (PInstance p) (Object { oDelegates = ds }) =

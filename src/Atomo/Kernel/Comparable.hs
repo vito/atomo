@@ -22,29 +22,29 @@ load = do
     [$p|(a: Object) == (b: Object)|] =::: [$e|a equals?: b|]
     [$p|(a: Object) /= (b: Object)|] =::: [$e|(a == b) not|]
 
-    [$p|(a: Char) < (b: Char)|] =: do
-        Char a <- here "a" >>= findChar
-        Char b <- here "b" >>= findChar
+    [$p|(a: Character) < (b: Character)|] =: do
+        Character a <- here "a" >>= findCharacter
+        Character b <- here "b" >>= findCharacter
         return $ Boolean (a < b)
 
-    [$p|(a: Char) > (b: Char)|] =: do
-        Char a <- here "a" >>= findChar
-        Char b <- here "b" >>= findChar
+    [$p|(a: Character) > (b: Character)|] =: do
+        Character a <- here "a" >>= findCharacter
+        Character b <- here "b" >>= findCharacter
         return $ Boolean (a > b)
 
-    [$p|(a: Char) <= (b: Char)|] =: do
-        Char a <- here "a" >>= findChar
-        Char b <- here "b" >>= findChar
+    [$p|(a: Character) <= (b: Character)|] =: do
+        Character a <- here "a" >>= findCharacter
+        Character b <- here "b" >>= findCharacter
         return $ Boolean (a <= b)
 
-    [$p|(a: Char) >= (b: Char)|] =: do
-        Char a <- here "a" >>= findChar
-        Char b <- here "b" >>= findChar
+    [$p|(a: Character) >= (b: Character)|] =: do
+        Character a <- here "a" >>= findCharacter
+        Character b <- here "b" >>= findCharacter
         return $ Boolean (a >= b)
 
-    [$p|(a: Char) == (b: Char)|] =: do
-        Char a <- here "a" >>= findChar
-        Char b <- here "b" >>= findChar
+    [$p|(a: Character) == (b: Character)|] =: do
+        Character a <- here "a" >>= findCharacter
+        Character b <- here "b" >>= findCharacter
         return $ Boolean (a == b)
 
     [$p|(a: Integer) < (b: Integer)|] =: primII (<)

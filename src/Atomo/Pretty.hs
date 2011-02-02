@@ -46,7 +46,7 @@ instance Pretty Value where
       where
         exprs = sep . punctuate (text ";") $ map pretty es
     prettyFrom _ (Boolean b) = text $ show b
-    prettyFrom _ (Char c) = char '$' <> (text . tail . init $ show c)
+    prettyFrom _ (Character c) = char '$' <> (text . tail . init $ show c)
     prettyFrom _ (Continuation _) = internal "continuation" empty
     prettyFrom _ (Double d) = double d
     prettyFrom _ (Expression e) = char '\'' <> parens (pretty e)

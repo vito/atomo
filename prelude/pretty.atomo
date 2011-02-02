@@ -2,7 +2,7 @@
 
 Pretty needs-parens?: Block := False
 Pretty needs-parens?: Boolean := False
-Pretty needs-parens?: Char := False
+Pretty needs-parens?: Character := False
 Pretty needs-parens?: Continuation := False
 Pretty needs-parens?: Double := False
 Pretty needs-parens?: Expression := False

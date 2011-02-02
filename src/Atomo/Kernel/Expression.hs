@@ -243,7 +243,7 @@ load = do
 
         case e of
             EMacroQuote { eFlags = fs } ->
-                return (list (map Char fs))
+                return (list (map Character fs))
             _ -> raise ["no-flags-for"] [Expression e]
 
     [$p|(e: Expression) arguments|] =: do

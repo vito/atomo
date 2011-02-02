@@ -143,7 +143,7 @@ The object onto which a method is inserted is determined by the type of the patt
 #definitions:{
   #item:{#hl:{_}, #hl:{foo}, #hl:{bar}, ...}is:{#hl:{Object}}
   #item:{#hl:{1}, #hl:{2}, ...}is:{#hl:{Integer}}
-  #item:{#hl:{$a}, #hl:{$b}, ...}is:{#hl:{Char}}
+  #item:{#hl:{$a}, #hl:{$b}, ...}is:{#hl:{Character}}
   #item:{#hl:{True}, #hl:{False}}is:{#hl:{Boolean}}
   #item:{#hl:{1.0}, #hl:{2.0}, ...}is:{#hl:{Double}}
   #item:{#hl:{1/2}, #hl:{3/4}, ...}is:{#hl:{Rational}}

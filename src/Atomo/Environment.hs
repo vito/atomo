@@ -193,7 +193,7 @@ eval (EMacroQuote { eName = n, eRaw = r, eFlags = fs }) = do
         keyword'
             ["quote", "as"]
             [t, string r, particle n]
-            [option "flags" (list (map Char fs))]
+            [option "flags" (list (map Character fs))]
 
 -- | Evaluate multiple expressions, returning the last result.
 evalAll :: [Expr] -> VM Value
@@ -337,7 +337,7 @@ targets' is (PTuple _) = return [idTuple is]
 targets' is (PHeadTail h t) = do
     ht <- targets' is h
     tt <- targets' is t
-    if idChar is `elem` ht || idString is `elem` tt
+    if idCharacter is `elem` ht || idString is `elem` tt
         then return [idList is, idString is]
         else return [idList is]
 targets' is (PPMKeyword {}) = return [idParticle is]

@@ -111,7 +111,7 @@ library
     Atomo.Kernel.Time,
     Atomo.Kernel.Environment,
     Atomo.Kernel.Continuation,
-    Atomo.Kernel.Char,
+    Atomo.Kernel.Character,
     Atomo.Kernel.Regexp,
     Atomo.Kernel.Pretty,
     Atomo.Kernel.Format,

@@ -4,7 +4,7 @@ Strings are immutable, efficient, Unicode sequences of characters.
 
 #define:{
     c singleton
-    | c is-a?: Char
+    | c is-a?: Character
     > String
 }body:{
     Creates a #hl:{String} containing a single character.
@@ -19,7 +19,7 @@ Strings are immutable, efficient, Unicode sequences of characters.
     | s is-a?: String
     > List
 }body:{
-    Convert string #hl:{s} to a #hl:{List} of #hl:{Char}s.
+    Convert string #hl:{s} to a #hl:{List} of #hl:{Character}s.
 
     #example:{
         "foo" as: List
@@ -31,7 +31,7 @@ Strings are immutable, efficient, Unicode sequences of characters.
   | l is-a?: List
   > String
 }body:{
-  Attempts to convert a list to a string. If the list does not contain only #hl:{Char}s, #hl:{@list-not-homogenous} is signaled.
+  Attempts to convert a list to a string. If the list does not contain only #hl:{Character}s, #hl:{@list-not-homogenous} is signaled.
 
   #example:{
     [$a, $b, $c] to: String
@@ -69,7 +69,7 @@ Strings are immutable, efficient, Unicode sequences of characters.
     s at: index
     | s is-a?: String
     | index is-a?: Integer
-    > Char
+    > Character
 }body:{
     Returns the string's character at #hl:{index}. If the index is out of bounds, #hl:{@(out-of-bounds: index for-string: s)} is raised.
 

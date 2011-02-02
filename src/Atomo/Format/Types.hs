@@ -43,7 +43,7 @@ data Segment
     | SGeneral
 
     -- | %c
-    | SChar
+    | SCharacter
 
     -- | %a
     | SAsString
@@ -140,7 +140,7 @@ instance Pretty Segment where
     prettyFrom _ SFloat = char 'f'
     prettyFrom _ SExponent = char 'e'
     prettyFrom _ SGeneral = char 'g'
-    prettyFrom _ SChar = char 'c'
+    prettyFrom _ SCharacter = char 'c'
     prettyFrom _ SAsString = char 'a'
     prettyFrom _ SAny = char 'v'
     prettyFrom _ (SPluralize s Nothing) = char 'p' <> parens (pretty s)

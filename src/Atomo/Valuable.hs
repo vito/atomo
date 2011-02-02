@@ -21,9 +21,9 @@ instance Valuable Value where
     fromValue = return
 
 instance Valuable Char where
-    toValue = return . Char
-    fromValue (Char c) = return c
-    fromValue v = raise ["wrong-value", "needed"] [v, string "Char"]
+    toValue = return . Character
+    fromValue (Character c) = return c
+    fromValue v = raise ["wrong-value", "needed"] [v, string "Character"]
 
 instance Valuable Double where
     toValue = return . Double

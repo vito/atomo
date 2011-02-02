@@ -26,8 +26,8 @@ describe: "dispatch" as: {
         on: Integer match: [0, 1, 2]
       }
 
-      it: "matches on Chars" so: {
-        on: Char match: [$a, $b, $c]
+      it: "matches on Characters" so: {
+        on: Character match: [$a, $b, $c]
       }
 
       it: "matches on Doubles" so: {

@@ -62,7 +62,7 @@ lOperator = try $ do
 
 lPrimitive :: Lexer Token
 lPrimitive = liftM TokPrimitive $ choice
-    [ lvChar
+    [ lvCharacter
     , lvString
     , try lvRational
     , try lvDouble

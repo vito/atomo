@@ -121,7 +121,7 @@ load = do
         c <- liftIO (hGetChar h)
         liftIO (hSetBuffering h b)
 
-        return (Char c)
+        return (Character c)
 
     [$p|(p: Port) contents|] =:
         getHandle [$e|p handle|] >>= liftM String . liftIO . TIO.hGetContents

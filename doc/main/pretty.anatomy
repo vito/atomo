@@ -40,7 +40,7 @@ Atomo provides a handy wrapper for the Haskell #code:{Text.PrettyPrint} system. 
 
 #define:{
   Pretty char: c
-  | c is-a?: Char
+  | c is-a?: Character
   > Pretty
 }body:{
   A document of height and width 1, containing a literal character.

@@ -11,13 +11,13 @@ import Atomo
 load :: VM ()
 load = do
     [$p|(s: String) as: List|] =:
-        liftM (list . map Char) (getString [$e|s|])
+        liftM (list . map Character) (getString [$e|s|])
 
-    [$p|(s: String) to: Char|] =: do
+    [$p|(s: String) to: Character|] =: do
         s <- getString [$e|s|]
         case s of
-            "$'" -> return (Char '\'')
-            '$':rest -> return (Char (read $ "'" ++ rest ++ "'"))
+            "$'" -> return (Character '\'')
+            '$':rest -> return (Character (read $ "'" ++ rest ++ "'"))
             _ -> raise ["invalid-string"] [string s]
 
     [$p|(s: String) to: Integer|] =: do
@@ -37,12 +37,12 @@ load = do
     [$p|(l: List) to: String|] =: do
         vs <- getList [$e|l|]
 
-        if all isChar vs
-            then return $ string (map (\(Char c) -> c) vs)
+        if all isCharacter vs
+            then return $ string (map (\(Character c) -> c) vs)
             else raise' "list-not-homogenous"
 
-    [$p|(c: Char) singleton|] =: do
-        Char c <- here "c" >>= findChar
+    [$p|(c: Character) singleton|] =: do
+        Character c <- here "c" >>= findCharacter
         return (String (T.singleton c))
 
     [$p|(s: String) length|] =:
@@ -57,15 +57,15 @@ load = do
 
         if fromIntegral n >= T.length t
             then raise ["out-of-bounds", "for-string"] [Integer n, String t]
-            else return . Char $ t `T.index` fromIntegral n
+            else return . Character $ t `T.index` fromIntegral n
 
     [$p|"" head|] =::: [$e|error: @empty-string|]
     [$p|(s: String) head|] =:
-        liftM (Char . T.head) (getText [$e|s|])
+        liftM (Character . T.head) (getText [$e|s|])
 
     [$p|"" last|] =::: [$e|error: @empty-string|]
     [$p|(s: String) last|] =:
-        liftM (Char . T.last) (getText [$e|s|])
+        liftM (Character . T.last) (getText [$e|s|])
 
     [$p|(s: String) from: (n: Integer) to: (m: Integer)|] =: do
             Integer n <- here "n" >>= findInteger
@@ -103,7 +103,7 @@ load = do
 
         let takeWhileM [] = return []
             takeWhileM (x:xs) =
-                ifVM (dispatch (keyword ["call"] [t, Char x]))
+                ifVM (dispatch (keyword ["call"] [t, Character x]))
                     (liftM (x:) (takeWhileM xs))
                     (return [])
 
@@ -115,14 +115,14 @@ load = do
 
         let dropWhileM [] = return []
             dropWhileM (x:xs) =
-                ifVM (dispatch (keyword ["call"] [t, Char x]))
+                ifVM (dispatch (keyword ["call"] [t, Character x]))
                     (dropWhileM xs)
                     (return (x:xs))
 
         liftM string $ dropWhileM s
 
-    [$p|(c: Char) repeat: (n: Integer)|] =: do
-        Char c <- here "c" >>= findChar
+    [$p|(c: Character) repeat: (n: Integer)|] =: do
+        Character c <- here "c" >>= findCharacter
         Integer n <- here "n" >>= findInteger
         return (string (replicate (fromIntegral n) c))
 
@@ -152,8 +152,8 @@ load = do
 
         return (String (T.intercalate d ts))
 
-    [$p|(s: String) intersperse: (c: Char)|] =: do
-        Char c <- here "c" >>= findChar
+    [$p|(s: String) intersperse: (c: Character)|] =: do
+        Character c <- here "c" >>= findCharacter
         t <- getText [$e|s|]
         return (String (T.intersperse c t))
 
@@ -164,9 +164,9 @@ load = do
 
     -- TODO: split-by
 
-    [$p|(s: String) split-on: (d: Char)|] =: do
+    [$p|(s: String) split-on: (d: Character)|] =: do
         s <- getText [$e|s|]
-        Char d <- here "d" >>= findChar
+        Character d <- here "d" >>= findCharacter
         return $ list (map String (T.split (== d) s))
 
     [$p|(s: String) split-at: (n: Integer)|] =: do
@@ -225,24 +225,24 @@ load = do
         b <- here "b"
 
         vs <- forM s $ \c ->
-            dispatch (keyword ["call"] [b, Char c])
+            dispatch (keyword ["call"] [b, Character c])
 
-        if all isChar vs
-            then return (string (map (\(Char c) -> c) vs))
+        if all isCharacter vs
+            then return (string (map (\(Character c) -> c) vs))
             else return $ list vs
 
     [$p|(s: String) each: (b: Block)|] =::: [$e|{ s map: b in-context; s } call|]
 
-    [$p|(c: Char) . (s: String)|] =: do
-        Char c <- here "c" >>= findChar
+    [$p|(c: Character) . (s: String)|] =: do
+        Character c <- here "c" >>= findCharacter
         s <- getText [$e|s|]
         return (String (T.cons c s))
 
-    [$p|(c: Char) >> (s: String)|] =::: [$e|c . s|]
+    [$p|(c: Character) >> (s: String)|] =::: [$e|c . s|]
 
-    [$p|(s: String) << (c: Char)|] =: do
+    [$p|(s: String) << (c: Character)|] =: do
         s <- getText [$e|s|]
-        Char c <- here "c" >>= findChar
+        Character c <- here "c" >>= findCharacter
         return (String (T.snoc s c))
 
     [$p|(haystack: String) replace: (needle: String) with: (new: String)|] =: do
@@ -263,21 +263,21 @@ load = do
     [$p|(s: String) left-justify: (length: Integer) &padding: $ |] =: do
         s <- getText [$e|s|]
         Integer l <- here "length" >>= findInteger
-        Char c <- here "c" >>= findChar
+        Character c <- here "c" >>= findCharacter
 
         return (String (T.justifyLeft (fromIntegral l) c s))
 
     [$p|(s: String) right-justify: (length: Integer) &padding: $ |] =: do
         s <- getText [$e|s|]
         Integer l <- here "length" >>= findInteger
-        Char c <- here "c" >>= findChar
+        Character c <- here "c" >>= findCharacter
 
         return (String (T.justifyRight (fromIntegral l) c s))
 
     [$p|(s: String) center: (length: Integer) &padding: $ |] =: do
         s <- getText [$e|s|]
         Integer l <- here "length" >>= findInteger
-        Char c <- here "c" >>= findChar
+        Character c <- here "c" >>= findCharacter
 
         return (String (T.center (fromIntegral l) c s))
 
@@ -290,27 +290,27 @@ load = do
     [$p|(s: String) strip-end|] =:
         liftM (String . T.stripEnd) (getText [$e|s|])
 
-    [$p|(s: String) strip: (c: Char)|] =: do
-        Char c <- here "c" >>= findChar
+    [$p|(s: String) strip: (c: Character)|] =: do
+        Character c <- here "c" >>= findCharacter
         liftM (String . T.dropAround (== c)) (getText [$e|s|])
 
-    [$p|(s: String) strip-start: (c: Char)|] =: do
-        Char c <- here "c" >>= findChar
+    [$p|(s: String) strip-start: (c: Character)|] =: do
+        Character c <- here "c" >>= findCharacter
         liftM (String . T.dropWhile (== c)) (getText [$e|s|])
 
-    [$p|(s: String) strip-end: (c: Char)|] =: do
-        Char c <- here "c" >>= findChar
+    [$p|(s: String) strip-end: (c: Character)|] =: do
+        Character c <- here "c" >>= findCharacter
         liftM (String . T.dropWhileEnd (== c)) (getText [$e|s|])
 
     [$p|(s: String) all?: b|] =::: [$e|(s as: List) all?: b|]
     [$p|(s: String) any?: b|] =::: [$e|(s as: List) any?: b|]
 
-    [$p|(s: String) contains?: (c: Char)|] =: do
+    [$p|(s: String) contains?: (c: Character)|] =: do
         t <- getText [$e|s|]
-        Char c <- here "c" >>= findChar
+        Character c <- here "c" >>= findCharacter
         return (Boolean (T.any (== c) t))
 
-    [$p|(c: Char) in?: (s: String)|] =::: [$e|s contains?: c|]
+    [$p|(c: Character) in?: (s: String)|] =::: [$e|s contains?: c|]
 
     [$p|(s: String) reduce: b|] =::: [$e|(s as: List) reduce: b|]
     [$p|(s: String) reduce: b with: v|] =::: [$e|(s as: List) reduce: b with: v|]
@@ -319,10 +319,10 @@ load = do
     [$p|(s: String) reduce-right: b with: v|] =::: [$e|(s as: List) reduce-right: b with: v|]
 
     [$p|(s: String) maximum|] =:
-        liftM (Char . T.maximum) (getText [$e|s|])
+        liftM (Character . T.maximum) (getText [$e|s|])
 
     [$p|(s: String) minimum|] =:
-        liftM (Char . T.minimum) (getText [$e|s|])
+        liftM (Character . T.minimum) (getText [$e|s|])
 
     [$p|(s: String) sort|] =:
         liftM (string . sort) (getString [$e|s|])
@@ -356,7 +356,7 @@ load = do
         z <- here "zipper"
 
         vs <- forM (T.zip x y) $ \(a, b) ->
-            dispatch (keyword ["call"] [z, tuple [Char a, Char b]])
+            dispatch (keyword ["call"] [z, tuple [Character a, Character b]])
 
         return $ list vs
 

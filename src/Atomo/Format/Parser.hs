@@ -81,8 +81,8 @@ sExponent = char 'e' >> return SExponent
 sGeneral :: Parser Segment
 sGeneral = char 'g' >> return SGeneral
 
-sChar :: Parser Segment
-sChar = char 'c' >> return SChar
+sCharacter :: Parser Segment
+sCharacter = char 'c' >> return SCharacter
 
 sAsString :: Parser Segment
 sAsString = char 'a' >> return SAsString
@@ -103,15 +103,15 @@ sLowercase = do
     fs <- nested '(' ')'
     return (SLowercase fs)
 
-sCharOrCapitalize :: Parser Segment
-sCharOrCapitalize = do
+sCharacterOrCapitalize :: Parser Segment
+sCharacterOrCapitalize = do
     char 'c'
     cap <- option False (try (lookAhead (char '(' >> return True)))
     if cap
         then do
             fs <- nested '(' ')'
             return (SCapitalize fs)
-        else return SChar
+        else return SCharacter
 
 sUppercase :: Parser Segment
 sUppercase = do
@@ -166,7 +166,7 @@ segment = choice
     , sFloat
     , sExponent
     , sGeneral
-    , sCharOrCapitalize
+    , sCharacterOrCapitalize
     , sAsString
     , sAny
     , sPluralize
