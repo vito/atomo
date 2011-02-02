@@ -1,3 +1,3 @@
-anatomy doc/main/start.atomo -o anatomy
+anatomy doc/main/start.anatomy -o anatomy
 rsync -a -P -e "ssh -p 7331" anatomy/ alex@atomo-lang.org:/srv/http/atomo-lang.org/site/docs/
 
