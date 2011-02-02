@@ -28,3 +28,4 @@
 #include-section:"io.anatomy"
 #include-section:"timer.anatomy"
 #include-section:"association.anatomy"
+#include-section:"pretty.anatomy"
