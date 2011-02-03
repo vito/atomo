@@ -69,8 +69,10 @@ macro (class: (c: Dispatch))
   { single = Particle new: c names head
     name = `Dispatch new: single to: ['this]
     body = c targets at: 1
+    pretty = `(pretty := Pretty text: ~(single name))
+    new = `Block new: (pretty . body contents)
 
     `(if: (responds-to?: ~single)
         then: { ~(class-create: body contents) call: ~name }
-        else: { ~name = class: ~body } in-context)
+        else: { ~name = class: ~new } in-context)
   } call
