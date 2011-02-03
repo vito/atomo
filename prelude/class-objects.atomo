@@ -5,6 +5,7 @@ macro (module: (def: Dispatch))
     body = def targets at: 1
     add-module: name as: body contents
     body
+    '@ok
   } call
 
 for-macro add-module: (name: String) as: (body: List) :=
