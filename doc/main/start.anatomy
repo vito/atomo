@@ -17,6 +17,7 @@
 #include-section:"strings.anatomy"
 #include-section:"regexp.anatomy"
 #include-section:"formatting.anatomy"
+#include-section:"class-objects.anatomy"
 #include-section:"blocks.anatomy"
 #include-section:"concurrency.anatomy"
 #include-section:"conditions.anatomy"
