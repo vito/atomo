@@ -22,9 +22,6 @@ type ParserOf a = ParsecT a ParserState Identity
 type Parser = ParserOf [TaggedToken]
 
 
-gensym :: Char
-gensym = '!'
-
 showToken :: Token -> String
 showToken TokEnd = "ending"
 showToken t = show (pretty t)
@@ -70,8 +67,6 @@ identifier = do
     ps <- getState
     withToken $ \t ->
         case t of
-            TokIdentifier (c:n) | c == gensym && psInQuote ps ->
-                Just (n ++ ":" ++ show (psClock ps))
             TokIdentifier n ->
                 Just n
             _ -> Nothing

@@ -9,6 +9,9 @@ import Atomo.Pattern (match)
 import Atomo.Types
 
 
+gensym :: Char
+gensym = '!'
+
 nextPhase :: [Expr] -> VM [Expr]
 nextPhase es = do
     mapM_ doPragmas es
@@ -33,9 +36,8 @@ doPragmas (EList { eContents = es }) = do
     mapM_ doPragmas es
 doPragmas (ETuple { eContents = es }) = do
     mapM_ doPragmas es
-doPragmas (EMacro { emPattern = p, eExpr = e }) = do
-    {-e' <- doPragmas e-}
-    macroExpand e >>= addMacro p
+doPragmas (EMacro { emPattern = p, eExpr = e }) =
+    addMacro p e
 doPragmas (EParticle { eParticle = ep }) =
     case ep of
         Keyword { mTargets = mes } ->
@@ -111,9 +113,12 @@ macroExpand d@(EDispatch { eMessage = em }) = do
         Just m -> do
             modifyPS $ \ps -> ps { psClock = psClock ps + 1 }
 
-            Expression ne <- runMethod m msg >>= findExpression
+            eb <- macroExpand (mExpr m)
+            Expression ne <-
+                runMethod (m { mExpr = eb }) msg
+                    >>= findExpression
 
-            macroExpand ne
+            gensyms ne >>= macroExpand
 
         Nothing -> do
             nem <- expanded em
@@ -154,9 +159,6 @@ macroExpand l@(EList { eContents = es }) = do
 macroExpand t@(ETuple { eContents = es }) = do
     nes <- mapM macroExpand es
     return t { eContents = nes }
-macroExpand m@(EMacro { eExpr = e }) = do -- TODO: is this sane?
-    e' <- macroExpand e
-    return m { eExpr = e' }
 macroExpand p@(EParticle { eParticle = ep }) = do
     nos <- forM (mOptionals ep) $ \(Option i n me) -> do
         ne <- maybe (return Nothing) (liftM Just . macroExpand) me
@@ -186,16 +188,120 @@ macroExpand n@(ENewDynamic { eBindings = bs, eExpr = e }) = do
     bs' <- mapM (\(p, b) -> macroExpand b >>= \nb -> return (p, nb)) bs
     e' <- macroExpand e
     return n { eBindings = bs', eExpr = e' }
+macroExpand m@(EMacro {}) = return m
 macroExpand e@(EGetDynamic {}) = return e
 macroExpand e@(EOperator {}) = return e
 macroExpand e@(EPrimitive {}) = return e
 macroExpand e@(EForMacro {}) = return e
 macroExpand e@(ETop {}) = return e
 macroExpand e@(EVM {}) = return e
--- TODO: follow through EQuote into EUnquote
-macroExpand e@(EQuote {}) = return e
+macroExpand e@(EQuote {}) = expandQuote e
 macroExpand e@(EUnquote {}) = return e
 
+expandQuote :: Expr -> VM Expr
+expandQuote = throughQuotes 0 $ \n e ->
+    case n of
+        0 -> macroExpand e
+        _ -> return e
+
+gensyms :: Expr -> VM Expr
+gensyms = throughQuotes 0 $ \_ e ->
+    case e of
+        EDispatch { eMessage = m@(Single { mName = x:xs }) }
+            | x == gensym -> do
+                c <- gets (psClock . parserState)
+                return e
+                    { eMessage = single'
+                        (xs ++ ":" ++ show c)
+                        (mTarget m)
+                        (mOptionals m)
+                    }
+        _ -> return e
+
+throughQuotes :: Int -> (Int -> Expr -> VM Expr) -> Expr -> VM Expr
+throughQuotes 0 f u@(EUnquote { eExpr = e }) = do
+    ne <- f 0 e
+    return u { eExpr = ne }
+throughQuotes n f u@(EUnquote { eExpr = a }) = do
+    ne <- throughQuotes (n - 1) f a
+    f n u { eExpr = ne }
+-- don't expand through definitions, as gensyms in those
+-- are likely used elsewhere where they'll be expanded
+throughQuotes n f d@(EDefine {}) = f n d
+throughQuotes n f s@(ESet { ePattern = p, eExpr = e }) = do
+    np <- expandPattern p
+    ne <- throughQuotes n f e
+    f n s { ePattern = np, eExpr = ne }
+throughQuotes n f d@(EDispatch { eMessage = m@(Keyword {}) }) = do
+    nts <- mapM (throughQuotes n f) (mTargets m)
+    f n d { eMessage = m { mTargets = nts } }
+throughQuotes n f d@(EDispatch { eMessage = m@(Single {}) }) = do
+    nt <- throughQuotes n f (mTarget m)
+    f n d { eMessage = m { mTarget = nt } }
+throughQuotes n f b@(EBlock { eArguments = ps, eContents = es }) = do
+    nps <- mapM expandPattern ps
+    nes <- mapM (throughQuotes n f) es
+    f n b { eArguments = nps, eContents = nes }
+throughQuotes n f l@(EList { eContents = es }) = do
+    nes <- mapM (throughQuotes n f) es
+    f n l { eContents = nes }
+throughQuotes n f t@(ETuple { eContents = es }) = do
+    nes <- mapM (throughQuotes n f) es
+    f n t { eContents = nes }
+throughQuotes n f m@(EMacro { eExpr = e }) = do
+    ne <- throughQuotes n f e
+    f n m { eExpr = ne }
+throughQuotes n f p@(EParticle { eParticle = m@(Keyword { mTargets = mes }) }) = do
+    nmes <- forM mes $ maybe (return Nothing) (liftM Just . throughQuotes n f)
+    f n p { eParticle = m { mTargets = nmes } }
+throughQuotes n f p@(EParticle { eParticle = m@(Single { mTarget = me }) }) = do
+    nme <- maybe (return Nothing) (liftM Just . throughQuotes n f) me
+    f n p { eParticle = m { mTarget = nme } }
+throughQuotes n f s@(ESetDynamic { eExpr = e }) = do
+    e' <- throughQuotes n f e
+    f n s { eExpr = e' }
+throughQuotes n f d@(EDefineDynamic { eExpr = e }) = do
+    e' <- throughQuotes n f e
+    f n d { eExpr = e' }
+throughQuotes n f d@(ENewDynamic { eBindings = bs, eExpr = e }) = do
+    nbs <- mapM (\(p, b) -> f n b >>= \nb -> return (p, nb)) bs
+    ne <- throughQuotes n f e
+    f n d { eBindings = nbs, eExpr = ne }
+throughQuotes n f q@(EQuote { eExpr = e }) = do
+    ne <- throughQuotes (n + 1) f e
+    f (n + 1) q { eExpr = ne }
+throughQuotes n f e = f n e
+
+expandPattern :: Pattern -> VM Pattern
+expandPattern (PNamed n p)
+    | head n == gensym = do
+        c <- gets (psClock . parserState)
+        np <- expandPattern p
+        return (PNamed (tail n ++ ":" ++ show c) np)
+    | otherwise = liftM (PNamed n) (expandPattern p)
+expandPattern (PHeadTail h t) =
+    liftM2 PHeadTail (expandPattern h) (expandPattern t)
+expandPattern (PList ps) =
+    liftM PList (mapM expandPattern ps)
+expandPattern (PTuple ps) =
+    liftM PTuple (mapM expandPattern ps)
+expandPattern (PMessage (m@(Single { mTarget = t }))) = do
+    nt <- expandPattern t
+    return $ PMessage m { mTarget = nt }
+expandPattern (PMessage (m@(Keyword { mTargets = ts }))) = do
+    nts <- mapM expandPattern ts
+    return $ PMessage m { mTargets = nts }
+expandPattern (PInstance p) =
+    liftM PInstance (expandPattern p)
+expandPattern (PStrict p) =
+    liftM PStrict (expandPattern p)
+expandPattern (PVariable p) =
+    liftM PVariable (expandPattern p)
+expandPattern (PExpr p) =
+    liftM PExpr (expandQuote p)
+expandPattern (PPMKeyword ns ps) =
+    liftM (PPMKeyword ns) (mapM expandPattern ps)
+expandPattern p = return p
 
 -- | find a findMacro method for message `m' on object `o'
 findMacro :: Message Value -> VM (Maybe Method)
@@ -208,7 +314,7 @@ findMacro m = do
     methods (Keyword {}) = liftM (snd . psMacros) getPS
 
     firstMatch _ _ [] = Nothing
-    firstMatch ids' m' (mt:mts) 
+    firstMatch ids' m' (mt:mts)
         | match ids' Nothing (PMessage (mPattern mt)) (Message m') =
             Just mt
         | otherwise = firstMatch ids' m' mts
