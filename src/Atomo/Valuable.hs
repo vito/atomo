@@ -1,3 +1,4 @@
+{-# LANGUAGE QuasiQuotes, TypeSynonymInstances #-}
 module Atomo.Valuable where
 
 import Control.Monad (liftM)
@@ -6,6 +7,9 @@ import qualified Data.Text as T
 import qualified Data.Vector as V
 
 import Atomo.Environment
+import Atomo.Helpers
+import Atomo.Pretty (Prettied)
+import Atomo.QuasiQuotes
 import Atomo.Types
 
 
@@ -110,3 +114,9 @@ instance Valuable BufferMode where
                 ]
             ]
         ]
+
+instance Valuable Prettied where
+    toValue d =
+        [$e|Pretty|] `newWith` [("doc", haskell d)]
+
+    fromValue v = dispatch (single "doc" v) >>= fromHaskell
