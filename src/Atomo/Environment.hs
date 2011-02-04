@@ -445,14 +445,26 @@ runMethod (Responder { mPattern = p, mContext = c, mExpr = e }) m = do
         case filter (\(Option x _ _) -> x == i) (mOptionals m) of
             [] -> do
                 d <- withTop nt (eval oe)
-                define (Single i n (PMatch nt) []) (EPrimitive Nothing d)
+                define (Single i n (PMatch nt) [])
+                    (EPrimitive Nothing d)
             (Option oi on ov:_) ->
-                define (Single oi on (PMatch nt) []) (EPrimitive Nothing ov)
+                define (Single oi on (PMatch nt) [])
+                    (EPrimitive Nothing ov)
 
     withTop nt $ eval e
 runMethod (Macro { mPattern = p, mExpr = e }) m = do
     t <- gets (psEnvironment . parserState)
     nt <- newObject [t] (bindings p m, emptyMap)
+
+    forM_ (mOptionals p) $ \(Option i n (PExpr d)) ->
+        case filter (\(Option x _ _) -> x == i) (mOptionals m) of
+            [] ->
+                define (Single i n (PMatch nt) [])
+                    (EPrimitive Nothing (Expression d))
+            (Option oi on ov:_) ->
+                define (Single oi on (PMatch nt) [])
+                    (EPrimitive Nothing ov)
+
     withTop nt $ eval e
 
 -- | Get the object for a value.

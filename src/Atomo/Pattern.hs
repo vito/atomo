@@ -282,13 +282,16 @@ toRolePattern p = toPattern p
 
 -- | Convert an expression into a macro's message pattern.
 toMacroPattern :: Expr -> Maybe (Message Pattern)
-toMacroPattern (EDispatch { eMessage = Single { mName = n, mTarget = t } }) = do
+toMacroPattern (EDispatch { eMessage = Single { mName = n, mTarget = t, mOptionals = os } }) = do
     p <- toMacroRole t
-    return (single n p)
-toMacroPattern (EDispatch { eMessage = Keyword { mNames = ns, mTargets = ts } }) = do
+    return (single' n p (map macroOptional os))
+toMacroPattern (EDispatch { eMessage = Keyword { mNames = ns, mTargets = ts, mOptionals = os } }) = do
     ps <- mapM toMacroRole ts
-    return (keyword ns ps)
+    return (keyword' ns ps (map macroOptional os))
 toMacroPattern _ = Nothing
+
+macroOptional :: Option Expr -> Option Pattern
+macroOptional (Option i n e) = Option i n (PExpr e)
 
 -- | Convert an expression into a pattern-match for use as a macro's role.
 toMacroRole :: Expr -> Maybe Pattern
