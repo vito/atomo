@@ -26,6 +26,7 @@ In addition to this rule, methods named #code:{new} or beginning with #code:{new
     X = class: { new := { foo = 1 } }
     X new foo
     Y = class: { new := { foo = 1 } } &extends: 1
+    Y is-a?: 1
     Y new + 2
   }
 }

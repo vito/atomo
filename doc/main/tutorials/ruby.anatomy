@@ -163,7 +163,7 @@
 #(math = Lobby clone)
 
 #row:{
-  We already have a pretty usably module system, so let's give it a whirl!
+  We already have a pretty useful module system, so let's give it a whirl!
 
   #atomo:{
     module: Math: {
@@ -207,18 +207,15 @@
     include: FooBar
   }on:math
 
-  Hooray! Seems to all be in working order. So let's move on to classes.
+  Hooray! Delicious failure. Seems to all be in working order. So let's move on to classes.
 }
 
 #row:{
   Creates an anonymous class object, extending a given parent object, defaulting to #hl:{Object}.
 }is:{
-  macro (class: (b: Block))
-    `(class: ~b extends: Object)
-
-  macro (class: (b: Block) extends: obj)
-    `(~(class-create: b contents) call: ~obj clone)
-}on:this
+  macro (class: (b: Block) &extends: Object)
+    `(~(class-create: b contents) call: ~extends clone)
+}
 
 #row:{
   Create a block for creating a class, given the class body (a list of expressions). This block takes a single argument: the target of the definitions, which is normally a clone of the parent object.
@@ -230,7 +227,7 @@
   for-macro class-create: (body: List) :=
     `Block new: (`(me = !o) . (expand-body: body on: `!o) .. [`!o])
               arguments: [`!o]
-}on:this
+}
 
 #(greeter = Lobby clone)
 #row:{
@@ -354,9 +351,7 @@
 
   As you can see, anonymous classes expand into a call to a class-creation block; the block is called with the cloned parent as an argument, and any methods are defined on it. The block then returns the class object.
 
-  We can also see that our bang-identifiers are being sprinkled with a bit of pixi dust that keeps them from colliding with other identifiers. In fact, the parser rejects these names, but they're well past the parsing stage.
-
-  NOTE: Those numbers aren't quite right, which seems to be a bug in Anatomy, the tool that created this document. Normally you'd see different numbers with every expansion. Not a huge deal, but I'm looking into it.
+  We can also see that our bang-identifiers are being sprinkled with a bit of magic that keeps them from colliding with other identifiers. In fact, the parser rejects these names, but they're well past the parsing stage.
 
   So what about including modules? What happens then? Let's see:
 
@@ -365,7 +360,7 @@
     `(include: MoreMath) expand
   }on:math
 
-  We see that including modules defines the module's contents onto a given target (in this case the toplevel object, #hl:{this}), with values defined with #hl:{=} unexported. They're kept within the block the methods are defined in, so they're still in-scope for them, but they're left alone. Including one module in another does the same as anything else, but what about including a module into a class definition?
+  We see that including modules defines the module's contents onto a given target (in this case the toplevel object, #hl:{this}). This is done by #hl:{@join:}ing its body onto the target, passing an explicit reference to it along as an argument. Including one module in another does the same as anything else, but what about including a module into a class definition?
 
   #interaction:{
     `(class: { include: MyEnumerable }) expand
@@ -377,15 +372,15 @@
 #heading:{Wrapping Up}
 
 #row:{
-  In just a few lines of code we've written a simple, elegant, and efficient implementation of Ruby's #code:{module}, #code:{class}, and #code:{include} forms. What's more, code written using these forms doesn't force others to adopt these idioms - everything expands into simple Atomo code that's natural to any users of your API.
+  In just a few lines of code we've written a simple, elegant, and low-overhead implementation of Ruby's #code:{module}, #code:{class}, and #code:{include} forms. What's more, code written using these forms doesn't force others to adopt these idioms - everything expands into simple Atomo code that will be natural to any users of your API.
 
   We've used a few things you should remember: #hl:{for-macro} for defining helper methods and values for your macros, #hl:{macro} for code that creates code, and the use of #hl:{!bangs} to achieve hygienic macros without any mental overhead. We've also briefly shown #hl:{expand}, a very useful method to use when writing macros to see what's #italic:{really} happening to your code.
 
   You may have noticed something missing, though. You can't do this:
 
   #atomo:{
-    class: A: {} extends: B
+    class: A: {} &extends: B
   }
 
-  The implementation isn't too hard, though; just remember that it's actually parsed as #hl:{class: (A: {} extends: B)}. This is left as an exercise. Good luck!
+  The implementation isn't too hard, though; just remember that it's actually parsed as #hl:{class: (A: {} &extends: B)}. This is left as an exercise. Good luck!
 }
