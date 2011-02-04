@@ -6,9 +6,9 @@ Classes defined with this system are essentially alternative syntax for creating
 
 Defining a module (see #hl:{module:}) registers its body associated with its name into the #reference:{Macro Environment}. An #hl:{include:} dispatch expands that module's body "onto" its target.
 
-Class object and module bodies used with these macros are very similar - indeed, they are evaluated with the exact same translations, just in different contexts. A class definition's body is evaluated upon class creation, to set the "base" class object. A module's body is evaluated wherever it is #hl:{include:}d.
+Class object and module bodies used with these macros are very similar - indeed, they are evaluated with the exact same translations, just in different contexts. A class definition's body is evaluated upon class creation, to set up the meta-object. A module's body is evaluated wherever it is #hl:{include:}d.
 
-Inside of these definition bodies, #hl:{:=} has a certain context implied for the right hand side. For class objects, it's the object receiving the message, and for modules it's the target being included onto. This context can be referred to explicitly as #hl:{me}, which is similar to #hl:{self} or #hl:{this} in other languages (but it's not a keyword in Atomo).
+Inside of these definition bodies, #hl:{:=} has a certain context implied for the right hand side. For class objects, it's the object receiving the message, and for modules it's the target being included onto. This context can be referred to explicitly as #hl:{me}, which is similar to #code:{self} or #code:{this} in other languages (but it's not a keyword in Atomo).
 
 In addition to this rule, methods named #code:{new} or beginning with #code:{new.} are assumed to be initializers. Their right-hand side should be a block containing expressions to evaluate on the new instance.
 
@@ -16,28 +16,17 @@ In addition to this rule, methods named #code:{new} or beginning with #code:{new
 #section:{Defining Classes}
 
 #define:{
-  class: body
+  class: body &extends: Object
   | body is-a?: Block
   > Object
 }body:{
-  Creates an anonymous class object with a given body, cloning #hl:{Object}.
+  Creates an anonymous class object with a given body, cloning a specified parent, or #hl:{Object} by default.
 
   #example:{
     X = class: { new := { foo = 1 } }
     X new foo
-  }
-}
-
-#define:{
-  class: body extends: super
-  | body is-a?: Block
-  > Object
-}body:{
-  Creates an anonymous class object with a given body, cloning #hl:{super}.
-
-  #example:{
-    X = class: { new := { foo = 1 } } extends: 1
-    X new + 2
+    Y = class: { new := { foo = 1 } } &extends: 1
+    Y new + 2
   }
 }
 
@@ -57,6 +46,13 @@ In addition to this rule, methods named #code:{new} or beginning with #code:{new
     X new
     X new foo
   }
+}
+
+#define:{
+  me
+  > any
+}body:{
+  When running a method, this is bound to the to the current object instance or. In the class body, this refers to the meta-object.
 }
 
 
