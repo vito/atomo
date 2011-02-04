@@ -55,11 +55,8 @@ for-macro initializer?: (name: Particle) :=
         name names head starts-with?: "new."
   }
 
-macro (class: (b: Block))
-  `(class: ~b extends: Object)
-
-macro (class: (b: Block) extends: obj)
-  `(~(class-create: b contents) call: ~obj clone)
+macro (class: (b: Block) &extends: Object)
+  `(~(class-create: b contents) call: ~extends clone)
 
 for-macro class-create: (body: List) :=
   `Block new: (`(me = !o) . (expand-body: body on: `!o) .. [`!o])
