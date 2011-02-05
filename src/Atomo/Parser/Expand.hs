@@ -113,7 +113,7 @@ macroExpand d@(EDispatch { eMessage = em }) = do
         Just m -> do
             modifyPS $ \ps -> ps { psClock = psClock ps + 1 }
 
-            eb <- macroExpand (mExpr m)
+            eb <- gensyms (mExpr m) >>= macroExpand
             Expression ne <-
                 runMethod (m { mExpr = eb }) msg
                     >>= findExpression
