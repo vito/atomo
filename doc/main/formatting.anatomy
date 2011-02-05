@@ -41,22 +41,21 @@ There are various flags you can use to individually modify the behaviour of the 
     }
   }
 
-  #item:{#code:{0}}is:{
-    Zero-pad. Note that this only "counts" when it's at the start of either a number or a precision flag.
-
-    #example:{
-      f"%05d" % 10
-      f"%05s" % "hi"
-    }
-  }
-
   #item:{#code:{.(number)}}is:{
     A "precision" flag, named for its use in floating-point formatters. This flag is also used for #code:{%r}.
 
     #example:{
       f"%.2f" % 1.567
       f"%10.2f" % 1.567
-      f"%010.2f" % 1.567
+    }
+  }
+
+  #item:{#code:{0}}is:{
+    Zero-pad flag, which must precede either a numeric or a precision flag.
+
+    #example:{
+      f"%05d" % 10
+      f"%010.2f" % 10.50
     }
   }
 
@@ -76,9 +75,6 @@ These basic formatters render a value to the string, with flags to control paddi
 
     #example:{
       f"%s" % "hello!"
-      f"%10s" % "hello!"
-      f"%>10s" % "hello!"
-      f"%=10s" % "hello!"
     }
   }
 
@@ -188,13 +184,50 @@ The basic formatters above support various flags for controlling padding and ali
 Numeric formatters align to the right by default.
 
 #definitions:{
-  #item:{#code:{numeric}}is:{Pad to a given width.}
+  #item:{#code:{numeric}}is:{
+    Pad to a given width.
+
+    #example:{
+      f"%10s" % "hello!"
+      f"%5d" % 10
+    }
+  }
+
   #item:{#code:{0}}is:{
     Pad with #code:{0} rather than spaces. Usually used for numbers.
+
+    #example:{
+      f"%05d" % 10
+      f"%010s" % "hello!"
+    }
   }
-  #item:{#code:{<}}is:{Align left.}
-  #item:{#code:{>}}is:{Align right.}
-  #item:{#code:{=}}is:{Centered horizontally.}
+
+  #item:{#code:{<}}is:{
+    Align left.
+
+    #example:{
+      f"%<10s" % "hello!"
+      f"%<5d" % 10
+    }
+  }
+
+  #item:{#code:{>}}is:{
+    Align right.
+
+    #example:{
+      f"%>10s" % "hello!"
+      f"%>5d" % 10
+    }
+  }
+
+  #item:{#code:{=}}is:{
+    Centered horizontally.
+
+    #example:{
+      f"%=10s" % "hello!"
+      f"%=5d" % 10
+    }
+  }
 }
 
 
@@ -278,7 +311,7 @@ The pluralization is by no means comprehensive. It knows about basic rules, but 
     "Splices" a formatter given as an input, followed by the formatter's inputs as a list.
 
     #example:{
-      f"%%" % (f"%d", 1)
+      f"%%" % (f"%d", [1])
       f"%%" % (f"%d, %d", [1, 2])
     }
 
@@ -321,7 +354,7 @@ Various flags are supported:
     Treat each value being iterated over as a list of the inputs for its iteration.
 
     #example:{
-      f"%.{%a, %a}" % [[1, $a], [2, $b]]
+      f"%.{%a, %a; }" % [[1, $a], [2, $b]]
     }
 
     Note that when using this flag, #code:{%^} breaks based on the sublist's inputs; it will not break the entire iteration. For this you must use #code:{%.^}.
