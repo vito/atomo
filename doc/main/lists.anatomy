@@ -452,66 +452,6 @@
 }
 
 #define:{
-    start to: end by: diff
-    | start is-a?: Integer
-    | end is-a?: Integer
-    | diff is-a?: Integer
-    > List
-}body:{
-    Efficiently generate a list from the range #hl:{start} to #hl:{end}, inclusive, by adding #hl:{diff} to each integer.
-
-    #example:{
-        0 to: 5 by: 2
-    }
-}
-
-#define:{
-    start up-to: end
-    | start is-a?: Integer
-    | end is-a?: Integer
-    > List
-}body:{
-    Alias for #hl:{start to: end by: 1}.
-}
-
-#define:{
-    start down-to: end
-    | start is-a?: Integer
-    | end is-a?: Integer
-    > List
-}body:{
-    Alias for #hl:{start to: end by: -1}.
-}
-
-#define:{
-    start .. end
-    | start is-a?: Integer
-    | end is-a?: Integer
-    > List
-}body:{
-    Efficiently generate a sequence of integers between #hl:{start} and #hl:{end}, inclusive.
-
-    #example:{
-        0 .. 5
-        5 .. 0
-    }
-}
-
-#define:{
-    start ... end
-    | start is-a?: Integer
-    | end is-a?: Integer
-    > List
-}body:{
-    Efficiently generate a sequence of integers between #hl:{start} and #hl:{end}, exclusive.
-
-    #example:{
-        0 ... 5
-        5 ... 0
-    }
-}
-
-#define:{
     l push: v
     | l is-a?: List
     > List
