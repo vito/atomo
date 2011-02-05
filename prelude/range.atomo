@@ -15,7 +15,7 @@ class: Range: {
     ] and
 
   matches?: value :=
-    value > begin &&
+    value >= begin &&
       if: exclusive?
         then: { value < end }
         else: { value <= end }
@@ -33,30 +33,31 @@ class: Range: {
 
   step: action &size: 1 :=
     { result = []
-      last = if: exclusive? then: { end - 1 } else: { end }
+      last = if: exclusive? then: { end pred } else: { end }
       current = begin
       while: { current <= last } do: {
         result << action call: current
-        current = current next: size
+        current = current shift: size
       }
       result
     } call
 
   step &size: 1 :=
     { result = []
-      last = if: exclusive? then: { end - 1 } else: { end }
+      last = if: exclusive? then: { end pred } else: { end }
       current = begin
       while: { current <= last } do: {
         result << current
-        current = current next: size
+        current = current shift: size
       }
       result
     } call
 
   pretty :=
-    if: exclusive?
-      then: { begin pretty <+> text: "..." <+> end pretty }
-      else: { begin pretty <+> text: ".." <+> end pretty }
+    { if: exclusive?
+        then: { begin pretty <+> text: "..." <+> end pretty }
+        else: { begin pretty <+> text: ".." <+> end pretty }
+    } doc
 }
 
 x .. y := Range new.begin: x end: y
