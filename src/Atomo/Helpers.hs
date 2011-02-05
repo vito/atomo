@@ -17,7 +17,7 @@ infixr 0 =:, =::
 
 -- | Define a method as an action returning a value.
 (=:) :: Message Pattern -> VM Value -> VM ()
-pat =: vm = define pat (EVM Nothing Nothing vm)
+pat =: vm = define pat (EVM Nothing vm)
 
 -- | Set a slot to a given value.
 (=::) :: Message Pattern -> Value -> VM ()

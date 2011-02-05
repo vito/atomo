@@ -311,7 +311,6 @@ data Expr
         }
     | EVM
         { eLocation :: Maybe SourcePos
-        , ePretty :: Maybe Doc
         , eAction :: VM Value
         }
     | EQuote
