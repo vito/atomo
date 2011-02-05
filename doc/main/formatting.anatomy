@@ -1,0 +1,407 @@
+#title:{String Formatting}tag:"formatting"
+
+Atomo provides #code:{printf}-like string formatting extended with the power of Common Lisp's #code:{FORMAT} system (with a different but directly translateable syntax).
+
+To create a #hl:{Formatter} object, you use the #code:{f} macro-quoter.
+
+#example:{
+  f{foo bar} is-a?: Formatter
+}
+
+A #hl:{Formatter} object is a pre-parsed formatting string. Because it's a macro-quote, any parse errors are caught at macroexpansion time, rather than when it's used.
+
+Like Python, we use the #hl:{%} operator for sending values to this #hl:{Formatter} and getting a formatted #hl:{String} back.
+
+#example:{
+  f{%s} % "foo"
+  f{%.2f: %s} % (10.579, "ten point something")
+  f{%0.4f} % 5.6
+}
+
+
+#section:{Syntax}
+
+Formatters use #code:{%} as their special character, and some use any of #code:{[](){}} for wrapping their arguments. Thus, you may occasionally have to escape these, which can be done with a backslash.
+
+#example:{
+  f"\%" % ()
+  f"%l(\(FoO\))" % ()
+}
+
+There are various flags you can use to individually modify the behaviour of the following formatters. The rules are as follows:
+
+#definitions:{
+  #item:{#code:{(number)}, #code:{\#}}is:{
+    A numeric flag. The #code:{\#} shortcut means "the number of remaining inputs", and acts as if it were a number flag.
+
+    #example:{
+      f"%10s" % "hello"
+      f"%\#s" % ("hi", 1, 2, 3)
+      f"%\#s" % ("hi", 1, 2, 3, 4, 5, 6)
+    }
+  }
+
+  #item:{#code:{0}}is:{
+    Zero-pad. Note that this only "counts" when it's at the start of either a number or a precision flag.
+
+    #example:{
+      f"%05d" % 10
+      f"%05s" % "hi"
+    }
+  }
+
+  #item:{#code:{.(number)}}is:{
+    A "precision" flag, named for its use in floating-point formatters. This flag is also used for #code:{%r}.
+
+    #example:{
+      f"%.2f" % 1.567
+      f"%10.2f" % 1.567
+      f"%010.2f" % 1.567
+    }
+  }
+
+  #item:{#code:{,}, #code:{+}, #code:{*}, #code:{=}, #code:{<}, #code:{>}, and #code:{?}}is:{
+    Various symbols with special meanings for whatever formatter they're paired with.
+  }
+}
+
+
+#section:{Basic Formatters}
+
+These basic formatters render a value to the string, with flags to control padding and alignment. See #reference:{Alignment}.
+
+#definitions:{
+  #item:{#code:{%s}}is:{
+    Format a string.
+
+    #example:{
+      f"%s" % "hello!"
+      f"%10s" % "hello!"
+      f"%>10s" % "hello!"
+      f"%=10s" % "hello!"
+    }
+  }
+
+  #item:{#code:{%d}}is:{
+    Format an integer in decimal notation.
+
+    #example:{
+      f"%d" % 10
+    }
+  }
+
+  #item:{#code:{%x}}is:{
+    Format an integer in hexadecimal notation.
+
+    #example:{
+      f"%x" % 10
+    }
+  }
+
+  #item:{#code:{%o}}is:{
+    Format an integer in octal notation.
+
+    #example:{
+      f"%o" % 10
+    }
+  }
+
+  #item:{#code:{%b}}is:{
+    Format an integer in binary notation.
+
+    #example:{
+      f"%b" % 10
+    }
+  }
+
+  #item:{#code:{%r}}is:{
+    Format an integer with a radix specified by a "precision" flag, which must be between 2 and 36.
+
+    #example:{
+      f"%.32r" % 62
+    }
+  }
+
+  #item:{#code:{%f}}is:{
+    Format a double in decimal floating-point notation. The number of decimal points to show is controlled by a precision flag.
+
+    #example:{
+      f"%f" % 12.345678
+      f"%.2f" % 12.345678
+    }
+  }
+
+  #item:{#code:{%e}}is:{
+    Format a double in scientific notation. The number of decimal points to show is controlled by a precision flag.
+
+    #example:{
+      f"%e" % 12.345678
+      f"%.2e" % 12.345678
+    }
+  }
+
+  #item:{#code:{%g}}is:{
+    Format a double in decimal or scientific notation. The number of decimal points to show is controlled by a precision flag.
+
+    #example:{
+      f"%g" % 12.345678
+      f"%.2g" % 12.345678
+      f"%g" % 12345678901234567890.123456
+      f"%.2g" % 12345678901234567890.123456
+    }
+  }
+
+  #item:{#code:{%c}}is:{
+    Format a character.
+
+    #example:{
+      f"%c" % $a
+    }
+  }
+
+  #item:{#code:{%a}}is:{
+    Format any value, converting it to a string via #hl:{as: String}.
+
+    #example:{
+      f"%a" % "hello!"
+      f"%a" % $a
+      f"%a" % (1 -> $a)
+    }
+  }
+
+  #item:{#code:{%v}}is:{
+    Format any value, converting it to a string via #hl:{show}.
+
+    #example:{
+      f"%v" % "hello!"
+      f"%v" % $a
+      f"%v" % (1 -> $a)
+    }
+  }
+}
+
+
+#section:{Alignment}
+
+The basic formatters above support various flags for controlling padding and alignment.
+
+Numeric formatters align to the right by default.
+
+#definitions:{
+  #item:{#code:{numeric}}is:{Pad to a given width.}
+  #item:{#code:{0}}is:{
+    Pad with #code:{0} rather than spaces. Usually used for numbers.
+  }
+  #item:{#code:{<}}is:{Align left.}
+  #item:{#code:{>}}is:{Align right.}
+  #item:{#code:{=}}is:{Centered horizontally.}
+}
+
+
+#section:{Pluralization}
+
+The #code:{%p} formatter is used to pluralize a word based on an integer input. The basic form is #code:{%p(foo)}, where #code:{foo} is the word you want pluralized if the input is not #code:{1}.
+
+#example:{
+  f"%p(cat)" % 0
+  f"%p(cat)" % 1
+  f"%p(cat)" % 2
+}
+
+A #code:{>} flag will cause it to peek ahead, grabbing the number without consuming it.
+
+#example:{
+  f"%>p(cat): %d" % 0
+  f"%>p(cat): %d" % 1
+  f"%>p(cat): %d" % 2
+}
+
+The pluralization is by no means comprehensive. It knows about basic rules, but should it fail for your word you can provide your own plural form in a second pair of parentheses.
+
+#example:{
+  f"%p(person)" % 2
+  f"%p(person)(people)" % 2
+}
+
+
+#section:{Case Conversion}
+
+#definitions:{
+  #item:{#code:{%l(...)}}is:{
+    Converts the formatted contents to lowercase.
+
+    #example:{
+      f"%l(FoO %s)" % "HELLO!"
+    }
+  }
+
+  #item:{#code:{%u(...)}}is:{
+    Converts the formatted contents to uppercase.
+
+    #example:{
+      f"%u(FoO %s)" % "HELLO!"
+    }
+  }
+
+  #item:{#code:{%c(...)}}is:{
+    Capitalizes each word in the string. Note that the words are converted to lowercase before capitalization.
+
+    #example:{
+      f"%c(FoO %s)" % "HELLO!"
+    }
+
+    A numeric flag may be provided to limit the capitalization to a certain amount of words.
+
+    #example:{
+      f"%1c(FOO bar %s)" % "BaZ"
+      f"%2c(FOO bar %s)" % "BaZ"
+    }
+  }
+}
+
+
+#section:{Skipping & Indirection}
+
+#definitions:{
+  #item:{#code:{%_}}is:{
+    Skips an input value. With a numeric flag, it skips a certain number of inputs. With the #code:{<} flag, it skips backwards.
+
+    #example:{
+      f"%_%d" % (1, 2, 3)
+      f"%2_%d" % (1, 2, 3)
+      f"%d,%<_%d" % (1, 2, 3)
+      f"%d,%d,%<2_%d" % (1, 2, 3)
+    }
+  }
+
+  #item:{#code:{%%}}is:{
+    "Splices" a formatter given as an input, followed by the formatter's inputs as a list.
+
+    #example:{
+      f"%%" % (f"%d", 1)
+      f"%%" % (f"%d, %d", [1, 2])
+    }
+
+    With a #code:{*} flag, it uses the rest of the main inputs as the spliced formatter's inputs.
+
+    #example:{
+      f"%*%" % (f"%d", 1)
+      f"%*%" % (f"%d, %d", 1, 2)
+    }
+  }
+}
+
+
+#section:{Iteration & Breaking}
+
+This type of formatter, the basic form being #code:{%{...}}, iterates over a list, formatting the iteration's contents for each of its values.
+
+#example:{
+  f"%{%a, }" % [1, $a, "hi"]
+}
+
+A break, #code:{%^}, can be used to stop the formatting when it's at the end of the iteration.
+
+#example:{
+  f"%{%a%^, }" % [1, $a, "hi"]
+}
+
+Various flags are supported:
+
+#definitions:{
+  #item:{#code:{*}}is:{
+    Iterate over the rest of the inputs.
+
+    #example:{
+      f"%*{%a%^, }" % (1, $a, "hi")
+    }
+  }
+
+  #item:{#code:{.}}is:{
+    Treat each value being iterated over as a list of the inputs for its iteration.
+
+    #example:{
+      f"%.{%a, %a}" % [[1, $a], [2, $b]]
+    }
+
+    Note that when using this flag, #code:{%^} breaks based on the sublist's inputs; it will not break the entire iteration. For this you must use #code:{%.^}.
+
+    #example:{
+      f"%.{%a, %a; %^%a, }" % [[1, $a], [2, $b, "dos"], [3, $c, "foo"]]
+      f"%.{%a, %a%.^; }" % [[1, $a], [2, $b], [3, $c]]
+    }
+  }
+
+  #item:{#code:{+}}is:{
+    Always iterate at least once. This is often used with #reference:{Conditionals} to output something if there are no values.
+
+    #example:{
+      f"%+{%\#[empty](%d%^, )}" % [1, 2, 3]
+      f"%+{%\#[empty](%d%^, )}" % []
+    }
+  }
+
+  #item:{numeric}is:{
+    Limits the number of iterations.
+
+    #example:{
+      f"%2{%d, }" % [1, 2, 3]
+    }
+
+    Note that a limit of #code:{0} overrides the #code:{+} flag. Also, #code:{%^} will not be triggered when it reaches the limit; it always waits for the end.
+
+    #example:{
+      f"%0+{hi}" % []
+      f"%2{%d%^, }" % [1, 2, 3]
+    }
+  }
+}
+
+
+#section:{Conditionals}
+
+A conditional formatter looks like this: #code:{%[...]+(...)?}, where #code:{+} means one or more and #code:{?} means optional. The required portion is the branches, and the optional portion is the default.
+
+By default, using a conditional consumes an integer input, and uses that to decide what to format. If it's #code:{0}, it formats the first branch, if it's #code:{1} the second, and so on. If it goes out of the range of the branches you've provided, it formats the default, or if there is no default, nothing is formatted.
+
+#example:{
+  f"%[zero][one](two or more)" % 0
+  f"%[zero][one](two or more)" % 1
+  f"%[zero][one](two or more)" % 2
+}
+
+A numeric flag can be used to determine the branch (or default) to format. Using a number will be a bit useless, forcing it to always format one branch, but using #code:{\#} is very useful. See #reference:{Syntax}.
+
+#example:{
+  f"%0[zero!]" % ()
+  f"%0[zero!]" % 1
+  f"%\#[zero][one](two or more)" % ()
+  f"%\#[zero][one](two or more)" % 1
+  f"%\#[zero][one](two or more)" % (1, 2)
+}
+
+With a #code:{?} flag, the conditional is expects a boolean input, and one or two branches. With one branch, its contents are formatted only if the input is #hl:{True}. With two, it acts like a "if-then-else".
+
+#example:{
+  f"%?[hi]" % False
+  f"%?[hi]" % True
+  f"%?[hi][bye]" % False
+  f"%?[hi][bye]" % True
+}
+
+
+#section:{Justification}
+
+Justifying multiple format segments to a given with can be done via a numeric flag and the #code:{%j(...)+} form, where #code:{+} means one or more segments. The numeric flag is the width to justify to, and each segment is a block of text to justify after formatting.
+
+#example:{
+  f"%50j(one)(two)(three)" % ()
+  f"%50j(one)(two)(three)(four)(five)" % ()
+  f"%50j(foo: %s)(bar: %d)(baz: %c)" % ("hi", 1, $x)
+}
+
+If the number given is smaller than the width of the combined segments, they are just concatentated.
+
+#example:{
+  f"%10j(hello)(goodbye)" % ()
+}
