@@ -64,6 +64,16 @@ instance Valuable T.Text where
     fromValue (String s) = return s
     fromValue v = raise ["wrong-value", "needed"] [v, string "String"]
 
+instance Valuable Pattern where
+    toValue = return . Pattern
+    fromValue (Pattern x) = return x
+    fromValue v = raise ["wrong-value", "needed"] [v, string "Pattern"]
+
+instance Valuable Expr where
+    toValue = return . Expression
+    fromValue (Expression x) = return x
+    fromValue v = raise ["wrong-value", "needed"] [v, string "Expression"]
+
 instance Valuable x => Valuable (Maybe x) where
     toValue (Just x) = liftM (keyParticleN ["ok"] . (:[])) (toValue x)
     toValue Nothing = return (particle "none")

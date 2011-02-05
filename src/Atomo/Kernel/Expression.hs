@@ -2,13 +2,11 @@
 {-# OPTIONS -fno-warn-name-shadowing #-}
 module Atomo.Kernel.Expression (load) where
 
-import Text.PrettyPrint (Doc)
 import Text.Parsec (sourceColumn, sourceLine, sourceName)
 
 import Atomo
 import Atomo.Parser (parseInput)
 import Atomo.Parser.Expand
-import Atomo.Pattern (match)
 import Atomo.Pretty (pretty)
 import Atomo.Valuable
 
@@ -37,12 +35,9 @@ load = do
         let pats = map (fromExpression . head . fromTuple) bs
             exprs = map (fromExpression . (!! 1) . fromTuple) bs
 
-        Expression value <- here "value" >>= findExpression
-
         ps <- mapM toRolePattern' pats
-        ids <- gets primitives
-        return . Expression . EVM Nothing (Just $ prettyMatch value (zip pats exprs)) $
-            eval value >>= matchBranches ids (zip ps exprs)
+        Expression value <- here "value" >>= findExpression
+        return (Expression (EMatch Nothing value (zip ps exprs)))
 
     [$p|`Set new: (pattern: Expression) to: (value: Expression)|] =: do
         Expression pat <- here "pattern" >>= findExpression
@@ -154,12 +149,15 @@ load = do
             EDefineDynamic {} -> return (particle "define-dynamic")
             EGetDynamic {} -> return (particle "get-dynamic")
             EMacroQuote {} -> return (particle "macro-quote")
+            EMatch {} -> return (particle "match")
 
     [$p|(e: Expression) target|] =: do
         Expression e <- here "e" >>= findExpression
 
         case e of
             EDispatch { eMessage = Single { mTarget = t } } ->
+                return (Expression t)
+            EMatch { eTarget = t } ->
                 return (Expression t)
             _ -> raise ["no-target-for"] [Expression e]
 
@@ -240,6 +238,8 @@ load = do
                 return (list (map Expression es))
             EMacroQuote { eRaw = r } ->
                 return (string r)
+            EMatch { eBranches = bs } ->
+                liftM list (mapM toValue bs)
             _ -> raise ["no-contents-for"] [Expression e]
 
     [$p|(e: Expression) flags|] =: do
@@ -303,23 +303,6 @@ load = do
                 return (list (map (\n -> keyParticle [n] [Nothing, Nothing]) ns))
 
             _ -> raise ["no-operators-for"] [Expression e]
-
-
-matchBranches :: IDs -> [(Pattern, Expr)] -> Value -> VM Value
-matchBranches _ [] v = raise ["no-match-for"] [v]
-matchBranches ids ((p, e):ps) v = do
-    p' <- matchable' p
-    if match ids Nothing p' v
-        then newScope $ set p' v >> eval e
-        else matchBranches ids ps v
-
-prettyMatch :: Expr -> [(Expr, Expr)] -> Doc
-prettyMatch t bs =
-    pretty . EDispatch Nothing $
-        keyword ["match"] [t, EBlock Nothing [] branches]
-  where
-    branches = flip map bs $ \(p, e) ->
-        EDispatch Nothing $ keyword ["->"] [p, e]
 
 toName :: Expr -> VM String
 toName (EDispatch { eMessage = Single { mName = n } }) = return n

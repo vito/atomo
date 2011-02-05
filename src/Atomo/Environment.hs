@@ -154,6 +154,12 @@ eval (EQuote { eExpr = qe }) = do
     unquote n p@(EPrimitive { eValue = Expression e }) = do
         ne <- unquote n e
         return p { eValue = Expression ne }
+    unquote n m@(EMatch { eTarget = t, eBranches = bs }) = do
+        nt <- unquote n t
+        nbs <- forM bs $ \(p, e) -> do
+            ne <- unquote n e
+            return (p, ne)
+        return m { eTarget = nt, eBranches = nbs }
     unquote _ p@(EPrimitive {}) = return p
     unquote _ t@(ETop {}) = return t
     unquote _ v@(EVM {}) = return v
@@ -194,6 +200,18 @@ eval (EMacroQuote { eName = n, eRaw = r, eFlags = fs }) = do
             ["quote", "as"]
             [t, string r, particle n]
             [option "flags" (list (map Character fs))]
+eval (EMatch { eTarget = t, eBranches = bs }) = do
+    v <- eval t
+    ids <- gets primitives
+    matchBranches ids bs v
+
+matchBranches :: IDs -> [(Pattern, Expr)] -> Value -> VM Value
+matchBranches _ [] v = raise ["no-match-for"] [v]
+matchBranches ids ((p, e):ps) v = do
+    p' <- matchable' p
+    if match ids Nothing p' v
+        then newScope $ set p' v >> eval e
+        else matchBranches ids ps v
 
 -- | Evaluate multiple expressions, returning the last result.
 evalAll :: [Expr] -> VM Value

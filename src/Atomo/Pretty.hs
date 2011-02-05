@@ -155,6 +155,7 @@ instance Pretty Pattern where
     prettyFrom _ PEQuote = text "Quote"
     prettyFrom _ PEUnquote = text "Unquote"
     prettyFrom _ PEMacroQuote = text "MacroQuote"
+    prettyFrom _ PEMatch = text "Match"
 
 
 instance Pretty Expr where
@@ -200,6 +201,12 @@ instance Pretty Expr where
         internal "get-dynamic" $ text n
     prettyFrom _ (EMacroQuote _ n r f) =
         text n <> char '{' <> text (macroEscape r) <> char '}' <> text f
+    prettyFrom _ (EMatch _ t bs) =
+        prettyFrom CKeyword t <+> text "match:" <+> branches
+      where
+        branches = braces . sep . punctuate (text ";") $
+            flip map bs $ \(p, e) ->
+                pretty p <+> text "->" <+> pretty e
 
 instance Pretty [Expr] where
     prettyFrom _ es = sep . punctuate (text ";") $ map pretty es

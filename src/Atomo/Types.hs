@@ -249,6 +249,9 @@ data Pattern
 
     -- | Matches any @EMacroQuote@ expression.
     | PEMacroQuote
+
+    -- | Matches any @EMatch@ expression.
+    | PEMatch
     deriving (Show, Typeable)
 
 -- | Expressions; the nodes in a syntax tree.
@@ -343,6 +346,11 @@ data Expr
         , eName :: String
         , eRaw :: String
         , eFlags :: [Char]
+        }
+    | EMatch
+        { eLocation :: Maybe SourcePos
+        , eTarget :: Expr
+        , eBranches :: [(Pattern, Expr)]
         }
     deriving (Show, Typeable)
 
@@ -515,12 +523,13 @@ instance Eq Pattern where
     (==) PEList PEList = True
     (==) PETuple PETuple = True
     (==) PEMacro PEMacro = True
-    (==) PEForMacro PEForMacro = True --
+    (==) PEForMacro PEForMacro = True
     (==) PEParticle PEParticle = True
     (==) PETop PETop = True
     (==) PEQuote PEQuote = True
     (==) PEUnquote PEUnquote = True
-    (==) PEMacroQuote PEMacroQuote = True --
+    (==) PEMacroQuote PEMacroQuote = True
+    (==) PEMatch PEMatch = True
     (==) _ _ = False
 
 instance Eq Expr where
@@ -550,6 +559,8 @@ instance Eq Expr where
     (==) (EGetDynamic _ an) (EGetDynamic _ bn) = an == bn
     (==) (EMacroQuote _ an ac afs) (EMacroQuote _ bn bc bfs) =
         an == bn && ac == bc && afs == bfs
+    (==) (EMatch _ at avs) (EMatch _ bt bvs) =
+        at == bt && avs == bvs
     (==) _ _ = False
 
 instance Eq a => Eq (Message a) where
@@ -632,6 +643,7 @@ instance S.Lift Expr where
     lift (EDefineDynamic _ n e) = [| EDefineDynamic Nothing n e |]
     lift (EGetDynamic _ n) = [| EGetDynamic Nothing n |]
     lift (EMacroQuote _ n r fs) = [| EMacroQuote Nothing n r fs |]
+    lift (EMatch _ t bs) = [| EMatch Nothing t bs |]
 
 instance S.Lift Assoc where
     lift ALeft = [| ALeft |]
@@ -681,6 +693,7 @@ instance S.Lift Pattern where
     lift PEQuote = [| PEQuote |]
     lift PEUnquote = [| PEUnquote |]
     lift PEMacroQuote = [| PEMacroQuote |]
+    lift PEMatch = [| PEMatch |]
     lift (PExpr e) = [| PExpr e |]
     lift (PInstance p) = [| PInstance p |]
     lift (PStrict p) = [| PStrict p |]

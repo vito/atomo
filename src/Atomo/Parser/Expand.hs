@@ -50,6 +50,9 @@ doPragmas (EParticle { eParticle = ep }) =
             doPragmas e
 
         _ -> return ()
+doPragmas (EMatch { eTarget = e, eBranches = bs }) = do
+    doPragmas e
+    forM_ bs (doPragmas . snd)
 doPragmas (EOperator {}) = return ()
 doPragmas (EPrimitive {}) = return ()
 doPragmas (EForMacro { eExpr = e }) = do
@@ -188,6 +191,12 @@ macroExpand n@(ENewDynamic { eBindings = bs, eExpr = e }) = do
     bs' <- mapM (\(p, b) -> macroExpand b >>= \nb -> return (p, nb)) bs
     e' <- macroExpand e
     return n { eBindings = bs', eExpr = e' }
+macroExpand m@(EMatch { eTarget = t, eBranches = bs }) = do
+    nt <- macroExpand t
+    nbs <- forM bs $ \(p, e) -> do
+        ne <- macroExpand e
+        return (p, ne)
+    return m { eTarget = nt, eBranches = nbs }
 macroExpand m@(EMacro {}) = return m
 macroExpand e@(EGetDynamic {}) = return e
 macroExpand e@(EOperator {}) = return e
@@ -270,6 +279,10 @@ throughQuotes n f d@(ENewDynamic { eBindings = bs, eExpr = e }) = do
 throughQuotes n f q@(EQuote { eExpr = e }) = do
     ne <- throughQuotes (n + 1) f e
     f (n + 1) q { eExpr = ne }
+throughQuotes n f m@(EMatch { eTarget = t, eBranches = bs }) = do
+    nt <- throughQuotes n f t
+    nbs <- mapM (\(p, b) -> f n b >>= \nb -> return (p, nb)) bs
+    f n m { eTarget = nt, eBranches = nbs }
 throughQuotes n f e = f n e
 
 expandPattern :: Pattern -> VM Pattern

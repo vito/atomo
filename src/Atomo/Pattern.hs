@@ -308,6 +308,7 @@ toMacroRole (EDispatch _ (Single { mName = "Top" })) = Just PETop
 toMacroRole (EDispatch _ (Single { mName = "Quote" })) = Just PEQuote
 toMacroRole (EDispatch _ (Single { mName = "Unquote" })) = Just PEUnquote
 toMacroRole (EDispatch _ (Single { mName = "MacroQuote" })) = Just PEMacroQuote
+toMacroRole (EDispatch _ (Single { mName = "Match" })) = Just PEMatch
 toMacroRole (EDispatch { eMessage = Keyword { mNames = [n], mTargets = [ETop {}, x] } }) = do
     p <- toMacroRole x
     return (PNamed n p)
