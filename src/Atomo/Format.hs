@@ -236,7 +236,7 @@ justifyL fs s = do
     return $
         case n of
             Nothing -> s
-            Just w | fSymbol fs '=' ->
+            Just w | fSymbol fs '=' || fSymbol fs '<' && fSymbol fs '>' ->
                 T.center w pad s
             Just w | fSymbol fs '>' ->
                 T.justifyRight w pad s
@@ -252,7 +252,7 @@ justifyR fs s = do
     return $
         case n of
             Nothing -> s
-            Just w | fSymbol fs '=' ->
+            Just w | fSymbol fs '=' || fSymbol fs '<' && fSymbol fs '>' ->
                 T.center w pad s
             Just w | fSymbol fs '<' ->
                 T.justifyLeft w pad s
