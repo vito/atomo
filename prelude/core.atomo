@@ -49,6 +49,8 @@ for-macro quote: s as: @w := s words
 
 for-macro quote: s as: @f := Formatter new: s
 
+for-macro quote: s as: @raw := s
+
 macro (a \ (b: Dispatch))
   { set-head: y to: x :=
       { head =
