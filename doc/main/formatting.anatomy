@@ -427,14 +427,53 @@ With a #code:{?} flag, the conditional is expects a boolean input, and one or tw
 
 Justifying multiple format segments to a given with can be done via a numeric flag and the #code:{%j(...)+} form, where #code:{+} means one or more segments. The numeric flag is the width to justify to, and each segment is a block of text to justify after formatting.
 
+With two segments, they are justified to the left and right, respectively. As a special case, justifying one segment is aligns it to the right.
+
 #example:{
-  f"%50j(one)(two)(three)" % ()
-  f"%50j(one)(two)(three)(four)(five)" % ()
-  f"%50j(foo: %s)(bar: %d)(baz: %c)" % ("hi", 1, $x)
+  f"%20j(one)(two)(three)" % ()
+  f"%30j(one)(two)(three)(four)(five)" % ()
+  f"%25j(foo: %s)(bar: %d)(baz: %c)" % ("hi", 1, $x)
 }
 
 If the number given is smaller than the width of the combined segments, they are just concatentated.
 
 #example:{
   f"%10j(hello)(goodbye)" % ()
+}
+
+Three flags are supported for controlling the spacing. These override the defaults mentioned above.
+
+#definitions:{
+  #item:{#code:{<}}is:{
+    Add spacing before the first segment.
+
+    #example:{
+      f"%<20j(one)(two)(three)" % ()
+      f"%<20j(one)(two)" % ()
+      f"%<20j(one)" % ()
+    }
+  }
+
+  #item:{#code:{>}}is:{
+    Add spacing after the last segment.
+
+    #example:{
+      f"%>20j(one)(two)(three)" % ()
+      f"%>20j(one)(two)" % ()
+      f"%>20j(one)" % ()
+    }
+  }
+
+  #item:{#code:{=}}is:{
+    Add spacing before and after the first and last segments. This is equivalent to providing both #code:{<} and #code:{>} flags.
+
+    #example:{
+      f"%=20j(one)(two)(three)" % ()
+      f"%=20j(one)(two)" % ()
+      f"%=20j(one)" % ()
+      f"%<>20j(one)(two)(three)" % ()
+      f"%<>20j(one)(two)" % ()
+      f"%<>20j(one)" % ()
+    }
+  }
 }
