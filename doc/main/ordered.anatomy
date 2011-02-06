@@ -2,7 +2,7 @@
 
 #define:{
   Ordered
-  > Module
+  > module
 }body:{
   The #hl:{Ordered} module provides various utility methods for anything that defines #hl:{ordering} and #hl:{from-ordering:}.
 }

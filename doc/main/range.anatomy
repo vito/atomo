@@ -1,4 +1,4 @@
-#title:{Ranges}
+#title:{Ranges}tag:"ranges"
 
 Generic ranges for any value that is #hl:{Ordered}. Range objects are #hl:{Enumerable}.
 
