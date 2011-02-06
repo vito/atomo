@@ -69,13 +69,11 @@ operator = withToken $ \t ->
         _ -> Nothing
 
 identifier :: Parser String
-identifier = do
-    ps <- getState
-    withToken $ \t ->
-        case t of
-            TokIdentifier n ->
-                Just n
-            _ -> Nothing
+identifier = withToken $ \t ->
+    case t of
+        TokIdentifier n ->
+            Just n
+        _ -> Nothing
 
 particle :: Parser Chained
 particle = withToken $ \t ->

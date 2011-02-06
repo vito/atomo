@@ -12,7 +12,6 @@ import Data.IORef
 import Data.List (nub)
 import Data.Maybe (listToMaybe)
 import Text.Parsec (ParseError, SourcePos, sourceName, sourceLine, sourceColumn)
-import Text.PrettyPrint (Doc)
 import Text.Regex.PCRE
 import qualified Data.IntMap as M
 import qualified Data.Set as S
