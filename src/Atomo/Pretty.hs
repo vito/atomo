@@ -268,6 +268,7 @@ instance Pretty Delegates where
 instance Pretty Token where
     prettyFrom _ (TokKeyword k) = text k <> char ':'
     prettyFrom _ (TokOptional o) = char '&' <> text o <> char ':'
+    prettyFrom _ (TokOptionalFlag o) = char '&' <> text o
     prettyFrom _ (TokOperator o) = text o
     prettyFrom _ (TokMacroQuote n r f) =
         text n <> char '{' <> text (macroEscape r) <> char '}' <> text f

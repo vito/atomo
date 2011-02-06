@@ -17,6 +17,7 @@ data LexerState =
 data Token
     = TokKeyword String
     | TokOptional String
+    | TokOptionalFlag String
     | TokOperator String
     | TokMacroQuote String String [Char]
     | TokIdentifier String

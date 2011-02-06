@@ -14,6 +14,7 @@ lToken = choice
     [ lKeyword
     , lReserved
     , lOptional
+    , lOptionalFlag
     , lOperator
     , lParticle
     , lPrimitive
@@ -41,6 +42,13 @@ lOptional = try $ do
     n <- ident
     char ':'
     return (TokOptional n)
+
+lOptionalFlag :: Lexer Token
+lOptionalFlag = try $ do
+    char '&'
+    n <- ident
+    notFollowedBy (char ':')
+    return (TokOptionalFlag n)
 
 lParticle :: Lexer Token
 lParticle = try $ do

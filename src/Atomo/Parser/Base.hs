@@ -56,6 +56,12 @@ optionalKeyword = withToken $ \t ->
         TokOptional n -> Just n
         _ -> Nothing
 
+optionalFlag :: Parser String
+optionalFlag = withToken $ \t ->
+    case t of
+        TokOptionalFlag n -> Just n
+        _ -> Nothing
+
 operator :: Parser String
 operator = withToken $ \t ->
     case t of
@@ -169,6 +175,11 @@ optionSegment p = do
     name <- optionalKeyword
     target <- p
     return (name, target)
+
+optionFlag :: Parser (String, Expr)
+optionFlag = do
+    name <- optionalFlag
+    return (name, EPrimitive Nothing (Boolean True))
 
 tagged :: Parser Expr -> Parser Expr
 tagged p = do

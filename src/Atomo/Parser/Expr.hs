@@ -260,7 +260,7 @@ pDispatch = tagged (do
 -- | Optional keyword arguments.
 pdOptionals :: Parser [Option Expr]
 pdOptionals = do
-    os <- many (optionSegment prKeyword)
+    os <- many (optionSegment prKeyword <|> optionFlag)
     return (map (uncurry T.option) os)
 
 -- | Parse an expr up to a single dispatch.
