@@ -269,32 +269,47 @@ justify fs ts = do
     return $
         case n of
             Nothing -> T.concat ts
-            Just w -> justifyTo w ts
+            Just w -> justifyTo fs w ts
 
-justifyTo :: Int -> [T.Text] -> T.Text
-justifyTo to ts = done ts
+justifyTo :: [Flag] -> Int -> [T.Text] -> T.Text
+justifyTo fs to ts = start ts
   where
     need = to - sum (map T.length ts)
-    naiveAvg = need `div` (length ts - 1)
+    spacings
+        | fSymbol fs '<' && fSymbol fs '>' || fSymbol fs '=' =
+            length ts + 1
+        | fSymbol fs '<' = length ts
+        | fSymbol fs '>' = length ts
+        | otherwise = length ts - 1
+    naiveAvg = need `div` spacings
 
     -- special case; e.g. 5 `div` 3 is 1, so we end up with 1|1|3;
     -- try turning that into 1|2|2
     --
     -- to determine this, we see if the leftover space could be reduced
     -- by adding 1 to the other spacings
-    avg | (need - naiveAvg * (length ts - 1)) >= (length ts - 2) =
+    avg | (need - naiveAvg * spacings) >= (spacings - 1) =
             naiveAvg + 1
         | otherwise = naiveAvg
 
-    done [] = T.empty
-    done (w:ws) = T.concat
-        [ w
-        , space naiveAvg
-        , spaced (need - naiveAvg) ws
-        ]
+    start [] = T.empty
+    start (w:ws)
+        | fSymbol fs '<' || fSymbol fs '=' = T.concat
+            [ space naiveAvg
+            , w
+            , space avg
+            , spaced (need - naiveAvg - avg) ws
+            ]
+        | otherwise = T.concat
+            [ w
+            , space naiveAvg
+            , spaced (need - naiveAvg) ws
+            ]
 
     spaced _ [] = T.empty
-    spaced n [w] = space n `T.append` w
+    spaced n [w]
+        | fSymbol fs '>' || fSymbol fs '=' = w `T.append` space n
+        | otherwise = space n `T.append` w
     spaced n (w:ws) = T.concat
         [ w
         , space avg
