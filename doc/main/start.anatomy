@@ -30,4 +30,5 @@
 #include-section:"timer.anatomy"
 #include-section:"association.anatomy"
 #include-section:"ordered.anatomy"
+#include-section:"range.anatomy"
 #include-section:"pretty.anatomy"
