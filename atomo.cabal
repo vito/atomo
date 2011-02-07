@@ -13,9 +13,9 @@ description:
     Neat stuff: first-class continuations, very metaprogramming and DSL
     -friendly, message-passing concurrency, pattern-matching.
     .
-    Documentation: <http://atomo-lang.org/docs/>
+    Documentation: <http://atomo-lang.org/docs>
     .
-    Examples: <http://bitbucket.org/alex/atomo/src/tip/examples/>
+    Examples: <http://darcsden.com/alex/atomo/browse/examples>
     .
     IRC Channel: <irc://irc.freenode.net/atomo>
 homepage:            http://atomo-lang.org/
