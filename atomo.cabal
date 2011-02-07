@@ -13,6 +13,8 @@ description:
     Neat stuff: first-class continuations, very metaprogramming and DSL
     -friendly, message-passing concurrency, pattern-matching.
     .
+    Release Notes: <http://atomo-lang.org/notes/0.4>
+    .
     Documentation: <http://atomo-lang.org/docs>
     .
     Examples: <http://darcsden.com/alex/atomo/browse/examples>
