@@ -23,25 +23,33 @@ As you can see, they are converted to lists on the receiving end. You can't do m
 
 #section:{Optional Roles}
 
-Methods can now be defined with optional roles, which can be overridden by the sender. Their default must be specified, which is an expression that will be evaluated to yield the value for the body.
+Methods can now be defined with optional roles, which can be overridden by the sender. A default must be specified.
 
 #example:{
-  foo: x &bar: 2 := x + bar
+  foo: x &bar: 2 := [x, bar]
   foo: 1
   foo: 1 &bar: 3
 }
 
-As you can see, we're using #code:{&} at the start of a keyword role for optionals. A non-keyword name can be used like a flag, e.g. #hl:{1 foo &bar}, which is equivalent to #hl:{1 foo &bar: True}.
+Default values are actually arbitrary expressions that will be evaluated with the bindings from the other patterns.
+
+#example:{
+  foo: x &bar: (x - 2) := [x, bar]
+  foo: 2
+  foo: 2 &bar: 4
+}
+
+As you can see, we're using #code:{&} at the start of a keyword role for optionals syntax. A non-keyword name can be used like a flag, e.g. #hl:{1 foo &bar}, which is equivalent to #hl:{1 foo &bar: True}.
 
 
 #section:{Macro-Quotes}
 
-#reference:{macro-quotes} provide a generalized string quotation mechanism, allowing arbitrary literal values to be implemented. Using them sends a message at macroexpansion time, which determines what value it expands to.
+#reference:{macro-quotes} provide a generalized string quotation mechanism, allowing arbitrary literal values to be created by the user. At macroexpansion time, they trigger a message sent to the #reference:{Macro Environment}, where a user-defined method determines what they expand to.
 
-This trivial macro-quoter expands a block of text into a list of its words:
-
-#interaction:{
-  w{foo bar baz}
+#example:{
+  w{foo bar baz}      -- word list
+  raw"foo\nbar 'baz'" -- raw string
+  r"(\d+)"            -- regexp literal
 }
 
-The application for these is already far-reaching, fostering the formatting and regular expression features listed below. In the future they may be used for things like URL literals, byte strings, paths, and more.
+The application for these is already far-reaching, fostering the new regular expression and string formatting features listed below. In the future they may be used for things like URL literals, byte strings, paths, and more.

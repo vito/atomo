@@ -1,6 +1,6 @@
 #title:{New Features}
 
-The following are new features as part of the standard library, or implementation-level additions.
+The following are new features added to the standard library, or implementation-level additions and goodies.
 
 #list:{
   #item:{
@@ -13,7 +13,7 @@ The following are new features as part of the standard library, or implementatio
   }
 
   #item:{
-    A new #reference:{String Formatting} system has been custom-built for Atomo, modeled on Common Lisp's #code:{FORMAT} function, with #code:{printf}-like syntax. The #code:{f} macro-quoter is used to parse these into #hl:{Formatter}s at macro-expansion time.
+    A new #reference:{String Formatting} system has been custom-built for Atomo, modeled on Common Lisp's #code:{FORMAT} function, with #code:{printf}-like syntax. The #code:{f} macro-quoter is used to parse these into #hl:{Formatter}s at macroexpansion time.
 
     #example:{
       f"%s" % "hello!"
@@ -23,16 +23,16 @@ The following are new features as part of the standard library, or implementatio
   }
 
   #item:{
+    #reference:{Class Objects}, providing #code:{module}, #code:{include}, and #code:{class} functionality similar to Ruby.
+  }
+
+  #item:{
     Particles can now have the first role filled in. Accordingly, a #hl:{complete} method was added, which is just #hl:{complete: ()}.
 
     #example:{
       @(1 sqrt)
       @(1 sqrt) complete
     }
-  }
-
-  #item:{
-    #reference:{Class Objects}, providing #code:{module}, #code:{include}, and #code:{class} functionality similar to Ruby, is now included in the prelude.
   }
 
   #item:{
@@ -53,10 +53,6 @@ The following are new features as part of the standard library, or implementatio
 
   #item:{
     Added #hl:{has-slot?:} for determining if an object has a given slot defined on it directly.
-  }
-
-  #item:{
-    Added #hl:{id}, a trivial method which just yields its target.
   }
 
   #item:{
