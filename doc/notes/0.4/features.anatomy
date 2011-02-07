@@ -1,0 +1,47 @@
+#title:{Language Design Features}
+
+#section:{Tuples & Variadic Roles}
+
+Tuples are throwaway data, used to temporarily group together arbitrary values.
+
+#example:{
+  ()
+  ($a, 1)
+}
+
+Their primary application is variadic roles, where they can be used to send along zero or more than one values (sending one value is done by just using the value itself; there is no one-element tuple).
+
+#example:{
+  foo: (... args) := args
+  foo: ()
+  foo: 1
+  foo: (2, $x)
+}
+
+As you can see, they are converted to lists on the receiving end. You can't do much with tuples themselves (except for pattern-match them), but converting to a list is trivial (and fast).
+
+
+#section:{Optional Roles}
+
+Methods can now be defined with optional roles, which can be overridden by the sender. Their default must be specified, which is an expression that will be evaluated to yield the value for the body.
+
+#example:{
+  foo: x &bar: 2 := x + bar
+  foo: 1
+  foo: 1 &bar: 3
+}
+
+As you can see, we're using #code:{&} at the start of a keyword role for optionals. A single name can be used as well, e.g. #hl:{1 foo &bar}, which implies #hl:{1 foo &bar: True}.
+
+
+#section:{Macro-Quotes}
+
+Version 0.4 introduces new syntax for generalized string quoting. A macro-quote is a literal expression containing a raw string and optional flags. Using them sends a message at macroexpansion time, which determines what value it expands to.
+
+This trivial macro-quoter expands a block of text into its words at macroexpansion time:
+
+#interaction:{
+  w{foo bar baz}
+}
+
+The application for these is already far-reaching, fostering the formatting and regular expression features listed below.
