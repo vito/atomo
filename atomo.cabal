@@ -35,8 +35,8 @@ extra-source-files: bin/eco
 data-files:         prelude/*.atomo
 
 source-repository   head
-    type:           hg
-    location:       http://bitbucket.org/alex/atomo
+    type:           darcs
+    location:       http://darcsden.com/alex/atomo
 
 flag lib
     description:   Install the Atomo library.
