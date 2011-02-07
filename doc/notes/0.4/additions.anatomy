@@ -64,7 +64,7 @@ The following are new features as part of the standard library, or implementatio
 
     #example:{
       w{foo bar baz}
-      raw{hello\nworld, I\'m pretty \{\r\a\w\}.}
+      raw'hello\nworld, I\'m pretty \'\r\a\w\'.'
     }
   }
 
