@@ -231,9 +231,9 @@ On occasion you'll want to create a pattern-match from an expression, or use pat
   If the expression cannot represent a pattern, #hl:{@unknown-pattern:} is signaled.
 
   #example:{
-    '1 to: Pattern
-    'Integer to: Pattern
-    '(foo: Integer) to: Pattern
+    '1 to: Pattern Role
+    'Integer to: Pattern Role
+    '(foo: Integer) to: Pattern Role
   }
 }
 
