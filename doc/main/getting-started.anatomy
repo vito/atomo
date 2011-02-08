@@ -97,6 +97,20 @@ To illustrate the power of this sytem, let's try putting scope objects to use. #
       }
 }
 
+Here we've defined a method on all #hl:{Block}s. This method clones its target, yielding a new object that delegates to the block; any messages it doesn't understand go there. On this new block object, we've overridden the #hl:{call} and #hl:{call:} methods. These overrides use #hl:{context} for getting the original block's context, and #hl:{join:}s the block itself into its context.
+
+What #hl:{join:} does is call a block with a given toplevel object, keeping the block's context in scope (at a higher priority than the target).
+
+#example:{
+  a = 1
+  2 join: { + a }
+  $a join: { 5 join: { - ord } }
+  ord = 10
+  $a join: { 5 join: { - ord } }
+}
+
+Thus, it is often used for playing around with the scope for some code, which is exactly what we want to do with #hl:{in-context} - create a block that is evaluated directly onto its context rather than a nested scope.
+
 Now let's give it a shot:
 
 #interaction:{
