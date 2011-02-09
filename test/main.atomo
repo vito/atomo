@@ -1,0 +1,9 @@
+use: "therie"
+
+theorize: {
+  load: "suite/condition.atomo"
+  load: "suite/dispatch.atomo"
+  load: "suite/blocks.atomo"
+  load: "suite/optionals.atomo"
+  load: "suite/format.atomo"
+}

@@ -1,0 +1,27 @@
+(b: Block) doc := Pretty clone join: b
+
+Pretty needs-parens?: Block := False
+Pretty needs-parens?: Boolean := False
+Pretty needs-parens?: Character := False
+Pretty needs-parens?: Continuation := False
+Pretty needs-parens?: Double := False
+Pretty needs-parens?: Expression := False
+Pretty needs-parens?: Haskell := False
+Pretty needs-parens?: Integer := False
+Pretty needs-parens?: List := False
+Pretty needs-parens?: Message := False
+Pretty needs-parens?: Method := False
+Pretty needs-parens?: Particle := False
+Pretty needs-parens?: Pattern := False
+Pretty needs-parens?: Process := False
+Pretty needs-parens?: Rational := False
+Pretty needs-parens?: Regexp := False
+Pretty needs-parens?: String := False
+Pretty needs-parens?: Tuple := False
+Pretty needs-parens?: _  := True
+
+x pretty-parens :=
+  { if: (needs-parens?: x)
+      then: { parens: x pretty }
+      else: { x pretty }
+  } doc

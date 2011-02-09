@@ -1,0 +1,404 @@
+#title:{Numbers}tag:"numbers"
+
+#define:{
+    Number
+    > Object
+}body:{
+    Any numeric value. #hl:{Integer} and #hl:{Double} are both #hl:{Number}s, though presumeably quotients and complex numbers would also be valid.
+}
+
+#define:{
+    Integer
+    > Object
+}body:{
+    Integral numbers with no decimal segment.
+
+    #example-segment:{1}
+}
+
+#define:{
+    Double
+    > Object
+}body:{
+    Double-precision floating-point numbers.
+
+    #example-segment:{1.0}
+}
+
+#define:{
+    Rational
+    > Object
+}body:{
+    Exact ratios between integers.
+
+    #example-segment:{22/7}
+}
+
+#define:{
+    a + b
+    | a is-a?: Number
+    | b is-a?: Number
+    > Number
+}body:{
+    Adds #hl:{a} and #hl:{b}. If either are #hl:{Rational}s, it returns a #hl:{Rational}; otherwise, if either are #hl:{Double}s, it returns a #hl:{Double}.
+
+    #example:{
+      1 + 2
+      1.0 + 2.0
+      1/2 + 3/4
+      1/2 + 2
+      1.0 + -2
+    }
+}
+
+#define:{
+    a - b
+    | a is-a?: Number
+    | b is-a?: Number
+    > Number
+}body:{
+    Subtracts #hl:{b} from #hl:{a}. If either are #hl:{Rational}s, it returns a #hl:{Rational}; otherwise, if either are #hl:{Double}s, it returns a #hl:{Double}.
+
+    #example:{
+      1 - 2
+      1.0 - 2.0
+      1/2 - 3/4
+      1/2 - 2.5
+      1.0 - -2
+    }
+}
+
+#define:{
+    a * b
+    | a is-a?: Number
+    | b is-a?: Number
+    > Number
+}body:{
+    Multiplies #hl:{a} by #hl:{b}. If either are #hl:{Rational}s, it returns a #hl:{Rational}; otherwise, if either are #hl:{Double}s, it returns a #hl:{Double}.
+
+    #example:{
+      1 * 2
+      1.0 * 2.0
+      1/2 * 3/4
+      1/2 * 2.5
+      1.0 * -2
+    }
+}
+
+#define:{
+    a / b
+    | a is-a?: Number
+    | b is-a?: Number
+    > Number
+}body:{
+    Divides #hl:{a} by #hl:{b}. If either are #hl:{Rational}s, it returns a #hl:{Rational}; otherwise, if either are #hl:{Double}s, it returns a #hl:{Double}. If both are #hl:{Integer}s, it performs integer division.
+
+    #example:{
+      1 / 2
+      1.0 / 2.0
+      1/2 / 3/4
+      1/2 / 2.5
+      1.0 / -2
+    }
+}
+
+#define:{
+    a ^ b
+    | a is-a?: Number
+    | b is-a?: Integer || b is-a?: Double
+    > Number
+}body:{
+    Raises #hl:{a} to the power of #hl:{b}. If either are #hl:{Double}s, it returns a #hl:{Double}. If #hl:{a} is a #hl:{Rational}, #hl:{b} must be an #hl:{Integer}.
+
+    #example:{
+      1 ^ 2
+      1.0 ^ 2.0
+      1/2 ^ 4
+      1.0 ^ -2
+    }
+}
+
+#define:{
+    a % b
+    | a is-a?: Integer
+    | b is-a?: Integer
+    > Integer
+}body:{
+    Modulus operator.
+
+    #example:{
+      3 % 2
+      6 % 2
+      7 % -2
+    }
+}
+
+#define:{
+    a quotient: b
+    | a is-a?: Integer
+    | b is-a?: Integer
+    > Integer
+}body:{
+    Returns the quotient of dividing #hl:{a} by #hl:{b}.
+
+    #example:{
+      22 quotient: 5
+    }
+}
+
+#define:{
+    a remainder: b
+    | a is-a?: Integer
+    | b is-a?: Integer
+    > Integer
+}body:{
+    Returns the remainder of dividing #hl:{a} by #hl:{b}.
+
+    #example:{
+      22 remainder: 5
+    }
+}
+
+#define:{
+    n sqrt
+    | n is-a?: Integer || n is-a?: Double
+    > Double
+}body:{
+    Returns the square root of #hl:{n}.
+
+    #example:{
+      5 sqrt
+      5.8 sqrt
+    }
+}
+
+#define:{
+    d ceiling
+    | d is-a?: Double
+    > Integer
+}body:{
+    Converts #hl:{d} into an #hl:{Integer} by rounding up.
+
+    #example:{
+      1.9 ceiling
+      1.1 ceiling
+      1.0 ceiling
+    }
+}
+
+#define:{
+    d round
+    | d is-a?: Double
+    > Integer
+}body:{
+    Rounds #hl:{d} down or up to the nearest #hl:{Integer}.
+
+    #example:{
+      1.9 round
+      1.5 round
+      1.4 round
+      1.0 round
+    }
+}
+
+#define:{
+    d floor
+    | d is-a?: Double
+    > Integer
+}body:{
+    Converts #hl:{d} into an #hl:{Integer} by rounding down.
+
+    #example:{
+      1.9 floor
+      1.1 floor
+      1.0 floor
+    }
+}
+
+#define:{
+    n reciprocal
+    | n is-a?: Number
+    > Number
+}body:{
+    Returns the reciprocal of #hl:{n}, returning either a #hl:{Double} (if #hl:{n} is an #hl:{Integer} or #hl:{Double}) or a #hl:{Rational} (if #hl:{n} is a #hl:{Rational}).
+
+    #example:{
+      2 reciprocal
+      0.5 reciprocal
+      3/4 reciprocal
+    }
+}
+
+#define:{
+    r numerator
+    | r is-a?: Rational
+    > Integer
+}body:{
+    Returns #hl:{r}'s numerator.
+
+    #example:{
+      3/4 numerator
+    }
+}
+
+#define:{
+    r denominator
+    | r is-a?: Rational
+    > Integer
+}body:{
+    Returns #hl:{r}'s denominator.
+
+    #example:{
+      3/4 denominator
+    }
+}
+
+#define:{
+    r approximate
+    | r is-a?: Rational
+    > Double
+}body:{
+    Approximates #hl:{r} as an (inexact) #hl:{Double}.
+
+    #example:{
+      3/4 approximate
+    }
+}
+
+#define:{
+    n rationalize
+    | n is-a?: Integer || n is-a?: Double
+    > Rational
+}body:{
+    Convert an #hl:{Integer} or an inexact #hl:{Double} into the simplest rational number within #hl:{0.001} of #hl:{n}.
+
+    #example:{
+      5 rationalize
+      0.5 rationalize
+      0.1234 rationalize
+    }
+}
+
+#define:{
+    n rationalize: epsilon
+    | n is-a?: Integer || n is-a?: Double
+    > Rational
+}body:{
+    Convert an #hl:{Integer} or an inexact #hl:{Double} into the simplest rational number within #hl:{epsilon} of #hl:{n}.
+
+    #example:{
+      0.1234 rationalize: 1.0
+      0.1234 rationalize: 0.1
+      0.1234 rationalize: 0.01
+      0.1234 rationalize: 0.001
+      0.1234 rationalize: 0.0001
+      0.1234 rationalize: 0.0
+    }
+}
+
+#define:{
+    d as: Integer
+    | d is-a?: Double
+    > Integer
+}body:{
+    Converts #hl:{d} into an #hl:{Integer} by sending #hl:{floor} to it.
+
+    #example:{
+      0.75 as: Integer
+      1.75 as: Integer
+    }
+}
+
+#define:{
+    d as: Rational
+    | d is-a?: Double
+    > Rational
+}body:{
+    Converts #hl:{d} into a #hl:{Rational} by sending #hl:{rationalize} to it.
+
+    #example:{
+      0.75 as: Rational
+    }
+}
+
+#define:{
+    i as: Double
+    | i is-a?: Integer
+    > Double
+}body:{
+    Converts #hl:{i} into a #hl:{Double}.
+
+    #example:{
+      4 as: Double
+    }
+}
+
+#define:{
+    i as: Rational
+    | i is-a?: Integer
+    > Rational
+}body:{
+    Converts #hl:{i} into a #hl:{Rational}.
+
+    #example:{
+      4 as: Rational
+    }
+}
+
+#define:{
+    r as: Double
+    | r is-a?: Rational
+    > Double
+}body:{
+    Converts #hl:{r} into a #hl:{Double} by sending #hl:{approximate} to it.
+
+    #example:{
+      4/3 as: Double
+    }
+}
+
+#define:{
+    r as: Integer
+    | r is-a?: Rational
+    > Integer
+}body:{
+    Converts #hl:{r} into an #hl:{Integer} by sending #hl:{approximate} and #hl:{floor} to it.
+
+    #example:{
+      4/3 as: Integer
+    }
+}
+
+#define:{
+    n even?
+    | n is-a?: Integer
+    > Boolean
+}body:{
+    Is #hl:{n} even?.
+}
+
+#define:{
+    n odd?
+    | n is-a?: Integer
+    > Boolean
+}body:{
+    Is #hl:{n} odd?.
+}
+
+#define:{
+    a divides?: b
+    | a is-a?: Integer
+    | b is-a?: Integer
+    > Boolean
+}body:{
+    Does #hl:{a} divide #hl:{b}?
+}
+
+#define:{
+    a divisible-by?: b
+    | a is-a?: Integer
+    | b is-a?: Integer
+    > Boolean
+}body:{
+    Alias for #hl:{b divides?: a}.
+}

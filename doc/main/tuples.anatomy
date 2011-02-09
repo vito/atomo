@@ -1,0 +1,28 @@
+#title:{Tuples}tag:"tuples"
+
+Atomo's tuples are very different from the tuples you'll find in most other languages. In fact, they are primarily a syntactic construct, and should never, ever be used for persistent data. Their use is restricted to temporary groupings of arbitrary values, such as pattern-matching and variadic message roles.
+
+For example, they can be used to quickly swap two values via pattern-matching:
+
+#interaction:{
+  (a, b) = (1, 2)
+  (a, b) = (b, a)
+  [a, b]
+}
+
+They're also used for variadic roles - that is, roles that may take zero, one, or any number of values:
+
+#interaction:{
+  { a | a + 1 } call: 2
+  { a b | a + b } call: (2, 1)
+}
+
+But things can go very wrong when you try to use them as data:
+
+#interaction:{
+  [(1, $1), (2, $2), (3, $3)] map: @pretty
+}
+
+What happened here was that when we called #hl:{@pretty} on each value of the list, the tuple was used as a variadic role value, rather than some "tuple" value. So, do not confuse tuples with how they're used in Python or even Haskell - they are strictly for temporary groupings of data. When used persistently, it is often the case that you will end up with only some of the data contained in them.
+
+And that's really all there is to Atomo's tuples. There isn't a huge method list here because there isn't really anything you should be doing with them. In fact, the only method defined on Tuple is #hl:{@pretty}, for pretty-printing.

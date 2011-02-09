@@ -1,0 +1,94 @@
+#title:{Changes}
+
+The following is a list of major changes in this version which are backwards-incompatible.
+
+#list:{
+  #item:{
+    Defining and dispatching now only uses the first role as the target. Pattern-matching provides the rest of the "multiple dispatch."
+  }
+
+  #item:{
+    Countless #link:{documentation}to:{http://atomo-lang.org/docs} updates and additions.
+  }
+
+  #item:{
+    Linebreaks and other special characters are now accepted in string literals.
+  }
+
+  #item:{
+    Implicit gensyms now use #code:{!} rather than #code:{\#} as a prefix.
+  }
+
+  #item:{
+    Condition handlers are now properly removed from the stack to prevent a handler from handling itself.
+  }
+
+  #item:{
+    Many methods, including #hl:{call:}, now use tuples rather than lists to provide multiple arguments.
+  }
+
+  #item:{
+    A few methods, notably #hl:{zip:}, now use optional roles.
+  }
+
+  #item:{
+    #hl:{zip:} now returns a list of lists and accepts multiple lists to zip with.
+  }
+
+  #item:{
+    #hl:{join:} now searches the block's context before the target's delegates.
+  }
+
+  #item:{
+    #hl:{responds-to?:} now accepts a less-complete particle, and does partial matching based on which roles are filled and not filled.
+
+    #example:{
+      1 responds-to?: @+
+      1 responds-to?: @(+ "foo")
+    }
+  }
+
+  #item:{
+    #hl:{<<} and #hl:{>>} operators are now macros intended for destructive update.
+
+    #example:{
+      a = [1, 2]
+      a << 3
+      a
+    }
+  }
+
+  #item:{
+    #hl:{Block repeat} and #hl:{Block repeat: Integer} now call the block in-context.
+
+    #example:{
+      a = 0
+      { a += 1 } repeat: 10
+      a
+    }
+  }
+
+  #item:{
+    #hl:{Pattern match: _} now yields #hl:{@none} or #hl:{@ok} rather than #hl:{@no} or #hl:{@yes:}.
+  }
+
+  #item:{
+    #hl:{List to-string} is now #hl:{List to: String}.
+  }
+
+  #item:{
+    #hl:{Char} is now #hl:{Character}.
+  }
+
+  #item:{
+    File and directory I/O methods now check that the file/directory exists, etc., to prevent hard crashes.
+  }
+
+  #item:{
+    The Atomo library is not installed by default; use #code:{-flib}.
+  }
+
+  #item:{
+    Many internal cleanups and fixes.
+  }
+}

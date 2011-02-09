@@ -1,0 +1,82 @@
+#title:{The REPL}tag:"repl"
+
+Atomo's REPL (read evaluate print loop) is an interactive environment for reading expressions, evaluating them in some context, and printing the result.
+
+The prompt is provided by the #link:{haskeline}to:{http://hackage.haskell.org/package/haskeline} library, so it is #code:{readline}-like, with history navigation.
+
+The input is parsed as a block of expressions, so you can separate multiple expressions with #code:{;} or #code:{,}, in which case they will be evaluated in sequence and the last value will be printed.
+
+It's also intelligent about multiline input, catching "unexpected ending" parse errors and allowing you to finish the expression:
+
+#verbatim:{
+  [0]> "foo
+  .... bar"
+  "foo\nbar"
+  [1]> 1 +
+  ....   2
+  3
+  [2]> { a = 1
+  ....   a + 2
+  ....         \ print
+  .... } call
+  3
+  3
+}
+
+If the REPL jumps the gun and eats up your input before you're done and causes a parse error, an #hl:{incomplete} restart is provided. Triggering this restart will let you keep adding input.
+
+To exit the REPL, you can use #code:{Ctrl+C} or #code:{Ctrl+D}, followed by #code:{y} to confirm. Pressing #code:{Ctrl+C} twice will also force it to exit.
+
+The REPL is implemented in Atomo, so you can use it in your code.
+
+#define:{
+  env basic-repl
+  > @ok
+}body:{
+  Starts up the REPL with #hl:{env} as the environment for evaluation.
+
+  Signals sent:
+
+  #definitions:{
+    #item:{#hl:{@prompt}}is:{
+      Used to determine a prompt for the input line. To set your own, trigger the #hl:{use-prompt} restart with your prompt (a string) as an argument.
+    }
+
+    #item:{#hl:{@quit}}is:{
+      Signaled when interaction receives an interrupt (usually by #code:{Ctrl+C}) or end-of-input (usually by #code:{Ctrl-D}).
+    }
+
+    #item:{#hl:{@(special: name)}}is:{
+      Signaled when a special meta-command is entered. These are arbitrary strings preceded by a colon (#code:{:}).
+
+      For example, when the main REPL debugger is started, it asks for the restart to use in the form of #code:{:1}, #code:{:2}, and so on. When these are entered, #hl:{@(special: "1")}, #hl:{@(special: "2")} etc. are signaled.
+    }
+
+    #item:{#hl:{@loop}}is:{
+      Signaled after the REPL has evaluated and printed an input, and is about to start the loop over again.
+    }
+  }
+}
+
+#define:{
+  env repl
+  > @ok
+}body:{
+  Starts a full-blown REPL with #hl:{env} as the environment for evaluation. This is what is run when you just say #code:{atomo} to start up Atomo's REPL - it wraps #hl:{basic-repl}, providing a debugger, a different prompt, prompts before exiting.
+
+  Example:
+
+  #verbatim:{
+    [0]> 1 repl
+    [0]> + 2
+    3
+    [1]> sqrt
+    1.0
+    [2]>
+    really quit? (y/n) y
+    @ok
+    [3]>
+  }
+
+  Note that the #code:{[3]>} above is the outer REPL - as the inner one was signaling #hl:{@loop}, its frame number increase as well.
+}

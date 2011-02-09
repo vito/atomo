@@ -1,0 +1,38 @@
+describe: "optionals" as: {
+  describe: "on single dispatch" as: {
+    it: "provides a default overrideable value" so: {
+      X = Object clone
+      X foo &bar: 0 := bar
+      X foo should-be: 0
+      X foo &bar: 1 should-be: 1
+    }
+
+    it: "evaluates defaults in the method body's context" so: {
+      X = Object clone
+      (x: X) bar &bar: @(got: X) := bar
+      X bar should-be: @(got: X)
+      X bar &bar: 1 should-be: 1
+    }
+  }
+
+  describe: "on multiple dispatch" as: {
+    it: "provides a default overrideable value" so: {
+      foo: x bar: y &baz: 0 := baz
+      (foo: 1 bar: 2) should-be: 0
+      (foo: 1 bar: 2 &baz: 1) should-be: 1
+    }
+
+    it: "evaluates defaults in the method body's context" so: {
+      foo: x bar: y &baz: [x, y] := baz
+      (foo: 1 bar: 2) should-be: [1, 2]
+      (foo: 1 bar: 2 &baz: 1) should-be: 1
+    }
+  }
+
+  describe: "in particles" as: {
+    it: "is completed in sequence after normal arguments" so: {
+      @(foo &baz: _) (complete: (1, 2)) optionals
+        should-be: [@baz -> 2]
+    }
+  }
+}

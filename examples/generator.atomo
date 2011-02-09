@@ -1,0 +1,54 @@
+Generator = Object clone
+
+-- turn a block into a generator
+(b: Block) generator :=
+  Generator clone do:
+    { next := control-state call/cc
+
+      control-state =
+        { return |
+          yielder = return
+          join: b
+        } in-context
+
+      initial = control-state
+
+      reset := { control-state set!: initial; @ok } call
+    }
+
+-- return a value from the generator, continuing from
+-- this point when @next is sent
+(g: Generator) yield: v :=
+  { g yielder =
+      { resume |
+        g control-state set!: resume
+        g yielder yield: v
+      } call/cc
+
+    v
+  } call
+
+-- generator for the fibonacci sequence
+fib =
+  { [i, j] = [0, 1]
+
+    { yield: i
+      [i, j] = [j, i + j]
+    } repeat
+  } generator
+
+-- generator for 0, 1, 2, 3, ...
+counter =
+  { i = 1
+
+    { yield: i
+      i = i + 1
+    } repeat
+  } generator
+
+-- print the first 10 fibonacci numbers
+go :=
+  { ("fib " .. counter next show .. ":\t" .. fib next show) print
+  } repeat: 10
+
+go

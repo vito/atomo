@@ -1,0 +1,6 @@
+a := b
+b := c
+c := d
+d := foo -- error; foo is undefined
+
+{ a print } call

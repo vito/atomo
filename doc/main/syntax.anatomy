@@ -1,0 +1,398 @@
+#title:{Syntax}tag:"syntax"
+
+Atomo has a rather simple-to-use syntax, enabled by the powerful Parsec library it uses for parsing.
+
+
+#section:{General Rules}
+
+Atomo is whitespace-sensitive. Operators and keywords must be surrounded by whitespace, and indentation provides hints to the parser when you don't want to use semicolons. For example; #hl:{1/2} is a #hl:{Rational}, while #hl:{1 / 2} is integral division. #hl:{foo-bar} is an identifier, while #hl:{foo - bar} is subtraction.
+
+Requiring whitespace around operators enables the use of more symbols in identifier names, allowing pleasant conventions like questions marks (e.g. #hl:{empty?}) and exclamation points (e.g. #hl:{do-something-destructive!}) for indicating the behaviour of a method.
+
+Atomo's whitespace indentation rules are similar to Haskell's - they are not as strict as Python's, you just increase the spacing amount to indicate continuing the previous line, and continue that indentation amount to indicate continuing the current "block" of code.
+
+Using significant whitespace, this block:
+
+#atomo:{
+  { "hi" print
+    goodbye
+    2 + 2
+  } call
+}
+
+is equivalent to:
+
+#atomo:{
+  { "hi" print; goodbye; 2 + 2 } call
+}
+
+With these simple line-continuing rules in place, you can spread a single chain of messages across multiple lines:
+
+#atomo:{
+  something
+    foo
+    (+ 2)
+    sqrt
+}
+
+Which is parsed as:
+
+#atomo:{something foo (+ 2) sqrt}
+
+The same goes for keyword messages:
+
+#atomo:{
+  if: x
+    then: { y }
+    else: { z }
+}
+
+It is recommended that continued keyword roles are indented relative to the initial keyword, though this is not necessary. As long as it is indented more than the first role, the message is "continued."
+
+These are all OK:
+
+#atomo:{
+  0 up-to: 5
+      do: { n | n print }
+
+  something up-to: 5
+    do: { n | n print }
+
+  something up-to: 5
+              do: { n | n print }
+
+  something
+    up-to: 5
+      do: { n | n print }
+}
+
+The same rules apply to operators, which are equivalent to keywords:
+
+#atomo:{
+  x foo =
+    { a = 1
+      a + 1
+    } call
+}
+
+Which is parsed as:
+
+#atomo:{ x foo = { a = 1; a + 1 } call }
+
+
+#section:{Indentation Guidelines}tag:"guidelines"
+
+Two spaces for indentation is highly recommended, as it often aligns things neatly on one column. For example, a block's arguments, its contents, and the message sent to the block all end up on the same column:
+
+#atomo:{
+  { foo |
+    do-something: foo
+    foo * 2
+    [ foo
+      foo + 1
+      foo * 2
+    ] length
+  } call: 2
+}
+
+Using this convention you also avoid stray closing braces, which would be common with other indentation styles.
+
+Usually, don't do this:
+
+#atomo:{
+  foo := [1, 2, 3] map: { n |
+    -- ...
+  }
+}
+
+as it indicates the final closing brace is somehow related to #hl:{foo}, when really it's just the ending delimiter for the block passed to #hl:{map:}.
+
+There are some exceptions, though; for example, if a block's body is more important than the message being sent, or if it's used structurally as part of a DSL, it is highly recommended to just use the hanging-brace style, so you don't have to indent too far. #hl:{match:}, #hl:{condition:}, #hl:{case-of:} and many more are examples of these. Another "rule of thumb" is, if the block takes arguments, you should use the two-space-indentation style. Otherwise, it's fair game.
+
+
+#section:{Comments}
+
+Atomo uses the same comment syntax as Haskell: #hl:{--} for linewise comments, #hl:{{- -}} for block comments (which can be nested).
+
+#atomo:{
+  1 -- The number, "one."
+  ({- Blah blah blah, {- yo dawg -}, fizz buzz! -} "foo") print
+}
+
+
+#section:{Literals}tag:"literals-syntax"
+
+#definitions:{
+  #item:{integers}is:{
+    #hl:{1}, #hl:{-1}, #hl:{0xdeadbeef}, #hl:{0o644}, #hl:{-0x10}, #hl:{-0o10} ...
+  }
+
+  #item:{doubles}is:{
+    #hl:{1.0}, #hl:{-1.5}, #hl:{1.5e10}, #hl:{1.4e-3}, #hl:{-1.4e4}...
+  }
+
+  #item:{characters}is:{
+    #hl:{$a}, #hl:{$b}, #hl:{$\n}, #hl:{$\1234} (unicode number)...
+
+    Escape codes supported (in addition to numeric escapes):
+
+    #verbatim:{
+      ascii-2:
+        \b \t \n \v \f \r \SO \SI \EM \FS \GS \RS \US ␣ (space)
+        \BS \HT \LF \VT \FF \CR \SO \SI \EM \BS \GS \RS \US \SP
+
+      ascii-3:
+        \NUL \SOH \STX \ETX \EOT \ENQ \ACK \a \DLE \DC1 \DC2
+        \DC3 \DC4 \NAK \SYN \ETB \CAN \SUB \ESC \DEL
+    }
+  }
+
+  #item:{rationals}is:{#hl:{1/2}, #hl:{30/500}, #hl:{-1/2}, #hl:{1/-2}, ...}
+
+  #item:{strings}is:{#hl:{""}, #hl:{"foo"}, #hl:{"fizz \"buzz\""}, containing the above-mentioned escape codes}
+
+  #item:{macro-quotes}is:{
+    #hl:{r{\d+}m}, #hl:{w{foo bar}}, ...
+
+    See #reference:{macro-quotes}.
+
+    General format:
+
+    #verbatim:{
+      name(d1)content*(d2)[flag*]
+        where
+          name = identifier
+          content = arbitrary, raw text
+          flag = case-sensitive alphabetic character
+          (d1) = one of (\{["$|`'~@
+          (d2) = the matching delimiter for (d1)
+    }
+
+    Note that a large number of delimiters may be used; these are punctuation characters that are already reserved for other uses, so that the #code:{name} will not "flow" into them, because they're not valid characters for use in an identifier. That is, allowing #code:{/} as a delimiter, for example, would lead to parsing ambiguity with #hl:{foo/ bar/}.
+
+    The content between the delimiters is parsed with no escapes except for the delimiters. That is, #hl:{r"foo\"bar"} is the same as #hl:{r{foo"bar}}, and #hl:{r"foo\bar"} is sent with #hl:{"foo\\bar"} as the contents.
+  }
+
+  #item:{boolean}is:{#hl:{True} and #hl:{False}}
+
+  #item:{lists}is:{#hl:{[]}, #hl:{[1]}, #hl:{[1, 2]}, #hl:{[1, $2, "three"]}, ...}
+
+  #item:{tuples}is:{
+    #hl:{()}, #hl:{(1, 2)}, #hl:{(1, $2, "three")}, ...
+
+    Note that there is no such thing as a tuple with only one value.
+  }
+
+  #item:{expressions}is:{
+    #definitions:{
+      #item:{quoted}is:{
+        An apostrophe (#code:{'}) before an expression "quotes" it, turning it into an expression literal:
+
+        #example-segment:{
+          '1
+          'a
+          '(1 + 1)
+          ''(1 + b)
+          '{ a = 1; a + 1 }
+        }
+      }
+
+      #item:{quasiquoted}is:{
+        Atomo supports quasiquotation as seen in most Lisps, most similarly Clojure. A backquote (#code:{`}) begins a quasiquote, inside of which you can use tilde (#code:{~}) to "unquote".
+
+        These can be nested infinitely; unquoting works inside of aggregate expressions such as lists, blocks, and definitions.
+
+        #example:{
+          `1
+          `(1 + ~(2 + 2))
+          ``(1 + ~~(2 + 2))
+          `{ a = ~(2 + 2) }
+          `[1, 2, ~(1 + 2)]
+        }
+
+        Note that unquoting too far throws an #hl:{@out-of-quote:} error.
+
+        #example:{
+          `~~(2 + 2)
+        }
+
+        Identifiers beginning with #code:{!} inside of a quasiquote are decorated with a clock value to ensure name collision does not occur in a macro's expansion. This is similar to Common Lisp's #hl:{gensym} mechanism, but it is automated and more implicit.
+
+        #example:{
+          a = '{ x + 2 }
+          `{ !x | ~a } expand
+        }
+      }
+    }
+  }
+
+  #item:{particles}is:{
+    Particles begin with an at-sign (#code:{@}), followed by a "partial message."
+
+    Regular single messages look like this:
+
+    #atomo:{
+      @foo
+      @fizz-buzz
+    }
+
+    The message's target can be specified, in which case the message isn't actually "partial":
+
+    #atomo:{
+      @(1 foo)
+      @("whatever" bar)
+    }
+
+    Optional roles in single particles require parentheses surrounding the message portion:
+
+    #atomo:{
+      @(foo &bar: 2)
+      @(1 sqrt &fizz: _)
+    }
+
+    Keyword particles are similar:
+
+    #atomo:{
+      @(print: "hi!")
+      @(+ 2)
+      @(from: _ to: 3)
+      @(1 + 2 &foo: 2 &bar: _)
+      @(this foo: _ &bar: 100)
+    }
+
+    Additionally, the roles in a keyword particle may be omitted entirely, leaving only selector names:
+
+    #atomo:{
+      @from:to:
+      @+
+    }
+
+    These are equivalent to #hl:{@(from: _ to: _)} and #hl:{@(+ _)}, respectively. Note that #hl:{@(from: _)} means #hl:{@(_ from: _)}, not #hl:{@(this from: _)}.
+  }
+
+  #item:{blocks}is:{
+    Blocks are surrounded by curly braces (#code:{{ }}) and contain 0 or more expressions separated by semicolons or whitespace.
+
+    A block may have arguments, which are patterns separated by spaces. The arguments are placed after the opening brace, and are terminated by a pipe (#code:{|}), followed by the block's contents (if any).
+
+    #example-segment:{
+      { 1 + 1 }
+      { a | a * 2 }
+      { }
+      { a b | a + b }
+      { a b | }
+      { "hi" print; another; 6 * 7 }
+      { a (b . c) | x; y; z }
+    }
+
+    Block parsing is whitespace-aware; see #reference:{General Rules}.
+  }
+
+  #item:{scope}is:{
+    #hl:{this} is a reserved word that always refers to the current toplevel object.
+
+    #example:{
+      { a = 1; this } call
+      x = this
+      { a = 1; @(them: x me: this) } call
+    }
+  }
+}
+
+
+#section:{Dispatch}tag:"dispatch-syntax"
+
+Atomo's dispatch syntax is similar to the Smalltalk family, naming conventions aside. There are two types of messages to dispatch: single messages and keyword messages.
+
+To dispatch a single message to some target, the message name is placed after the target value, separated by whitespace.
+
+#example-segment:{
+  1 foo
+  { 1 sqrt } call
+}
+
+If there is no "target" for the message, the implied target is #hl:{this} (the toplevel object representing the current scope).
+
+Keyword messages are slightly different in that they have more than one target, each separated by a "keyword" which is part of one whole message. Like single messages, if there is no initial role, #hl:{this} is assumed.
+
+#example:{
+  3 divides?: 12
+  1 + 2
+  delegating-to: Integer
+  (0 .. 10) (as: List) from: 3 to: 5
+}
+
+Keyword message dispatch normally requires parentheses to chain multiple message sends, starting from the start of the chain to the end of the current dispatch. This leads to a lot of jumping around whenever you want to add another keyword dispatch:
+
+#atomo:{
+  (((1 x: a) y: b) z: c) foo
+}
+
+Atomo remedies this by allowing parentheses to be used inside the chain of sends itself, effectively turning keyword message dispatch into something that's as easily chained as single messages:
+
+#atomo:{
+  1 (x: a) (y: b) (z: c) foo
+}
+
+Messages can also have optional roles, which have the same syntax as keyword roles but are prefixed by a #code:{&} (ampersand).
+
+#example:{
+  [1, 2, 3] zip: [2, 3, 4] &zipper: @*
+  1 sqrt &foo: 2
+}
+
+This also works in chained message dispatches which requires parentheses to disambiguate it from the other messages:
+
+#atomo:{
+  1 sqrt (+ 3 &fizz: @buzz) (sqrt &foo: 1 &bar: 2)
+}
+
+#section:{#hl:{macro}}tag:"macro-syntax"
+
+The #hl:{macro} keyword is used to define macros; the format is as follows:
+
+See #reference:{defining-macros}.
+
+#verbatim:{
+  macro (pattern) expression
+    where
+      pattern = a message pattern
+      expression = the macro's body
+}
+
+
+#section:{#hl:{for-macro}}tag:"for-macro-syntax"
+
+The #hl:{for-macro} keyword is used to specify that an expression should be evaluated before the macroexpansion phase. The format is as follows:
+
+See #reference:{macro-environment}.
+
+#verbatim:{
+  for-macro expression
+    where
+      expression = the expression to evaluate
+}
+
+
+#section:{#hl:{operator}}tag:"operator-syntax"
+
+You can control how Atomo parses binary operators like #hl:{+} and #hl:{->} via the #hl:{operator} keyword. The syntax is as follows:
+
+#verbatim:{
+  operator [associativity] [precedence] operators
+    where
+      associativity = "right" | "left"
+      precedence = integer
+      operators = operator +
+}
+
+An omitted associativity implies left, and an omitted precedence implies 5 (the default). One of the two must be provided.
+
+#example-segment:{
+  operator right 0 ->
+  operator right 8 ^
+  operator 7 % * /
+  operator 6 + -
+}
+
+Operator expressions, when evaluated, just return #hl:{@ok}.

@@ -1,0 +1,30 @@
+context Block: (es: List) :=
+  Block new: es arguments: [] in: context
+
+context Block: (es: List) arguments: (as: List) :=
+  Block new: es arguments: as in: context
+
+(b: Block) in-context :=
+  b clone do:
+    { call := b call-in: b context
+      call: vs := b context join: b with: vs
+    }
+
+(start: Integer) to: (end: Integer) by: (diff: Integer) do: b :=
+  { cc |
+    n = start
+
+    while: { (n - diff - end) abs >= diff abs } do: {
+      b call: n
+      n = n + diff
+    }
+  } call/cc
+
+(start: Integer) up-to: (end: Integer) do: b :=
+  start to: end by: 1 do: b
+
+(start: Integer) down-to: (end: Integer) do: b :=
+  start to: end by: -1 do: b
+
+(n: Integer) times: (b: Block) :=
+  1 up-to: n do: b in-context

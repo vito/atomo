@@ -1,0 +1,228 @@
+#title:{Conditions & Restarts}tag:"conditions"
+
+Atomo uses a condition system very similar to Common Lisp's.
+
+#section:{Signals}
+
+#define:{
+  signal: v
+  > @ok
+}body:{
+  Sends a value to all bound handlers, nearest-first.
+
+  #example:{
+    { signal: @foo; signal: @bar } bind: { @foo -> "fooing" print }
+  }
+}
+
+#define:{
+  error: v
+  > any
+}body:{
+  Signals #hl:{v} as an error. If the #hl:{signal:} call exits normally, a debugger is started. Hence, this method never exits normally.
+
+  #example:{
+    { "x" print; error: 1; "y" print } call
+  }
+}
+
+#define:{
+  warning: v
+  > @ok
+}body:{
+  Similar to #hl:{error:}, but instead of starting a debugger, prints the error to #hl:{*error-output*}.
+
+  #example:{
+    { "x" print; warning: 2; "y" print } call
+  }
+}
+
+#section:{Handlers}
+
+#define:{
+  action bind: handlers
+  | action is-a?: Block
+  | handlers is-a?: Block
+  > any
+}body:{
+  Performs #hl:{action}, with a handler for all signals matched in #hl:{handlers} block. Returns the result of #hl:{action}.
+
+  The contents of #hl:{handlers} should be #hl:{Association} expressions, e.g. #hl:{pattern -> responder}, where #hl:{pattern} is a match on the signal value, and #hl:{responder} is either a #hl:{Block} (which will be called with the signal value itself as an argument) or an expression to be evaluated in response to the signal.
+
+  #example:{
+    { signal: @foo } bind: { @foo -> "fooed!" print }
+    { signal: @(bar: 42) } bind: { @(bar: x) -> @(fooed: x) print }
+    { error: @uh-oh } bind: { Error -> { e | @(got-error: e) print } }
+  }
+
+  A #hl:{responder} may often invoke #hl:{restart:} or #hl:{restart:with:}, which is the only way they can affect the return value of #hl:{action}.
+
+  After a handler responds to a signal, the signal continues outward to the next recently bound handler:
+
+  #example:{
+    { { signal: @foo } bind: { @foo -> "me first!" print } } bind: { @foo -> "no me!" print }
+  }
+}
+
+#define:{
+  action with-restarts: restarts
+  | action is-a?: Block
+  | restarts is-a?: Block
+  > any
+}body:{
+  Call #hl:{action}, binding the restarts described by #hl:{restarts}. These restarts, when invoked, will replace the result of #hl:{action}.
+
+  The contents of #hl:{restarts} should be #hl:{Association} expressions, e.g. #hl:{name -> expression}, where #hl:{name} is the name for the restart, and #hl:{expression} is the action to be performed when the restart is invoked.
+
+  #example:{
+    { { x } with-restarts: { ignore -> @ok } } bind: { Error -> restart: 'ignore }
+  }
+}
+
+#define:{
+  action with-restarts: restarts bind: handlers
+  | action is-a?: Block
+  | restarts is-a?: Block
+  | handlers is-a?: Block
+  > any
+}body:{
+  Trivial macro which just expands to #hl:{with-restarts:} and #hl:{bind:}.
+}
+
+#define:{
+  restart: name
+  | name is-a?: Expression
+  > any
+}body:{
+  Finds restart #hl:{name} and jumps to it.
+
+  #example:{
+    action := { signal: @foo; "hi" print } with-restarts: { skip -> @skipped }
+    { action } bind: { @foo -> restart: 'skip }
+  }
+}
+
+#define:{
+  restart: name with: (... args)
+  | name is-a?: Expression
+  > any
+}body:{
+  Invokes restart #hl:{name} with #hl:{args} passed to the block.
+
+  #example:{
+    action := { signal: @foo; "hi" print } with-restarts: { use-value -> { v | v } }
+    { action } bind: { @foo -> restart: 'use-value with: 42 }
+  }
+}
+
+#define:{
+  find-restart: name
+  | name is-a?: Expression
+  > in?: [@(ok: Restart), @none]
+}body:{
+  Looks for a restart named #hl:{name}.
+
+  #example:{
+    action := { signal: @foo; "hi" print } with-restarts: { skip -> @skipped }
+    { action } bind: { @foo -> [find-restart: 'skip, find-restart: 'bar] print }
+  }
+}
+
+#section:{Traditional Exceptions}
+
+These methods are specific to errors, and provide a system similar to that of traditional exception handling. They are defined in terms of the more general condition system.
+
+#define:{
+  action catch: recover
+  | action is-a?: Block
+  | recover responds-to?: @call:
+  > any
+}body:{
+  Execute #hl:{action call}, catching any errors and passing them to #hl:{recover} for handling.
+
+  Yields the result of #hl:{action} or #hl:{recover}.
+
+  #example:{
+    { error: @error } catch: { e | @(got: e) }
+    { @ok } catch: { @caught }
+    { error: "hi" } catch: @print
+  }
+}
+
+#define:{
+  action catch: recover ensuring: cleanup
+  | [action, recover, cleanup] all?: @(is-a?: Block)
+  > any
+}body:{
+  Execute #hl:{action call}, catching any errors and passing them to #hl:{recover} for handling, and ensuring that #hl:{cleanup} is called after the action is executed.
+
+  Yields the result of #hl:{action} or #hl:{recover}.
+
+  #example:{
+    { @ok } catch: { @caught } ensuring: { "cleaning up" print }
+    { error: @not-ok } catch: { @caught } ensuring: { "cleaning up" print }
+  }
+}
+
+#define:{
+  action handle: branches
+  | action is-a?: Block
+  | branches is-a?: Block
+  > any
+}body:{
+  Similar to #hl:{catch:}, but #hl:{branches} is a block containing exception patterns bound to the action to take if they're thrown. If none of the exceptions match any of the patterns, the exception is re-thrown.
+
+  #example:{
+    { error: @foo } handle: { @foo -> 1; @bar -> 2 }
+    { error: @bar } handle: { @foo -> 1; @bar -> 2 }
+    { error: @baz } handle: { @foo -> 1; @bar -> 2 }
+    { @ok } handle: { @foo -> 1; @bar -> 2 }
+  }
+}
+
+#define:{
+  action handle: branches ensuring: cleanup
+  | [action, branches, cleanup] all?: @(is-a?: Block)
+  > any
+}body:{
+  Similar to #hl:{handle:}, but with an #hl:{ensuring:} block.
+
+  #example:{
+    { error: @foo } handle: { @foo -> 1 } ensuring: { "hi" print }
+    { error: @baz } handle: { @foo -> 1 } ensuring: { "hi" print }
+    { @ok } handle: { @foo -> 1 } ensuring: { "hi" print }
+  }
+}
+
+#define:{
+  action ensuring: cleanup
+  | action is-a?: Block
+  | cleanup is-a?: Block
+  > any
+}body:{
+  Execute #hl:{action call}, ensuring that #hl:{cleanup} is called after the action is executed.
+
+  Yields the result of #hl:{action}.
+
+  #example:{
+    { @ok } ensuring: { "cleaning up" print }
+    { error: @not-ok } ensuring: { "cleaning up" print }
+  }
+}
+
+#define:{
+  value ensuring: cleanup do: action
+  | cleanup is-a?: Block
+  | action is-a?: Block
+  > any
+}body:{
+  Similar to #hl:{ensuring:}, but #hl:{value} is passed to both blocks. This makes things like file opening and closing very natural.
+
+  Yields the result of #hl:{action}.
+
+  #example:{
+    File (new: "example-file") ensuring: @close do: @(display: "Hello!")
+  }
+
+  #(@ok = File delete: "example-file")
+}

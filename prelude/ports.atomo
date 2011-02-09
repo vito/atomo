@@ -1,0 +1,83 @@
+define: *history-file* as: (Directory home </> ".atomo_history")
+define: *output-port* as: Port standard-output
+define: *input-port* as: Port standard-input
+
+current-history-file := *history-file* _?
+
+(x: Object) print := *output-port* _? print: x
+(x: Object) display := *output-port* _? display: x
+
+read := *input-port* _? read
+read-line := *input-port* _? read-line
+read-char := *input-port* _? read-char
+
+contents := *input-port* _? contents
+ready? := *input-port* _? ready?
+eof? := *input-port* _? eof?
+
+
+String-Port = Port clone
+
+String-Port pretty := text: "<port {string}>"
+
+String-Port new := String-Port new: ""
+String-Port new: (c: String) :=
+  String-Port clone do: { contents = c }
+
+(b: String-Port) print: x :=
+  { b display: ((x as: String) .. "\n")
+    x
+  } call
+
+(b: String-Port) display: x :=
+  { b contents = b contents .. (x as: String)
+    x
+  } call
+
+(b: String-Port) read-line :=
+  { b contents take-while: @(/= $\n) } after: {
+    b contents = b contents (drop-while: @(/= $\n)) tail
+  }
+
+(b: String-Port) read-char :=
+  { b contents head } after: { b contents = b contents tail }
+
+(b: String-Port) eof? := b contents empty?
+
+(b: String-Port) ready? := b contents empty? not
+
+
+with-output-to: (fn: String) do: b :=
+  { Port (new: fn &mode: @write) } wrap: @close do:
+    { file |
+      with-output-to: file do: b
+    }
+
+with-output-to: (p: Port) do: b :=
+  with: *output-port* as: p do: b
+
+with-input-from: (fn: String) do: (b: Block) :=
+  { Port (new: fn &mode: @read) } wrap: @close do:
+    { file |
+      with-input-from: file do: b
+    }
+
+with-input-from: (p: Port) do: (b: Block) :=
+  with: *input-port* as: p do: b
+
+
+Directory copy: (from: String) to: (to: String) :=
+  { Directory create-tree-if-missing: to
+
+    Directory (contents: from) map:
+      { c |
+        f = from </> c
+        t = to </> c
+
+        if: Directory (exists?: f)
+          then: { Directory copy: f to: t }
+          else: { File copy: f to: t }
+      }
+
+    @ok
+  } call

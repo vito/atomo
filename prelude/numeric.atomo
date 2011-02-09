@@ -1,0 +1,18 @@
+macro (x += y) `(~x = ~x + ~y)
+macro (x -= y) `(~x = ~x - ~y)
+
+- (n: Number) := -1 * n
+
+(n: Integer) even? := 2 divides?: n
+(n: Integer) odd? := n even? not
+
+(x: Integer) divides?: (y: Integer) :=
+  (y % x) == 0
+
+(x: Integer) divisible-by?: (y: Integer) :=
+  y divides?: x
+
+(n: Number) abs :=
+  if: (n < 0)
+    then: { - n }
+    else: { n }

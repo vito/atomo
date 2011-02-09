@@ -1,0 +1,55 @@
+module: Ordered: {
+  succ := shift: 1
+  pred := shift: -1
+
+  shift: diff := from-ordering: (ordering + diff)
+
+  to: x by: diff :=
+    condition: {
+      diff == 0 ->
+        error: @zero-diff
+
+      ((diff < 0 && ordering < x ordering) ||
+        diff > 0 && ordering > x ordering) ->
+        []
+
+      otherwise ->
+        me . ((shift: diff) to: x by: diff)
+    }
+
+  up-to: x := me to: x by: 1
+
+  down-to: x := me to: x by: -1
+}
+
+class: Integer: {
+  include: Ordered
+
+  ordering := me
+  from-ordering: n := n
+}
+
+class: Character: {
+  include: Ordered
+
+  ordering := ord
+  from-ordering: n := n chr
+}
+
+class: Double: {
+  include: Ordered
+
+  ordering := as: Integer
+  from-ordering: n := n as: Double
+
+  shift: (n: Double) := + n
+}
+
+class: Rational: {
+  include: Ordered
+
+  ordering := as: Integer
+  from-ordering: n := n as: Rational
+
+  shift: (n: Rational) := + n
+}

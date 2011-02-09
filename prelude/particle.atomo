@@ -1,0 +1,53 @@
+{ operator?: str := str all?: @(in?: "~!@#$%^&*-_=+./\\|<>?:")
+
+  keywordfy: str :=
+    if: (operator?: str)
+      then: { Pretty text: str }
+      else: { Pretty text: (str .. ":") }
+
+  slot: @none := Pretty text: "_"
+  slot: @(ok: v) := v pretty
+
+  (p: -> Particle) pretty :=
+    { optionals := hsep:
+        p optionals
+          (map: { o | char: $& <> text: o from name <> colon <+> slot: o to })
+
+      p type match: {
+        @keyword ->
+          { vs := p targets map: { v | slot: v }
+
+            initial :=
+              p targets head match: {
+                @none -> empty
+                @(ok: v) -> v pretty
+              }
+
+            rest := hsep:
+              (p names zip: vs tail)
+                (map:
+                  { [name, value] |
+                    keywordfy: name <+> value
+                  })
+
+            if: (p targets (all?: @(== @none)) && p optionals empty?)
+              then: { char: $@ <> hcat: (p names map: { n | keywordfy: n }) }
+              else: { char: $@ <> parens: (initial <+> rest <+> optionals) }
+          } call
+
+        @single ->
+          condition: {
+            (p optionals empty? && p target == @none) ->
+              char: $@ <> text: p name
+
+            p target == @none ->
+              char: $@ <> parens: (text: p name <+> optionals)
+
+            otherwise ->
+              { @(ok: t) = p target
+                char: $@ <> parens: (t pretty <+> text: p name <+> optionals)
+              } call
+          }
+      }
+    } doc
+} call

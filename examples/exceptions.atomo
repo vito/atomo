@@ -1,0 +1,30 @@
+Panicker = Object clone do:
+  { yield: v := error: v
+  }
+
+define: handler as: Panicker
+
+try: action catch: rescue :=
+  { cc |
+    with: handler as: cc do: action
+  } call/cc match: {
+    @(exception: x) -> rescue call: x
+    ok -> ok
+  }
+
+throw: v :=
+  handler _? yield: @(exception: v)
+
+try: {
+  try: {
+    "before" print
+    throw: @foo
+    "after" print
+  } catch: { exn |
+    @(got-inner: exn) print
+    throw: @bar
+    "after again" print
+  }
+} catch: { exn |
+  @(got-outer: exn) print
+}

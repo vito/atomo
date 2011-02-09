@@ -1,0 +1,12 @@
+n@(Number traits) fib
+[
+    n isZero
+        ifTrue: [ 1 ]
+        ifFalse: [
+            (n = 1)
+                ifTrue: [ 1 ]
+                ifFalse: [ ((n - 2) fib) + ((n - 1) fib) ]
+        ]
+].
+
+inform: (([ inform: ((20 fib) as: String).] timeToRun) printString &precision: 2).

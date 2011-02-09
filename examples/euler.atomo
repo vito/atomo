@@ -1,0 +1,23 @@
+-- chaining methods
+problem-1: max :=
+  (0 ... max)
+    (filter: { n | 3 divides?: n || 5 divides?: n })
+    sum
+
+-- simple imperative version
+problem-2: max :=
+  { sum = 0
+
+    [i, j] = [0, 1]
+    while: { j < max } do: {
+      when: j even?
+        do: { sum = sum + j }
+
+      [i, j] = [j, i + j]
+    }
+
+    sum
+  } call
+    
+(problem-1: 1000) print
+(problem-2: 4000000) print

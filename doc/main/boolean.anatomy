@@ -1,0 +1,147 @@
+#title:{Boolean}tag:"boolean"
+
+#section:{Logic}
+
+#define:{
+    Boolean
+    > Object
+}body:{
+    Boolean values.
+
+    #example-segment:{
+      True
+      False
+    }
+}
+
+#define:{
+    a && b
+    | a is-a?: Boolean
+    | b is-a?: Boolean
+    > in?: [True, False]
+}body:{
+    Test whether #hl:{a} and #hl:{b} are both #hl:{True}. This is actually a macro which calls the short-circuiting #hl:{and:}.
+
+    #example:{
+        True && False
+        (1 == 1) && ($a /= $b)
+    }
+}
+
+#define:{
+    a || b
+    | a is-a?: Boolean
+    | b is-a?: Boolean
+    > in?: [True, False]
+}body:{
+    Test if either #hl:{a} or #hl:{b} are #hl:{True}. This is actually a macro which calls the short-circuiting #hl:{or:}.
+
+    #example:{
+        True || False
+        (1 == 1) || ($a /= $b)
+    }
+}
+
+#define:{
+    a and: b
+    | a is-a?: Boolean
+    | b is-a?: Block
+    > in?: [True, False]
+}body:{
+    A short-circuiting form of #hl:{&&}, only #hl:{call}ing the right-hand side if #hl:{a} is #hl:{True}.
+}
+
+#define:{
+    a or: b
+    | a is-a?: Boolean
+    | b is-a?: Block
+    > in?: [True, False]
+}body:{
+    A short-circuiting form of #hl:{||}, only #hl:{call}ing the right-hand side if #hl:{a} is #hl:{False}.
+}
+
+#define:{
+    a not
+    | a is-a?: Boolean
+    > in?: [True, False]
+}body:{
+    Negate #hl:{a}.
+
+    #example:{
+        True not
+        False not
+        True not not
+    }
+}
+
+#section:{Control Flow}
+
+#define:{
+    if: test then: yes else: no
+    | test is-a?: Boolean
+    | yes is-a?: Block
+    | no is-a?: Block
+    > any
+}body:{
+    Basic if-then-else control flow. If #hl:{test} is #hl:{True}, #hl:{yes} is #hl:{call}ed, otherwise #hl:{no} is. The result is the result of whichever block is called.
+
+    #example:{
+        if: (1 == 0) then: { "Uh-oh." } else: { "We're good!" }
+    }
+}
+
+#define:{
+    when: test do: action
+    | test is-a?: Boolean
+    | action is-a?: Block
+    > @ok
+}body:{
+    Sends #hl:{call} to #hl:{action in-context} if #hl:{test} is #hl:{True}, always returning #hl:{@ok}.
+
+    #example:{
+        a = 0
+        b := when: (a == 1) do: { "a is 1!" print }
+        b
+        a = 1
+        b
+    }
+}
+
+#define:{
+    while: test do: action
+    | test is-a?: Block
+    | action is-a?: Block
+    > @ok
+}body:{
+    Continually sends #hl:{call} to #hl:{action in-context} until #hl:{test} yields #hl:{False}.
+
+    #example:{
+        a = 1
+        while: { a < 10 } do: { a = a + 1 }
+        a
+    }
+}
+
+#define:{
+    condition: branches
+    | branches is-a?: Block
+    > any
+}body:{
+    Similar to Scheme's #code:{cond}, this construct takes a block pairing tests with their branch, and goes through each pairing until a test yields #hl:{True}, in which case it evaluates the expression that test was associated with.
+
+    If no branches yield #hl:{True}, #hl:{@no-true-branches} is raised.
+
+    NOTE: #italic:{This is a macro which expands to chained #hl:{if:then:else:} dispatches.}
+
+    #example:{
+        condition: { False -> "Hello!" print; True -> "Goodbye!" print }
+        condition: { 1 == 1 -> 0; otherwise -> 1 }
+    }
+}
+
+#define:{
+    otherwise
+    > True
+}body:{
+    Alias for #hl:{True} for use in #hl:{condition:}, or anywhere else where it would look nicer.
+}

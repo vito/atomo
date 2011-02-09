@@ -1,0 +1,68 @@
+@no-true-branches describe-error :=
+  "no tests in condition: block were true"
+
+False and: _ := False
+True and: (b: Block) := b call
+
+True or: _ := True
+False or: (b: Block) := b call
+
+macro (a && b) `(~a and: { ~b })
+macro (a || b) `(~a or: { ~b })
+
+True not := False
+False not := True
+
+if: True then: (a: Block) else: Block :=
+  a call
+
+if: False then: Block else: (b: Block) :=
+  b call
+
+unless: True do: Block := @ok
+unless: False do: (action: Block) :=
+  { action in-context call
+    @ok
+  } call
+
+macro (e unless: b) `(unless: ~b do: { ~e })
+
+when: False do: Block := @ok
+when: True do: (action: Block) :=
+  { action in-context call
+    @ok
+  } call
+
+macro (e when: b) `(when: ~b do: { ~e })
+
+while: (test: Block) do: (action: Block) :=
+  { cc a |
+    { (cc yield: @ok) unless: test call
+      a call
+    } repeat
+  } call/cc: action in-context
+
+(action: Block) while: (test: Block) :=
+  { action in-context call
+    while: test do: action
+  } call
+
+until: (test: Block) do: (action: Block) :=
+  { cc a |
+    { (cc yield: @ok) when: test call
+      a call
+    } repeat
+  } call/cc: action in-context
+
+(action: Block) until: (test: Block) :=
+  { action in-context call
+    until: test do: action
+  } call
+
+otherwise := True
+
+macro (condition: (bs: Block))
+  bs contents reduce-right:
+    { `(~test -> ~branch) x |
+      `(if: ~test then: { ~branch } else: { ~x })
+    } with: `(error: @no-true-branches)

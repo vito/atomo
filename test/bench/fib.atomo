@@ -1,0 +1,5 @@
+0 fib := 1
+1 fib := 1
+(n: Integer) fib := (n - 2) fib + (n - 1) fib
+
+{ { 20 fib } time print } (repeat: 100) sum (/ 100) print

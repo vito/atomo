@@ -1,0 +1,372 @@
+describe: "formatting" as: {
+  describe: "chunks of text" as: {
+    it: "formats as the text itself" so: {
+      (f"foo" % ()) should-be: "foo"
+    }
+
+    it: "has escapes for special format characters" so: {
+      (f"\%\(\)\{\}\[\]" % ()) should-be: "%(){}[]"
+    }
+
+    it: "handles other escapes normally" so: {
+      (f"\n\t\123\EOT" % ()) should-be: "\n\t\123\EOT"
+    }
+  }
+
+  describe: "string (%s)" as: {
+    it: "formats a string" so: {
+      (f"%s" % "hello") should-be: "hello"
+    }
+
+    it: "fails with non-string input" so: {
+      { f"%s" % 1 } should-error:
+        @(could-not-find: "String" in: 1)
+    }
+  }
+
+  describe: "decimal (%d)" as: {
+    it: "formats an integer in decimal notation" so: {
+      (f"%d" % 10) should-be: "10"
+    }
+
+    it: "fails with non-integer input" so: {
+      { f"%d" % "hello" } should-error:
+        @(could-not-find: "Integer" in: "hello")
+    }
+  }
+
+  describe: "hexadecimal (%x)" as: {
+    it: "formats an integer in hexadecimal notation" so: {
+      (f"%x" % 10) should-be: "a"
+    }
+
+    it: "fails with non-integer input" so: {
+      { f"%x" % "hello" } should-error:
+        @(could-not-find: "Integer" in: "hello")
+    }
+  }
+
+  describe: "octal (%o)" as: {
+    it: "formats an integer in octal notation" so: {
+      (f"%o" % 10) should-be: "12"
+    }
+
+    it: "fails with non-integer input" so: {
+      { f"%o" % "hello" } should-error:
+        @(could-not-find: "Integer" in: "hello")
+    }
+  }
+
+  describe: "binary (%b)" as: {
+    it: "formats an integer in binary notation" so: {
+      (f"%b" % 10) should-be: "1010"
+    }
+
+    it: "fails with non-integer input" so: {
+      { f"%b" % "hello" } should-error:
+        @(could-not-find: "Integer" in: "hello")
+    }
+  }
+
+  describe: "radix (%r)" as: {
+    it: "formats an integer in a given base" so: {
+      (f"%.10r" % 10) should-be: "10"
+      (f"%.16r" % 10) should-be: "a"
+      (f"%.8r" % 10) should-be: "12"
+      (f"%.2r" % 10) should-be: "1010"
+      (f"%.36r" % 35) should-be: "z"
+    }
+
+    it: "fails with non-integer input" so: {
+      { f"%.10r" % "hello" } should-error:
+        @(could-not-find: "Integer" in: "hello")
+    }
+  }
+
+  describe: "floating point (%f)" as: {
+    it: "formats a double in general notation" so: {
+      (f"%f" % 10.0) should-be: "10.0"
+      (f"%f" % 10.5) should-be: "10.5"
+      (f"%f" % 10.54321) should-be: "10.54321"
+    }
+
+    it: "fails with non-double input" so: {
+      { f"%f" % "hello" } should-error:
+        @(could-not-find: "Double" in: "hello")
+    }
+
+    it: "accepts a precision flag" so: {
+      (f"%.2f" % 10.54321) should-be: "10.54"
+      (f"%.2f" % 10.545) should-be: "10.55"
+    }
+  }
+
+  describe: "exponential (%e)" as: {
+    it: "formats a double in exponential notation" so: {
+      (f"%e" % 10.0) should-be: "1.0e1"
+      (f"%e" % 10.5) should-be: "1.05e1"
+      (f"%e" % 10.54321) should-be: "1.054321e1"
+      (f"%e" % 10.12345678901234567890)
+        should-be: "1.0123456789012346e1"
+    }
+
+    it: "fails with non-double input" so: {
+      { f"%e" % "hello" } should-error:
+        @(could-not-find: "Double" in: "hello")
+    }
+
+    it: "accepts a precision flag" so: {
+      (f"%.2e" % 10.54321) should-be: "1.05e1"
+      (f"%.2e" % 10.545) should-be: "1.05e1"
+      (f"%.2e" % 10.12345678901234567890) should-be: "1.01e1"
+    }
+  }
+
+  describe: "general (%g)" as: {
+    it: "formats a double in general notation" so: {
+      (f"%g" % 10.0) should-be: "10.0"
+      (f"%g" % 10.5) should-be: "10.5"
+      (f"%g" % 10.54321) should-be: "10.54321"
+      (f"%g" % 10000000.12345678901234567890)
+        should-be: "1.000000012345679e7"
+    }
+
+    it: "fails with non-double input" so: {
+      { f"%g" % "hello" } should-error:
+        @(could-not-find: "Double" in: "hello")
+    }
+
+    it: "accepts a precision flag" so: {
+      (f"%.2g" % 10.54321) should-be: "10.54"
+      (f"%.2g" % 10.545) should-be: "10.55"
+      (f"%.2g" % 10000000.12345678901234567890)
+        should-be: "1.00e7"
+    }
+  }
+
+  describe: "character (%c)" as: {
+    it: "formats a character" so: {
+      (f"%c" % $a) should-be: "a"
+    }
+
+    it: "fails with non-character input" so: {
+      { f"%c" % 1 } should-error:
+        @(could-not-find: "Character" in: 1)
+    }
+  }
+
+  describe: "any (%a)" as: {
+    it: "formats any value as a String" so: {
+      (f"%a" % 1) should-be: "1"
+      (f"%a" % "hello") should-be: "hello"
+    }
+  }
+
+  describe: "value (%v)" as: {
+    it: "pretty-prints any value" so: {
+      (f"%v" % 1) should-be: "1"
+      (f"%v" % "hello") should-be: "\"hello\""
+    }
+  }
+
+  describe: "pluralization (%p)" as: {
+    it: "pluralizes a word based on integer input" so: {
+      (f"%p(cat)" % 1) should-be: "cat"
+      (f"%p(cat)" % 2) should-be: "cats"
+    }
+
+    it: "accepts a second field for a specific plural form" so: {
+      (f"%p(person)(people)" % 1) should-be: "person"
+      (f"%p(person)(people)" % 2) should-be: "people"
+    }
+
+    it: "accepts a > flag to not consume the number input" so: {
+      (f"%>p(person)(people): %d" % 1) should-be: "person: 1"
+      (f"%>p(person)(people): %d" % 2) should-be: "people: 2"
+    }
+  }
+
+  describe: "lowercase (%l)" as: {
+    it: "converts its contents to lowercase" so: {
+      (f"%l(%s)" % "HElLo!") should-be: "hello!"
+    }
+  }
+
+  describe: "capitalize (%c)" as: {
+    it: "title-cases its contents" so: {
+      (f"%c(%s)" % "HElLo, mOm!") should-be: "Hello, Mom!"
+    }
+
+    it: "accepts a number flag to title-case a certain amount of words" so: {
+      (f"%1c(%s)" % "HElLo, mOm!") should-be: "Hello, mOm!"
+    }
+  }
+
+  describe: "uppercase (%u)" as: {
+    it: "converts its contents to uppercase" so: {
+      (f"%u(%s)" % "hElLo!") should-be: "HELLO!"
+    }
+  }
+
+  describe: "skip (%_)" as: {
+    it: "skips an input value" so: {
+      (f"%_%d" % (1, 2)) should-be: "2"
+    }
+
+    it: "accepts a number flag for skipping a certain amount of inputs" so: {
+      (f"%2_%d" % (1, 2, 3)) should-be: "3"
+    }
+
+    it: "accepts a < flag for skipping backards" so: {
+      (f"%_%<_%d" % (1, 2)) should-be: "1"
+      (f"%2_%2<_%d" % (1, 2, 3)) should-be: "1"
+    }
+  }
+
+  describe: "indirection (%%)" as: {
+    it: "uses a given format string, followed by a list of inputs" so: {
+      (f"%%" % (f"%d", [1])) should-be: "1"
+    }
+
+    it: "only consumes its own inputs" so: {
+      (f"%%%d" % (f"%d", [1], 2)) should-be: "12"
+    }
+
+    it: "only skips its own inputs" so: {
+      (f"%%%d" % (f"%_", [1], 2)) should-be: "2"
+    }
+  }
+
+  describe: "iteration (%{...})" as: {
+    it: "executes a format over a list of inputs" so: {
+      (f"%{%d, }" % [1, 2, 3]) should-be: "1, 2, 3, "
+    }
+
+    it: "accepts a * flag for acting on the rest of the inputs" so: {
+      (f"%*{%d, }" % (1, 2, 3)) should-be: "1, 2, 3, "
+    }
+
+    describe: "number flag" as: {
+      it: "limits the number of iterations" so: {
+        (f"%2{%d, }" % [1, 2, 3]) should-be: "1, 2, "
+      }
+
+      it: "does not cause %^ to break" so: {
+        (f"%2{%d%^, }" % [1, 2, 3]) should-be: "1, 2, "
+      }
+
+      it: "does not iterate with a limit of 0" so: {
+        (f"%0{%d, }" % [1, 2, 3]) should-be: ""
+      }
+    }
+
+    describe: "+ flag" as: {
+      it: "causes iteration to always run at least once" so: {
+        (f"%+{hi}" % []) should-be: "hi"
+        (f"%+{%#[hello]}" % []) should-be: "hello"
+      }
+
+      it: "overridden by a limit of 0" so: {
+        (f"%0+{%d, }" % [1, 2, 3]) should-be: ""
+      }
+    }
+
+    it: "accepts a . flag for taking lists of inputs" so: {
+      (f"%.{%d: %s\n}" % [[1, "one"], [2, "two"], [3, "three"]])
+        should-be: "1: one\n2: two\n3: three\n"
+    }
+  }
+
+  describe: "break (%^)" as: {
+    it: "stops an iteration when there are no more inputs" so: {
+      (f"%{%d%^, }" % [1, 2, 3]) should-be: "1, 2, 3"
+    }
+
+    it: "stops a sublist iteration only based on the sublist" so: {
+      (f"%.{%d%^, }" % [[1], [2, $x], [3]]) should-be: "12, 3"
+    }
+  }
+
+  describe: "conditional formatting (%[...]+(...)?)" as: {
+    it: "formats the branch at an offset given by the input" so: {
+      (f"%[0][1][2]" % 0) should-be: "0"
+      (f"%[0][1][2]" % 1) should-be: "1"
+    }
+
+    it: "has an optional default branch" so: {
+      (f"%[0][1](2+)" % 0) should-be: "0"
+      (f"%[0][1](2+)" % 1) should-be: "1"
+      (f"%[0][1](2+)" % 2) should-be: "2+"
+      (f"%[0][1](2+)" % 3) should-be: "2+"
+    }
+
+    describe: "number flag" as: {
+      it: "determines which branch gets formatted" so: {
+        (f"%0[0][1][2]" % ()) should-be: "0"
+        (f"%1[0][1][2]" % ()) should-be: "1"
+      }
+
+      it: "flows into the default branch" so: {
+        (f"%3[0][1][2](3+)" % ()) should-be: "3+"
+      }
+
+      describe: "using #" as: {
+        it: "determines which branch gets formatted" so: {
+          (f"%#[0][1][2]" % ()) should-be: "0"
+          (f"%#[0][1][2]" % 1) should-be: "1"
+          (f"%#[0][1][2]" % (1, 2)) should-be: "2"
+        }
+
+        it: "flows into the default branch" so: {
+          (f"%#[0][1][2](3+)" % ()) should-be: "0"
+          (f"%#[0][1][2](3+)" % (1, 2, 3, 4)) should-be: "3+"
+        }
+      }
+    }
+
+    describe: "? flag" as: {
+      describe: "one branch" as: {
+        it: "consumes a boolean, formatting if it's True" so: {
+          (f"%?[yes]" % True) should-be: "yes"
+          (f"%?[yes]" % False) should-be: ""
+        }
+
+        it: "fails with non-boolean input" so: {
+          { f"%?[yes]" % 1 } should-error:
+            @(could-not-find: "Boolean" in: 1)
+        }
+      }
+
+      describe: "two or more branches" as: {
+        it: "consumes a boolean, formatting the first branch if True, and the second if False" so: {
+          (f"%?[yes][no]" % True) should-be: "yes"
+          (f"%?[yes][no]" % False) should-be: "no"
+          (f"%?[yes][no][maybe so]" % True) should-be: "yes"
+          (f"%?[yes][no][maybe so]" % False) should-be: "no"
+        }
+
+        it: "fails with non-boolean input" so: {
+          { f"%?[yes][no]" % 1 } should-error:
+            @(could-not-find: "Boolean" in: 1)
+        }
+      }
+    }
+  }
+
+  describe: "justification (%j(...)+)" as: {
+    it: "justifies one segment to the right side" so: {
+      (f"%20j(one)" % ()) should-be: "                 one"
+      (f"%20j(one)" % ()) length should-be: 20
+    }
+
+    it: "justifies two segments to left and right sides" so: {
+      (f"%20j(one)(two)" % ()) should-be: "one              two"
+      (f"%20j(one)(two)" % ()) length should-be: 20
+    }
+
+    it: "attempts to space more than two segments evenly" so: {
+      (f"%20j(one)(two)(three)" % ()) should-be: "one    two     three"
+      (f"%20j(one)(two)(three)" % ()) length should-be: 20
+    }
+  }
+}

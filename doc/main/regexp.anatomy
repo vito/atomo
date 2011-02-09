@@ -1,0 +1,233 @@
+#title:{Regular Expressions}tag:"regexps"
+
+#define:{
+  Regexp
+  > Object
+}body:{
+  A compiled PCRE-style regular expression, usually created via the #code:{r} macro-quoter.
+
+  #example:{
+    r"foo bar" is-a?: Regexp
+    r"(\d{4,})"
+  }
+}
+
+#define:{
+  Regexp new: pattern &flags: flags
+  | pattern is-a?: String
+  | flags is-a?: String
+  > Regexp
+}body:{
+  Creates a #hl:{Regexp} with a given pattern, compiled with the given flags.
+
+  The macro-quoter #code:{r} is an easyer way of calling this, though it cannot be done programmatically.
+
+  Note that all regular expressions match strings as UTF-8; there is no flag for this.
+
+  #example:{
+    Regexp new: "\\d+" &flags: "m"
+    Regexp new: "\\d+" &flags: "isa"
+  }
+
+  Accepted flags (see #link:{the PCRE manual}to:{http://perldoc.perl.org/perlre.html\#Modifiers} for more information):
+
+  #definitions:{
+    #item:{#code:{m} (#code:{multiline})}is:{
+      By default, PCRE treats the subject string as consisting of a single line of characters (even if it actually contains newlines). The start of line metacharacter (#code:{^}) matches only at the start of the string, while the end of line metacharacter (#code:{$}) matches only at the end of the string, or before a terminating newline (unless #code:{dollar_endonly} is set). This is the same as Perl.
+
+      When this flag is set, the start of line and end of line constructs match immediately following or immediately before internal newlines in the subject string, respectively, as well as at the very start and end. This is equivalent to Perl's #code:{/m} option, and it can be changed within a pattern by a #code:{(?m)} option setting. If there are no newlines in a subject string, or no occur- rences of #code:{^} or #code:{$} in a pattern, setting this flag has no effect.
+    }
+    #item:{#code:{s} (#code:{dotall})}is:{
+      If this flag is set, a dot metacharater in the pattern matches all characters, including those that indicate newline. Without it, a dot does not match when the current position is at a newline. This option is equivalent to Perl's #code:{/s} option, and it can be changed within a pattern by a #code:{(?s)} option setting. A negative class such as #code:{[^a]} always matches newline characters, independent of the setting of this option.
+    }
+    #item:{#code:{i} (#code:{caseless})}is:{
+      Equivalent to Perl's #code:{/i} option. If set, letters in the pattern match both upper and lower -case letters.
+    }
+    #item:{#code:{x} (#code:{extended})}is:{
+      If this bit is set, whitespace data characters in the pattern are totally ignored except when escaped or inside a character class. Whitespace does not include the VT character (code 11). In addition, characters between an unescaped #code:{\#} outside a character class and the next newline, inclusive, are also ignored. This is equivalent to Perl's #code:{/x} option, and it can be changed within a pattern by a #code:{(?x)} option setting.
+
+      This option makes it possible to include comments inside complicated patterns. Note, however, that this applies only to data characters. Whitespace characters may never appear within special character sequences in a pattern, for example within the sequence #code:{(?(} which introduces a conditional subpattern.
+    }
+    #item:{#code:{a} (#code:{anchored})}is:{
+      If this flag is set, the pattern is forced to be anchored, that is, it is constrained to match only at the first matching point in the string that is being searched (the subject string). This effect can also be achieved by appropriate constructs in the pattern itself, which is the only way to do it in Perl.
+    }
+    #item:{#code:{G} (#code:{ungreedy})}is:{
+      This option inverts the greediness of the quantifiers so that they are not greedy by default, but become greedy if followed by #code:{?}. It is not compatible with Perl. It can also be set by a #code:{(?U)} option setting within the pattern.
+    }
+    #item:{#code:{e} (#code:{dollar_endonly})}is:{
+      If this flag is set, a dollar metacharacter in the pattern matches only at the end of the subject string. Without this option, a dollar also matches immediately before a newline at the end of the string (but not before any other newlines). This flag is ignored if multiline is set. There is no equivalent to this option in Perl, and no way to set it within a pattern.
+    }
+    #item:{#code:{f} (#code:{firstline})}is:{
+      If this flag is set, an unanchored pattern is required to match before or at the first newline in the subject string, though the matched text may continue over the newline.
+    }
+    #item:{#code:{C} (#code:{no_auto_capture})}is:{
+      If this option is set, it disables the use of numbered capturing parentheses in the pattern. Any opening paren- thesis that is not followed by #code:{?} behaves as if it were followed by #code:{?:} but named parentheses can still be used for capturing (and they acquire numbers in the usual way). There is no equivalent of this option in Perl.
+    }
+  }
+
+  The above flag descriptions are based on #code:{man pcreapi}, written by Philip Hazel, 2007.
+}
+
+#define:{
+  needle matches?: haystack
+  | needle is-a?: Regexp
+  | haystack is-a?: String
+  > Boolean
+}body:{
+  Test if a regular expression matches a given string.
+
+  #example:{
+    r"abc" matches?: "abc"
+    r"^\d+$" matches?: "123"
+    r"^\d+$" matches?: "123abc"
+  }
+}
+
+#define:{
+  a =~ b
+  > Boolean
+}body:{
+  Alias for #hl:{matches?:}, allowing the roles to be swapped.
+
+  #example:{
+    r"\d+" matches?: "1"
+    "1" matches?: r"\d+"
+  }
+}
+
+#define:{
+  r match: s
+  | r is-a?: Regexp
+  | s is-a?: String
+  > in?: [@(ok: RegexpMatch), @none]
+}body:{
+  Attempt a regular expression match, yielding #hl:{@none} if there is not match or #hl:{@ok:} wrapping a #hl:{RegexpMatch} if it's successful.
+
+  #example:{
+    r"\d+" match: "123"
+    r"\d+" match: "abc"
+  }
+
+  This is often more cleanly used with #hl:{case-of?:}, where the matching case provides implicit bindings, and the non-matching case continues onto the next test:
+
+  #example:{
+    "123" case-of: { r"\w+" -> @foo; r"(\d+)" -> this }
+  }
+}
+
+#define:{
+  haystack replace: needle with: replacement
+  | haystack is-a?: String
+  | needle is-a?: Regexp
+  | replacement is-a?: Block || replacement is-a?: String
+  > String
+}body:{
+  Replace the first occurrence of #hl:{needle} in #hl:{haystack}.
+
+  If #hl:{replacement} is a block, it is called with the bindings in context.
+
+  If it is a string, it is parsed as a replacement format (at runtime), looking for bindings denoted by #hl:{$}. For example, to use the first subcapture, you use #hl:{"$1"}. To match a named capture, you use #hl:{"$(foo)"}.
+
+  #example:{
+    "abc 123 foo" replace: r{abc (?<num>\d+)} with: { \num .. "!" }
+    "abc 123 foo" replace: r{abc (?<num>\d+)} with: "$(num)!"
+    "123 456" replace: r{(?<num>\d+)} with: "($(num))"
+  }
+}
+
+#define:{
+  haystack replace-all: needle with: replacement
+  | haystack is-a?: String
+  | needle is-a?: Regexp
+  | replacement is-a?: Block || replacement is-a?: String
+  > String
+}body:{
+  Similar to #hl:{replace:with:}, but replaces all occurrences of the match.
+
+  #example:{
+    "123 456" replace-all: r{(?<num>\d+)} with: "($(num))"
+  }
+}
+
+#define:{
+  RegexpMatch
+  > Object
+}body:{
+  A throw-away object containing information about a regular expression match.
+
+  #example:{
+    (r"a(b)(?<see>c)" match: "abc") match: { @(ok: m) -> m }
+  }
+}
+
+#define:{
+  m match
+  | m is-a?: RegexpMatch
+  > String
+}body:{
+  Yields the matched text.
+
+  #example:{
+    (r"b" match: "abc") match: { @(ok: m) -> m match }
+  }
+}
+
+#define:{
+  m captures
+  | m is-a?: RegexpMatch
+  > List
+}body:{
+  Yields the captured matches.
+
+  #example:{
+    (r"a(b)c" match: "abc") match: { @(ok: m) -> m captures }
+  }
+}
+
+#define:{
+  m before
+  | m is-a?: RegexpMatch
+  > String
+}body:{
+  Yields the text preceding a match.
+
+  #example:{
+    (r"b" match: "abc") match: { @(ok: m) -> m before }
+  }
+}
+
+#define:{
+  m after
+  | m is-a?: RegexpMatch
+  > String
+}body:{
+  Yields the text following a match.
+
+  #example:{
+    (r"b" match: "abc") match: { @(ok: m) -> m after }
+  }
+}
+
+#define:{
+  RegexpBindings
+  > Object
+}body:{
+  A throw-away object containing the bindings from a regular expression match, as methods preceded by a backslash. Captures are named from their offset, and named matches are bound by their name.
+
+  #example:{
+    (r"a(b)(?<see>c)" match: "abc") match: { @(ok: m) -> m bindings }
+  }
+}
+
+#define:{
+  m bindings
+  | m is-a?: RegexpMatch
+  > RegexpBindings
+}body:{
+  Yields the bind following a match.
+  Yields the #hl:{RegexpBindings} for a match.
+
+  #example:{
+    (r"(b)(?<see>c)" match: "abc") match: { @(ok: m) -> m bindings }
+  }
+}

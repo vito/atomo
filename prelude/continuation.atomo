@@ -1,0 +1,4 @@
+(v: Block) before: (b: Block) := v before: b after: { @ok }
+(v: Block) after: (a: Block) := v before: { @ok } after: a
+(init: Block) wrap: cleanup do: action :=
+  { action call: x } before: { x = init call } in-context after: { cleanup call: x }

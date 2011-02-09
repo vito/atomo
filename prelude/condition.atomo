@@ -1,0 +1,170 @@
+Restart = Object clone
+
+{ define: *handlers* as: []
+  define: *restarts* as: []
+
+  super do: {
+    Default-Debugger = Object clone do:
+      { run: e :=
+          { Restart show-options-for: e
+
+            "!> " display
+
+            Restart (get: read) jump: ()
+          } call
+      }
+
+    define: *debugger* as: Default-Debugger
+    define: *error-output* as: Port standard-error
+
+    Condition = Object clone
+
+    Error = Condition clone
+    Simple-Error = Error clone
+
+    Warning = Condition clone
+    Simple-Warning = Warning clone
+  }
+
+  (e: Simple-Error) describe-error := e value describe-error
+  (w: Simple-Warning) describe-error := w value describe-error
+
+  Simple-Error new: v :=
+    Simple-Error clone (delegating-to: v) do: { value = v }
+
+  Simple-Warning new: v :=
+    Simple-Warning clone (delegating-to: v) do: { value = v }
+
+  (e: Simple-Error) pretty :=
+    { text: "<error" <+> e value pretty <> text: ">" } doc
+  (e: Simple-Warning) pretty :=
+    { text: "<warning" <+> e value pretty <> text: ">" } doc
+
+  Restart show-options-for: e :=
+    { { $- (repeat: 78) print
+        e describe-error
+          (word-wrap: 74)
+          lines
+          (map: { l | "*** " .. l })
+          unlines
+          print
+
+        halt when: *restarts* empty?
+
+        "restarts:" print
+
+        *restarts* (zip: (0 .. *restarts* length) (as: List)) map:
+          { [name, index] |
+            ("  :" .. index show .. " -> " .. name from name) print
+          }
+      } call
+    } catch: { e |
+      "UH OH: error while showing error dialogue; dumping:\n  " display
+      e dump
+    }
+
+  Restart get: (n: Integer) :=
+    *restarts* (at: n) to
+
+  Restart new: (a: Block) in: (c: Continuation) :=
+    { res = *restarts*
+      Restart clone do:
+        { jump: as := with: *restarts* as: res do: { c yield: (a call: as) }
+          action = a
+          context = c
+        }
+    } call
+
+  (r: -> Restart) pretty :=
+    text: "<restart" <+> r action pretty <> text: ">"
+
+  macro (action with-restarts: (restarts: Block))
+    { rs = restarts contents map:
+        { `(~n -> ~e) |
+          e type match: {
+            @block -> `('~n -> ~e)
+            _ -> `('~n -> { ~e })
+          }
+        }
+
+      `(
+        { cc action pairs |
+          restarts = pairs map:
+            { a | a from -> (Restart new: a to in: cc) }
+          action with-restarts: restarts
+        } call/cc: (~action, ~(`List new: rs))
+      )
+    } call
+
+  macro (action with-restarts: (restarts: Block) bind: (handlers: Block))
+    `({ ~action with-restarts: ~restarts } bind: ~handlers)
+
+  (action: Block) with-restarts: (restarts: List) :=
+    modify: *restarts* as: { rs | restarts .. rs } do: action
+
+  { super } signal: v :=
+    { modify: *handlers* as: @id do: {
+        *handlers* map:
+          { h |
+            *handlers* =! *handlers* tail
+            h (call: v) (call: v)
+          }
+      }
+
+      @ok
+    } call
+
+  { super } error: v := error: (Simple-Error new: v)
+  { super } error: (e: Error) :=
+    { signal: e
+
+      with-output-to: *error-output* do: {
+        *debugger* run: e
+      }
+    } call
+
+  { super } warning: v := warning: (Simple-Warning new: v)
+  { super } warning: (w: Warning) :=
+    { signal: w
+
+      with-output-to: *error-output* do: {
+        ("WARNING: " .. w describe-error) print
+      }
+
+      @ok
+    } with-restarts: {
+      muffle-warning -> @ok
+    }
+
+  { super } restart: name := restart: name with: ()
+
+  { super } restart: name with: params :=
+    *restarts* (lookup: name) match: {
+      @(ok: r) ->
+        r jump: params
+
+      @none ->
+        error: @(unknown-restart: name)
+    }
+
+  { super } find-restart: name :=
+    *restarts* lookup: name
+
+  { super } with-handler: (h: Block) do: (action: Block) :=
+    modify: *handlers* as: { hs | h . hs } do: action
+
+  macro (a bind: (bs: Block))
+    { branches = bs contents map:
+        { `(~p -> ~e) |
+          if: (e type == @block)
+            then: { `(~p -> ~e) }
+            else: { `(~p -> { ~e }) }
+        }
+
+      handler = `Block new: (branches .. ['(_ -> { @ok })])
+
+      `({ h a |
+          with-handler: h do: a
+        } call: ({ !c | super = super; !c match: ~handler }, ~a))
+    } call
+} call

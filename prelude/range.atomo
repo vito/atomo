@@ -1,0 +1,56 @@
+class: Range: {
+  include: Enumerable
+
+  new.start: start end: end &exclusive?: False :=
+    { start = start
+      end = end
+      exclusive? = exclusive?
+    }
+
+  == (other: { me }) :=
+    equals?: other || [
+      start == other start
+      end == other end
+      exclusive? == other exclusive?
+    ] and
+
+  matches?: value :=
+    value >= start &&
+      if: exclusive?
+        then: { value < end }
+        else: { value <= end }
+
+  collect: action := step: action
+
+  step: action &size: 1 :=
+    { result = []
+      last = if: exclusive? then: { end pred } else: { end }
+      current = start
+      while: { current <= last } do: {
+        result << action call: current
+        current = current shift: size
+      }
+      result
+    } call
+
+  step &size: 1 :=
+    { result = []
+      last = if: exclusive? then: { end pred } else: { end }
+      current = start
+      while: { current <= last } do: {
+        result << current
+        current = current shift: size
+      }
+      result
+    } call
+
+  pretty :=
+    { if: exclusive?
+        then: { start pretty <+> text: "..." <+> end pretty }
+        else: { start pretty <+> text: ".." <+> end pretty }
+    } doc
+}
+
+x .. y := Range new.start: x end: y
+
+x ... y := Range new.start: x end: y &exclusive?: True

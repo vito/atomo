@@ -1,0 +1,102 @@
+#title:{Ordered Values}tag:"ordered"
+
+#define:{
+  Ordered
+  > module
+}body:{
+  The #hl:{Ordered} module provides various utility methods for anything that defines #hl:{ordering} and #hl:{from-ordering:}.
+}
+
+#define:{
+  o ordering
+  > Integer
+}body:{
+  The ordering of the value in its sequence.
+
+  #example:{
+    1 ordering
+    $a ordering
+    1/2 ordering
+  }
+}
+
+#define:{
+  o from-ordering: n
+  | n is-a?: Integer
+  > any
+}body:{
+  Creates a value given its ordering in its sequence.
+
+  #example:{
+    Integer from-ordering: 1
+    Character from-ordering: 97
+    Rational from-ordering: 2
+  }
+}
+
+#define:{
+  o succ
+  > any
+}body:{
+  Moves forward one "step".
+
+  #example:{
+    1 succ
+    $a succ
+    3/2 succ
+  }
+}
+
+#define:{
+  o pred
+  > any
+}body:{
+  Moves backward one step.
+
+  #example:{
+    1 pred
+    $a pred
+    3/2 pred
+  }
+}
+
+#define:{
+  o shift: diff
+  | diff is-a?: Integer
+  > any
+}body:{
+  Moves around in the ordering by #hl:{diff} steps.
+
+  #example:{
+    1 shift: 2
+    $f shift: -2
+  }
+}
+
+#define:{
+  x to: y by: diff
+  | diff is-a?: Integer
+  > List
+}body:{
+  Returns a list of the values in the ordering from #hl:{x} to #hl:{y}, shifting by #hl:{diff}.
+
+  #example:{
+    1 to: 5 by: 2
+    $a to: $z by: 3
+    $z to: $a by: -3
+  }
+}
+
+#define:{
+  x up-to: y
+  > List
+}body:{
+  #hl:{x to: y by: 1}.
+}
+
+#define:{
+  x down-to: y
+  > List
+}body:{
+  #hl:{x to: y by: -1}.
+}

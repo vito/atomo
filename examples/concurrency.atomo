@@ -1,0 +1,12 @@
+process =
+  { sender |
+    x = receive
+    x print
+    "waiting for 1 second..." print
+    Timer sleep: 1 second
+    sender <- @(got: x)
+  } spawn: self
+
+process <- "hello, world!"
+
+receive print

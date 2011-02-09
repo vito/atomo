@@ -1,0 +1,57 @@
+{ @empty-string describe-error := "string is empty"
+
+  (s: String) indent: (n: Integer) :=
+    s lines (map: { l | $  (repeat: n) .. l }) (join: "\n")
+
+  (s: String) word-wrap: (length: Integer) :=
+    s lines
+      (map: { l |
+        if: (l all?: @space?)
+          then: { l }
+          else: { (l take-while: @space?) .. (wrap-line: l to: length acc: "") }
+      })
+      unlines
+
+  wrap-line: "" to: _ acc: acc := acc
+  wrap-line: l to: length acc: acc :=
+    { words = l words
+
+      condition: {
+        acc empty? ->
+          wrap-line: words tail unwords to: length acc: words head
+
+        acc length > length ->
+          acc .. "\n" .. (wrap-line: l to: length acc: "")
+
+        acc length + 1 + words head length > length ->
+          acc .. "\n" .. (wrap-line: words tail unwords to: length acc: words head)
+
+        otherwise ->
+          wrap-line: words tail unwords to: length acc: (acc .. " " .. words head)
+      }
+    } call
+} call
+
+(s: String) plural :=
+  s case-of: {
+    r"o$"i ->
+      s .. "es"
+    r"[aeiou]$"i ->
+      s .. "s"
+    r"(?<root>.+[aeiou])y$"i ->
+      s .. "s"
+    r"(lay-by|stand-by)$"i ->
+      s .. "s"
+    r"(?<root>.+)y$"i ->
+      \root .. "ies"
+    r"(?<root>.+)us$"i ->
+      \root .. "i"
+    r"(?<root>.+)sis$"i ->
+      \root .. "es"
+    r"(?<root>.+)(ex|ix)$"i ->
+      \root .. "ices"
+    r"(?<root>.+)(ss|sh|ch|dge)$"i ->
+      s .. "es"
+    _ ->
+      s .. "s"
+  }

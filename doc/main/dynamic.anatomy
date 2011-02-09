@@ -1,0 +1,93 @@
+#title:{Dynamic Environment}tag:"dynamic"
+
+Atomo has a dynamic system similar to Scheme's #code:{parameterize} and Common Lisp's #code:{defvar}.
+
+The usual convention of using #code:{*earmuffs*} for dynamic variable names is fine, but it's not really necessary as it's harder for them to collide with normal variables (accessing is either explicit or lexical, and updating is explicit).
+
+#define:{
+  top define: name as: root
+  > root
+}body:{
+  Creates a new dynamic variable called #hl:{name}, defining an accessor in #hl:{top}. The accessor simply performs #hl:{name _?}.
+
+  If the dynamic variable already exists, it is replaced.
+
+  #example:{
+    define: *foo* as: 10
+    *foo* _?
+    *foo*
+  }
+}
+
+#define:{
+  name _?
+  > any
+}body:{
+  Retrieves the binding for #hl:{name} from the dynamic environment.
+
+  #example:{
+    define: *foo* as: 10
+    *foo* _?
+  }
+
+  Normally you won't need to do this, since #hl:{define:as:} defines an accessor for you, so you can just say the name.
+}
+
+#define:{
+  name =! value
+  > value
+}body:{
+  Updates the most recent binding for #hl:{name} as #hl:{value}. This cannot replace the root value.
+
+  #example:{
+    define: *foo* as: 0
+    with: *foo* as: 1 do: { *foo* =! 2; *foo* }
+    *foo* =! 2
+  }
+}
+
+#define:{
+  with: name as: binding do: action
+  | action is-a?: Block
+  > any
+}body:{
+  Calls #hl:{action} with #hl:{name} bound as #hl:{binding}.
+
+  #example:{
+    define: *foo* as: 0
+    with: *foo* as: 1 do: { *foo* }
+    *foo*
+  }
+}
+
+#define:{
+  with: bindings do: action
+  | bindings is-a?: List
+  | action is-a?: Block
+  > any
+}body:{
+  Calls #hl:{action} with the given #hl:{Associations} of variables to their new bindings. Expands into multiple #hl:{with:as:do:} calls.
+  Calls #hl:{action} with #hl:{name} bound as #hl:{binding}.
+
+  #example:{
+    define: *foo* as: 0
+    define: *bar* as: $a
+    with: [*foo* -> 1, *bar* -> $b] do: { [*foo*, *bar*] }
+    [*foo*, *bar*]
+  }
+}
+
+#define:{
+  modify: name as: modifier do: action
+  | action is-a?: Block
+  | modifier responds-to?: @call:
+  > any
+}body:{
+  Similar to #hl:{with:as:do:}, but passes the current value to #hl:{modifier} to yield the new binding.
+
+  #example:{
+    define: *foo* as: 0
+    modify: *foo* as: @(+ 1) do: { *foo* }
+    *foo*
+  }
+}

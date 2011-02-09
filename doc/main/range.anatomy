@@ -1,0 +1,109 @@
+#title:{Ranges}tag:"ranges"
+
+Generic ranges for any value that is #hl:{Ordered}. Range objects are #hl:{Enumerable}.
+
+#define:{
+  Range
+  > Object
+}body:{
+  An object containing a range's beginning, end, and exclusivity.
+}
+
+#define:{
+  a .. b
+  > Range
+}body:{
+  Create an inclusive #hl:{Range} from #hl:{a} to #hl:{b}.
+}
+
+#define:{
+  a ... b
+  > Range
+}body:{
+  Create an exclusive #hl:{Range} from #hl:{a} to #hl:{b}.
+}
+
+#define:{
+  r start
+  | r is-a?: Range
+  > any
+}body:{
+  The start of the range.
+
+  #example:{
+    ($a .. $z) start
+  }
+}
+
+#define:{
+  r end
+  | r is-a?: Range
+  > any
+}body:{
+  The end of the range.
+
+  #example:{
+    ($a .. $z) end
+  }
+}
+
+#define:{
+  r exclusive?
+  | r is-a?: Range
+  > Boolean
+}body:{
+  Is a range exclusive?
+
+  #example:{
+    ($a .. $z) exclusive?
+    ($a ... $z) exclusive?
+  }
+}
+
+#define:{
+  r matches?: x
+  | r is-a?: Range
+  > Boolean
+}body:{
+  Test if #hl:{x} is within the bounds of the range. This is useful for #hl:{case-of:}.
+
+  #example:{
+    ($a .. $z) matches?: $z
+    ($a ... $z) matches?: $z
+    $z case-of: { $a .. $w -> @foo; $x .. $z -> @bar }
+  }
+}
+
+#define:{
+  r step &size: 1
+  | r is-a?: Range
+  > List
+}body:{
+  Returns a list of the values in the range, increasing by #hl:{size}.
+
+  #example:{
+    ($a .. $f) step
+    ($a .. $f) step &size: 2
+  }
+}
+
+#define:{
+  r step: action &size: 1
+  | r is-a?: Range
+  > List
+}body:{
+  Returns a list of the values in the range, increasing by #hl:{size}, sent to #hl:{action}.
+
+  #example:{
+    ($a .. $f) step: @show
+    ($a .. $f) step: @show &size: 2
+  }
+}
+
+#define:{
+  r collect: action
+  | r is-a?: Range
+  > List
+}body:{
+  Alias for #hl:{step:}.
+}

@@ -1,0 +1,99 @@
+HTML = Object clone
+Self-Closing = "base meta link hr br param img area input col frame" words
+
+HTML new :=
+  HTML clone do:
+    { tag = ""
+      attributes = []
+      content = []
+      attribute-mode = False
+    }
+
+
+-- creating elements with no content
+-- keyword dispatch adds attributes
+(h: HTML) did-not-understand: (m: Message) :=
+  { elem = HTML new do:
+      { tag = m particle name
+        attribute-mode = True
+      }
+
+    h content = h content << elem
+
+    elem
+  } call
+
+-- creating elements with content
+(h: HTML) did-not-understand: (m: Message) at: 0 :=
+  if: h attribute-mode
+    then: {
+      attr-names = m particle names
+      attr-values = m targets tail
+      attrs = attr-names zip: attr-values
+
+      h attributes = h attributes .. attrs
+    }
+    else: {
+      content = m targets (at: 1)
+      attr-names = m particle names tail
+      attr-values = m targets (drop: 2)
+
+      elem = HTML new do:
+        { tag = m particle names (at: 0)
+          attributes = attr-names zip: attr-values
+        }
+
+      if: (content is-a?: Block)
+        then: { elem do: content }
+        else: { elem content = [content] }
+
+      h content = h content << elem
+    }
+
+(h: HTML) cdata: x :=
+  h content = h content << x
+
+(h: HTML) doctype :=
+  h cdata: "<!DOCTYPE html>"
+
+(h: HTML) as: String :=
+  { c = h content (map: @(as: String)) join
+
+    attrs =
+      h attributes
+        (map: { a | " " .. a from .. "=\"" .. a to .. "\"" })
+        join
+
+    condition: {
+      h tag empty? -> c
+
+      c empty? && (Self-Closing contains?: h tag) ->
+        "<" .. h tag .. attrs .. " />"
+
+      otherwise ->
+        "<" .. h tag .. attrs .. ">" .. c .. "</" .. h tag .. ">"
+    }
+  } call
+
+
+HTML new (do: {
+  doctype
+  html: {
+    head: {
+      meta do: {
+        http-equiv: "content-type"
+        content: "text/html; charset=utf-8"
+      }
+
+      title: "Getting Started"
+      link rel: "stylesheet" type: "text/css" href: "a.css"
+    }
+    body: {
+      p: "foo"
+
+      div: {
+        span: "blah!"
+      }
+    } class: "some-class" id: "hello"
+  }
+}) print

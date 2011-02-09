@@ -1,0 +1,33 @@
+#!/usr/bin/env atomo
+
+Environment arguments tail match: {
+    ("install" . path . _) ->
+        Eco install: path
+
+    ("install" . _) ->
+        Eco install: "."
+
+    ("uninstall" . name . version . _) ->
+        Eco uninstall: name version: (version as: Version)
+
+    ("uninstall" . name . _) ->
+        Eco uninstall: name
+
+    ("list" . _) ->
+        Eco packages each: { p |
+            pkgs = p to
+            p from print
+            ("\tdescription: " .. pkgs head description) print
+            ("\tlatest version: " .. pkgs head version (as: String)) print
+            ("\tavailable versions: " .. pkgs (map: { p | p version as: String }) (join: ", ")) print
+            "" print
+        }
+
+    _ -> {
+        "usage:" print
+        "\tinstall PATH:\tinstall package at PATH to ~/.eco" print
+        "\tinstall:\tinstall package at cwd to ~/.eco" print
+        "\tuninstall NAME VERSION:\tuninstall package NAME version VERSION" print
+        "\tuninstall NAME:\tuninstall package all versions of package NAME" print
+    } call
+}

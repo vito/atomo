@@ -1,0 +1,3 @@
+anatomy doc/notes/$1/main.anatomy -o notes
+rsync -a -P -e "ssh -p 7331" notes/ alex@atomo-lang.org:/srv/http/atomo-lang.org/site/notes/$1
+

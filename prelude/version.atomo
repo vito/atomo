@@ -1,0 +1,72 @@
+Version = Object clone
+
+(major: Integer) . (minor: Integer) :=
+  Version clone do:
+    { major = major
+      minor = minor
+    }
+
+(major: Integer) . (rest: Version) :=
+  Version clone do:
+    { major = major
+      minor = rest
+    }
+
+(v: Version) pretty :=
+  v major pretty <+> text: "." <+> v minor pretty
+
+(v: Version) as: String :=
+  v major show .. "." .. v minor (as: String)
+
+(s: String) to: Version :=
+  s (split-on: $.) (map: @(to: Integer)) reduce-right: @.
+
+(n: Integer) as: Version := n . 0
+
+-- used for checking version satisfying constraint { any }
+Version any = True
+
+(a: Version) == (b: Version) :=
+  a major == b major && a minor == b minor
+
+(n: Integer) == (v: Version) :=
+  (n == v major) && (v minor == 0)
+
+(v: Version) == (n: Integer) :=
+  (n == v major) && (v minor == 0)
+
+(a: Version) > (b: Version) :=
+  a major > b major || a minor > b minor
+
+(n: Integer) > (v: Version) :=
+  n > v major || v major == n && v minor /= 0
+
+(v: Version) > (n: Integer) :=
+  v major > n || v major == n && v minor /= 0
+
+(a: Version) < (b: Version) :=
+  a major < b major || a minor < b minor
+
+(n: Integer) < (v: Version) :=
+  n < v major || v major == n && v minor /= 0
+
+(v: Version) < (n: Integer) :=
+  v major < n || v major == n && v minor /= 0
+
+(a: Version) >= (b: Version) :=
+  a major >= b major || a minor >= b minor
+
+(n: Integer) >= (v: Version) :=
+  n >= v major
+
+(v: Version) >= (n: Integer) :=
+  v major >= n
+
+(a: Version) <= (b: Version) :=
+  a major <= b major || a minor <= b minor
+
+(n: Integer) <= (v: Version) :=
+  n <= v major
+
+(v: Version) <= (n: Integer) :=
+  v major <= n

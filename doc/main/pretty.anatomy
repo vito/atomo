@@ -1,0 +1,462 @@
+#title:{Pretty-Printing}tag:"pretty"
+
+Atomo provides a handy wrapper for the Haskell #code:{Text.PrettyPrint} system. The documentation here is largely based off of #link:{its own}to:{http://hackage.haskell.org/packages/archive/pretty/latest/doc/html/Text-PrettyPrint-HughesPJ.html}.
+
+#define:{
+  Pretty
+  > Object
+}body:{
+  Provides a ton of intelligent pretty-printing functionality.
+}
+
+#define:{
+  o pretty
+  > Pretty
+}body:{
+  Turn an object into a pretty-printed document, which can be used in other pretty-printers. This is defined on #hl:{Object}, so everything has it, but you should override this if possible.
+
+  Pretty-printing a value should yield something that looks like the expression that created that value. If it cannot be pretty-printed cleanly, make it obvious, usually via surrounding some description with angle brackets (#code:{<>}).
+
+  #example:{
+    1 pretty
+    (1 -> 2) pretty
+  }
+}
+
+#define:{
+  x doc
+  | x is-a?: Block
+  > Pretty
+}body:{
+  Used for writing pretty-printed forms; basically a shortcut for #hl:{@(Pretty join: x)}.
+
+  #example:{
+    { char: $c <+> int: 10 } doc
+  }
+}
+
+
+#section:{Documents From Values}
+
+#define:{
+  Pretty char: c
+  | c is-a?: Character
+  > Pretty
+}body:{
+  A document of height and width 1, containing a literal character.
+
+  #example:{
+    Pretty char: $x
+  }
+}
+
+#define:{
+  Pretty text: s
+  | s is-a?: String
+  > Pretty
+}body:{
+  A document of height 1 containing a literal string.
+
+  Satisfies the following laws:
+
+  #verbatim:{
+    text: s <> text: t == text: (s .. t)
+    text: "" <> x == x, if x is non-empty
+  }
+
+  The side condition on the last law is necessary because text "" has height 1, while empty has no height.
+
+  #example:{
+    Pretty text: "hello!"
+  }
+}
+
+#define:{
+  Pretty zero-width-text: s
+  | s is-a?: String
+  > Pretty
+}body:{
+  Some text, but without any width. Use for non-printing text such as a HTML or Latex tags.
+
+  #example:{
+    Pretty zero-width-text: "hello!"
+  }
+}
+
+#define:{
+  Pretty int: x
+  | x is-a?: Integer
+  > Pretty
+}body:{
+  Shortcut for #hl:{text: x show}.
+}
+
+#define:{
+  Pretty integer: x
+  | x is-a?: Integer
+  > Pretty
+}body:{
+  Same as #hl:{int:}.
+}
+
+#define:{
+  Pretty float: x
+  | x is-a?: Double
+  > Pretty
+}body:{
+  Shortcut for #hl:{text: x show}.
+}
+
+#define:{
+  Pretty double: x
+  | x is-a?: Double
+  > Pretty
+}body:{
+  Same as #hl:{float:}.
+}
+
+#define:{
+  Pretty rational: x
+  | x is-a?: Rational
+  > Pretty
+}body:{
+  Shortcut for #hl:{text: x show}.
+}
+
+
+#section:{Simple Shortcuts}
+
+#define:{
+  Pretty semi
+  > Pretty
+}body:{Shortcut for #hl:{char: $;}.}
+
+#define:{
+  Pretty comma
+  > Pretty
+}body:{Shortcut for #hl:{char: $,}.}
+
+#define:{
+  Pretty colon
+  > Pretty
+}body:{Shortcut for #hl:{char: $:}.}
+
+#define:{
+  Pretty space
+  > Pretty
+}body:{Shortcut for #hl:{char: $ }.}
+
+#define:{
+  Pretty equals
+  > Pretty
+}body:{Shortcut for #hl:{char: $=}.}
+
+#define:{
+  Pretty lparen
+  > Pretty
+}body:{Shortcut for #hl:{char: $(}.}
+
+#define:{
+  Pretty rparen
+  > Pretty
+}body:{Shortcut for #hl:{char: $)}.}
+
+#define:{
+  Pretty lbrack
+  > Pretty
+}body:{Shortcut for #hl:{char: $[}.}
+
+#define:{
+  Pretty rbrack
+  > Pretty
+}body:{Shortcut for #hl:{char: $]}.}
+
+#define:{
+  Pretty lbrace
+  > Pretty
+}body:{Shortcut for #hl:{char: $\{}.}
+
+#define:{
+  Pretty rbrace
+  > Pretty
+}body:{Shortcut for #hl:{char: $\}}.}
+
+
+#section:{Wrapping Documents}
+
+#define:{
+  Pretty parens: p
+  | p is-a?: Pretty
+  > Pretty
+}body:{
+  Wrap #hl:{p} in #code:{(...)}.
+
+  #example:{
+    { parens: (text: "hi!") } doc
+  }
+}
+
+#define:{
+  Pretty brackets: p
+  | p is-a?: Pretty
+  > Pretty
+}body:{
+  Wrap #hl:{p} in #code:{[...]}.
+
+  #example:{
+    { brackets: (text: "hi!") } doc
+  }
+}
+
+#define:{
+  Pretty braces: p
+  | p is-a?: Pretty
+  > Pretty
+}body:{
+  Wrap #hl:{p} in #code:{\{...\}}.
+
+  #example:{
+    { braces: (text: "hi!") } doc
+  }
+}
+
+#define:{
+  Pretty quotes: p
+  | p is-a?: Pretty
+  > Pretty
+}body:{
+  Wrap #hl:{p} in #code:{'...'}.
+
+  #example:{
+    { quotes: (text: "hi!") } doc
+  }
+}
+
+#define:{
+  Pretty double-quotes: p
+  | p is-a?: Pretty
+  > Pretty
+}body:{
+  Wrap #hl:{p} in #code:{"..."}.
+
+  #example:{
+    { double-quotes: (text: "hi!") } doc
+  }
+}
+
+
+#section:{Combining Documents}
+
+#define:{
+  Pretty empty
+  > Pretty
+}body:{
+  The empty document, with no height and no width. #hl:{empty} is the identity for #hl:{<>}, #hl:{<+>}, #hl:"\\\\" and #hl:"\\+\\", and anywhere in the argument list for #hl:{sep:}, #hl:{hcat:}, #hl:{hsep:}, #hl:{vcat:}, #hl:{fcat:}, etc.
+
+  #example:{
+    Pretty empty
+  }
+
+  (Just a blank line.)
+}
+
+#define:{
+  p empty?
+  | p is-a?: Pretty
+  > Boolean
+}body:{
+  Is the document #hl:{p} empty?
+}
+
+#define:{
+  a <> b
+  | a is-a?: Pretty
+  | b is-a?: Pretty
+  > Pretty
+}body:{
+  Beside. #hl:{<>} is associative, with identity #hl:{empty}.
+
+  #example:{
+    { (char: $e) <> (integer: 42) } doc
+  }
+}
+
+#define:{
+  a <+> b
+  | a is-a?: Pretty
+  | b is-a?: Pretty
+  > Pretty
+}body:{
+  Beside, separated by a space, unless one of the arguments is #hl:{empty}. #hl:{<+>} is associative, with identity #hl:{empty}.
+
+  #example:{
+    { (char: $e) <+> (integer: 42) } doc
+  }
+}
+
+#define:{
+  Pretty hcat: ps
+  | ps is-a?: List
+  > Pretty
+}body:{
+  List version of #hl:{<>}.
+}
+
+#define:{
+  Pretty hsep: ps
+  | ps is-a?: List
+  > Pretty
+}body:{
+  List version of #hl:{<+>}.
+}
+
+#define:{
+  a \\ b
+  | a is-a?: Pretty
+  | b is-a?: Pretty
+  > Pretty
+}body:{
+  Position #hl:{a} above #hl:{b}, except that if the last line of the first argument stops at least one position before the first line of the second begins, these two lines are overlapped.
+
+  #example:{
+    { text: "hi" \\ (text: "there") nest: 1 } doc
+    { text: "hi" \\ (text: "there") nest: 5 } doc
+  }
+
+  #hl:"\\\\" is associative, with identity #hl:{empty}, and also satisfies:
+
+  #verbatim:{
+    (x \\ y) <> z == x $$ (y <> z), if y is non-empty
+  }
+}
+
+#define:{
+  a \+\ b
+  | a is-a?: Pretty
+  | b is-a?: Pretty
+  > Pretty
+}body:{
+  Position #hl:{a} above #hl:{b}, with no overlapping. #hl:"\\+\\" is associative, with identity #hl:{empty}.
+
+  #example:{
+    { text: "hi" \+\ (text: "there") nest: 1 } doc
+    { text: "hi" \+\ (text: "there") nest: 5 } doc
+  }
+}
+
+#define:{
+  Pretty vcat: ps
+  | ps is-a?: List
+  > Pretty
+}body:{
+  List version of #hl:{\\}.
+}
+
+#define:{
+  Pretty sep: ps
+  | ps is-a?: List
+  > Pretty
+}body:{
+  Either #hl:{hsep:} or #hl:{vcat:}.
+}
+
+#define:{
+  Pretty cat: ps
+  | ps is-a?: List
+  > Pretty
+}body:{
+  Either #hl:{hcat:} or #hl:{vcat:}.
+}
+
+#define:{
+  Pretty fsep: ps
+  | ps is-a?: List
+  > Pretty
+}body:{
+  "Paragraph fill" version of #hl:{sep:}.
+}
+
+#define:{
+  Pretty fcat: ps
+  | ps is-a?: List
+  > Pretty
+}body:{
+  "Paragraph fill" version of #hl:{cat:}.
+}
+
+#define:{
+  p nest: n
+  | p is-a?: Pretty
+  | n is-a?: Integer
+  > Pretty
+}body:{
+  Nest (or indent) a document by a given number of positions (which may also be negative). #hl:{nest:} satisfies the laws:
+
+  #verbatim:{
+    x nest: 0 == x
+    (x nest: a) nest: b == x nest: (a + b)
+    (x <> y) nest: a == x nest: a <> y nest: a
+    (x \\ y) nest: a == x nest: a \\ y nest: a
+    Pretty empty nest: a == Pretty empty
+    x <> y nest: a = x <> y, if x is non-empty
+  }
+
+  The side condition on the last law is needed because #hl:{empty} is a left identity for #hl:{<>}.
+
+  #example:{
+    { (text: "hello!") nest: 4 } doc
+  }
+}
+
+#define:{
+  a hang: b indented: n
+  | a is-a?: Pretty
+  | b is-a?: Pretty
+  | n is-a?: Integer
+  > Pretty
+}body:{
+  Shortcut for #hl:{Pretty sep: [a, b nest: n]}.
+
+  #example:{
+    { (text: "one") hang: (text: "two" \+\ text: "three") indented: 1 } doc
+  }
+}
+
+#define:{
+  delim punctuate: ps
+  | delim is-a?: Pretty
+  | ps is-a?: List
+  > Pretty
+}body:{
+  Intersperse #hl:{delim} through #hl:{ps}.
+
+  That is, #hl:{x punctuate: [p1, ... pn]} is #hl:{[p1 <> x, p2 <> x, ... pn-1 <> x, pn]}.
+
+  #example:{
+    { semi punctuate: [text: "a", text: "b", char: $c] } doc
+  }
+}
+
+
+#section:{Rendering}
+
+#define:{
+  p render &mode: @page &line-length: 100 &ribbons-per-line: 1.5
+  | p is-a?: Pretty
+  > String
+}body:{
+  Renders the document as a string.
+
+  Valid settings for #hl:{mode}:
+
+  #definitions:{
+    #item:{#hl:{@page}}is:{normal}
+    #item:{#hl:{@zig-zag}}is:{with zig-zag cuts}
+    #item:{#hl:{@left}}is:{no indentation; infinitely long lines}
+    #item:{#hl:{@one-line}}is:{all on one line}
+  }
+
+  #example:{
+    (1 -> $1) pretty render
+  }
+}

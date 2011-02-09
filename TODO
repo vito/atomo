@@ -1,0 +1,40 @@
+* documentation:
+  * Message
+  * Pattern
+  * String
+  * File
+  * Directory
+  * Method
+  * Char
+  * Expression
+    * @(`Match new: List on: Expression)
+    * @(`Block new: List) and `(@Block new: List arguments: List)
+    * @(`List new: List)
+    * @(String parse-expressions) -- rename?
+    * @(evaluate: Expression)
+    * expression meta-stuff
+
+  * @(Block: List) and @(Block: List arguments: List)
+
+  * @(Object repl)
+  * @(Object basic-repl)
+
+  * @when:
+  * @unless:do:
+  * @unless:
+
+  * @define:on:with:as:
+  * @define:on:as:
+
+  * @match:on:
+
+  * @from:take:
+
+  * @interaction:
+
+  * @indent:
+  * @word-wrap:
+
+  * @describe-error
+
+  * @(- Number)

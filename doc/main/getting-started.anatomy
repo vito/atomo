@@ -1,0 +1,201 @@
+#title:{Getting Started}tag:"getting-started"
+
+#section:{A quick introduction to Atomo}
+
+Atomo is a unique combination of many programming ideas - prototyping, message-passing, pattern matching, multiple dispatch, and message-passing concurrency being the primary ones. It is eagerly evaluated, and does not have a #italic:{null} type. It supports multiple inheritance via delegation. And it's mind-bogglingly dynamic.
+
+This guide will get you up and running with the very basics of the Atomo programming language. It assumes you have some prior programming experience, though not necessarily with a language like Atomo.
+
+
+#section:{Installation}
+
+Atomo may be installed through the #link:{Cabal}to:{http://www.haskell.org/cabal/} package managing system:
+
+#verbatim:{cabal install atomo}
+
+Alternatively, you can install it from the repository at #link:{darcsden}to:{http://darcsden.com/alex/atomo}:
+
+#verbatim:{
+    darcs get http://darcsden.com/alex/atomo
+    cd atomo
+    cabal install
+}
+
+Once that's all done, just make sure #code:{~/.cabal/bin} is in your #code:{$PATH}, and you should be all set!
+
+
+#section:{Fire it up!}
+
+To start up the Atomo REPL, just type in "atomo" at your prompt:
+
+#verbatim:{
+    $ atomo
+    >
+}
+
+Now you're in the Atomo #italic:{read-evaluate-print loop}, which - as you may have guessed - takes in Atomo code, evaluates it, and prints the result, repeating this loop until you exit. You probably won't be able to do much since we haven't gotten very far yet, but here's some basic math, just for a quick taste:
+
+#interaction:{
+    1 + 1
+    1 + 2 * 3
+    20 sqrt
+}
+
+The REPL is readline-style, with history navigation. To exit the REPL, hit Ctrl+D or Ctrl+C, and hit #code:{y}. It asks before you leave, because running servers from the REPL is a common task, and it shouldn't be too easy to just shut down everything by accident.
+
+
+#section:{Define & Dispatch}
+
+There are two primary concepts in Atomo that lay the foundation for the entire language: #italic:{defining} and #italic:{dispatching}.
+
+Defining sets a value or expression to respond to some message. Dispatching is sending a message to get a value back.
+
+#interaction:{
+    a = 1
+    a
+}
+
+Here we're inserting a slot - a kind of method - on the toplevel object, which responds to the message #hl:{a} by yielding the integet #hl:{1}. We then dispatch that message and get the value back.
+
+There are two operators for defining methods: #hl:{=} and #hl:{:=}. The #hl:{=} operator performs pattern-matching and slot insertion, while #hl:{:=} defines a method that responds to a message by evaluating an expression. Generally you'll use #hl:{:=} for defining methods, and #hl:{=} for setting values.
+
+To illustrate this distinction, we'll define a method that simply prints #hl:{"Hello, world!"}, using both operators. Note that #hl:{print} outputs the value and yields the same value.
+
+#interaction:{
+    y := "Hello, world!" print
+    x = "Goodbye, world!" print
+    y
+    x
+}
+
+As you can see, #italic:{Goodbye, world!} was printed immediately after defining #hl:{x}, with subsequent dispatches for #hl:{x} simply returning the value that was printed. Conversely, #hl:{y} dutifully prints #italic:{Hello, world!} with every dispatch.
+
+But #hl:{=} has a few more tricks up its sleeve. As mentioned before, it can also do pattern-matching. And since it returns the same value, it can be used to set multiple values at once:
+
+#interaction:{
+    [a, _] = b = [1, 2]
+    a
+    b
+    a = a + 1
+    a
+}
+
+As you can see, first we set #hl:{b} to #hl:{[1, 2]}, and then we immediately pattern-match #hl:{[a, _]} on #hl:{b}, which sets #hl:{a} to #hl:{1}, the first element of the list. We then re-assign #hl:{a} as #hl:{a + 1}, increasing #hl:{a}'s vlaue by 1.
+
+
+#section:{Lexical Scoping via Delegation}
+
+You'll notice earlier I used the term #italic:{top-level object} for describing the target of the #hl:{a} definition. This is the entirety of Atomo's scoping system; it's objects all the way down. The nearest lexical scope to a point in your code (henceforth called the #italic:{top-level object} or #italic:{top}) is simply an object that delegates down the chain to the surrounding scope, and so on and son on until it hits rock #italic:{bottom} (#hl:{Object}). You can grab the current top-level object via the keyword #hl:{this}.
+
+To illustrate the power of this sytem, let's try putting scope objects to use. #hl:{Block}s provide a #hl:{context} method for grabbing the context in which they were written. Putting the pieces together, #hl:{in-context} is easily defined - which converts a block into one that is evalulated in its original scope:
+
+#atomo:{
+  (b: Block) in-context :=
+    b clone do:
+      { call := b context join: b
+        call: vs := b context join: b with: vs
+      }
+}
+
+Now let's give it a shot:
+
+#interaction:{
+    a = 1
+    { a = a + 1 } in-context call
+    a
+}
+
+Ta-da! Rather than setting #hl:{a} to #hl:{2} inside of the block, it was actually executed in the block's context, thus redefining #hl:{a}.
+
+What with the scoping system being objects and all, this means you can go beyond just defining "variables". When you see #hl:{x = 1}, it's not saying "set the variable #hl:{x} to #hl:{1}", it's saying "insert a slot on the top-level object that responds to #hl:{x} by yielding #hl:{1}." But you aren't limited to single messages like #hl:{x}. Oh, no. Feel free to define a keyword method if you want, it works just fine:
+
+#interaction:{
+    foo: x := ("fooing: " .. x show) print
+    foo: @hi
+}
+
+Which brings me to...
+
+#section:{Keywords!}
+
+In Atomo, you're either dispatching #italic:{single messages}, such as #hl:{make-sandwich}, or a keyword-delimited message with multiple values, known as #italic:{keyword messages}.
+
+#example:{
+    [1, 2, 3] at: 0
+    1 + 1
+    [1, 2, 3, 4] at: 3 put: 5
+}
+
+The syntax for keyword dispatch is very flexible, to ease the flow of writing code that uses chains of them. For example, this syntax is perfectly valid, and is called #italic:{chaining}:
+
+#atomo:{
+    1 (+ 2) (divides?: 6) not
+}
+
+This gets parsed as regular ol' dispatching, as in:
+
+#atomo:{
+  ((1 + 2) divides?: 6) not
+}
+
+Those parentheses at the front come at a huge cost to the flow of your writing - every time you want to add a dispatch, you would have to go back to the beginning, add a #code:{(}, and find where you were. Keyword chains remedy that by allowing you to use parentheses wherever you are to effectively turn them into a single-dispatch syntax.
+
+
+#section:{Messages & Multiple Dispatch}
+
+In Atomo, there is no "call a method Y on object X." It's all just sending messages. When you send a message to something, it may or may not understand it - it isn't a reference to a solid method definition in any sense. So if it doesn't know how to handle the message, you get "message not understood," not "method not found."
+
+This way of thinking makes a huge difference in how you reason about things in Atomo, especially when it comes to #italic:{multiple dispatch}. In a nutshell, multiple dispatch means you define your methods in terms of everything involved - not just one object. When you define a keyword method, it has a number of roles - objects that the method involves. If a message is not understood by one role, it moves on to the next, and so on.
+
+If no roles understand the message, it sends either #hl:{did-not-understand:} (for single messages) or #hl:{did-not-understand:at:} (for keyword messages) to each object involved until one handles it. If none of them respond, you get an error.
+
+#example:{
+    X = Object clone
+    X did-not-understand: m := "I have no idea what you mean by this: " .. m show
+    X make-me-a-sandwich
+}
+
+That's a lot to take in at once, so let's just dive in and play around with this thing. We'll write a small Rock-Paper-Scissors game. First we'll define the three different objects involved in the game:
+
+#(rps = Lobby clone)
+
+#atomo:{
+  Rock = Object clone
+  Paper = Object clone
+  Scissors = Object clone
+}on:rps
+
+Pretty simple - to make a new object just clone #hl:{Object}. Here we have #hl:{Rock}, #hl:{Paper}, and #hl:{Scissors} defined and ready for action. Now comes the fun part - defining how the game works!
+
+#atomo:{
+  Rock beats?: Scissors := True
+  Paper beats?: Rock := True
+  Scissors beats?: Paper := True
+  _ beats?: _ := False
+}on:rps
+
+The #hl:{beats?:} method has two #italic:{roles} - the first one is being checked to see if it "beats" the second one in our game. In this case, the standard rules apply - rock beats scissors, paper beats rock, and scissors beats paper. Let's try it out!
+
+#interaction:{
+  Rock beats?: Paper
+  Rock beats?: Scissors
+}on:rps
+
+Hooray! It works! Above we defined the three winning cases, and left all the other cases to fall into the catch-all - the one defined with #hl:{_} in place of both roles. This method is the least precise out of all of them, so it only gets chosen if none of the other, more specific, definitions match the dispatch. Hence, all losing combinations yield #hl:{False}.
+
+You may be wondering where these methods actually end up when they involve multiple roles. Let's take a peek:
+
+#interaction:{
+  Rock
+  Paper
+  Scissors
+}on:rps
+
+As you can see, our definitions were only placed on the first role involved, rather than duplicated for each object. This is because searching for a method always begins with the first role, and from then on it's just pattern-matching for the rest of the roles. It's not very clear here, since it just says #code:{<object>} for the other roles, but the second roles are #hl:{Scissors}, #hl:{Rock}, and #hl:{Paper}, respectively. Our catch-all, #hl:{_ beats?: _} ended up being placed on #hl:{Object}, which is a bit too large to just "take a peek."
+
+In a cleaner system you would use something like #hl:{RPS} as the "catch-all", and define each object in the game as a clone of that, rather than #hl:{Object}.
+
+
+#section:{Wrapping Up}
+
+That's about all there is to it; Atomo is a simple language, so once you know everything here you can go quite far. I recommend moving on to #reference:{Syntax} so you know what you're typing, and then perhaps to #reference:{The Ecosystem} if you plan on sharing your code or using other libraries. The other sections are mostly references for the various systems and types of values in Atomo; you should check those out too!

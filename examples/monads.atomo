@@ -1,0 +1,40 @@
+Monad = Object clone
+
+Maybe = Monad clone
+Nothing = Maybe clone do: { show = "Nothing" }
+Just: a := Maybe clone do: { value = a; show := "Just: " .. value show }
+
+Nothing >>= _ := Nothing
+(j: Maybe) >>= f := f call: j value
+
+macro (x >> y) `(~x >>= { ~y })
+
+macro ((b: Block) do)
+  b contents reduce-right:
+    { e acc |
+      e match: {
+        `(~x <- ~y) ->
+          `(~y >>= ~(`Block new: [acc] arguments: [x]))
+
+        _ -> `(~e >> ~acc)
+      }
+    }
+
+`(
+  { Just: 1
+    Nothing
+    res <- Just: 2
+    Just: (res + 1)
+  } do
+) expand print
+
+{ Just: 1
+  Nothing
+  res <- Just: 2
+  Just: (res + 1)
+} do print
+
+{ Just: 1
+  res <- Just: 2
+  Just: (res + 1)
+} do print

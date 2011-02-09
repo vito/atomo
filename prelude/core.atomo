@@ -1,0 +1,66 @@
+operator right 0 = := =!
+operator right 1 ->
+
+macro (x match: (ts: Block))
+  `Match new: (ts contents map: { `(~p -> ~e) | (p, e) })
+           on: x expand
+
+macro (p = e)
+  `Set new: p to: e
+
+macro (p := e)
+  `Define new: p as: e
+
+macro (define: (name: Dispatch) as: root)
+  `({ ~name := ~name _?
+      ~(`DefineDynamic new: name as: root)
+    } call-in: this)
+
+macro (x _?)
+  `GetDynamic new: x
+
+macro (x =! y)
+  `SetDynamic new: x to: y
+
+macro (with: x as: y do: b)
+  `NewDynamic new: [x -> y] do: `(~b call)
+
+macro (with: (bs: List) do: action)
+  `NewDynamic new: (bs contents map: { `(~a -> ~b) | a -> b })
+                do: `(~action call)
+
+macro (modify: param as: change do: action)
+  `(with: ~param as: (~change call: ~param _?) do: ~action)
+
+macro (target slurp: (filename: Primitive))
+  { src = File read: (super evaluate: filename)
+    exprs = src parse-expressions
+    blk = `Block new: exprs
+    `(~blk call-in: ~target)
+  } call
+
+for-macro quote: s as: q &flags: [] :=
+  error: @(unknown-quoter: q for: s &flags: flags)
+
+for-macro quote: s as: @r &flags: [] :=
+  Regexp new: s &flags: (flags to: String)
+
+for-macro quote: s as: @w := s words
+
+for-macro quote: s as: @f := Formatter new: s
+
+for-macro quote: s as: @raw := s
+
+macro (a \ (b: Dispatch))
+  { set-head: y to: x :=
+      { head =
+          if: y targets head type (== @top)
+            then: { x }
+            else: { set-head: y targets head to: x }
+
+        `Dispatch new: y particle
+                    to: (y targets at: 0 put: head)
+      } call
+
+    set-head: b to: a
+  } call

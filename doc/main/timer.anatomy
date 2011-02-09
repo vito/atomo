@@ -1,0 +1,239 @@
+#title:{Timer}
+
+#section:{The Timer Object}
+
+#define:{
+    Timer
+    > Object
+}body:{
+    An object containing various methods related to timing of events and processes.
+
+    Not to be confused for a more robust date and time system - everything in this object is to be used "relatively."
+}
+
+#define:{
+    Timer now
+    > Double
+}body:{
+    Returns the current UNIX timestamp in seconds.
+
+    #example:{ Timer now }
+}
+
+#define:{
+    Timer sleep: duration
+    | duration is-a?: Number
+    > @ok
+}body:{
+    Delays the current process's execution by #hl:{duration} microseconds.
+
+    #example:{
+        Timer sleep: 1 millisecond
+    }
+}
+
+#define:{
+    Timer do: action every: duration
+    | action is-a?: Block
+    | duration is-a?: Number
+    > Process
+}body:{
+    Spawns a new process that repeatedly calls #hl:{action} at intervals of #hl:{duration} microseconds.
+
+    #example:{
+        p = Timer do: { "hello" print } every: 0.125 seconds
+        Timer sleep: 0.25 seconds
+        p stop
+    }
+}
+
+#define:{
+    Timer do: action after: duration
+    | action is-a?: Block
+    | duration is-a?: Number
+    > Process
+}body:{
+    Spawns a new process that calls #hl:{action} after #hl:{duration} microseconds.
+
+    #example:{
+        p = Timer do: { "hello" print } after: 0.125 seconds
+        Timer sleep: 0.25 seconds
+        p stop
+    }
+}
+
+#define:{
+    action time
+    | action is-a?: Block
+    > Double
+}body:{
+    Times how long it takes for #hl:{action call} to complete, returning the duration in seconds.
+
+    #example:{
+        { Timer sleep: 0.1 seconds } time
+    }
+}
+
+#section:{Unit Helpers}
+
+There are many methods defined for use with #hl:{Timer} so you don't have to do a bunch of calculations or repeat a bunch of 0s.
+
+#define:{
+    n us
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #hl:{n} microseconds. This is effectively a no-op, returning the same number back, since Timer already uses microsecond precision.
+}
+
+#define:{
+    n microseconds
+    | n is-a?: Number
+    > Number
+}body:{
+    See #hl:{us}.
+}
+
+#define:{
+    n microsecond
+    | n is-a?: Number
+    > Number
+}body:{
+    See #hl:{us}.
+}
+
+#define:{
+    n ms
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #hl:{n} milliseconds.
+}
+
+#define:{
+    n milliseconds
+    | n is-a?: Number
+    > Number
+}body:{
+    See #hl:{ms}.
+}
+
+#define:{
+    n millisecond
+    | n is-a?: Number
+    > Number
+}body:{
+    See #hl:{ms}.
+}
+
+#define:{
+    n seconds
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #hl:{n} in seconds.
+}
+
+#define:{
+    n second
+    | n is-a?: Number
+    > Number
+}body:{
+    See #hl:{seconds}.
+}
+
+#define:{
+    n minutes
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #hl:{n} in minutes.
+}
+
+#define:{
+    n minute
+    | n is-a?: Number
+    > Number
+}body:{
+    See #hl:{minutes}.
+}
+
+#define:{
+    n hours
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #hl:{n} in hours.
+}
+
+#define:{
+    n hour
+    | n is-a?: Number
+    > Number
+}body:{
+    See #hl:{hours}.
+}
+
+#define:{
+    n days
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #hl:{n} in days.
+}
+
+#define:{
+    n day
+    | n is-a?: Number
+    > Number
+}body:{
+    See #hl:{days}.
+}
+
+#define:{
+    n weeks
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #hl:{n} in weeks.
+}
+
+#define:{
+    n week
+    | n is-a?: Number
+    > Number
+}body:{
+    See #hl:{weeks}.
+}
+
+#define:{
+    n months
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #hl:{n} in months.
+}
+
+#define:{
+    n month
+    | n is-a?: Number
+    > Number
+}body:{
+    See #hl:{months}.
+}
+
+#define:{
+    n years
+    | n is-a?: Number
+    > Number
+}body:{
+    Yields #hl:{n} in years.
+}
+
+#define:{
+    n year
+    | n is-a?: Number
+    > Number
+}body:{
+    See #hl:{years}.
+}

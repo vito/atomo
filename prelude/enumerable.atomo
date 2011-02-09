@@ -1,0 +1,261 @@
+module: Enumerable: {
+  all?: test :=
+    { return |
+      collect: { v | (return yield: False) when: test (call: v) not }
+      True
+    } call/cc
+
+  any?: test :=
+    { return |
+      collect: { v | (return yield: True) when: test (call: v) not }
+      False
+    } call/cc
+
+  none? := all?: @(/= True)
+  none?: test := (any?: test) not
+
+  one? := count: @(== True) == 1
+  one?: test := count: test == 1
+
+  map: action := collect: action
+
+  count :=
+    { n = 0
+      collect: { super n += 1 }
+      n
+    } call
+
+  count: test :=
+    { n = 0
+      collect: { v | (super n += 1) when: (test in-context call: v) }
+      n
+    } call
+
+  cycle: action :=
+    { collect: { v | action in-context call: v }
+    } repeat
+
+  cycle: action times: (n: Integer) :=
+    { collect: { v | action in-context call: v }
+    } repeat: n
+
+  detect: test :=
+    { return |
+      collect: { v | (return yield: @(ok: v)) when: (test call: v) }
+      @none
+    } call/cc
+
+  detect: test or: default :=
+    { return |
+      collect: { v | (return yield: v) when: (test call: v) }
+      default
+    } call/cc
+
+  find: test := detect: test
+  find: test or: default := detect: test or: default
+
+  find-all: test :=
+    { result = []
+      collect: { v |
+        (super result << v) when: (test call: v)
+      }
+      result
+    } call
+
+  select: test := find-all: test
+  filter: test := find-all: test
+
+  reject: test :=
+    { result = []
+      collect: { v |
+        (super result << v) unless: (test call: v)
+      }
+      result
+    } call
+
+  partition: test :=
+    @(yes: (select: test) no: (reject: test))
+
+  find-index: test :=
+    { return |
+      n = 0
+      collect: { v |
+        (return yield: @(ok: n)) when: (test call: v)
+        super n += 1
+      }
+      @none
+    } call/cc
+
+  find-indices: test :=
+    { return |
+      is = []
+      n = 0
+      collect: { v |
+        (super is << n) when: (test call: v)
+        super n += 1
+      }
+      is
+    } call/cc
+
+  drop: n := (as: List) drop: n
+
+  drop-while: test := (as: List) drop-while: test
+
+  grep: pattern &do: { v | v } :=
+    { result = []
+      collect: { v |
+        (super super result << do call: v) when: (pattern === v)
+      }
+      result
+    } call
+
+  group-by: action :=
+    { result = []
+      collect: { v |
+        res = action call: v
+        result (lookup: res) match: {
+          @none ->
+            (super super result =
+              result set: res to: [v])
+
+          @(ok: vs) ->
+            (super super result =
+              result set: res to: (vs push: v))
+        }
+      }
+      result
+    } call
+
+  include?: v := any?: @(== v)
+  includes?: v := any?: @(== v)
+  member?: v := any?: @(== v)
+  contains?: v := any?: @(== v)
+
+  take: n := (as: List) take: n
+
+  first: n := take: n
+
+  take-while: test :=
+    { done |
+      result = []
+
+      collect: { v |
+        (done yield: result) unless: (test call: v)
+        super result << v
+      }
+
+      result
+    } call/cc
+
+  each: action :=
+    { collect: action in-context
+      me
+    } call
+
+  each-consecutive: n do: action :=
+    { next = me as: List
+      until: { next count < n } do: {
+        cur = next take: n
+        next = next tail
+        action in-context call: cur
+      }
+      me
+    } call
+
+  each-slice: n do: action :=
+    { next = me
+      { cur = next take: n
+        next = next drop: n
+        action in-context call: cur
+      } until: { next empty? }
+      me
+    } call
+
+  each-with-index: action :=
+    { n = 0
+      collect: { v |
+        action in-context call: (v, n)
+        super n += 1
+      }
+      me
+    } call
+
+  reverse-each: action :=
+    { (as: List) reverse each: action
+      me
+    } call
+
+  sort &comparison: @<=> :=
+    (as: List) sort &comparison: comparison
+  sort-by: something &comparison: @<=> :=
+    (as: List) sort-by: something &comparison: comparison
+
+  zip: b &zipper: @id :=
+    (as: List) zip: (b as: List) &zipper: zipper
+
+  first :=
+    { done |
+      collect: { v | done yield: v }
+      error: @empty
+    } call/cc
+
+  reduce: a &initial: @undefined :=
+    { collect: { v |
+        super initial =
+          if: (initial == @undefined)
+            then: { v }
+            else: { a call: (v, initial) }
+      }
+
+      if: (initial == @undefined)
+        then: { error: @empty }
+        else: { initial }
+    } call
+
+  inject: a &initial: @undefined :=
+    reduce: a &initial: initial
+
+  maximum &comparison: @<=> :=
+    reduce: { a b |
+      if: (comparison call: (a, b) > 0)
+        then: { a }
+        else: { b }
+    }
+
+  maximum-by: comparing :=
+    reduce: { a b |
+      if: (comparing call: a <=> comparing call: b > 0)
+        then: { a }
+        else: { b }
+    }
+
+  minimum &comparison: @<=> :=
+    reduce: { a b |
+      if: (comparison call: (a, b) < 0)
+        then: { a }
+        else: { b }
+    }
+
+  minimum-by: comparing :=
+    reduce: { a b |
+      if: (comparing call: a <=> comparing call: b < 0)
+        then: { a }
+        else: { b }
+    }
+
+  minimum-maximum &comparison: @<=> :=
+    @(minimium: (minimum &comparison: comparison)
+        maximum: (maximum &comparison: comparison))
+
+  minimum-maximum-by: comparing :=
+    @(minimum: (minimum-by: comparing)
+        maximum: (maximum-by: comparing))
+
+  as: List :=
+    { list = []
+      collect: { v | super list << v }
+      list
+    } call
+
+  entries := as: List
+}

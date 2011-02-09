@@ -1,0 +1,57 @@
+define: x as: 0
+
+describe: "condition" as: {
+  describe: @signal: as: {
+    it: "triggers matching handlers" so: {
+      with: x as: 0 do: {
+        { signal: @foo } bind: { @foo -> (x =! 1) }
+        x should-be: 1
+      }
+    }
+
+    it: "does not trigger non-matching handlers" so: {
+      with: x as: 0 do: {
+        { signal: @foo } bind: { @bar -> (x =! 1) }
+        x should-be: 0
+      }
+    }
+
+    it: "goes through handlers, nearest-first" so: {
+      with: x as: 0 do: {
+        { { signal: @foo
+          } bind: {
+            @foo -> (x =! 1 + x)
+          }
+        } bind: {
+          @foo -> (x =! 2 * x)
+        }
+
+        x should-be: 2
+      }
+    }
+
+    it: "calls restarts" so: {
+      res =
+        { { signal: @foo } with-restarts: { ok -> { r | r } }
+        } bind: {
+          @foo -> restart: 'ok with: @restarted
+        }
+
+      res should-be: @restarted
+    }
+
+    it: "calls the nearest restart if names conflict" so: {
+      res =
+        { { res = { error: @foo } with-restarts: { use-value -> { r | r } }
+            res .. "?"
+          } with-restarts: {
+            use-value -> { r | r }
+          }
+        } bind: {
+          Error -> { restart: 'use-value with: "!" }
+        }
+
+      res should-be: "!?"
+    }
+  }
+}

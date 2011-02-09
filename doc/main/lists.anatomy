@@ -1,0 +1,562 @@
+#title:{Lists}tag:"lists"
+
+#define:{
+    List
+    > Object
+}body:{
+    Lists are immutable vectors of arbitrary values.
+
+    #example-segment:{
+        [1, $b, "three", 4.0]
+        []
+    }
+}
+
+#define:{
+    l length
+    | l is-a?: List
+    > Integer
+}body:{
+    Returns the length of the list #hl:{l}.
+
+    #example:{
+        [1, 2, 3] length
+    }
+}
+
+#define:{
+    l empty?
+    | l is-a?: List
+    > Boolean
+}body:{
+    Is the list #hl:{l} empty?
+
+    #example:{
+        [] empty?
+        [1, 2, 3] empty?
+    }
+}
+
+#define:{
+    l at: index
+    | l is-a?: List
+    | index is-a?: Integer
+    > any
+}body:{
+    Returns the list's value at #hl:{index}. If the index is out of bounds, #hl:{@(out-of-bounds: index for-list: l)} is raised.
+
+    #example:{
+        [1, 2, 3] at: 1
+        [1, 2, 3] at: 3
+    }
+}
+
+#define:{
+    l at: index put: v
+    | l is-a?: List
+    | index is-a?: Integer
+    > List
+}body:{
+    Yield a new list with the value at #hl:{index} replaced with #hl:{v}. If the index is out of bounds, #hl:{@(out-of-bounds: index for-list: l)} is raised.
+
+    #example:{
+        [1, 2, 3] at: 1 put: 5
+    }
+}
+
+#define:{
+    l head
+    | l is-a?: List
+    > any
+}body:{
+    Returns the first value of the list. If the list is empty, #hl:{@empty-list} is raised.
+
+    #example:{
+        [1, 2, 3] head
+    }
+}
+
+#define:{
+    l last
+    | l is-a?: List
+    > any
+}body:{
+    Returns the last value of the list. If the list is empty, #hl:{@empty-list} is raised.
+
+    #example:{
+        [1, 2, 3] last
+    }
+}
+
+#define:{
+    l init
+    | l is-a?: List
+    > List
+}body:{
+    Returns all but the last value of the list. If the list is empty, #hl:{@empty-list} is raised.
+
+    #example:{
+        [1, 2, 3] init
+    }
+}
+
+#define:{
+    l tail
+    | l is-a?: List
+    > List
+}body:{
+    Returns all but the first value of the list. If the list is empty, #hl:{@empty-list} is raised.
+
+    #example:{
+        [1, 2, 3] tail
+    }
+}
+
+#define:{
+    l from: start to: end
+    | l is-a?: List
+    | start is-a?: Integer
+    | end is-a?: Integer
+    > List
+}body:{
+    Returns the slice of elements from #hl:{start} to #hl:{end} of #hl:{l}. If the range is invalid, #hl:{@(invalid-range: @(from: start to: end) for-list: l)} is raised. A range is invalid if either #hl:{start} or #hl:{end} are negative, or if either are out of the list's boundaries.
+
+    #example:{
+        [1, 2, 3, 4, 5] from: 1 to: 3
+    }
+}
+
+#define:{
+    l take: n
+    | l is-a?: List
+    | n is-a?: Integer
+    > List
+}body:{
+    Returns a list of the first #hl:{n} values of the list. If #hl:{n} is greater than the list's length, it returns as many as it can (i.e., the entire list); the length of the returned list will not always be #hl:{n}.
+
+    #example:{
+        [1, 2, 3, 4, 5] take: 2
+        [1, 2] take: 4
+    }
+}
+
+#define:{
+    l drop: n
+    | l is-a?: List
+    | n is-a?: Integer
+    > List
+}body:{
+    Returns a list of the values after #hl:{n} values have been dropped from the start of the list. If #hl:{n} is greater than the list's length, it returns an empty list.
+
+    #example:{
+        [1, 2, 3, 4, 5] drop: 2
+        [5, 6, 7] drop: 5
+    }
+}
+
+#define:{
+    v replicate: n
+    | n is-a?: Integer
+    > List
+}body:{
+    Returns a list containing #hl:{v} replicated #hl:{n} times.
+
+    #example:{
+        "Odelay!" replicate: 5
+    }
+}
+
+#define:{
+    a .. b
+    | a is-a?: List
+    | b is-a?: List
+    > List
+}body:{
+    Appends the two lists #hl:{a} and #hl:{b}, returning a new list.
+
+    #example:{
+        [1, 2, 3] .. [4, 5, 6]
+        [] .. [1, 2] .. []
+    }
+}
+
+#define:{
+    l reverse
+    | l is-a?: List
+    > List
+}body:{
+    Returns a new list, with all values of #hl:{l}, in reversed order.
+
+    #example:{
+        [1, 2, 3] reverse
+    }
+}
+
+#define:{
+    l map: a
+    | l is-a?: List
+    | a responds-to?: @call:
+    > List
+}body:{
+    Returns a new list, with #hl:{call:} sent to #hl:{a} with each value in #hl:{l}.
+
+    #example:{
+        [1, 2, 3] map: { n | n + 1 }
+        [1, 2, 3] map: @(* 2)
+    }
+}
+
+#define:{
+    x zip: (... ys) &zipper: @id
+    | x is-a?: List
+    | zipper responds-to?: @call:
+    > List
+}body:{
+    "Zips" up the lists #hl:{x} and #hl:{ys}. If #hl:{zipper} is not #hl:{@id}, it is #hl:{call:}ed with each zipped value as an argument.
+
+    The list it returns is as long as the shortest list.
+
+    #example:{
+        [1, 2, 3] zip: [4, 5, 6] &zipper: @*
+        [1, 2, 3] zip: (["a", "b", "c"], [$a, $b, $c])
+        [1, 2, 3] zip: (["a", "b", "c"], [$a, $b, $c]) &zipper: { a b c | a -> b -> c }
+    }
+}
+
+#define:{
+    l take-while: p
+    | l is-a?: List
+    | p responds-to?: @call:
+    > List
+}body:{
+    Takes values from list #hl:{l} while #hl:{p} called on them yields #hl:{True}.
+
+    #example:{
+        [1, 3, 4, 5, 6] take-while: @odd?
+    }
+}
+
+#define:{
+    l drop-while: p
+    | l is-a?: List
+    | p responds-to?: @call:
+    > List
+}body:{
+    Removes values from list #hl:{l} while #hl:{p} called on them yields #hl:{True}, returning a list of the remaining values.
+
+    #example:{
+        [1, 3, 4, 5, 6] drop-while: @odd?
+    }
+}
+
+#define:{
+    l filter: p
+    | l is-a?: List
+    | p responds-to?: @call:
+    > List
+}body:{
+    Returns a list of all values in #hl:{l} that satisfy the predicate #hl:{p}.
+
+    #example:{
+        [1, 2, 3, 4, 5] filter: @odd?
+        [1, 2, 3, 2, 1] filter: { n | n == 3 }
+    }
+}
+
+#define:{
+    l reduce: b
+    | l is-a?: List
+    | b responds-to?: @call:
+    > any
+}body:{
+    Alias for #hl:{l tail reduce: b with: l head}. If the list is empty, #hl:{@empty-list} is raised.
+
+    #example:{
+        [1, 2, 3, 4, 5] reduce: @*
+    }
+}
+
+#define:{
+    l reduce: b with: v
+    | l is-a?: List
+    | b responds-to?: @call:
+    > any
+}body:{
+    Reduces the list to a single value by "folding" over it, with #hl:{v} as the initial value.
+
+    #example:{
+        [1, 2, 3, 4, 5] reduce: @*
+        [] reduce: @* with: 1
+    }
+}
+
+#define:{
+    l reduce-right: b
+    | l is-a?: List
+    | b responds-to?: @call:
+    > any
+}body:{
+    Similar to #hl:{reduce:}, but right-associative. If the list is empty, #hl:{@empty-list} is raised.
+}
+
+#define:{
+    l reduce-right: b with: v
+    | l is-a?: List
+    | b responds-to?: @call:
+    > any
+}body:{
+    Similar to #hl:{reduce:with:}, but right-associative.
+}
+
+#define:{
+    l concat
+    | l is-a?: List
+    > List
+}body:{
+    Reduces a list by appending all of its values. The list's values must all be lists.
+
+    #example:{
+        [[1, 2], [3, 4, 5], [6]] concat
+        [] concat
+    }
+}
+
+#define:{
+    l sum
+    | l is-a?: List
+    > any
+}body:{
+    Reduces a list with #hl:{+} and #hl:{0}.
+
+    #example:{
+        [1, 2, 3] sum
+        [] sum
+    }
+}
+
+#define:{
+    l product
+    | l is-a?: List
+    > any
+}body:{
+    Reduces a list with #hl:{*} and #hl:{1}.
+
+    #example:{
+        [1, 2, 3] product
+        [] product
+    }
+}
+
+#define:{
+    l maximum
+    | l is-a?: List
+    > any
+}body:{
+    Reduces a list with #hl:{max:}. The list must not be empty.
+
+    #example:{
+        [1, 2, 3] maximum
+    }
+}
+
+#define:{
+    l minimum
+    | l is-a?: List
+    > any
+}body:{
+    Reduces a list with #hl:{min:}. The list must not be empty.
+
+    #example:{
+        [1, 2, 3] minimum
+    }
+}
+
+#define:{
+    l all?: p
+    | l is-a?: List
+    | p responds-to?: @call:
+    > Boolean
+}body:{
+    Checks if all values in #hl:{l} satisfy the predicate #hl:{p}.
+
+    #example:{
+        [1, 3, 5] all?: @odd?
+        [1, 3, 6] all?: @odd?
+        [] all?: @odd?
+    }
+}
+
+#define:{
+    l any?: p
+    | l is-a?: List
+    | p responds-to?: @call:
+    > Boolean
+}body:{
+    Checks if any values in #hl:{l} satisfy the predicate #hl:{p}.
+
+    #example:{
+        [2, 3, 6] any?: @odd?
+        [2, 4, 6] any?: @odd?
+        [] any?: @odd?
+    }
+}
+
+#define:{
+    l and
+    | l is-a?: List
+    > Boolean
+}body:{
+    Check if all values in the list are #hl:{True}.
+
+    #example:{
+        [1 == 1, $a == $a] and
+        [1 == 1, $a == $b] and
+        [] and
+    }
+}
+
+#define:{
+    l or
+    | l is-a?: List
+    > Boolean
+}body:{
+    Check if any values in the list are #hl:{True}.
+
+    #example:{
+        [1 == 1, $a == $a] or
+        [1 == 1, $a == $b] or
+        [1 == 2, $a == $c] or
+        [] or
+    }
+}
+
+#define:{
+    l contains?: v
+    | l is-a?: List
+    > Boolean
+}body:{
+    Check if #hl:{v} is a member of the list #hl:{l}.
+
+    #example:{
+        "abc" contains?: $a
+        "abc" contains?: $d
+    }
+}
+
+#define:{
+    v in?: l
+    | l is-a?: List
+    > Boolean
+}body:{
+    Alias for #hl:{l contains?: v}.
+}
+
+#define:{
+    l push: v
+    | l is-a?: List
+    > List
+}body:{
+    Pushes a value onto the end of a list.
+
+    #example:{
+        a = [1, 2, 3]
+        a push: 4
+    }
+}
+
+#define:{
+    l cons: v
+    | l is-a?: List
+    > List
+}body:{
+    Pushes a value onto the front of a list. Same as #hl:{.}.
+
+    #example:{
+        a = [1, 2, 3]
+        a cons: 4
+    }
+}
+
+#define:{
+  a << b
+  > is-a?: a
+}body:{
+  A macro for #hl:{push:} with destructive update.
+
+  #example:{
+    a = [1, 2, 3]
+    a << 4
+    a
+    '(a << 5) expand
+  }
+}
+
+#define:{
+  a >> b
+  > is-a?: b
+}body:{
+  A macro for #hl:{cons:} with destructive update.
+
+  #example:{
+    a = [1, 2, 3]
+    0 >> a
+    a
+    '(-1 >> a) expand
+  }
+}
+
+#define:{
+    l split: delimiter
+    | l is-a?: List
+    | delimiter is-a?: List
+    > List
+}body:{
+    Split a list into sublists, separated by #hl:{delimiter}. Note that strict equality (i.e. #hl:{equals?:}) is used for matching the delimiter.
+
+    #example:{
+        [0, 1, 1, 2, 1, 1, 3] split: [1, 1]
+        [0, 1, 1] split: [1, 1]
+        [] split: [1, 1]
+    }
+}
+
+#define:{
+    l split-on: o
+    | l is-a?: List
+    > List
+}body:{
+    Split #hl:{l} into sublists, breaking on every occurrence of #hl:{o}. Also uses strict equality.
+
+    #example:{
+        [0, 1, 2, 1, 3] split-on: 1
+        [0, 1] split-on: 1
+        [] split-on: 1
+    }
+}
+
+#define:{
+    l sort
+    | l is-a?: List
+    > List
+}body:{
+    Returns a sorted list of #hl:{l}'s values, using the mergesort algorithm. It does this by sending #hl:{>} to determine the larger between two values.
+
+    #example:{
+        [1, 6, 3, 0, 10] sort
+        [$z, $f, $x] sort
+    }
+}
+
+#define:{
+    l sort-by: compare
+    | l is-a?: List
+    | compare responds-to?: @call:
+    > List
+}body:{
+    Returns a sorted list of #hl:{l}'s values, using the mergesort algorithm. #hl:{compare}, when #hl:{call:}ed with two values in #hl:{l}, should return #hl:{True} if the first is greater than the second, and #hl:{False} otherwise.
+
+    #example:{
+        [1, 6, 3, 0, 10] sort-by: @>
+        [1, 6, 3, 0, 10] sort-by: @<
+    }
+}

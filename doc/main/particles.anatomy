@@ -1,0 +1,144 @@
+#title:{Particles}tag:"particles"
+
+#define:{
+    Particle
+    > Object
+}body:{
+    Ah, particles - an Atomo programmer's best friend. Although their primary purpose is to represent "partial messages" like #hl:{@sqrt} or #hl:{@(foo: 2 bar: _)}, their use gracefully extends far beyond that. The fact that they can be pattern-matched makes their use as error values and success indicators very handy.
+
+    For example, #hl:{lookup:} uses them to indicate whether it was able to find a given key in a list of #hl:{Association}s. If it finds the association, it returns the associated value wrapped in #hl:{@ok:}. If it doesn't find it, it returns #hl:{@none}. It is the dispatcher's job to decide what they want to do from there.
+
+    #example:{
+        [1 -> $a, 2 -> $b] lookup: 1
+        [1 -> $a, 2 -> $b] lookup: 3
+    }
+
+    Many errors are also encoded as simple "structured error messages" using particles. For example, when indexing a list out of bounds:
+
+    #interaction:{
+        [1, 2, 3] at: 1
+        [1, 2, 3] at: 3
+    }
+
+    This value can be caught and pattern-matched, with the keywords in the particle clearly explaining the importance and meaning of every value involved:
+
+    #atomo:{
+      { [1, 2, 3] at: 3 } handle: {
+        @(out-of-bounds: idx for-list: _) ->
+            "out of bounds: " (.. idx show) print
+      }
+    }
+
+    And, since they respond to #hl:{call:}, they can be used most places where you would otherwise have a block that takes certain arguments:
+
+    #interaction:{
+        [1, 2, 3] map: { n | n + 2 }
+        [1, 2, 3] map: @(+ 2)
+        [1, 4, 9] map: @sqrt
+    }
+
+    In this case, the values fill up the empty slots in the particle (in order), and the "completed" message is dispatched, yielding its result.
+
+    There are two kinds of particles: single particles and keyword particles, which reflects the two types of messages.
+
+    Single particles are simple names, like #hl:{@sqrt}, or if the target is filled, #hl:{@(1 sqrt)}.
+
+    Keyword particles may contain more "filled-in" values, such as #hl:{@(+ 2)} or #hl:{@foo:} or even #hl:{@(1 + 1)}. Single particles only have one unfilled value; keyword particles can have any number of them, but they are keyword-delimited.
+
+    Keyword particles have varying forms of syntax. #hl:{@+} is equivalent to #hl:{@(_ + _)}. #hl:{@foo:bar:} is equivalent to #hl:{@(_ foo: _ bar: _)}. #hl:{@(foo: 2)} is equivalent to #hl:{@(_ foo: 2)}.
+}
+
+#define:{
+    p complete: (... targets)
+    | p is-a?: Particle
+    > Message
+}body:{
+    Complete the particle #hl:{p} by filling it in with values from #hl:{values}, in order. If there are not enough values in the list to complete the particle, #hl:{@particle-needed:given:} is thrown.
+
+    #example:{
+        @sqrt complete: 10
+        @+ complete: (1, 2)
+        @+ complete: 1
+    }
+}
+
+#define:{
+    p call: (... values)
+    | p is-a?: Particle
+    > any
+}body:{
+    Complete the particle #hl:{p} by filling it in with values from #hl:{values}, in order, and #hl:{dispatch} the completed message.
+
+    #example:{
+        @sqrt call: 10
+        @+ call: (1, 2)
+        @+ call: 2
+    }
+}
+
+#define:{
+    p name
+    | p is-a?: Particle
+    > String
+}body:{
+    Returns the name of the single particle #hl:{p}.
+
+    #example:{
+        @sqrt name
+    }
+}
+
+#define:{
+    p names
+    | p is-a?: Particle
+    > String
+}body:{
+    Returns the names in the keyword particle #hl:{p}.
+
+    #example:{
+        @+ names
+        @foo:bar: names
+    }
+}
+
+#define:{
+    p target
+    | p is-a?: Particle
+    > any
+}body:{
+    Returns the single particle #hl:{p}'s target wrapped in #hl:{@ok:}, or #hl:{none} if it does not exist.
+
+    #example:{
+        @foo target
+        @(1 sqrt) target
+    }
+}
+
+#define:{
+    p targets
+    | p is-a?: Particle
+    > List
+}body:{
+    Returns a list of the keyword particle #hl:{p}'s targets, indicating the absense of a value with #hl:{@none} and wrapping existing values in #hl:{@ok:}.
+
+    #example:{
+        @+ targets
+        @(+ 2) targets
+        @(foo: _ bar: $a) targets
+        @(1 + 2) targets
+    }
+}
+
+#define:{
+    p type
+    | p is-a?: Particle
+    > in?: [@single, @keyword]
+}body:{
+    Yields the type of the keyword - single or keyword.
+
+    #example:{
+        @sqrt type
+        @+ type
+        @foo:bar: type
+    }
+}
