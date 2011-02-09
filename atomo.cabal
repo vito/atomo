@@ -1,5 +1,5 @@
 name:                atomo
-version:             0.4
+version:             0.4.0.1
 synopsis:            A highly dynamic, extremely simple, very fun programming
                      language.
 description:
@@ -57,7 +57,7 @@ library
     containers,
     directory,
     filepath,
-    hashable,
+    hashable == 1.0.0,
     hint,
     mtl,
     parsec >= 3.0.0,
