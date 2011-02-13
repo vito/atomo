@@ -13,7 +13,7 @@ Version = Object clone
     }
 
 (v: Version) pretty :=
-  v major pretty <+> text: "." <+> v minor pretty
+  { v major pretty <+> text: "." <+> v minor pretty } doc
 
 (v: Version) as: String :=
   v major show .. "." .. v minor (as: String)
