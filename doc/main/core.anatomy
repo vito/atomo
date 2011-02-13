@@ -1,77 +1,77 @@
 #title:{Core}tag:"core"
 
 #define:{
-    Object
-    > Object
+  Object
+  > Object
 }body:{
-    The "root" of everything. Everything delegates to #hl:{Object}, including toplevel objects.
+  The "root" of everything. Everything delegates to #hl:{Object}, including toplevel objects.
 
-    #example:{
-        True is-a?: Object
-        is-a?: Object
-    }
+  #example:{
+    True is-a?: Object
+    is-a?: Object
+  }
 
-    Generally, to create new objects you send #hl:{clone} to this if there's nothing more specific.
+  Generally, to create new objects you send #hl:{clone} to this if there's nothing more specific.
 
-    #example-segment:{
-        MyBoolean = Object clone
-        MyTrue = Boolean clone
-        MyFalse = Boolean clone
-    }
+  #example-segment:{
+    MyBoolean = Object clone
+    MyTrue = Boolean clone
+    MyFalse = Boolean clone
+  }
 }
 
 #define:{
-    p := e
-    > @ok
+  p := e
+  > @ok
 }body:{
-    Defines #hl:{e} to be evaluated when the message described by #hl:{p} is dispatched to any of its targets. Returns #hl:{@ok}. See #reference:{definition-syntax}.
+  Defines #hl:{e} to be evaluated when the message described by #hl:{p} is dispatched to any of its targets. Returns #hl:{@ok}. See #reference:{definition-syntax}.
 
-    When defining a method of the same name as an existing one, it will be inserted with the most precise first. If two patterns are equivalent, the new method replaces the old.
+  When defining a method of the same name as an existing one, it will be inserted with the most precise first. If two patterns are equivalent, the new method replaces the old.
 
-    #example:{
-        0 fib := 1
-        1 fib := 1
-        (n: Integer) fib := (n - 2) fib + (n - 1) fib
-        5 fib
-    }
+  #example:{
+    0 fib := 1
+    1 fib := 1
+    (n: Integer) fib := (n - 2) fib + (n - 1) fib
+    5 fib
+  }
 
-    This defines three #hl:{fib} methods on #hl:{Integer}. The order of the definitions doesn't matter; they are inserted in order of precision, so the methods that pattern-match on #hl:{0} and #hl:{1} are always chosen over the more general #hl:{Integer} match.
+  This defines three #hl:{fib} methods on #hl:{Integer}. The order of the definitions doesn't matter; they are inserted in order of precision, so the methods that pattern-match on #hl:{0} and #hl:{1} are always chosen over the more general #hl:{Integer} match.
 
-    The method's expression #hl:{e} is evaluated with a new toplevel object containing the bindings from the pattern-match as methods, and delegating to the context of the method definition.
+  The method's expression #hl:{e} is evaluated with a new toplevel object containing the bindings from the pattern-match as methods, and delegating to the context of the method definition.
 
-    #example:{
-        x foo: [y, z] bar: _ := this
-        1 foo: [2, $3] bar: 4
-        a = 2
-        foo := [1, a]
-        foo
-        { a = 3; foo } call
-    }
+  #example:{
+    x foo: [y, z] bar: _ := this
+    1 foo: [2, $3] bar: 4
+    a = 2
+    foo := [1, a]
+    foo
+    { a = 3; foo } call
+  }
 
-    Here we're using #hl:{this} to simply return the toplevel object that the expression is evaluated in.
+  Here we're using #hl:{this} to simply return the toplevel object that the expression is evaluated in.
 }
 
 #define:{
-    p = v
-    > v
+  p = v
+  > v
 }body:{
-    Pattern-match #hl:{p} on #hl:{v}, inserting the bindings from the match into the current scope. Returns the value it's matching on (#hl:{v}). See #reference:{pattern-syntax}.
+  Pattern-match #hl:{p} on #hl:{v}, inserting the bindings from the match into the current scope. Returns the value it's matching on (#hl:{v}). See #reference:{pattern-syntax}.
 
-    #example:{
-        a = 1
-        [x, y] = [2, 3]
-        @(ok: foo) = @(ok: 4)
-        [a, x, y, foo]
-    }
+  #example:{
+    a = 1
+    [x, y] = [2, 3]
+    @(ok: foo) = @(ok: 4)
+    [a, x, y, foo]
+  }
 
-    In addition to simple pattern-matching, #hl:{=} can also define methods. However, it always evaluates the right-hand side before insertion, and roles in a message pattern are all objects (not patterns), unlike its brethren #hl:{:=}.
+  In addition to simple pattern-matching, #hl:{=} can also define methods. However, it always evaluates the right-hand side before insertion, and roles in a message pattern are all objects (not patterns), unlike its brethren #hl:{:=}.
 
-    #example:{
-        a = 1
-        X = Object clone
-        X b = a + 2
-        X b
-    }
+  #example:{
+    a = 1
+    X = Object clone
+    X b = a + 2
+    X b
+  }
 }
 
 #define:{
@@ -104,28 +104,28 @@
 }
 
 #define:{
-    o clone
-    > is-a?: o
+  o clone
+  > is-a?: o
 }body:{
-    Returns a new object, delegating to #hl:{o}.
+  Returns a new object, delegating to #hl:{o}.
 }
 
 #define:{
-    o copy
-    > any
+  o copy
+  > any
 }body:{
-    Copies object #hl:{o}, creating a new object with the same methods and delegates.
+  Copies object #hl:{o}, creating a new object with the same methods and delegates.
 }
 
 #define:{
-    o new
-    > is-a?: o
+  o new
+  > is-a?: o
 }body:{
-    Generally, this initializes a new clone of #hl:{o}, which will usually be the base object (e.g. #hl:{Regexp} itself). The initialization typically uses #hl:{clone} and sets up some state.
+  Generally, this initializes a new clone of #hl:{o}, which will usually be the base object (e.g. #hl:{Regexp} itself). The initialization typically uses #hl:{clone} and sets up some state.
 
-    This is not defined for #hl:{Object}; it (or some variation) should be defined for any object's initialization rather than overriding #hl:{clone}.
+  This is not defined for #hl:{Object}; it (or some variation) should be defined for any object's initialization rather than overriding #hl:{clone}.
 
-    Other conventions are #hl:{new:} and #hl:{new.foo: _ bar: _}, with any additional optionals.
+  Other conventions are #hl:{new:} and #hl:{new.foo: _ bar: _}, with any additional optionals.
 }
 
 #define:{
@@ -142,93 +142,93 @@
 }
 
 #define:{
-    x delegating-to: y
-    > @ok
+  x delegating-to: y
+  > @ok
 }body:{
-    Yields a new object with #hl:{x}'s method table and #hl:{y} affixed to its delegates list.
+  Yields a new object with #hl:{x}'s method table and #hl:{y} affixed to its delegates list.
 }
 
 #define:{
-    x with-delegates: ds
-    | ds is-a?: List
-    > @ok
+  x with-delegates: ds
+  | ds is-a?: List
+  > @ok
 }body:{
-    Yields a new object with #hl:{x}'s method table and #hl:{ds} as its delegates list.
+  Yields a new object with #hl:{x}'s method table and #hl:{ds} as its delegates list.
 }
 
 #define:{
-    x delegates-to?: y
-    > Boolean
+  x delegates-to?: y
+  > Boolean
 }body:{
-    Returns #hl:{True} if #hl:{x} delegates to #hl:{y}.
+  Returns #hl:{True} if #hl:{x} delegates to #hl:{y}.
 
-    #example:{
-        X = Object clone
-        Y = Object clone
-        Y delegates-to?: X
-        Y (delegating-to: X) delegates-to?: X
-    }
+  #example:{
+    X = Object clone
+    Y = Object clone
+    Y delegates-to?: X
+    Y (delegating-to: X) delegates-to?: X
+  }
 }
 
 #define:{
+  x delegates
+  > List
+}body:{
+  Returns a list of #hl:{x}'s delegates.
+
+  #example:{
+    x = 1 clone
     x delegates
-    > List
-}body:{
-    Returns a list of #hl:{x}'s delegates.
-
-    #example:{
-      x = 1 clone
-      x delegates
-      x (delegating-to: 2) delegates
-    }
+    x (delegating-to: 2) delegates
+  }
 }
 
 #define:{
-    x super
-    > any
+  x super
+  > any
 }body:{
-    Returns the first value that #hl:{x} delegates to.
+  Returns the first value that #hl:{x} delegates to.
 
-    #example:{
-      1 clone super
-      1 clone (delegating-to: 2) super
-    }
+  #example:{
+    1 clone super
+    1 clone (delegating-to: 2) super
+  }
 }
 
 #define:{
-    x is-a?: y
-    > Boolean
+  x is-a?: y
+  > Boolean
 }body:{
-    Returns #hl:{True} if #hl:{x} is equal to #hl:{y} or delegates to it, directly or indirectly.
+  Returns #hl:{True} if #hl:{x} is equal to #hl:{y} or delegates to it, directly or indirectly.
 
-    #example:{
-        1 is-a?: Integer
-        X = Object clone
-        Y = Object clone
-        X is-a?: X
-        Y is-a?: X
-        Y (delegating-to: X) is-a?: X
-    }
+  #example:{
+    1 is-a?: Integer
+    X = Object clone
+    Y = Object clone
+    X is-a?: X
+    Y is-a?: X
+    Y (delegating-to: X) is-a?: X
+  }
 }
 
 #define:{
-    x responds-to?: p
-    | p is-a?: Particle
-    > Boolean
+  x responds-to?: p
+  | p is-a?: Particle
+  > Boolean
 }body:{
-    Check if object #hl:{x} would respond to the partial message #hl:{p}.
+  Check if object #hl:{x} would respond to the partial message #hl:{p}.
 
-    The particle can have any number of roles missing; the first slot is filled and a "partial match" is done. That is, when searching for a method, only the filled-in roles are matched with; empty slots are a match for any role in a method's message pattern.
+  The particle can have any number of roles missing; the first slot is filled and a "partial match" is done. That is, when searching for a method, only the filled-in roles are matched with; empty slots are a match for any role in a method's message pattern.
 
-    #example:{
-        X = Object clone
-        X responds-to?: @foo
-        X foo = 42
-        X responds-to?: @foo
-        1 responds-to?: @+
-        1 responds-to?: @(+ 2)
-        1 responds-to?: @(+ "foo")
-    }
+  #example:{
+    X = Object clone
+    X responds-to?: @foo
+    X foo = 42
+    X responds-to?: @foo
+    1 responds-to?: @+
+    1 responds-to?: @(+ 2)
+    1 responds-to?: @(+ "foo")
+  }
 }
 
 #define:{
@@ -249,32 +249,32 @@
 }
 
 #define:{
-    x show
-    > String
+  x show
+  > String
 }body:{
-    Convert #hl:{x} to a proper representation of that value in code (if possible).
+  Convert #hl:{x} to a proper representation of that value in code (if possible).
 
-    #example:{
-        10 show
-        "foo" show
-        False show
-    }
+  #example:{
+    10 show
+    "foo" show
+    False show
+  }
 }
 
 #define:{
-    top load: filename
-    | filename is-a?: String
-    > @ok
+  top load: filename
+  | filename is-a?: String
+  > @ok
 }body:{
-    Executes the file #hl:{filename} with #hl:{top} as its top scope.
+  Executes the file #hl:{filename} with #hl:{top} as its top scope.
 }
 
 #define:{
-    top require: filename
-    | filename is-a?: String
-    > @ok
+  top require: filename
+  | filename is-a?: String
+  > @ok
 }body:{
-    Like #hl:{load:}, but loaded files are remembered (by their canonicalized, absolute path), so subsequent attempts to require them will be a no-op, returning #hl:{@ok}.
+  Like #hl:{load:}, but loaded files are remembered (by their canonicalized, absolute path), so subsequent attempts to require them will be a no-op, returning #hl:{@ok}.
 }
 
 #define:{

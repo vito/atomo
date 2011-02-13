@@ -16,9 +16,9 @@ Atomo may be installed through the #link:{Cabal}to:{http://www.haskell.org/cabal
 Alternatively, you can install it from the repository at #link:{darcsden}to:{http://darcsden.com/alex/atomo}:
 
 #verbatim:{
-    darcs get http://darcsden.com/alex/atomo
-    cd atomo
-    cabal install
+  darcs get http://darcsden.com/alex/atomo
+  cd atomo
+  cabal install
 }
 
 Once that's all done, just make sure #code:{~/.cabal/bin} is in your #code:{$PATH}, and you should be all set!
@@ -29,16 +29,16 @@ Once that's all done, just make sure #code:{~/.cabal/bin} is in your #code:{$PAT
 To start up the Atomo REPL, just type in "atomo" at your prompt:
 
 #verbatim:{
-    $ atomo
-    >
+  $ atomo
+  >
 }
 
 Now you're in the Atomo #italic:{read-evaluate-print loop}, which - as you may have guessed - takes in Atomo code, evaluates it, and prints the result, repeating this loop until you exit. You probably won't be able to do much since we haven't gotten very far yet, but here's some basic math, just for a quick taste:
 
 #interaction:{
-    1 + 1
-    1 + 2 * 3
-    20 sqrt
+  1 + 1
+  1 + 2 * 3
+  20 sqrt
 }
 
 The REPL is readline-style, with history navigation. To exit the REPL, hit Ctrl+D or Ctrl+C, and hit #code:{y}. It asks before you leave, because running servers from the REPL is a common task, and it shouldn't be too easy to just shut down everything by accident.
@@ -51,8 +51,8 @@ There are two primary concepts in Atomo that lay the foundation for the entire l
 Defining sets a value or expression to respond to some message. Dispatching is sending a message to get a value back.
 
 #interaction:{
-    a = 1
-    a
+  a = 1
+  a
 }
 
 Here we're inserting a slot - a kind of method - on the toplevel object, which responds to the message #hl:{a} by yielding the integet #hl:{1}. We then dispatch that message and get the value back.
@@ -62,10 +62,10 @@ There are two operators for defining methods: #hl:{=} and #hl:{:=}. The #hl:{=} 
 To illustrate this distinction, we'll define a method that simply prints #hl:{"Hello, world!"}, using both operators. Note that #hl:{print} outputs the value and yields the same value.
 
 #interaction:{
-    y := "Hello, world!" print
-    x = "Goodbye, world!" print
-    y
-    x
+  y := "Hello, world!" print
+  x = "Goodbye, world!" print
+  y
+  x
 }
 
 As you can see, #italic:{Goodbye, world!} was printed immediately after defining #hl:{x}, with subsequent dispatches for #hl:{x} simply returning the value that was printed. Conversely, #hl:{y} dutifully prints #italic:{Hello, world!} with every dispatch.
@@ -73,11 +73,11 @@ As you can see, #italic:{Goodbye, world!} was printed immediately after defining
 But #hl:{=} has a few more tricks up its sleeve. As mentioned before, it can also do pattern-matching. And since it returns the same value, it can be used to set multiple values at once:
 
 #interaction:{
-    [a, _] = b = [1, 2]
-    a
-    b
-    a = a + 1
-    a
+  [a, _] = b = [1, 2]
+  a
+  b
+  a = a + 1
+  a
 }
 
 As you can see, first we set #hl:{b} to #hl:{[1, 2]}, and then we immediately pattern-match #hl:{[a, _]} on #hl:{b}, which sets #hl:{a} to #hl:{1}, the first element of the list. We then re-assign #hl:{a} as #hl:{a + 1}, increasing #hl:{a}'s vlaue by 1.
@@ -114,9 +114,9 @@ Thus, it is often used for playing around with the scope for some code, which is
 Now let's give it a shot:
 
 #interaction:{
-    a = 1
-    { a = a + 1 } in-context call
-    a
+  a = 1
+  { a = a + 1 } in-context call
+  a
 }
 
 Ta-da! Rather than setting #hl:{a} to #hl:{2} inside of the block, it was actually executed in the block's context, thus redefining #hl:{a}.
@@ -124,8 +124,8 @@ Ta-da! Rather than setting #hl:{a} to #hl:{2} inside of the block, it was actual
 What with the scoping system being objects and all, this means you can go beyond just defining "variables". When you see #hl:{x = 1}, it's not saying "set the variable #hl:{x} to #hl:{1}", it's saying "insert a slot on the top-level object that responds to #hl:{x} by yielding #hl:{1}." But you aren't limited to single messages like #hl:{x}. Oh, no. Feel free to define a keyword method if you want, it works just fine:
 
 #interaction:{
-    foo: x := ("fooing: " .. x show) print
-    foo: @hi
+  foo: x := ("fooing: " .. x show) print
+  foo: @hi
 }
 
 Which brings me to...
@@ -135,15 +135,15 @@ Which brings me to...
 In Atomo, you're either dispatching #italic:{single messages}, such as #hl:{make-sandwich}, or a keyword-delimited message with multiple values, known as #italic:{keyword messages}.
 
 #example:{
-    [1, 2, 3] at: 0
-    1 + 1
-    [1, 2, 3, 4] at: 3 put: 5
+  [1, 2, 3] at: 0
+  1 + 1
+  [1, 2, 3, 4] at: 3 put: 5
 }
 
 The syntax for keyword dispatch is very flexible, to ease the flow of writing code that uses chains of them. For example, this syntax is perfectly valid, and is called #italic:{chaining}:
 
 #atomo:{
-    1 (+ 2) (divides?: 6) not
+  1 (+ 2) (divides?: 6) not
 }
 
 This gets parsed as regular ol' dispatching, as in:
@@ -164,9 +164,9 @@ This way of thinking makes a huge difference in how you reason about things in A
 If no roles understand the message, it sends either #hl:{did-not-understand:} (for single messages) or #hl:{did-not-understand:at:} (for keyword messages) to each object involved until one handles it. If none of them respond, you get an error.
 
 #example:{
-    X = Object clone
-    X did-not-understand: m := "I have no idea what you mean by this: " .. m show
-    X make-me-a-sandwich
+  X = Object clone
+  X did-not-understand: m := "I have no idea what you mean by this: " .. m show
+  X make-me-a-sandwich
 }
 
 That's a lot to take in at once, so let's just dive in and play around with this thing. We'll write a small Rock-Paper-Scissors game. First we'll define the three different objects involved in the game:

@@ -8,217 +8,217 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 #section:{Eco}
 
 #define:{
-    Eco
-    > Object
+  Eco
+  > Object
 }body:{
-    A global object that manages available and loaded packages. Your application should #hl:{initialize} it at startup.
+  A global object that manages available and loaded packages. Your application should #hl:{initialize} it at startup.
 }
 
 #define:{
-    Eco load
-    > @ok
+  Eco load
+  > @ok
 }body:{
-    Scan all installed packages in #code:{~/.eco/lib}. This is automatically done at startup.
+  Scan all installed packages in #code:{~/.eco/lib}. This is automatically done at startup.
 }
 
 #define:{
-    Eco initialize
-    > @ok
+  Eco initialize
+  > @ok
 }body:{
-    "Initialize" the ecosystem. Loads your package's #code:{package.eco} file and initializes each of its dependencies, recursively.
+  "Initialize" the ecosystem. Loads your package's #code:{package.eco} file and initializes each of its dependencies, recursively.
 
-    After the initialization stage, the only packages possible to load with #hl:{use:} will be the ones determined to be "safe" by the dependency resolution.
+  After the initialization stage, the only packages possible to load with #hl:{use:} will be the ones determined to be "safe" by the dependency resolution.
 
-    If a required package is not available, #hl:{@package-unavailable:needed:} is raised.
+  If a required package is not available, #hl:{@package-unavailable:needed:} is raised.
 
-    If no versions of a package satisfy given constraints, #hl:{@no-versions-of:satisfy:for:} is raised.
+  If no versions of a package satisfy given constraints, #hl:{@no-versions-of:satisfy:for:} is raised.
 }
 
 #define:{
-    Eco path-to: pkg
-    | pkg is-a?: Eco Package || pkg is-a?: String
-    > String
+  Eco path-to: pkg
+  | pkg is-a?: Eco Package || pkg is-a?: String
+  > String
 }body:{
-    Returns the full path to #code:{~/.eco/lib/(package name)}.
+  Returns the full path to #code:{~/.eco/lib/(package name)}.
 }
 
 #define:{
-    Eco path-to: pkg version: v
-    | pkg is-a?: Eco Package || pkg is-a?: String
-    | v is-a?: Version
-    > String
+  Eco path-to: pkg version: v
+  | pkg is-a?: Eco Package || pkg is-a?: String
+  | v is-a?: Version
+  > String
 }body:{
-    Returns the full path to #code:{~/.eco/lib/(package name)/(version)}.
+  Returns the full path to #code:{~/.eco/lib/(package name)/(version)}.
 }
 
 #define:{
-    Eco executable: name
-    | name is-a?: String
-    > String
+  Eco executable: name
+  | name is-a?: String
+  > String
 }body:{
-    Returns the full path to #code:{~/.eco/bin/(executable name)}.
+  Returns the full path to #code:{~/.eco/bin/(executable name)}.
 }
 
 #define:{
-    Eco install: path
-    | path is-a?: String
-    > @ok
+  Eco install: path
+  | path is-a?: String
+  > @ok
 }body:{
-    Install the package at #hl:{path} to #code:{~/.eco}.
+  Install the package at #hl:{path} to #code:{~/.eco}.
 
-    Required files: #code:{main.atomo}, #code:{package.eco}.
+  Required files: #code:{main.atomo}, #code:{package.eco}.
 
-    The two required files and anything listed in the package's #hl:{include:} field are recursively copied to #code:{~/.eco/(package name)/(package version)}.
+  The two required files and anything listed in the package's #hl:{include:} field are recursively copied to #code:{~/.eco/(package name)/(package version)}.
 
-    Files listed in the package's #hl:{executables:} field are copied to #code:{~/.eco/bin} and their executable flag is set to True (ie, #code:{+x}).
+  Files listed in the package's #hl:{executables:} field are copied to #code:{~/.eco/bin} and their executable flag is set to True (ie, #code:{+x}).
 }
 
 #define:{
-    Eco uninstall: name version: version
-    | name is-a?: String
-    | version is-a?: Version
-    > @ok
+  Eco uninstall: name version: version
+  | name is-a?: String
+  | version is-a?: Version
+  > @ok
 }body:{
-    Uninstall a package version. Removes its directory from #code:{~/.eco/lib}, and removes any executables.
+  Uninstall a package version. Removes its directory from #code:{~/.eco/lib}, and removes any executables.
 }
 
 #define:{
-    Eco uninstall: name
-    | name is-a?: String
-    > @ok
+  Eco uninstall: name
+  | name is-a?: String
+  > @ok
 }body:{
-    Uninstalls all versions of a package.
+  Uninstalls all versions of a package.
 }
 
 #define:{
-    top use: name
-    | name is-a?: String
-    > @ok
+  top use: name
+  | name is-a?: String
+  > @ok
 }body:{
-    Alias for #hl:{top use: name version: { True }} (that is, a constraint always yielding #hl:{True}).
+  Alias for #hl:{top use: name version: { True }} (that is, a constraint always yielding #hl:{True}).
 
-    #example-segment:{
-        use: "ehtml"
-    }
+  #example-segment:{
+    use: "ehtml"
+  }
 }
 
 #define:{
-    top use: name version: constraint
-    | name is-a?: String
-    | constraint is-a?: Block || constraint is-a?: Version
-    > @ok
+  top use: name version: constraint
+  | name is-a?: String
+  | constraint is-a?: Block || constraint is-a?: Version
+  > @ok
 }body:{
-    Load the highset version of package #hl:{name} satisfying the constraint (or matching the version) #hl:{constraint} onto #hl:{top}.
+  Load the highset version of package #hl:{name} satisfying the constraint (or matching the version) #hl:{constraint} onto #hl:{top}.
 
-    Note that this should be called after #hl:{Eco initialize}, which filters out versions that do not satisfy the package's dependency constraints.
+  Note that this should be called after #hl:{Eco initialize}, which filters out versions that do not satisfy the package's dependency constraints.
 
-    #example-segment:{
-        use: "ecss" version: { < (0 . 2) }
-    }
+  #example-segment:{
+    use: "ecss" version: { < (0 . 2) }
+  }
 
-    Four possible exceptions may be raised:
+  Four possible exceptions may be raised:
 
-    #definitions:{
-        #item:{#hl:{@(package-unavailable: name)}}is:{if the package is not installed.}
+  #definitions:{
+    #item:{#hl:{@(package-unavailable: name)}}is:{if the package is not installed.}
 
-        #item:{#hl:{@(no-package-versions: name)}}is:{if the package is installed, but no versions are valid (this should never happen).}
+    #item:{#hl:{@(no-package-versions: name)}}is:{if the package is installed, but no versions are valid (this should never happen).}
 
-        #item:{#hl:{@(no-versions-of: (name -> versions) satisfy: constraint)}}is:{if none of the package versions installed are satisfactory.}
+    #item:{#hl:{@(no-versions-of: (name -> versions) satisfy: constraint)}}is:{if none of the package versions installed are satisfactory.}
 
-        #item:{#hl:{@(incompatible-version-loaded: name needed: constraint)}}is:{if the package was already loaded, but the version that was loaded does not satisfy #hl:{constraint}. This may happen if you don't use #hl:{Eco initialize} and just use #hl:{use:version:} everywhere, which is not recommended.}
-    }
+    #item:{#hl:{@(incompatible-version-loaded: name needed: constraint)}}is:{if the package was already loaded, but the version that was loaded does not satisfy #hl:{constraint}. This may happen if you don't use #hl:{Eco initialize} and just use #hl:{use:version:} everywhere, which is not recommended.}
+  }
 }
 
 #section:{Packages}
 
 #define:{
-    Eco Package
-    > Object
+  Eco Package
+  > Object
 }body:{
-    Represents a package, of a particular version, in the ecosystem.
+  Represents a package, of a particular version, in the ecosystem.
 }
 
 #define:{
-    Eco Package load-from: filename
-    | file is-a?: String
-    > Eco Package
+  Eco Package load-from: filename
+  | file is-a?: String
+  > Eco Package
 }body:{
-    Loads a package from #hl:{filename}, typically named #code:{package.eco}.
+  Loads a package from #hl:{filename}, typically named #code:{package.eco}.
 
-    Example file:
+  Example file:
 
-    #atomo:{
-        name: "ehtml"
-        description: "embedded html dsl"
-        version: (0 . 1)
-        author: "Alex Suraci"
-    }
+  #atomo:{
+    name: "ehtml"
+    description: "embedded html dsl"
+    version: (0 . 1)
+    author: "Alex Suraci"
+  }
 
-    Note that #hl:{filename} should be valid Atomo source code; that's all it is. The file is loaded as-is on a new #hl:{Eco Package}; each of those lines is a dispatch.
+  Note that #hl:{filename} should be valid Atomo source code; that's all it is. The file is loaded as-is on a new #hl:{Eco Package}; each of those lines is a dispatch.
 }
 
 #define:{
-    Eco Package name: n
-    | n is-a?: String
-    > String
+  Eco Package name: n
+  | n is-a?: String
+  > String
 }body:{
-    Sets the package's name to #hl:{n}.
+  Sets the package's name to #hl:{n}.
 }
 
 #define:{
-    Eco Package description: d
-    | d is-a?: String
-    > String
+  Eco Package description: d
+  | d is-a?: String
+  > String
 }body:{
-    Sets the package's description to #hl:{d}.
+  Sets the package's description to #hl:{d}.
 }
 
 #define:{
-    Eco Package version: v
-    | v is-a?: Version
-    > Version
+  Eco Package version: v
+  | v is-a?: Version
+  > Version
 }body:{
-    Sets the package's version to #hl:{v}.
+  Sets the package's version to #hl:{v}.
 }
 
 #define:{
-    Eco Package author: n
-    | n is-a?: String
-    > String
+  Eco Package author: n
+  | n is-a?: String
+  > String
 }body:{
-    Sets the package's author to #hl:{n}.
+  Sets the package's author to #hl:{n}.
 }
 
 #define:{
-    Eco Package include: filenames
-    | filenames is-a?: List
-    > String
+  Eco Package include: filenames
+  | filenames is-a?: List
+  > String
 }body:{
-    Sets the package's include field to #hl:{filenames}.
+  Sets the package's include field to #hl:{filenames}.
 }
 
 #define:{
-    Eco Package depends-on: dependencies
-    | dependencies is-a?: List
-    > String
+  Eco Package depends-on: dependencies
+  | dependencies is-a?: List
+  > String
 }body:{
-    Sets the package's dependencies field to #hl:{dependencies}.
+  Sets the package's dependencies field to #hl:{dependencies}.
 
-    Values in the list should be either #hl:{Association}s from package names to a block for checking the package version, or just package names.
+  Values in the list should be either #hl:{Association}s from package names to a block for checking the package version, or just package names.
 
-    For example, to depend on any version of #code:{ehtml}, and versions greater than #code:{0.1} of #code:{ecss}:
+  For example, to depend on any version of #code:{ehtml}, and versions greater than #code:{0.1} of #code:{ecss}:
 
-    #atomo:{
-      depends-on: ["ehtml", "eccs" -> { > (0 . 1) }]
-    }
+  #atomo:{
+    depends-on: ["ehtml", "eccs" -> { > (0 . 1) }]
+  }
 }
 
 #define:{
-    Eco Package executables: filenames
-    | filenames is-a?: List
-    > String
+  Eco Package executables: filenames
+  | filenames is-a?: List
+  > String
 }body:{
-    Sets the package's executables field to #hl:{filenames}.
+  Sets the package's executables field to #hl:{filenames}.
 }
 
 #section:{Versions}
@@ -226,64 +226,64 @@ Installed packages go straight to #code:{~/.eco} - binaries go to #code:{~/.eco/
 Proper comparable version numbers. All of the usual suspects for anything that's comparable are implemented: #hl:{==}, #hl:{>}, #hl:{<}, #hl:{>=}, and #hl:{<=}. These methods are defined for all combinations of #hl:{Version} and #hl:{Integer}.
 
 #example:{
-    (0 . 1) < (0 . 2)
-    2 > (1 . 9)
-    (0 . 1) <= (0 . 1 . 1)
-    (0 . 1) == (0 . 1)
-    (0 . 1) == (0 . 1 . 0)
-    2 == (2 . 0)
+  (0 . 1) < (0 . 2)
+  2 > (1 . 9)
+  (0 . 1) <= (0 . 1 . 1)
+  (0 . 1) == (0 . 1)
+  (0 . 1) == (0 . 1 . 0)
+  2 == (2 . 0)
 }
 
 Note that the parentheses used in version constructors below are not necessary; they are merely here because the documentation scanner parses Atomo source and pretty-prints it, which makes the parentheses explicit.
 
 #define:{
-    Version
-    > Object
+  Version
+  > Object
 }body:{
-    A version number.
+  A version number.
 }
 
 #define:{
-    major . minor
-    | major is-a?: Integer
-    | minor is-a?: Integer || minor is-a?: Version
-    > Version
+  major . minor
+  | major is-a?: Integer
+  | minor is-a?: Integer || minor is-a?: Version
+  > Version
 }body:{
-    The primary #hl:{Version} constructor.
+  The primary #hl:{Version} constructor.
 
-    #example:{
-        0 . 1
-        1 . 2 . 0 . 3
-    }
+  #example:{
+    0 . 1
+    1 . 2 . 0 . 3
+  }
 }
 
 #define:{
-    v as: String
-    | v is-a?: Version
-    > String
+  v as: String
+  | v is-a?: Version
+  > String
 }body:{
-    Converts a #hl:{Version} to the typical textual representation of version numbers.
+  Converts a #hl:{Version} to the typical textual representation of version numbers.
 
-    #example:{
-        (0 . 1 . 2) as: String
-    }
+  #example:{
+    (0 . 1 . 2) as: String
+  }
 }
 
 #define:{
-    n to: Version
-    | n is-a?: Integer || n is-a?: String
-    > Version
+  n to: Version
+  | n is-a?: Integer || n is-a?: String
+  > Version
 }body:{
-    Conversion from #hl:{String} is the converse of #hl:{Version as: String}.
+  Conversion from #hl:{String} is the converse of #hl:{Version as: String}.
 
-    #example:{
-        "0.1.2" to: Version
-        (0 . 1 . 2) (as: String) (to: Version)
-    }
+  #example:{
+    "0.1.2" to: Version
+    (0 . 1 . 2) (as: String) (to: Version)
+  }
 
-    Conversion from #hl:{Integer} simply uses it as #hl:{major} and #hl:{0} as #hl:{minor}.
+  Conversion from #hl:{Integer} simply uses it as #hl:{major} and #hl:{0} as #hl:{minor}.
 
-    #example:{
-        1 as: Version
-    }
+  #example:{
+    1 as: Version
+  }
 }

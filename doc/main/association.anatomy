@@ -1,10 +1,10 @@
 #title:{Associations}tag:"association"
 
 #define:{
-    Association
-    > Object
+  Association
+  > Object
 }body:{
-    A simple mapping from one value to another.
+  A simple mapping from one value to another.
 }
 
 #define:{
@@ -22,79 +22,79 @@
 }
 
 #define:{
-    a -> b
-    > Association
+  a -> b
+  > Association
 }body:{
-    Create a new #hl:{Association} from #hl:{a} to #hl:{b}.
-    
-    This operator is right-associative and has a very low precedence level:
+  Create a new #hl:{Association} from #hl:{a} to #hl:{b}.
 
-    #example:{
-        1 -> $a
-        True -> 10
-        1 -> (2 -> (3 + 4))
-    }
+  This operator is right-associative and has a very low precedence level:
+
+  #example:{
+    1 -> $a
+    True -> 10
+    1 -> (2 -> (3 + 4))
+  }
 }
 
 #define:{
-    a from
-    | a is-a?: Association
-    > any
+  a from
+  | a is-a?: Association
+  > any
 }body:{
-    Yields #hl:{a}'s "from" value.
+  Yields #hl:{a}'s "from" value.
 
-    #example:{
-        (1 -> $a) from
-    }
+  #example:{
+    (1 -> $a) from
+  }
 }
 
 #define:{
-    a to
-    | a is-a?: Association
-    > any
+  a to
+  | a is-a?: Association
+  > any
 }body:{
-    Yields #hl:{a}'s "to" value.
+  Yields #hl:{a}'s "to" value.
 
-    #example:{
-        (1 -> $a) to
-    }
+  #example:{
+    (1 -> $a) to
+  }
 }
 
 #define:{
-    list lookup: from
-    | list is-a?: List
-    > in?: [@(ok: any), @none]
+  list lookup: from
+  | list is-a?: List
+  > in?: [@(ok: any), @none]
 }body:{
-    Looks up a key in a list of #hl:{Associations} by #hl:{from}, returning either the association's #hl:{to} value or #hl:{@none}.
+  Looks up a key in a list of #hl:{Associations} by #hl:{from}, returning either the association's #hl:{to} value or #hl:{@none}.
 
-    #example:{
-        [1 -> $a, 2 -> $b] lookup: 1
-        [1 -> $a, 2 -> $b] lookup: 5
-    }
+  #example:{
+    [1 -> $a, 2 -> $b] lookup: 1
+    [1 -> $a, 2 -> $b] lookup: 5
+  }
 }
 
 #define:{
-    list find: from
-    | list is-a?: List
-    > in?: [@(ok: Association), @none]
+  list find: from
+  | list is-a?: List
+  > in?: [@(ok: Association), @none]
 }body:{
-    Similar to #hl:{lookup:}, except it returns the #hl:{Association} object rather than its #hl:{to} value.
+  Similar to #hl:{lookup:}, except it returns the #hl:{Association} object rather than its #hl:{to} value.
 
-    #example:{
-        [1 -> $a, 2 -> $b] find: 1
-        [1 -> $a, 2 -> $b] find: 5
-    }
+  #example:{
+    [1 -> $a, 2 -> $b] find: 1
+    [1 -> $a, 2 -> $b] find: 5
+  }
 }
 
 #define:{
-    list set: key to: value
-    | list is-a?: List
-    > list
+  list set: key to: value
+  | list is-a?: List
+  > list
 }body:{
-    Sets an association from #hl:{key} to #hl:{value} in #hl:{list}, updating an association if it exists or adding it to the list if it doesn't.
+  Sets an association from #hl:{key} to #hl:{value} in #hl:{list}, updating an association if it exists or adding it to the list if it doesn't.
 
-    #example:{
-        [1 -> $a, 2 -> $b] set: 2 to: $B
-        [1 -> $a, 2 -> $b] set: 3 to: $c
-    }
+  #example:{
+    [1 -> $a, 2 -> $b] set: 2 to: $B
+    [1 -> $a, 2 -> $b] set: 3 to: $c
+  }
 }

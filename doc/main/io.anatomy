@@ -3,175 +3,174 @@
 Atomo uses an I/O system similar to Scheme - methods for reading/writing internally use #hl:{current-input-port} or #hl:{current-output-port}, which can be overridden via parameterization. Certain methods, e.g. #hl:{print} and #hl:{read-line}, will act on whatever those parameters are.
 
 #define:{
-    Port
-    > Object
+  Port
+  > Object
 }body:{
-    An object to read/write to. Typically has one slot, #hl:{handle}, which points to the file descriptor (a Haskell #code:{Handle}).
+  An object to read/write to. Typically has one slot, #hl:{handle}, which points to the file descriptor (a Haskell #code:{Handle}).
 }
 
 #local:{
-    Port new: filename &mode: @read-write
-    | filename is-a?: String
-    | [@read, @write, @read-write, @append] contains?: mode
-    > Port
+  Port new: filename &mode: @read-write
+  | filename is-a?: String
+  | [@read, @write, @read-write, @append] contains?: mode
+  > Port
 }body:{
-    Open the file #hl:{filename} and return a #hl:{Port} for performing I/O.
+  Open the file #hl:{filename} and return a #hl:{Port} for performing I/O.
 }
 
 #define:{
-    Port standard-input
-    > Port
+  Port standard-input
+  > Port
 }body:{
-    Standard input port (stdin).
+  Standard input port (stdin).
 }
 
 #define:{
-    Port standard-output
-    > Port
+  Port standard-output
+  > Port
 }body:{
-    Standard output port (stdout).
+  Standard output port (stdout).
 }
 
 #define:{
-    Port standard-error
-    > Port
+  Port standard-error
+  > Port
 }body:{
-    Standard error port (stderr).
+  Standard error port (stderr).
 }
 
 #define:{
-    p print: v
-    | p is-a?: Port
-    | v responds-to?: @(as: String)
-    > v
+  p print: v
+  | p is-a?: Port
+  | v responds-to?: @(as: String)
+  > v
 }body:{
-    Outputs #hl:{v as: String} to #hl:{p}, followed by a linebreak.
+  Outputs #hl:{v as: String} to #hl:{p}, followed by a linebreak.
 }
 
 #define:{
-    p display: v
-    | p is-a?: Port
-    | v responds-to?: @(as: String)
-    > v
+  p display: v
+  | p is-a?: Port
+  | v responds-to?: @(as: String)
+  > v
 }body:{
-    Outputs #hl:{v as: String} to #hl:{p}.
+  Outputs #hl:{v as: String} to #hl:{p}.
 }
 
 #define:{
-    p read
-    | p is-a?: Port
-    > any
+  p read
+  | p is-a?: Port
+  > any
 }body:{
-    Reads a primitive value from #hl:{p}. A primitive value is an integer, double, character, string, or lists and particles that contain primitive values. For anything else, if the parse is successful it returns it as an #hl:{Expression}. This includes blocks an arbitrary paranthesized expressions, or lists/particles containing non-primitives.
+  Reads a primitive value from #hl:{p}. A primitive value is an integer, double, character, string, or lists and particles that contain primitive values. For anything else, if the parse is successful it returns it as an #hl:{Expression}. This includes blocks an arbitrary paranthesized expressions, or lists/particles containing non-primitives.
 
-    The idea is that any value returned by #hl:{read} is safe; anything else is returned unevaluated.
+  The idea is that any value returned by #hl:{read} is safe; anything else is returned unevaluated.
 }
 
 #define:{
-    p read-line
-    | p is-a?: Port
-    > String
+  p read-line
+  | p is-a?: Port
+  > String
 }body:{
-    Read a line of text from #hl:{p}.
+  Read a line of text from #hl:{p}.
 }
 
 #define:{
-    p contents
-    | p is-a?: Port
-    > String
+  p contents
+  | p is-a?: Port
+  > String
 }body:{
-    Read in #hl:{p}'s entire contents, blocking until the end of the input is reached.
+  Read in #hl:{p}'s entire contents, blocking until the end of the input is reached.
 }
 
 #define:{
-    p flush
-    | p is-a?: Port
-    > @ok
+  p flush
+  | p is-a?: Port
+  > @ok
 }body:{
-    Flush #hl:{p}'s output. #hl:{print} and #hl:{display} automatically perform this task for you.
+  Flush #hl:{p}'s output. #hl:{print} and #hl:{display} automatically perform this task for you.
 }
 
 #define:{
-    p close
-    | p is-a?: Port
-    > @ok
+  p close
+  | p is-a?: Port
+  > @ok
 }body:{
-    Close #hl:{p}, flushing any output.
+  Close #hl:{p}, flushing any output.
 }
 
 #section:{Parameters}
 
 #define:{
-    current-output-port
-    > Parameter
+  current-output-port
+  > Parameter
 }body:{
-    A #hl:{Parameter} containing the default port used for printing output.
+  A #hl:{Parameter} containing the default port used for printing output.
 
-    Default is #hl:{Port standard-output}.
+  Default is #hl:{Port standard-output}.
 }
 
 #define:{
-    current-input-port
-    > Parameter
+  current-input-port
+  > Parameter
 }body:{
-    A #hl:{Parameter} containing the default port used for getting input.
+  A #hl:{Parameter} containing the default port used for getting input.
 
-    Default is #hl:{Port standard-input}.
+  Default is #hl:{Port standard-input}.
 }
 
 #define:{
-    o print
-    | o responds-to?: @(as: String)
-    > o
+  o print
+  | o responds-to?: @(as: String)
+  > o
 }body:{
-    Outputs #hl:{o as: String} to #hl:{current-output-port}, followed by a linebreak.
+  Outputs #hl:{o as: String} to #hl:{current-output-port}, followed by a linebreak.
 }
 
 #define:{
-    o display
-    | o responds-to?: @(as: String)
-    > o
+  o display
+  | o responds-to?: @(as: String)
+  > o
 }body:{
-    Outputs #hl:{o as: String} to #hl:{current-output-port}.
+  Outputs #hl:{o as: String} to #hl:{current-output-port}.
 }
 
 #define:{
-    read
-    > o
+  read
+  > o
 }body:{
-    Reads an object from #hl:{current-input-port}.
+  Reads an object from #hl:{current-input-port}.
 }
 
 #define:{
-    read-line
-    > String
+  read-line
+  > String
 }body:{
-    Reads one line of text from #hl:{current-input-port}.
+  Reads one line of text from #hl:{current-input-port}.
 }
 
 #define:{
-    with-input-from: p do: action
-    | p is-a?: Port || p is-a?: String
-    | a is-a?: Block
-    > any
+  with-input-from: p do: action
+  | p is-a?: Port || p is-a?: String
+  | a is-a?: Block
+  > any
 }body:{
-    Parameterize #hl:{current-input-port} and execute #hl:{action}, returning its result.
+  Parameterize #hl:{current-input-port} and execute #hl:{action}, returning its result.
 
-    If #hl:{p} is a #hl:{String}, it is considered a filename, and that file is opened for reading. The file is automatically closed after the block's execution.
+  If #hl:{p} is a #hl:{String}, it is considered a filename, and that file is opened for reading. The file is automatically closed after the block's execution.
 
-    If #hl:{p} is a #hl:{Port}, it is used for input.
+  If #hl:{p} is a #hl:{Port}, it is used for input.
 }
 
 #define:{
-    with-output-to: p do: action
-    | p is-a?: Port || p is-a?: String
-    | a is-a?: Block
-    > any
+  with-output-to: p do: action
+  | p is-a?: Port || p is-a?: String
+  | a is-a?: Block
+  > any
 }body:{
-    Parameterize #hl:{current-output-port} and execute #hl:{action}, returning its result.
+  Parameterize #hl:{current-output-port} and execute #hl:{action}, returning its result.
 
-    If #hl:{p} is a #hl:{String}, it is considered a filename, and that file is opened for writing. The file is created if it doesn't exist, or overwritten if it does. The file is automatically closed after the block's execution.
+  If #hl:{p} is a #hl:{String}, it is considered a filename, and that file is opened for writing. The file is created if it doesn't exist, or overwritten if it does. The file is automatically closed after the block's execution.
 
-    If #hl:{p} is a #hl:{Port}, it is used for output.
+  If #hl:{p} is a #hl:{Port}, it is used for output.
 }
-
