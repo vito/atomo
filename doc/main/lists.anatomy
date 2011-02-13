@@ -167,6 +167,19 @@
 }
 
 #define:{
+  x . xs
+  | xs is-a?: List
+  > List
+}body:{
+  List constructor; yield a new list with #ref:{x} added to the front of #ref:{xs}.
+
+  #example:{
+    1 . []
+    1 . [2, 3]
+  }
+}
+
+#define:{
   a .. b
   | a is-a?: List
   | b is-a?: List
@@ -456,11 +469,10 @@
   | l is-a?: List
   > List
 }body:{
-  Pushes a value onto the end of a list.
+  Yields a new list with #ref:{v} added to the end of #ref:{l}.
 
   #example:{
-    a = [1, 2, 3]
-    a push: 4
+    [1, 2, 3] push: 4
   }
 }
 
@@ -469,12 +481,7 @@
   | l is-a?: List
   > List
 }body:{
-  Pushes a value onto the front of a list. Same as #hl:{.}.
-
-  #example:{
-    a = [1, 2, 3]
-    a cons: 4
-  }
+  See #hl:{.}.
 }
 
 #define:{
