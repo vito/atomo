@@ -36,10 +36,8 @@
     Returns a new #hl:{Block} with #hl:{expressions} as its contents and #hl:{context} as its context.
 
     #example:{
-        orig = { a = 1; a + 1 }
-        Block new: orig contents in: this
-        adder = { * 7 }
-        (Block new: adder contents in: 6) call
+        Block new: ['(1 = 1), '(a + 1)] in: this
+        (Block new: ['(* 7)] in: 6) call
     }
 }
 
