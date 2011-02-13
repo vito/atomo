@@ -28,7 +28,7 @@
     }
 }
 
-#define:{
+#local:{
     Block new: expressions in: context
     | expressions is-a?: List
     > Block
