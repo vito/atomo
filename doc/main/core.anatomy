@@ -121,18 +121,11 @@
     o new
     > is-a?: o
 }body:{
-    Similar to #hl:{clone}, but often does certain initialization stuff like setting default values.
+    Generally, this initializes a new clone of #hl:{o}, which will usually be the base object (e.g. #hl:{Regexp} itself). The initialization typically uses #hl:{clone} and sets up some state.
 
-    Note: this method, along with #hl:{new:}, is just listed here so that links in the documentation will point to these more general descriptions rather than a more specific, but wrong, definition. It is not defined for #hl:{Object}.
-}
+    This is not defined for #hl:{Object}; it (or some variation) should be defined for any object's initialization rather than overriding #hl:{clone}.
 
-#define:{
-    o new: x
-    > is-a?: o
-}body:{
-    Similar to #hl:{new}, but with an additional argument used for initialization.
-
-    Note: this method, along with #hl:{new}, is just listed here so that links in the documentation will point to these more general descriptions rather than a more specific, but wrong, definition. It is not defined for #hl:{Object}.
+    Other conventions are #hl:{new:} and #hl:{new.foo: _ bar: _}, with any additional optionals.
 }
 
 #define:{
