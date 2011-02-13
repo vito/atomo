@@ -42,7 +42,7 @@ source-repository   head
 
 flag lib
     description:   Install the Atomo library.
-    default:       False
+    default:       True
 
 library
   if !flag(lib)
