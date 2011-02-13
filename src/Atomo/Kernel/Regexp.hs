@@ -30,12 +30,12 @@ data REReplace
 
 load :: VM ()
 load = do
-    ([$p|RegexpBindings|] =::) =<< eval [$e|Object clone|]
-    ([$p|RegexpMatch|] =::) =<< eval [$e|Object clone|]
+    ([p|RegexpBindings|] =::) =<< eval [e|Object clone|]
+    ([p|RegexpMatch|] =::) =<< eval [e|Object clone|]
 
-    [$p|Regexp new: (s: String) &flags: ""|] =: do
-        s <- getString [$e|s|]
-        fs <- getString [$e|flags|]
+    [p|Regexp new: (s: String) &flags: ""|] =: do
+        s <- getString [e|s|]
+        fs <- getString [e|flags|]
 
         case regex s fs of
             RegexOK re ->
@@ -43,24 +43,24 @@ load = do
             Failed x ->
                 raise ["regexp-failed"] [string x]
 
-    [$p|(r: Regexp) =~ (s: String)|] =::: [$e|r matches?: s|]
-    [$p|(s: String) =~ (r: Regexp)|] =::: [$e|r matches?: s|]
+    [p|(r: Regexp) =~ (s: String)|] =::: [e|r matches?: s|]
+    [p|(s: String) =~ (r: Regexp)|] =::: [e|r matches?: s|]
 
-    [$p|(r: Regexp) matches?: (s: String)|] =: do
+    [p|(r: Regexp) matches?: (s: String)|] =: do
         Regexp { rCompiled = re } <- here "r" >>= findRegexp
-        t <- getText [$e|s|]
+        t <- getText [e|s|]
         return (Boolean (match re (encodeUtf8 t)))
 
-    [$p|(r: Regexp) match: (s: String)|] =: do
+    [p|(r: Regexp) match: (s: String)|] =: do
         Regexp { rCompiled = re, rNamed = ns } <- here "r" >>= findRegexp
-        t <- getText [$e|s|]
+        t <- getText [e|s|]
         let mr = match re (encodeUtf8 t) :: MatchResult BS.ByteString
         if BS.null (mrMatch mr)
             then return (particle "none")
             else do
                 bs <- mkBindings (mrMatch mr:mrSubList mr) ns
 
-                rm <- [$e|RegexpMatch|] `newWith`
+                rm <- [e|RegexpMatch|] `newWith`
                     [ ("before", byteString (mrBefore mr))
                     , ("match", byteString (mrMatch mr))
                     , ("after", byteString (mrAfter mr))
@@ -70,34 +70,34 @@ load = do
 
                 return (keyParticleN ["ok"] [rm])
 
-    [$p|(s: String) replace: (r: Regexp) with: (callback: Block)|] =: do
+    [p|(s: String) replace: (r: Regexp) with: (callback: Block)|] =: do
         Regexp { rCompiled = re, rNamed = ns } <- here "r" >>= findRegexp
         callback <- here "callback"
-        t <- getText [$e|s|]
+        t <- getText [e|s|]
         doReplace re t $ \cs -> do
             bs <- mkBindings cs ns
             dispatch (keyword ["join"] [bs, callback])
                 >>= liftM fromString . findString
 
-    [$p|(s: String) replace: (r: Regexp) with: (format: String)|] =: do
+    [p|(s: String) replace: (r: Regexp) with: (format: String)|] =: do
         Regexp { rCompiled = re, rNamed = ns } <- here "r" >>= findRegexp
-        format <- getText [$e|format|]
-        t <- getText [$e|s|]
+        format <- getText [e|format|]
+        t <- getText [e|s|]
         doReplace re t (reReplace (replacements format) ns)
 
-    [$p|(s: String) replace-all: (r: Regexp) with: (callback: Block)|] =: do
+    [p|(s: String) replace-all: (r: Regexp) with: (callback: Block)|] =: do
         Regexp { rCompiled = re, rNamed = ns } <- here "r" >>= findRegexp
         callback <- here "callback"
-        t <- getText [$e|s|]
+        t <- getText [e|s|]
         doReplaceAll re t $ \cs -> do
             bs <- mkBindings cs ns
             dispatch (keyword ["join"] [bs, callback])
                 >>= liftM fromString . findString
 
-    [$p|(s: String) replace-all: (r: Regexp) with: (format: String)|] =: do
+    [p|(s: String) replace-all: (r: Regexp) with: (format: String)|] =: do
         Regexp { rCompiled = re, rNamed = ns } <- here "r" >>= findRegexp
-        format <- getText [$e|format|]
-        t <- getText [$e|s|]
+        format <- getText [e|format|]
+        t <- getText [e|s|]
         doReplaceAll re t (reReplace (replacements format) ns)
 
 doReplace :: Regex -> T.Text -> ([BS.ByteString] -> VM T.Text) -> VM Value
@@ -171,7 +171,7 @@ reReplace (RENamed n:rs) ns bs =
 
 mkBindings :: [BS.ByteString] -> [(String, Int)] -> VM Value
 mkBindings subs names =
-    [$e|RegexpBindings|] `newWith` concat
+    [e|RegexpBindings|] `newWith` concat
         [ zipWith (\n m -> ("\\" ++ show n, byteString m))
             [0 :: Int ..]
             subs

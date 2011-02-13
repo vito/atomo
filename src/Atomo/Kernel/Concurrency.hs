@@ -8,37 +8,37 @@ import Atomo.Spawn
 
 load :: VM ()
 load = do
-    [$p|self|] =: do
+    [p|self|] =: do
         chan <- gets channel
         tid <- liftIO myThreadId
         return (Process chan tid)
 
-    [$p|receive|] =: gets channel >>= liftIO . readChan
+    [p|receive|] =: gets channel >>= liftIO . readChan
 
-    [$p|halt|] =: gets halt >>= liftIO >> return (particle "ok")
+    [p|halt|] =: gets halt >>= liftIO >> return (particle "ok")
 
-    [$p|(p: Process) <- v|] =: do
+    [p|(p: Process) <- v|] =: do
         Process chan _ <- here "p" >>= findProcess
         v <- here "v"
         liftIO (writeChan chan v)
         here "p"
 
-    [$p|(b: Block) spawn|] =: do
+    [p|(b: Block) spawn|] =: do
         Block s as bes <- here "b" >>= findBlock
 
         if length as > 0
             then throwError (BlockArity (length as) 0)
             else spawn (doBlock emptyMap s bes)
 
-    [$p|(b: Block) spawn: (... args)|] =: do
+    [p|(b: Block) spawn: (... args)|] =: do
         b@(Block _ as _) <- here "b" >>= findBlock
-        vs <- getList [$e|args|]
+        vs <- getList [e|args|]
 
         if length as > length vs
             then throwError (BlockArity (length as) (length vs))
             else spawn (callBlock b vs)
 
-    [$p|(p: Process) stop|] =: do
+    [p|(p: Process) stop|] =: do
         Process _ tid <- here "p" >>= findProcess
         liftIO (killThread tid)
         return (particle "ok")

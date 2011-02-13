@@ -9,97 +9,97 @@ import Atomo
 load :: VM ()
 load = do
     mapM_ eval
-        [ [$e|operator 4 == /= < <= >= >|]
-        , [$e|operator right 3 &&|]
-        , [$e|operator right 2 |||]
+        [ [e|operator 4 == /= < <= >= >|]
+        , [e|operator right 3 &&|]
+        , [e|operator right 2 |||]
         ]
 
-    [$p|a equals?: b|] =: do
+    [p|a equals?: b|] =: do
         a <- here "a"
         b <- here "b"
         return $ Boolean (a == b)
 
-    [$p|(a: Object) == (b: Object)|] =::: [$e|a equals?: b|]
-    [$p|(a: Object) /= (b: Object)|] =::: [$e|(a == b) not|]
+    [p|(a: Object) == (b: Object)|] =::: [e|a equals?: b|]
+    [p|(a: Object) /= (b: Object)|] =::: [e|(a == b) not|]
 
-    [$p|(a: Character) < (b: Character)|] =: do
+    [p|(a: Character) < (b: Character)|] =: do
         Character a <- here "a" >>= findCharacter
         Character b <- here "b" >>= findCharacter
         return $ Boolean (a < b)
 
-    [$p|(a: Character) > (b: Character)|] =: do
+    [p|(a: Character) > (b: Character)|] =: do
         Character a <- here "a" >>= findCharacter
         Character b <- here "b" >>= findCharacter
         return $ Boolean (a > b)
 
-    [$p|(a: Character) <= (b: Character)|] =: do
+    [p|(a: Character) <= (b: Character)|] =: do
         Character a <- here "a" >>= findCharacter
         Character b <- here "b" >>= findCharacter
         return $ Boolean (a <= b)
 
-    [$p|(a: Character) >= (b: Character)|] =: do
+    [p|(a: Character) >= (b: Character)|] =: do
         Character a <- here "a" >>= findCharacter
         Character b <- here "b" >>= findCharacter
         return $ Boolean (a >= b)
 
-    [$p|(a: Character) == (b: Character)|] =: do
+    [p|(a: Character) == (b: Character)|] =: do
         Character a <- here "a" >>= findCharacter
         Character b <- here "b" >>= findCharacter
         return $ Boolean (a == b)
 
-    [$p|(a: Integer) < (b: Integer)|] =: primII (<)
-    [$p|(a: Double) < (b: Double)|] =: primDD (<)
-    [$p|(a: Rational) < (b: Rational)|] =: primRR (<)
-    [$p|(a: Integer) < (b: Double)|] =: primID (<)
-    [$p|(a: Integer) < (b: Rational)|] =: primIR (<)
-    [$p|(a: Double) < (b: Integer)|] =: primDI (<)
-    [$p|(a: Double) < (b: Rational)|] =: primDR (<)
-    [$p|(a: Rational) < (b: Integer)|] =: primRI (<)
-    [$p|(a: Rational) < (b: Double)|] =: primRD (<)
+    [p|(a: Integer) < (b: Integer)|] =: primII (<)
+    [p|(a: Double) < (b: Double)|] =: primDD (<)
+    [p|(a: Rational) < (b: Rational)|] =: primRR (<)
+    [p|(a: Integer) < (b: Double)|] =: primID (<)
+    [p|(a: Integer) < (b: Rational)|] =: primIR (<)
+    [p|(a: Double) < (b: Integer)|] =: primDI (<)
+    [p|(a: Double) < (b: Rational)|] =: primDR (<)
+    [p|(a: Rational) < (b: Integer)|] =: primRI (<)
+    [p|(a: Rational) < (b: Double)|] =: primRD (<)
 
-    [$p|(a: Integer) > (b: Integer)|] =: primII (>)
-    [$p|(a: Double) > (b: Double)|] =: primDD (>)
-    [$p|(a: Rational) > (b: Rational)|] =: primRR (>)
-    [$p|(a: Integer) > (b: Double)|] =: primID (>)
-    [$p|(a: Integer) > (b: Rational)|] =: primIR (>)
-    [$p|(a: Double) > (b: Integer)|] =: primDI (>)
-    [$p|(a: Double) > (b: Rational)|] =: primDR (>)
-    [$p|(a: Rational) > (b: Integer)|] =: primRI (>)
-    [$p|(a: Rational) > (b: Double)|] =: primRD (>)
+    [p|(a: Integer) > (b: Integer)|] =: primII (>)
+    [p|(a: Double) > (b: Double)|] =: primDD (>)
+    [p|(a: Rational) > (b: Rational)|] =: primRR (>)
+    [p|(a: Integer) > (b: Double)|] =: primID (>)
+    [p|(a: Integer) > (b: Rational)|] =: primIR (>)
+    [p|(a: Double) > (b: Integer)|] =: primDI (>)
+    [p|(a: Double) > (b: Rational)|] =: primDR (>)
+    [p|(a: Rational) > (b: Integer)|] =: primRI (>)
+    [p|(a: Rational) > (b: Double)|] =: primRD (>)
 
-    [$p|(a: Integer) <= (b: Integer)|] =: primII (<=)
-    [$p|(a: Double) <= (b: Double)|] =: primDD (<=)
-    [$p|(a: Rational) <= (b: Rational)|] =: primRR (<=)
-    [$p|(a: Integer) <= (b: Double)|] =: primID (<=)
-    [$p|(a: Integer) <= (b: Rational)|] =: primIR (<=)
-    [$p|(a: Double) <= (b: Integer)|] =: primDI (<=)
-    [$p|(a: Double) <= (b: Rational)|] =: primDR (<=)
-    [$p|(a: Rational) <= (b: Integer)|] =: primRI (<=)
-    [$p|(a: Rational) <= (b: Double)|] =: primRD (<=)
+    [p|(a: Integer) <= (b: Integer)|] =: primII (<=)
+    [p|(a: Double) <= (b: Double)|] =: primDD (<=)
+    [p|(a: Rational) <= (b: Rational)|] =: primRR (<=)
+    [p|(a: Integer) <= (b: Double)|] =: primID (<=)
+    [p|(a: Integer) <= (b: Rational)|] =: primIR (<=)
+    [p|(a: Double) <= (b: Integer)|] =: primDI (<=)
+    [p|(a: Double) <= (b: Rational)|] =: primDR (<=)
+    [p|(a: Rational) <= (b: Integer)|] =: primRI (<=)
+    [p|(a: Rational) <= (b: Double)|] =: primRD (<=)
 
-    [$p|(a: Integer) >= (b: Integer)|] =: primII (>=)
-    [$p|(a: Double) >= (b: Double)|] =: primDD (>=)
-    [$p|(a: Rational) >= (b: Rational)|] =: primRR (>=)
-    [$p|(a: Integer) >= (b: Double)|] =: primID (>=)
-    [$p|(a: Integer) >= (b: Rational)|] =: primIR (>=)
-    [$p|(a: Double) >= (b: Integer)|] =: primDI (>=)
-    [$p|(a: Double) >= (b: Rational)|] =: primDR (>=)
-    [$p|(a: Rational) >= (b: Integer)|] =: primRI (>=)
-    [$p|(a: Rational) >= (b: Double)|] =: primRD (>=)
+    [p|(a: Integer) >= (b: Integer)|] =: primII (>=)
+    [p|(a: Double) >= (b: Double)|] =: primDD (>=)
+    [p|(a: Rational) >= (b: Rational)|] =: primRR (>=)
+    [p|(a: Integer) >= (b: Double)|] =: primID (>=)
+    [p|(a: Integer) >= (b: Rational)|] =: primIR (>=)
+    [p|(a: Double) >= (b: Integer)|] =: primDI (>=)
+    [p|(a: Double) >= (b: Rational)|] =: primDR (>=)
+    [p|(a: Rational) >= (b: Integer)|] =: primRI (>=)
+    [p|(a: Rational) >= (b: Double)|] =: primRD (>=)
 
-    [$p|(a: Integer) == (b: Integer)|] =: primII (==)
-    [$p|(a: Double) == (b: Double)|] =: primDD (==)
-    [$p|(a: Rational) == (b: Rational)|] =: primRR (==)
-    [$p|(a: Integer) == (b: Double)|] =: primID (==)
-    [$p|(a: Integer) == (b: Rational)|] =: primIR (==)
-    [$p|(a: Double) == (b: Integer)|] =: primDI (==)
-    [$p|(a: Double) == (b: Rational)|] =: primDR (==)
-    [$p|(a: Rational) == (b: Integer)|] =: primRI (==)
-    [$p|(a: Rational) == (b: Double)|] =: primRD (==)
+    [p|(a: Integer) == (b: Integer)|] =: primII (==)
+    [p|(a: Double) == (b: Double)|] =: primDD (==)
+    [p|(a: Rational) == (b: Rational)|] =: primRR (==)
+    [p|(a: Integer) == (b: Double)|] =: primID (==)
+    [p|(a: Integer) == (b: Rational)|] =: primIR (==)
+    [p|(a: Double) == (b: Integer)|] =: primDI (==)
+    [p|(a: Double) == (b: Rational)|] =: primDR (==)
+    [p|(a: Rational) == (b: Integer)|] =: primRI (==)
+    [p|(a: Rational) == (b: Double)|] =: primRD (==)
 
-    [$p|(a: List) == (b: List)|] =: do
-        as <- getVector [$e|a|]
-        bs <- getVector [$e|b|]
+    [p|(a: List) == (b: List)|] =: do
+        as <- getVector [e|a|]
+        bs <- getVector [e|b|]
 
         if V.length as == V.length bs
             then do
@@ -107,12 +107,12 @@ load = do
                 return $ Boolean (V.all (== Boolean True) eqs)
             else return $ Boolean False
 
-    [$p|(a: Process) == (b: Process)|] =: do
+    [p|(a: Process) == (b: Process)|] =: do
         Process _ a <- here "a" >>= findProcess
         Process _ b <- here "b" >>= findProcess
         return $ Boolean (a == b)
 
-    [$p|(a: Message) == (b: Message)|] =: do
+    [p|(a: Message) == (b: Message)|] =: do
         Message a <- here "a" >>= findMessage
         Message b <- here "b" >>= findMessage
 
@@ -127,7 +127,7 @@ load = do
                 return $ Boolean (aos == bos && all (== Boolean True) eqs)
             _ -> return $ Boolean False
 
-    [$p|(a: Particle) == (b: Particle)|] =: do
+    [p|(a: Particle) == (b: Particle)|] =: do
         Particle a <- here "a" >>= findParticle
         Particle b <- here "b" >>= findParticle
 

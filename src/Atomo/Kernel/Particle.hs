@@ -8,65 +8,65 @@ import Atomo.Valuable
 
 load :: VM ()
 load = do
-    [$p|(p: Particle) new: (name: String)|] =: do
-        n <- getString [$e|name|]
+    [p|(p: Particle) new: (name: String)|] =: do
+        n <- getString [e|name|]
         return (particle n)
 
-    [$p|(p: Particle) new: (names: List)|] =: do
-        ns <- getList [$e|names|]
+    [p|(p: Particle) new: (names: List)|] =: do
+        ns <- getList [e|names|]
                 >>= mapM (liftM (fromText . fromString) . findString)
 
         return (keyParticle ns (replicate (length ns + 1) Nothing))
 
-    [$p|(p: Particle) call|] =::: [$e|p call: ()|]
-    [$p|(p: Particle) call: targets|] =:::
-        [$e|(p complete: targets) dispatch|]
+    [p|(p: Particle) call|] =::: [e|p call: ()|]
+    [p|(p: Particle) call: targets|] =:::
+        [e|(p complete: targets) dispatch|]
 
-    [$p|(p: Particle) name|] =: do
+    [p|(p: Particle) name|] =: do
         Particle (Single { mName = n }) <- here "p" >>= findParticle
         return (string n)
 
-    [$p|(p: Particle) names|] =: do
+    [p|(p: Particle) names|] =: do
         Particle (Keyword { mNames = ns }) <- here "p" >>= findParticle
         return $ list (map string ns)
 
-    [$p|(p: Particle) target|] =: do
+    [p|(p: Particle) target|] =: do
         (Particle (Single { mTarget = mt })) <- here "p" >>= findParticle
         toValue mt
 
-    [$p|(p: Particle) targets|] =: do
+    [p|(p: Particle) targets|] =: do
         (Particle (Keyword { mTargets = mts })) <- here "p" >>= findParticle
         liftM list (mapM toValue mts)
 
-    [$p|(p: Particle) optionals|] =: do
+    [p|(p: Particle) optionals|] =: do
         Particle p <- here "p" >>= findParticle
         liftM list $
             mapM (\(Option _ n mv) -> toValue (particle n, mv)) (mOptionals p)
 
-    [$p|(p: Particle) type|] =: do
+    [p|(p: Particle) type|] =: do
         Particle p <- here "p" >>= findParticle
         case p of
             Keyword {} -> return (particle "keyword")
             Single {} -> return (particle "single")
 
-    [$p|(p: Particle) complete|] =::: [$e|p complete: ()|]
-    [$p|(p: Particle) complete: (... targets)|] =: do
+    [p|(p: Particle) complete|] =::: [e|p complete: ()|]
+    [p|(p: Particle) complete: (... targets)|] =: do
         Particle p <- here "p" >>= findParticle
-        vs <- getList [$e|targets|]
+        vs <- getList [e|targets|]
         liftM Message (completeParticle p vs)
 
-    [$p|c define: (p: Particle) on: v with: (targets: List) as: e|] =: do
+    [p|c define: (p: Particle) on: v with: (targets: List) as: e|] =: do
         Particle p <- here "p" >>= findParticle
         v <- here "v"
-        ts <- getList [$e|targets|]
+        ts <- getList [e|targets|]
         e <- here "e"
         c <- here "c"
 
         let toPattern (Pattern p) = p
             toPattern v = PMatch v
-            
+
             others = map toPattern ts
-            
+
             main = toPattern v
 
         ids <- gets primitives
@@ -87,12 +87,12 @@ load = do
 
         forM_ obj $ \o ->
             defineOn o m
-        
+
         return (particle "ok")
 
-    [$p|c define: (p: Particle) on: (targets: List) as: v|] =: do
+    [p|c define: (p: Particle) on: (targets: List) as: v|] =: do
         Particle p <- here "p" >>= findParticle
-        vs <- getList [$e|targets|]
+        vs <- getList [e|targets|]
         v <- here "v"
         c <- here "c"
 

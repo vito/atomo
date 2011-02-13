@@ -8,33 +8,33 @@ import Atomo
 
 load :: VM ()
 load = do
-    [$p|current-continuation|] =:::
-        [$e|{ cc | cc } call/cc|]
+    [p|current-continuation|] =:::
+        [e|{ cc | cc } call/cc|]
 
     -- call/cc actually makes an object delegating to Continuation
     -- so just add the show definiton here
-    [$p|Continuation show|] =:: string "<continuation>"
+    [p|Continuation show|] =:: string "<continuation>"
 
-    [$p|(c: Continuation) yield: v|] =: do
+    [p|(c: Continuation) yield: v|] =: do
         Continuation c <- here "c" >>= findContinuation
         v <- here "v"
         liftIO (readIORef c) >>= ($ v)
 
     -- this enables call/cc as well
-    [$p|(c: Continuation) call: (... (v . _))|] =::: [$e|c yield: v|]
+    [p|(c: Continuation) call: (... (v . _))|] =::: [e|c yield: v|]
 
     -- effectively just "jumping" to a continuation
-    [$p|(c: Continuation) yield|] =::: [$e|c yield: @ok|]
-    [$p|(c: Continuation) call|] =::: [$e|c yield: @ok|]
+    [p|(c: Continuation) yield|] =::: [e|c yield: @ok|]
+    [p|(c: Continuation) call|] =::: [e|c yield: @ok|]
 
-    [$p|(o: Object) call/cc|] =::: [$e|o call/cc: ()|]
-    [$p|(o: Object) call/cc: (... args)|] =: callCC $ \c -> do
+    [p|(o: Object) call/cc|] =::: [e|o call/cc: ()|]
+    [p|(o: Object) call/cc: (... args)|] =: callCC $ \c -> do
         o <- here "o"
-        as <- getList [$e|args|]
+        as <- getList [e|args|]
         cr <- mkContinuation c
         dispatch (keyword ["call"] [o, tuple (Continuation cr:as)])
 
-    [$p|(v: Block) before: (b: Block) after: (a: Block)|] =: do
+    [p|(v: Block) before: (b: Block) after: (a: Block)|] =: do
         v <- here "v"
         b <- here "b"
         a <- here "a"
