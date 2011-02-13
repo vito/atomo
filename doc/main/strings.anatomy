@@ -3,27 +3,27 @@
 Strings are immutable, efficient, Unicode sequences of characters.
 
 #define:{
-    c singleton
-    | c is-a?: Character
-    > String
+  c singleton
+  | c is-a?: Character
+  > String
 }body:{
-    Creates a #hl:{String} containing a single character.
+  Creates a #hl:{String} containing a single character.
 
-    #example:{
-        $a singleton
-    }
+  #example:{
+    $a singleton
+  }
 }
 
 #define:{
-    s as: List
-    | s is-a?: String
-    > List
+  s as: List
+  | s is-a?: String
+  > List
 }body:{
-    Convert string #hl:{s} to a #hl:{List} of #hl:{Character}s.
+  Convert string #hl:{s} to a #hl:{List} of #hl:{Character}s.
 
-    #example:{
-        "foo" as: List
-    }
+  #example:{
+    "foo" as: List
+  }
 }
 
 #define:{
@@ -34,97 +34,95 @@ Strings are immutable, efficient, Unicode sequences of characters.
   Attempts to convert a list to a string. If the list does not contain only #hl:{Character}s, #hl:{@list-not-homogenous} is signaled.
 
   #example:{
-    [$a, $b, $c] to: String
-    [$a, 1, $c] to: String
+  [$a, $b, $c] to: String
+  [$a, 1, $c] to: String
   }
 }
 
 #define:{
-    s length
-    | s is-a?: String
-    > Integer
+  s length
+  | s is-a?: String
+  > Integer
 }body:{
-    Yields the length of the string.
+  Yields the length of the string.
 
-    #example:{
-        "abc" length
-        "Hello, 世界!" print length
-    }
+  #example:{
+    "abc" length
+    "Hello, 世界!" print length
+  }
 }
 
 #define:{
-    s empty?
-    | s is-a?: String
-    > Boolean
+  s empty?
+  | s is-a?: String
+  > Boolean
 }body:{
-    Is the string #hl:{s} empty?
+  Is the string #hl:{s} empty?
 
-    #example:{
-        "" empty?
-        "no" empty?
-    }
+  #example:{
+    "" empty?
+    "no" empty?
+  }
 }
 
 #define:{
-    s at: index
-    | s is-a?: String
-    | index is-a?: Integer
-    > Character
+  s at: index
+  | s is-a?: String
+  | index is-a?: Integer
+  > Character
 }body:{
-    Returns the string's character at #hl:{index}. If the index is out of bounds, #hl:{@(out-of-bounds: index for-string: s)} is raised.
+  Returns the string's character at #hl:{index}. If the index is out of bounds, #hl:{@(out-of-bounds: index for-string: s)} is raised.
 
-    #example:{
-        "abc" at: 1
-        "abc" at: 3
-    }
+  #example:{
+    "abc" at: 1
+    "abc" at: 3
+  }
 }
 
 #define:{
-    s head
-    | s is-a?: String
-    > any
+  s head
+  | s is-a?: String
+  > any
 }body:{
-    Returns the first character of the string. If the string is empty, #hl:{@empty-string} is raised.
+  Returns the first character of the string. If the string is empty, #hl:{@empty-string} is raised.
 
-    #example:{
-        "abc" head
-    }
+  #example:{
+    "abc" head
+  }
 }
 
 #define:{
-    s last
-    | s is-a?: String
-    > any
+  s last
+  | s is-a?: String
+  > any
 }body:{
-    Returns the last character of the string. If the string is empty, #hl:{@empty-string} is raised.
+  Returns the last character of the string. If the string is empty, #hl:{@empty-string} is raised.
 
-    #example:{
-        "abc" last
-    }
+  #example:{
+    "abc" last
+  }
 }
 
 #define:{
-    s init
-    | s is-a?: String
-    > String
+  s init
+  | s is-a?: String
+  > String
 }body:{
-    Returns all but the last character of the string. If the string is empty, #hl:{@empty-string} is raised.
+  Returns all but the last character of the string. If the string is empty, #hl:{@empty-string} is raised.
 
-    #example:{
-        "abc" init
-    }
+  #example:{
+    "abc" init
+  }
 }
 
 #define:{
-    s tail
-    | s is-a?: String
-    > String
+  s tail
+  | s is-a?: String
+  > String
 }body:{
-    Returns all but the first character of the string. If the string is empty, #hl:{@empty-string} is raised.
+  Returns all but the first character of the string. If the string is empty, #hl:{@empty-string} is raised.
 
-    #example:{
-        "abc" tail
-    }
+  #example:{
+    "abc" tail
+  }
 }
-
-

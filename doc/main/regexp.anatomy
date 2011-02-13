@@ -12,7 +12,7 @@
   }
 }
 
-#define:{
+#local:{
   Regexp new: pattern &flags: flags
   | pattern is-a?: String
   | flags is-a?: String

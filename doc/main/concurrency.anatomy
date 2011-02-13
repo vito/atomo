@@ -3,84 +3,84 @@
 Atomo uses message-passing concurrency akin to Erlang. Processes are very cheap to spawn and kill, and you can send messages to them or wait to receive values.
 
 #define:{
-    Process
-    > Object
+  Process
+  > Object
 }body:{
-    A green thread, bound to a communications channel and a process ID.
+  A green thread, bound to a communications channel and a process ID.
 }
 
 #define:{
+  self
+  > Process
+}body:{
+  Returns the current #hl:{Process}.
+
+  #example:{
     self
-    > Process
-}body:{
-    Returns the current #hl:{Process}.
-
-    #example:{
-        self
-    }
+  }
 }
 
 #define:{
+  receive
+  > any
+}body:{
+  Waits for a message, blocking until one is received.
+
+  #example:{
+    { main | "hello!" print; main <- @done } spawn: self
     receive
-    > any
-}body:{
-    Waits for a message, blocking until one is received.
-
-    #example:{
-        { main | "hello!" print; main <- @done } spawn: self
-        receive
-    }
+  }
 }
 
 #define:{
-    b spawn
-    | b is-a?: Block
-    > Process
+  b spawn
+  | b is-a?: Block
+  > Process
 }body:{
-    Executes #hl:{b call} in a separate process, and returns that new process.
+  Executes #hl:{b call} in a separate process, and returns that new process.
 
-    #example:{
-        { (1 + 1) print } spawn
-    }
+  #example:{
+    { (1 + 1) print } spawn
+  }
 }
 
 #define:{
-    b spawn: (... args)
-    | b is-a?: Block
-    > Process
+  b spawn: (... args)
+  | b is-a?: Block
+  > Process
 }body:{
-    Like #hl:{spawn}, but executes #hl:{b call: args} instead.
+  Like #hl:{spawn}, but executes #hl:{b call: args} instead.
 
-    #example:{
-        { a | (a + 1) print } spawn: 41
-    }
+  #example:{
+    { a | (a + 1) print } spawn: 41
+  }
 }
 
 #define:{
-    p <- v
-    | p is-a?: Process
-    > p
+  p <- v
+  | p is-a?: Process
+  > p
 }body:{
-    Sends the value #hl:{v} to process #hl:{p}, and returns #hl:{p}.
+  Sends the value #hl:{v} to process #hl:{p}, and returns #hl:{p}.
 
-    #example:{
-        p = { receive <- @pong } spawn
-        p <- self
-        receive
-    }
+  #example:{
+    p = { receive <- @pong } spawn
+    p <- self
+    receive
+  }
 }
 
 #define:{
-    p stop
-    | p is-a?: Process
-    > @ok
+  p stop
+  | p is-a?: Process
+  > @ok
 }body:{
-    Immediately kills the process #hl:{p}.
+  Immediately kills the process #hl:{p}.
 }
 
 #define:{
-    halt
-    > @ok
+  halt
+  > @ok
 }body:{
-    Immediately shuts down the Atomo VM, when called from #italic:{any} process.
+  Immediately shuts down the Atomo VM, when called from #italic:{any} process.
 }
