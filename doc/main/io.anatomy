@@ -9,21 +9,13 @@ Atomo uses an I/O system similar to Scheme - methods for reading/writing interna
     An object to read/write to. Typically has one slot, #hl:{handle}, which points to the file descriptor (a Haskell #code:{Handle}).
 }
 
-#define:{
-    Port new: filename mode: mode
+#local:{
+    Port new: filename &mode: @read-write
     | filename is-a?: String
     | [@read, @write, @read-write, @append] contains?: mode
     > Port
 }body:{
     Open the file #hl:{filename} and return a #hl:{Port} for performing I/O.
-}
-
-#define:{
-    Port new: filename
-    | filename is-a?: String
-    > Port
-}body:{
-    Alias for #hl:{Port new: filename mode: @read-write}.
 }
 
 #define:{
