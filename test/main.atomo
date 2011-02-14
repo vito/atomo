@@ -6,4 +6,5 @@ theorize: {
   load: "suite/blocks.atomo"
   load: "suite/optionals.atomo"
   load: "suite/format.atomo"
+  load: "suite/concurrency.atomo"
 }

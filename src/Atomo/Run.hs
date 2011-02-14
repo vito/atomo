@@ -70,6 +70,7 @@ loadPrelude = do
         , "set"
 
         , "block"
+        , "concurrency"
         , "continuation"
         , "list"
         , "numeric"
