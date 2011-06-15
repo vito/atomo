@@ -13,24 +13,24 @@ import Atomo.Valuable
 
 load :: VM ()
 load = do
-    [$p|`Block new: (es: List)|] =::: [$e|`Block new: es arguments: []|]
-    [$p|`Block new: (es: List) arguments: (as: List)|] =: do
-        es <- getList [$e|es|] >>= mapM findExpression
-        as <- getList [$e|as|] >>=
+    [p|`Block new: (es: List)|] =::: [e|`Block new: es arguments: []|]
+    [p|`Block new: (es: List) arguments: (as: List)|] =: do
+        es <- getList [e|es|] >>= mapM findExpression
+        as <- getList [e|as|] >>=
             mapM (\e -> findExpression e >>= toPattern' . fromExpression)
 
         return (Expression (EBlock Nothing as (map fromExpression es)))
 
-    [$p|`List new: (es: List)|] =: do
-        es <- getList [$e|es|] >>= mapM findExpression
+    [p|`List new: (es: List)|] =: do
+        es <- getList [e|es|] >>= mapM findExpression
         return (Expression (EList Nothing (map fromExpression es)))
 
-    [$p|`Tuple new: (es: List)|] =: do
-        es <- getList [$e|es|] >>= mapM findExpression
+    [p|`Tuple new: (es: List)|] =: do
+        es <- getList [e|es|] >>= mapM findExpression
         return (Expression (ETuple Nothing (map fromExpression es)))
 
-    [$p|`Match new: (branches: List) on: (value: Expression)|] =: do
-        bs <- getList [$e|branches|]
+    [p|`Match new: (branches: List) on: (value: Expression)|] =: do
+        bs <- getList [e|branches|]
 
         let pats = map (fromExpression . head . fromTuple) bs
             exprs = map (fromExpression . (!! 1) . fromTuple) bs
@@ -39,24 +39,24 @@ load = do
         Expression value <- here "value" >>= findExpression
         return (Expression (EMatch Nothing value (zip ps exprs)))
 
-    [$p|`Set new: (pattern: Expression) to: (value: Expression)|] =: do
+    [p|`Set new: (pattern: Expression) to: (value: Expression)|] =: do
         Expression pat <- here "pattern" >>= findExpression
         Expression e <- here "value" >>= findExpression
 
         p <- toPattern' pat
         return (Expression $ ESet Nothing p e)
 
-    [$p|`Define new: (pattern: Expression) as: (expr: Expression)|] =: do
+    [p|`Define new: (pattern: Expression) as: (expr: Expression)|] =: do
         Expression pat <- here "pattern" >>= findExpression
         Expression e <- here "expr" >>= findExpression
 
         p <- toDefinePattern' pat
         return (Expression $ EDefine Nothing p e)
 
-    [$p|`Dispatch new: (name: Particle) to: (targets: List) &optionals: []|] =: do
+    [p|`Dispatch new: (name: Particle) to: (targets: List) &optionals: []|] =: do
         Particle name <- here "name" >>= findParticle
-        ts <- getList [$e|targets|] >>= mapM findExpression
-        os <- getList [$e|optionals|] >>= mapM fromValue
+        ts <- getList [e|targets|] >>= mapM findExpression
+        os <- getList [e|optionals|] >>= mapM fromValue
 
         let opts = map (\(Particle (Single { mName = n }), Expression e) -> option n e) os
 
@@ -67,46 +67,46 @@ load = do
             Keyword { mNames = ns } ->
                 return $ Expression (EDispatch Nothing (keyword' ns (map fromExpression ts) opts))
 
-    [$p|`DefineDynamic new: (name: Expression) as: (root: Expression)|] =: do
+    [p|`DefineDynamic new: (name: Expression) as: (root: Expression)|] =: do
         n <- here "name" >>= findExpression >>= toName . fromExpression
         Expression r <- here "root" >>= findExpression
         return . Expression $ EDefineDynamic Nothing n r
 
-    [$p|`SetDynamic new: (name: Expression) to: (root: Expression)|] =: do
+    [p|`SetDynamic new: (name: Expression) to: (root: Expression)|] =: do
         n <- here "name" >>= findExpression >>= toName . fromExpression
         Expression r <- here "root" >>= findExpression
         return . Expression $ ESetDynamic Nothing n r
 
-    [$p|`GetDynamic new: (name: Expression)|] =: do
+    [p|`GetDynamic new: (name: Expression)|] =: do
         n <- here "name" >>= findExpression >>= toName . fromExpression
         return . Expression $ EGetDynamic Nothing n
 
-    [$p|`NewDynamic new: (bindings: List) do: (expr: Expression)|] =: do
-        ns <- getList [$e|bindings map: @from|]
+    [p|`NewDynamic new: (bindings: List) do: (expr: Expression)|] =: do
+        ns <- getList [e|bindings map: @from|]
             >>= mapM findExpression
             >>= mapM (toName . fromExpression)
-        exprs <- liftM (map fromExpression) $ getList [$e|bindings map: @to|] >>= mapM findExpression
+        exprs <- liftM (map fromExpression) $ getList [e|bindings map: @to|] >>= mapM findExpression
 
         Expression e <- here "expr" >>= findExpression
         return . Expression $ ENewDynamic Nothing (zip ns exprs) e
 
-    [$p|(s: String) parse-expressions|] =:
-        getString [$e|s|] >>= liftM (list . map Expression) . parseInput
+    [p|(s: String) parse-expressions|] =:
+        getString [e|s|] >>= liftM (list . map Expression) . parseInput
 
-    [$p|top evaluate: (e: Expression)|] =: do
+    [p|top evaluate: (e: Expression)|] =: do
         t <- here "top"
         Expression e <- here "e" >>= findExpression
         withTop t (eval e)
 
-    [$p|(e: Expression) expand|] =: do
+    [p|(e: Expression) expand|] =: do
         Expression e <- here "e" >>= findExpression
         liftM Expression $ macroExpand e
 
-    [$p|(e: Expression) pretty-expression|] =: do
+    [p|(e: Expression) pretty-expression|] =: do
         Expression e <- here "e" >>= findExpression
         toValue (pretty e)
 
-    [$p|(e: Expression) location|] =: do
+    [p|(e: Expression) location|] =: do
         Expression e <- here "e" >>= findExpression
 
         case eLocation e of
@@ -117,7 +117,7 @@ load = do
                 , Integer (fromIntegral (sourceColumn s))
                 ]
 
-    [$p|(e: Expression) type|] =: do
+    [p|(e: Expression) type|] =: do
         Expression e <- here "e" >>= findExpression
         case e of
             EDispatch { eMessage = Keyword {} } ->
@@ -151,7 +151,7 @@ load = do
             EMacroQuote {} -> return (particle "macro-quote")
             EMatch {} -> return (particle "match")
 
-    [$p|(e: Expression) target|] =: do
+    [p|(e: Expression) target|] =: do
         Expression e <- here "e" >>= findExpression
 
         case e of
@@ -161,7 +161,7 @@ load = do
                 return (Expression t)
             _ -> raise ["no-target-for"] [Expression e]
 
-    [$p|(e: Expression) targets|] =: do
+    [p|(e: Expression) targets|] =: do
         Expression e <- here "e" >>= findExpression
 
         case e of
@@ -171,7 +171,7 @@ load = do
                 return $ list [Expression t]
             _ -> raise ["no-targets-for"] [Expression e]
 
-    [$p|(e: Expression) optionals|] =: do
+    [p|(e: Expression) optionals|] =: do
         Expression e <- here "e" >>= findExpression
 
         case e of
@@ -181,7 +181,7 @@ load = do
                         (mOptionals m)
             _ -> raise ["no-optionals-for"] [Expression e]
 
-    [$p|(e: Expression) name|] =: do
+    [p|(e: Expression) name|] =: do
         Expression e <- here "e" >>= findExpression
 
         case e of
@@ -193,7 +193,7 @@ load = do
                 return (string n)
             _ -> raise ["no-name-for"] [Expression e]
 
-    [$p|(e: Expression) names|] =: do
+    [p|(e: Expression) names|] =: do
         Expression e <- here "e" >>= findExpression
 
         case e of
@@ -203,7 +203,7 @@ load = do
                 return (list (map string ns))
             _ -> raise ["no-names-for"] [Expression e]
 
-    [$p|(e: Expression) particle|] =: do
+    [p|(e: Expression) particle|] =: do
         Expression e <- here "e" >>= findExpression
 
         case e of
@@ -215,7 +215,7 @@ load = do
 
             _ -> raise ["no-particle-for"] [Expression e]
 
-    [$p|(e: Expression) values|] =: do
+    [p|(e: Expression) values|] =: do
         Expression e <- here "e" >>= findExpression
 
         case e of
@@ -226,7 +226,7 @@ load = do
                         mes
             _ -> raise ["no-values-for"] [Expression e]
 
-    [$p|(e: Expression) contents|] =: do
+    [p|(e: Expression) contents|] =: do
         Expression e <- here "e" >>= findExpression
 
         case e of
@@ -242,7 +242,7 @@ load = do
                 liftM list (mapM toValue bs)
             _ -> raise ["no-contents-for"] [Expression e]
 
-    [$p|(e: Expression) flags|] =: do
+    [p|(e: Expression) flags|] =: do
         Expression e <- here "e" >>= findExpression
 
         case e of
@@ -250,7 +250,7 @@ load = do
                 return (list (map Character fs))
             _ -> raise ["no-flags-for"] [Expression e]
 
-    [$p|(e: Expression) arguments|] =: do
+    [p|(e: Expression) arguments|] =: do
         Expression e <- here "e" >>= findExpression
 
         case e of
@@ -258,7 +258,7 @@ load = do
                 return (list (map Pattern as))
             _ -> raise ["no-arguments-for"] [Expression e]
 
-    [$p|(e: Expression) pattern|] =: do
+    [p|(e: Expression) pattern|] =: do
         Expression e <- here "e" >>= findExpression
         case e of
             ESet { ePattern = p } -> return (Pattern p)
@@ -266,7 +266,7 @@ load = do
             EMacro { emPattern = p } -> return (Pattern (PMessage p))
             _ -> raise ["no-pattern-for"] [Expression e]
 
-    [$p|(e: Expression) expression|] =: do
+    [p|(e: Expression) expression|] =: do
         Expression e <- here "e" >>= findExpression
         case e of
             ESet { eExpr = e } -> return (Expression e)
@@ -277,7 +277,7 @@ load = do
             EUnquote { eExpr = e } -> return (Expression e)
             _ -> raise ["no-expression-for"] [Expression e]
 
-    [$p|(e: Expression) associativity|] =: do
+    [p|(e: Expression) associativity|] =: do
         Expression e <- here "e" >>= findExpression
         case e of
             EOperator { eAssoc = ALeft } ->
@@ -288,7 +288,7 @@ load = do
 
             _ -> raise ["no-associativity-for"] [Expression e]
 
-    [$p|(e: Expression) precedence|] =: do
+    [p|(e: Expression) precedence|] =: do
         Expression e <- here "e" >>= findExpression
         case e of
             EOperator { ePrec = p } ->
@@ -296,7 +296,7 @@ load = do
 
             _ -> raise ["no-precedence-for"] [Expression e]
 
-    [$p|(e: Expression) operators|] =: do
+    [p|(e: Expression) operators|] =: do
         Expression e <- here "e" >>= findExpression
         case e of
             EOperator { eNames = ns } ->

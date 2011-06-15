@@ -8,17 +8,17 @@ import Atomo
 
 load :: VM ()
 load = do
-    ([$p|Timer|] =::) =<< eval [$e|Object clone|]
+    ([p|Timer|] =::) =<< eval [e|Object clone|]
 
-    [$p|Timer now|] =:
+    [p|Timer now|] =:
         liftM (Double . fromRational . toRational) (liftIO getPOSIXTime)
 
-    [$p|Timer sleep: (n: Integer)|] =: do
+    [p|Timer sleep: (n: Integer)|] =: do
         Integer n <- here "n" >>= findInteger
         liftIO (sleepFor n)
         return (particle "ok")
 
-    [$p|Timer sleep: (d: Double)|] =: do
+    [p|Timer sleep: (d: Double)|] =: do
         Double d <- here "d" >>= findDouble
         liftIO (threadDelay (floor d))
         return (particle "ok")

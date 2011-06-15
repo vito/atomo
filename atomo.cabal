@@ -58,7 +58,7 @@ library
     directory,
     filepath,
     hashable == 1.0.0,
-    hint,
+    hint >= 0.3.3.2,
     mtl,
     parsec >= 3.0.0,
     pretty,

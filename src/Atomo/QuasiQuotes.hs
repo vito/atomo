@@ -31,15 +31,15 @@ qqEnv = snd $ unsafePerformIO $
 
 -- | Pattern quasi-quoter.
 p :: QuasiQuoter
-p = QuasiQuoter quotePatternExp undefined
+p = QuasiQuoter quotePatternExp undefined undefined undefined
 
 -- | Single expression quasi-quoter.
 e :: QuasiQuoter
-e = QuasiQuoter quoteExprExp undefined
+e = QuasiQuoter quoteExprExp undefined undefined undefined
 
 -- | Quasi-quoter for multiple expressions (a block of code).
 es :: QuasiQuoter
-es = QuasiQuoter quoteExprsExp undefined
+es = QuasiQuoter quoteExprsExp undefined undefined undefined
 
 withLocation :: (String -> (String, Int, Int) -> a) -> (a -> Q Exp) -> String -> TH.ExpQ
 withLocation p c s = do

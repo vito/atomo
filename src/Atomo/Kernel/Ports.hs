@@ -17,23 +17,23 @@ import Atomo.Valuable
 
 load :: VM ()
 load = do
-    ([$p|Port|] =::) =<< eval [$e|Object clone|]
-    ([$p|File|] =::) =<< eval [$e|Object clone|]
-    ([$p|Directory|] =::) =<< eval [$e|Object clone|]
+    ([p|Port|] =::) =<< eval [e|Object clone|]
+    ([p|File|] =::) =<< eval [e|Object clone|]
+    ([p|Directory|] =::) =<< eval [e|Object clone|]
 
     sinp <- portObj stdin
     soutp <- portObj stdout
     serrp <- portObj stderr
-    [$p|Port standard-input|] =:: sinp
-    [$p|Port standard-output|] =:: soutp
-    [$p|Port standard-error|] =:: serrp
+    [p|Port standard-input|] =:: sinp
+    [p|Port standard-output|] =:: soutp
+    [p|Port standard-error|] =:: serrp
 
-    [$p|(p: Port) show|] =: do
-        hdl <- getHandle [$e|p handle|] >>= liftIO . hShow
+    [p|(p: Port) show|] =: do
+        hdl <- getHandle [e|p handle|] >>= liftIO . hShow
         return (string ("<port " ++ hdl ++ ">"))
 
-    [$p|Port new: (fn: String) &mode: @read-write|] =: do
-        fn <- getString [$e|fn|]
+    [p|Port new: (fn: String) &mode: @read-write|] =: do
+        fn <- getString [e|fn|]
         Particle m <- here "mode" >>= findParticle
 
         hdl <- case m of
@@ -51,45 +51,45 @@ load = do
 
         portObj hdl
 
-    [$p|(p: Port) buffering|] =:
-        getHandle [$e|p handle|] >>= liftIO . hGetBuffering >>= toValue
+    [p|(p: Port) buffering|] =:
+        getHandle [e|p handle|] >>= liftIO . hGetBuffering >>= toValue
 
-    [$p|(p: Port) set-buffering: mode|] =: do
-        h <- getHandle [$e|p handle|]
+    [p|(p: Port) set-buffering: mode|] =: do
+        h <- getHandle [e|p handle|]
         m <- here "mode" >>= fromValue
         liftIO (hSetBuffering h m)
         return (particle "ok")
 
-    [$p|(p: Port) print: x|] =: do
+    [p|(p: Port) print: x|] =: do
         x <- here "x"
         port <- here "p"
-        hdl <- getHandle [$e|p handle|]
+        hdl <- getHandle [e|p handle|]
 
         c <- liftIO (hIsClosed hdl)
         when c (raise ["port-closed", "for"] [port, x])
 
-        String s <- eval [$e|x as: String|] >>= findString
+        String s <- eval [e|x as: String|] >>= findString
 
         liftIO (TIO.hPutStrLn hdl s)
         liftIO (hFlush hdl)
         return x
 
-    [$p|(p: Port) display: x|] =: do
+    [p|(p: Port) display: x|] =: do
         x <- here "x"
         port <- here "p"
-        hdl <- getHandle [$e|p handle|]
+        hdl <- getHandle [e|p handle|]
 
         c <- liftIO (hIsClosed hdl)
         when c (raise ["port-closed", "for"] [port, x])
 
-        String s <- eval [$e|x as: String|] >>= findString
+        String s <- eval [e|x as: String|] >>= findString
 
         liftIO (TIO.hPutStr hdl s)
         liftIO (hFlush hdl)
         return x
 
-    [$p|(p: Port) read|] =: do
-        h <- getHandle [$e|p handle|]
+    [p|(p: Port) read|] =: do
+        h <- getHandle [e|p handle|]
 
         segment <- liftIO (hGetSegment h)
         parsed <- continuedParse segment "<read>"
@@ -106,16 +106,16 @@ load = do
             is | all isPrimitive is -> evalAll is
             (i:_) -> return (Expression i)
 
-    [$p|(p: Port) read-line|] =: do
-        h <- getHandle [$e|p handle|]
+    [p|(p: Port) read-line|] =: do
+        h <- getHandle [e|p handle|]
         done <- liftIO (hIsEOF h)
 
         if done
             then raise' "end-of-input"
             else liftM String $ liftIO (TIO.hGetLine h)
 
-    [$p|(p: Port) read-char|] =: do
-        h <- getHandle [$e|p handle|]
+    [p|(p: Port) read-char|] =: do
+        h <- getHandle [e|p handle|]
         b <- liftIO (hGetBuffering h)
         liftIO (hSetBuffering h NoBuffering)
         c <- liftIO (hGetChar h)
@@ -123,219 +123,219 @@ load = do
 
         return (Character c)
 
-    [$p|(p: Port) contents|] =:
-        getHandle [$e|p handle|] >>= liftM String . liftIO . TIO.hGetContents
+    [p|(p: Port) contents|] =:
+        getHandle [e|p handle|] >>= liftM String . liftIO . TIO.hGetContents
 
-    [$p|(p: Port) flush|] =:
-        getHandle [$e|p handle|] >>= liftIO . hFlush
+    [p|(p: Port) flush|] =:
+        getHandle [e|p handle|] >>= liftIO . hFlush
             >> return (particle "ok")
 
-    [$p|(p: Port) close|] =:
-        getHandle [$e|p handle|] >>= liftIO . hClose
+    [p|(p: Port) close|] =:
+        getHandle [e|p handle|] >>= liftIO . hClose
             >> return (particle "ok")
 
-    [$p|(p: Port) open?|] =:
-        getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hIsOpen
+    [p|(p: Port) open?|] =:
+        getHandle [e|p handle|] >>= liftM Boolean . liftIO . hIsOpen
 
-    [$p|(p: Port) closed?|] =:
-        getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hIsClosed
+    [p|(p: Port) closed?|] =:
+        getHandle [e|p handle|] >>= liftM Boolean . liftIO . hIsClosed
 
-    [$p|(p: Port) readable?|] =:
-        getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hIsReadable
+    [p|(p: Port) readable?|] =:
+        getHandle [e|p handle|] >>= liftM Boolean . liftIO . hIsReadable
 
-    [$p|(p: Port) writable?|] =:
-        getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hIsWritable
+    [p|(p: Port) writable?|] =:
+        getHandle [e|p handle|] >>= liftM Boolean . liftIO . hIsWritable
 
-    [$p|(p: Port) seekable?|] =:
-        getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hIsSeekable
+    [p|(p: Port) seekable?|] =:
+        getHandle [e|p handle|] >>= liftM Boolean . liftIO . hIsSeekable
 
-    [$p|(p: Port) ready?|] =:
-        getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hReady
+    [p|(p: Port) ready?|] =:
+        getHandle [e|p handle|] >>= liftM Boolean . liftIO . hReady
 
-    [$p|(p: Port) eof?|] =:
-        getHandle [$e|p handle|] >>= liftM Boolean . liftIO . hIsEOF
+    [p|(p: Port) eof?|] =:
+        getHandle [e|p handle|] >>= liftM Boolean . liftIO . hIsEOF
 
 
-    [$p|File new: (fn: String)|] =::: [$e|Port new: fn|]
-    [$p|File open: (fn: String)|] =::: [$e|Port new: fn|]
+    [p|File new: (fn: String)|] =::: [e|Port new: fn|]
+    [p|File open: (fn: String)|] =::: [e|Port new: fn|]
 
-    [$p|File read: (fn: String)|] =:::
-        [$e|Port (new: fn &mode: @read) ensuring: @close do: @contents|]
+    [p|File read: (fn: String)|] =:::
+        [e|Port (new: fn &mode: @read) ensuring: @close do: @contents|]
 
-    [$p|File delete: (fn: String)|] =: do
-        fn <- getString [$e|fn|]
+    [p|File delete: (fn: String)|] =: do
+        fn <- getString [e|fn|]
         checkExists fn
         liftIO (removeFile fn)
         return (particle "ok")
 
-    [$p|File move: (from: String) to: (to: String)|] =:::
-        [$e|File rename: from to: to|]
-    [$p|File rename: (from: String) to: (to: String)|] =: do
-        from <- getString [$e|from|]
-        to <- getString [$e|to|]
+    [p|File move: (from: String) to: (to: String)|] =:::
+        [e|File rename: from to: to|]
+    [p|File rename: (from: String) to: (to: String)|] =: do
+        from <- getString [e|from|]
+        to <- getString [e|to|]
         checkExists from
         liftIO (renameFile from to)
         return (particle "ok")
 
-    [$p|File copy: (from: String) to: (to: String)|] =: do
-        from <- getString [$e|from|]
-        to <- getString [$e|to|]
+    [p|File copy: (from: String) to: (to: String)|] =: do
+        from <- getString [e|from|]
+        to <- getString [e|to|]
         checkExists from
         liftIO (copyFile from to)
         return (particle "ok")
 
-    [$p|File canonicalize-path: (fn: String)|] =: do
-        fn <- getString [$e|fn|]
+    [p|File canonicalize-path: (fn: String)|] =: do
+        fn <- getString [e|fn|]
         liftM string $ liftIO (canonicalizePath fn)
 
-    [$p|File make-relative: (fn: String)|] =: do
-        fn <- getString [$e|fn|]
+    [p|File make-relative: (fn: String)|] =: do
+        fn <- getString [e|fn|]
         liftM string $ liftIO (makeRelativeToCurrentDirectory fn)
 
-    [$p|File exists?: (fn: String)|] =: do
-        fn <- getString [$e|fn|]
+    [p|File exists?: (fn: String)|] =: do
+        fn <- getString [e|fn|]
         liftM Boolean $ liftIO (doesFileExist fn)
 
-    [$p|File find-executable: (name: String)|] =: do
-        name <- getString [$e|name|]
+    [p|File find-executable: (name: String)|] =: do
+        name <- getString [e|name|]
         find <- liftIO (findExecutable name)
         case find of
             Nothing -> return (particle "none")
             Just fn -> return (keyParticle ["ok"] [Nothing, Just (string fn)])
 
-    [$p|File readable?: (fn: String)|] =: do
-        fn <- getString [$e|fn|]
+    [p|File readable?: (fn: String)|] =: do
+        fn <- getString [e|fn|]
         checkExists fn
         liftM (Boolean . readable) $ liftIO (getPermissions fn)
 
-    [$p|File writable?: (fn: String)|] =: do
-        fn <- getString [$e|fn|]
+    [p|File writable?: (fn: String)|] =: do
+        fn <- getString [e|fn|]
         checkExists fn
         liftM (Boolean . writable) $ liftIO (getPermissions fn)
 
-    [$p|File executable?: (fn: String)|] =: do
-        fn <- getString [$e|fn|]
+    [p|File executable?: (fn: String)|] =: do
+        fn <- getString [e|fn|]
         checkExists fn
         liftM (Boolean . executable) $ liftIO (getPermissions fn)
 
-    [$p|File searchable?: (fn: String)|] =: do
-        fn <- getString [$e|fn|]
+    [p|File searchable?: (fn: String)|] =: do
+        fn <- getString [e|fn|]
         checkExists fn
         liftM (Boolean . searchable) $ liftIO (getPermissions fn)
 
-    [$p|File set-readable: (fn: String) to: (b: Boolean)|] =: do
+    [p|File set-readable: (fn: String) to: (b: Boolean)|] =: do
         Boolean r <- here "b" >>= findBoolean
-        fn <- getString [$e|fn|]
+        fn <- getString [e|fn|]
         checkExists fn
         ps <- liftIO (getPermissions fn)
         liftIO (setPermissions fn (ps { readable = r }))
         return (particle "ok")
 
-    [$p|File set-writable: (fn: String) to: (b: Boolean)|] =: do
+    [p|File set-writable: (fn: String) to: (b: Boolean)|] =: do
         Boolean w <- here "b" >>= findBoolean
-        fn <- getString [$e|fn|]
+        fn <- getString [e|fn|]
         checkExists fn
         ps <- liftIO (getPermissions fn)
         liftIO (setPermissions fn (ps { writable = w }))
         return (particle "ok")
 
-    [$p|File set-executable: (fn: String) to: (b: Boolean)|] =: do
+    [p|File set-executable: (fn: String) to: (b: Boolean)|] =: do
         Boolean x <- here "b" >>= findBoolean
-        fn <- getString [$e|fn|]
+        fn <- getString [e|fn|]
         checkExists fn
         ps <- liftIO (getPermissions fn)
         liftIO (setPermissions fn (ps { executable = x }))
         return (particle "ok")
 
-    [$p|File set-searchable: (fn: String) to: (b: Boolean)|] =: do
+    [p|File set-searchable: (fn: String) to: (b: Boolean)|] =: do
         Boolean s <- here "b" >>= findBoolean
-        fn <- getString [$e|fn|]
+        fn <- getString [e|fn|]
         checkExists fn
         ps <- liftIO (getPermissions fn)
         liftIO (setPermissions fn (ps { searchable = s }))
         return (particle "ok")
 
-    [$p|Directory create: (path: String)|] =: do
-        path <- getString [$e|path|]
+    [p|Directory create: (path: String)|] =: do
+        path <- getString [e|path|]
         liftIO (createDirectory path)
         return (particle "ok")
 
-    [$p|Directory create-if-missing: (path: String)|] =: do
-        path <- getString [$e|path|]
+    [p|Directory create-if-missing: (path: String)|] =: do
+        path <- getString [e|path|]
         liftIO (createDirectoryIfMissing False path)
         return (particle "ok")
 
-    [$p|Directory create-tree-if-missing: (path: String)|] =: do
-        path <- getString [$e|path|]
+    [p|Directory create-tree-if-missing: (path: String)|] =: do
+        path <- getString [e|path|]
         liftIO (createDirectoryIfMissing True path)
         return (particle "ok")
 
-    [$p|Directory remove: (path: String)|] =: do
-        path <- getString [$e|path|]
+    [p|Directory remove: (path: String)|] =: do
+        path <- getString [e|path|]
         checkDirExists path
         liftIO (removeDirectory path)
         return (particle "ok")
 
-    [$p|Directory remove-recursive: (path: String)|] =: do
-        path <- getString [$e|path|]
+    [p|Directory remove-recursive: (path: String)|] =: do
+        path <- getString [e|path|]
         checkDirExists path
         liftIO (removeDirectoryRecursive path)
         return (particle "ok")
 
-    [$p|Directory move: (from: String) to: (to: String)|] =:::
-        [$e|Directory rename: from to: to|]
-    [$p|Directory rename: (from: String) to: (to: String)|] =: do
-        from <- getString [$e|from|]
-        to <- getString [$e|to|]
+    [p|Directory move: (from: String) to: (to: String)|] =:::
+        [e|Directory rename: from to: to|]
+    [p|Directory rename: (from: String) to: (to: String)|] =: do
+        from <- getString [e|from|]
+        to <- getString [e|to|]
         checkDirExists from
         liftIO (renameDirectory from to)
         return (particle "ok")
 
-    [$p|Directory contents: (path: String)|] =: do
-        path <- getString [$e|path|]
+    [p|Directory contents: (path: String)|] =: do
+        path <- getString [e|path|]
         checkDirExists path
         liftM (list . map string . filter (`notElem` [".", ".."]))
             (liftIO (getDirectoryContents path))
 
-    [$p|Directory current|] =:
+    [p|Directory current|] =:
         liftM string $ liftIO getCurrentDirectory
 
-    [$p|Directory set-current: (path: String)|] =: do
-        path <- getString [$e|path|]
+    [p|Directory set-current: (path: String)|] =: do
+        path <- getString [e|path|]
         checkDirExists path
         liftIO (setCurrentDirectory path)
         return (particle "ok")
 
-    [$p|Directory home|] =:
+    [p|Directory home|] =:
         liftM string $ liftIO getHomeDirectory
 
-    [$p|Directory user-data-for: (app: String)|] =: do
-        app <- getString [$e|app|]
+    [p|Directory user-data-for: (app: String)|] =: do
+        app <- getString [e|app|]
         liftM string $ liftIO (getAppUserDataDirectory app)
 
-    [$p|Directory user-documents|] =:
+    [p|Directory user-documents|] =:
         liftM string $ liftIO getUserDocumentsDirectory
 
-    [$p|Directory temporary|] =:
+    [p|Directory temporary|] =:
         liftM string $ liftIO getTemporaryDirectory
 
-    [$p|Directory exists?: (path: String)|] =: do
-        path <- getString [$e|path|]
+    [p|Directory exists?: (path: String)|] =: do
+        path <- getString [e|path|]
         liftM Boolean $ liftIO (doesDirectoryExist path)
 
-    [$p|(a: String) </> (b: String)|] =: do
-        a <- getString [$e|a|]
-        b <- getString [$e|b|]
+    [p|(a: String) </> (b: String)|] =: do
+        a <- getString [e|a|]
+        b <- getString [e|b|]
         return (string (a </> b))
 
-    [$p|(a: String) <.> (b: String)|] =: do
-        a <- getString [$e|a|]
-        b <- getString [$e|b|]
+    [p|(a: String) <.> (b: String)|] =: do
+        a <- getString [e|a|]
+        b <- getString [e|b|]
         return (string (a <.> b))
 
-    [$p|interaction: (prompt: String)|] =: do
-        prompt <- getString [$e|prompt|]
-        history <- getString [$e|current-history-file|]
+    [p|interaction: (prompt: String)|] =: do
+        prompt <- getString [e|prompt|]
+        history <- getString [e|current-history-file|]
         line <-
             liftIO $ Haskeline.catch
                 (liftM Just $ runInput history (getInputLine prompt))
@@ -366,7 +366,7 @@ load = do
         . withInterrupt
 
     portObj hdl = newScope $ do
-        port <- eval [$e|Port clone|]
+        port <- eval [e|Port clone|]
 
         define (single "handle" (PMatch port))
             (EPrimitive Nothing $ haskell hdl)

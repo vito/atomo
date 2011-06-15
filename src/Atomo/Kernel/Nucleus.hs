@@ -12,21 +12,21 @@ import Atomo.Pattern
 
 load :: VM ()
 load = do
-    [$p|x id|] =::: [$e|x|]
+    [p|x id|] =::: [e|x|]
 
-    [$p|(x: Object) clone|] =: do
+    [p|(x: Object) clone|] =: do
         x <- here "x"
         newObject [x] noMethods
 
-    [$p|(x: Object) copy|] =: do
+    [p|(x: Object) copy|] =: do
         x <- here "x" >>= objectFor
         ms <- liftIO (readIORef (oMethods x))
         liftM (Object (oDelegates x)) (liftIO (newIORef ms))
 
-    [$p|(x: Object) copy: (diff: Block)|] =:::
-        [$e|x copy do: diff|]
+    [p|(x: Object) copy: (diff: Block)|] =:::
+        [e|x copy do: diff|]
 
-    [$p|(x: Object) delegating-to: (y: Object)|] =: do
+    [p|(x: Object) delegating-to: (y: Object)|] =: do
         f <- here "x" >>= objectFor
         t <- here "y"
 
@@ -34,28 +34,28 @@ load = do
             { oDelegates = oDelegates f ++ [t]
             }
 
-    [$p|(x: Object) delegates-to?: (y: Object)|] =: do
+    [p|(x: Object) delegates-to?: (y: Object)|] =: do
         x <- here "x"
         y <- here "y"
         return (Boolean (delegatesTo x y))
 
-    [$p|(x: Object) delegates|] =: do
+    [p|(x: Object) delegates|] =: do
         o <- here "x" >>= objectFor
         return $ list (oDelegates o)
 
-    [$p|(x: Object) with-delegates: (ds: List)|] =: do
-        ds <- getList [$e|ds|]
+    [p|(x: Object) with-delegates: (ds: List)|] =: do
+        ds <- getList [e|ds|]
         x <- here "x" >>= objectFor
         return x { oDelegates = ds }
 
-    [$p|(x: Object) super|] =::: [$e|x delegates head|]
+    [p|(x: Object) super|] =::: [e|x delegates head|]
 
-    [$p|(x: Object) is-a?: (y: Object)|] =: do
+    [p|(x: Object) is-a?: (y: Object)|] =: do
         x <- here "x"
         y <- here "y"
         liftM Boolean (isA x y)
 
-    [$p|(x: Object) responds-to?: (p: Particle)|] =: do
+    [p|(x: Object) responds-to?: (p: Particle)|] =: do
         x <- here "x"
         Particle p' <- here "p" >>= findParticle
 
@@ -67,52 +67,52 @@ load = do
                 liftM (Boolean . isJust) . findMethod x $
                     single n x
 
-    [$p|x has-slot?: (name: String)|] =: do
+    [p|x has-slot?: (name: String)|] =: do
         x <- here "x" >>= objectFor
-        n <- getString [$e|name|]
+        n <- getString [e|name|]
         (ss, _) <- liftIO (readIORef (oMethods x))
         return (Boolean (memberMap (hash n) ss))
 
-    [$p|x set-slot: (name: String) to: v|] =: do
+    [p|x set-slot: (name: String) to: v|] =: do
         x <- here "x"
-        n <- getString [$e|name|]
+        n <- getString [e|name|]
         v <- here "v"
         define (single n (PMatch x)) (EPrimitive Nothing v)
         return v
 
-    [$p|(o: Object) methods|] =: do
+    [p|(o: Object) methods|] =: do
         o <- here "o" >>= objectFor
         (ss, ks) <- liftIO (readIORef (oMethods o))
 
-        [$e|Object|] `newWith`
+        [e|Object|] `newWith`
             [ ("singles", list (map (list . map Method) (elemsMap ss)))
             , ("keywords", list (map (list . map Method) (elemsMap ks)))
             ]
 
-    [$p|(x: Object) dump|] =: do
+    [p|(x: Object) dump|] =: do
         o <- here "x"
         liftIO (print o)
         return o
 
-    [$p|(x: Object) describe-error|] =::: [$e|x as: String|]
+    [p|(x: Object) describe-error|] =::: [e|x as: String|]
 
-    [$p|(s: String) as: String|] =::: [$e|s|]
+    [p|(s: String) as: String|] =::: [e|s|]
 
-    [$p|(x: Object) as: String|] =::: [$e|x show|]
+    [p|(x: Object) as: String|] =::: [e|x show|]
 
-    [$p|(x: Object) show|] =::: [$e|x pretty render|]
+    [p|(x: Object) show|] =::: [e|x pretty render|]
 
-    [$p|(t: Object) load: (fn: String)|] =: do
+    [p|(t: Object) load: (fn: String)|] =: do
         t <- here "t"
-        fn <- getString [$e|fn|]
+        fn <- getString [e|fn|]
 
         withTop t (loadFile fn)
 
         return (particle "ok")
 
-    [$p|(t: Object) require: (fn: String)|] =: do
+    [p|(t: Object) require: (fn: String)|] =: do
         t <- here "t"
-        fn <- getString [$e|fn|]
+        fn <- getString [e|fn|]
 
         withTop t (requireFile fn)
 
