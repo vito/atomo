@@ -127,6 +127,6 @@ instance Valuable BufferMode where
 
 instance Valuable Prettied where
     toValue d =
-        [$e|Pretty|] `newWith` [("doc", haskell d)]
+        [e|Pretty|] `newWith` [("doc", haskell d)]
 
     fromValue v = dispatch (single "doc" v) >>= fromHaskell

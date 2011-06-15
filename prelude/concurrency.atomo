@@ -1,0 +1,23 @@
+macro (receive: (branches: Block))
+  { bs = branches contents map:
+      { `(~p -> ~e) |
+        `(~p -> !cc yield: ~e)
+      } \ .. [`(_ -> @ok)]
+
+    `({ !cc |
+        { receive match: ~(`Block new: bs)
+        } repeat
+      } call/cc)
+  } call
+
+macro (receive: (branches: Block) after: `({ ~t -> ~a }))
+  { bs = branches contents map:
+      { `(~p -> ~e) |
+        `(@(ok: ~p) -> !cc yield: ~e)
+      } \ .. [`(@none -> !cc yield: ~a), `(_ -> @ok)]
+
+    `({ !cc |
+        { (receive-timeout: ~t) match: ~(`Block new: bs)
+        } repeat
+      } call/cc)
+  } call

@@ -1,0 +1,69 @@
+describe: "concurrency" as: {
+  main = self
+
+  describe: @receive: as: {
+    it: "consumes messages until one matches" so: {
+      r :=
+        { main <- receive: {
+            1 -> @one
+            2 -> @two
+          }
+        } spawn
+
+      p = r
+      p <- 3
+      p <- 3
+      p <- 2
+
+      receive should-be: @two
+
+      p = r
+      p <- 3
+      p <- 3
+      p <- 1
+
+      receive should-be: @one
+    }
+  }
+
+  describe: @receive:after: as: {
+    it: "consumes messages until one matches" so: {
+      ra :=
+        { main <- receive: {
+            1 -> @one
+            2 -> @two
+          } after: {
+            1 second -> @none
+          }
+        } spawn
+
+      p = ra
+      p <- 3
+      p <- 3
+      p <- 2
+      receive should-be: @two
+
+      p = ra
+      p <- 3
+      p <- 3
+      p <- 1
+      receive should-be: @one
+    }
+
+    it: "evaluates the timeout action after the given duration" so: {
+      ra :=
+        { main <- receive: {
+            1 -> @one
+            2 -> @two
+          } after: {
+            500 ms -> @none
+          }
+        } spawn
+
+      p = ra
+      p <- 3
+      p <- 3
+      receive should-be: @none
+    }
+  }
+}

@@ -56,7 +56,7 @@ noPrelude x = do
     return ()
 
 repl :: VM Value
-repl = eval [$e|Lobby clone repl|]
+repl = eval [e|Lobby clone repl|]
 
 primRepl :: VM Value
 primRepl = do
