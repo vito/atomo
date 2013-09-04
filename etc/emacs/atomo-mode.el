@@ -87,7 +87,7 @@
        ("\C-cq" . atomo-quit)
        ;;("\C-cr" . atomo-reeval-region)
        ("\C-cs" . atomo-snapshot)
-       ("\C-ct" . ,atomo-template-map)
+       ;;("\C-ct" . ,atomo-template-map)
        ("\C-cu" . atomo-unit-tests)
        ("\C-cw" . atomo-workspace)
        ;;("\C-c\C-s" . atomo-browse-selectors)
