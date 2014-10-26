@@ -21,7 +21,7 @@ when: (responds-to?: @loaded?) not do: {
 loaded? = True
 
 (b: Block) pretty :=
-    with: [multiline-pretty? -> True, docs-root -> "/docs/"] do: {
+    with: [multiline-pretty? -> True, docs-root -> "/atomo/docs/"] do: {
         b contents (map: { e | Docs pretty: e }) (join: "\n")
     }
 
@@ -59,7 +59,7 @@ Site index = main: {
     section: {
         nav: {
             ul: {
-                li: { a: "documentation" href: "/docs" }
+                li: { a: "documentation" href: "/atomo/docs" }
                 li: { a: "irc channel" href: "irc://irc.freenode.net:6667/atomo" }
                 li: { a: "source" href: "http://darcsden.com/alex/atomo" }
             }
