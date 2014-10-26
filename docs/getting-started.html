@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Getting Started</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+    <script src="jquery.js" type="text/javascript"></script>
+    <script src="jquery.hotkeys.js" type="text/javascript"></script>
+    <script src="tags.js" type="text/javascript"></script>
+    <script src="main.js" type="text/javascript"></script>
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+      <form class="search" action="javascript:void(0)">
+        <input type="text" id="search" placeholder="Search&hellip;" />
+      </form>
+      <ul class="search-results"></ul>
+      <h4>On this page:</h4>
+<ol class="toc"><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li><li><a href="getting-started.html#section_.Wrapping_.Up">Wrapping Up</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="index.html">Atomo</a><ol><li><a href="getting-started.html">Getting Started</a><ol><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li><li><a href="getting-started.html#section_.Wrapping_.Up">Wrapping Up</a></li></ol></li><li><a href="repl.html">The REPL</a></li><li><a href=".Tutorials.html">Tutorials</a><ol><li><a href="ruby.html">Ruby in Atomo</a></li></ol></li><li><a href="syntax.html">Syntax</a><ol><li><a href="syntax.html#section_.General_.Rules">General Rules</a></li><li><a href="syntax.html#section_guidelines">Indentation Guidelines</a></li><li><a href="syntax.html#section_.Comments">Comments</a></li><li><a href="syntax.html#section_literals-syntax">Literals</a></li><li><a href="syntax.html#section_dispatch-syntax">Dispatch</a></li><li><a href="syntax.html#section_macro-syntax"><code><span class="kr">macro</span></code></a></li><li><a href="syntax.html#section_for-macro-syntax"><code><span class="kr">for-macro</span></code></a></li><li><a href="syntax.html#section_operator-syntax"><code><span class="kr">operator</span></code></a></li></ol></li><li><a href="patterns.html">Patterns</a><ol><li><a href="patterns.html#section_types">Types of Patterns</a></li><li><a href="patterns.html#section_definition-target">A Pattern's Object</a></li><li><a href="patterns.html#section_.Pattern_.Objects">Pattern Objects</a></li></ol></li><li><a href="defining.html">Defining Methods</a><ol><li><a href="defining.html#section_variadic">Variadic Roles</a></li><li><a href="defining.html#section_optionals">Optional Roles</a></li><li><a href="defining.html#section_redefining">Redefining Methods</a></li></ol></li><li><a href="macros.html">Macros!</a><ol><li><a href="macros.html#section_defining-macros">Defining Macros</a></li><li><a href="macros.html#section_macro-environment">Macro Environment</a></li><li><a href="macros.html#section_macro-quotes">Macro Quotes</a></li></ol></li><li><a href="reference.html">Reference</a><ol><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>Getting Started</h1>
+
+<div class="section">
+  <h2 class="section-header" id="section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</h2><p>  </p><p>Atomo is a unique combination of many programming ideas - prototyping, message-passing, pattern matching, multiple dispatch, and message-passing concurrency being the primary ones. It is eagerly evaluated, and does not have a <em>null</em> type. It supports multiple inheritance via delegation. And it's mind-bogglingly dynamic.</p><p>This guide will get you up and running with the very basics of the Atomo programming language. It assumes you have some prior programming experience, though not necessarily with a language like Atomo.
+
+
+
+</p></div>
+<div class="section">
+  <h2 class="section-header" id="section_.Installation">Installation</h2><p>  </p><p>Atomo may be installed through the <a href="http://www.haskell.org/cabal/" class="external">Cabal</a> package managing system:
+
+</p><pre class="verbatim">cabal install atomo</pre><p>Alternatively, you can install it from the repository at <a href="http://darcsden.com/alex/atomo" class="external">darcsden</a>:
+
+</p><pre class="verbatim">darcs get http://darcsden.com/alex/atomo
+cd atomo
+cabal install</pre><p>Once that's all done, just make sure <code>~/.cabal/bin</code> is in your <code>$PATH</code>, and you should be all set!
+
+
+
+</p></div>
+<div class="section">
+  <h2 class="section-header" id="section_.Fire_it_up_">Fire it up!</h2><p>  </p><p>To start up the Atomo REPL, just type in &quot;atomo&quot; at your prompt:
+
+</p><pre class="verbatim">$ atomo
+&gt;</pre><p>Now you're in the Atomo <em>read-evaluate-print loop</em>, which - as you may have guessed - takes in Atomo code, evaluates it, and prints the result, repeating this loop until you exit. You probably won't be able to do much since we haven't gotten very far yet, but here's some basic math, just for a quick taste:
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_*">*</a></span><span class="t"> </span><span class="mi">3</span>
+<span class="mi">7</span>
+<span class="caret">&gt;</span> <span class="mi">20</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span>
+<span class="mf">4.47213595499958</span>
+</pre><p>The REPL is readline-style, with history navigation. To exit the REPL, hit Ctrl+D or Ctrl+C, and hit <code>y</code>. It asks before you leave, because running servers from the REPL is a common task, and it shouldn't be too easy to just shut down everything by accident.
+
+
+
+</p></div>
+<div class="section">
+  <h2 class="section-header" id="section_.Define___.Dispatch">Define &amp; Dispatch</h2><p>  </p><p>There are two primary concepts in Atomo that lay the foundation for the entire language: <em>defining</em> and <em>dispatching</em>.</p><p>Defining sets a value or expression to respond to some message. Dispatching is sending a message to get a value back.
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="mi">1</span>
+</pre><p>Here we're inserting a slot - a kind of method - on the toplevel object, which responds to the message <code><span class="n">a</span></code> by yielding the integet <code><span class="mi">1</span></code>. We then dispatch that message and get the value back.</p><p>There are two operators for defining methods: <code><span class="o"><a href="core.html#definition_=">=</a></span></code> and <code><span class="o"><a href="core.html#definition_:=">:=</a></span></code>. The <code><span class="o"><a href="core.html#definition_=">=</a></span></code> operator performs pattern-matching and slot insertion, while <code><span class="o"><a href="core.html#definition_:=">:=</a></span></code> defines a method that responds to a message by evaluating an expression. Generally you'll use <code><span class="o"><a href="core.html#definition_:=">:=</a></span></code> for defining methods, and <code><span class="o"><a href="core.html#definition_=">=</a></span></code> for setting values.</p><p>To illustrate this distinction, we'll define a method that simply prints <code><span class="s">&quot;</span><span class="s">Hello, world!</span><span class="s">&quot;</span></code>, using both operators. Note that <code><span class="n"><a href="io.html#definition_print">print</a></span></code> outputs the value and yields the same value.
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">y</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">Hello, world!</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">Goodbye, world!</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span>
+Goodbye, world!
+<span class="s">&quot;</span><span class="s">Goodbye, world!</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="n">y</span>
+Hello, world!
+<span class="s">&quot;</span><span class="s">Hello, world!</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="n">x</span>
+<span class="s">&quot;</span><span class="s">Goodbye, world!</span><span class="s">&quot;</span>
+</pre><p>As you can see, <em>Goodbye, world!</em> was printed immediately after defining <code><span class="n">x</span></code>, with subsequent dispatches for <code><span class="n">x</span></code> simply returning the value that was printed. Conversely, <code><span class="n">y</span></code> dutifully prints <em>Hello, world!</em> with every dispatch.</p><p>But <code><span class="o"><a href="core.html#definition_=">=</a></span></code> has a few more tricks up its sleeve. As mentioned before, it can also do pattern-matching. And since it returns the same value, it can be used to set multiple values at once:
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="t"> </span><span class="n">_</span><span class="p">]</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="n">b</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="mi">2</span>
+</pre><p>As you can see, first we set <code><span class="n">b</span></code> to <code><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span></code>, and then we immediately pattern-match <code><span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="t"> </span><span class="n">_</span><span class="p">]</span></code> on <code><span class="n">b</span></code>, which sets <code><span class="n">a</span></code> to <code><span class="mi">1</span></code>, the first element of the list. We then re-assign <code><span class="n">a</span></code> as <code><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">1</span></code>, increasing <code><span class="n">a</span></code>'s vlaue by 1.
+
+
+
+</p></div>
+<div class="section">
+  <h2 class="section-header" id="section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</h2><p>  </p><p>You'll notice earlier I used the term <em>top-level object</em> for describing the target of the <code><span class="n">a</span></code> definition. This is the entirety of Atomo's scoping system; it's objects all the way down. The nearest lexical scope to a point in your code (henceforth called the <em>top-level object</em> or <em>top</em>) is simply an object that delegates down the chain to the surrounding scope, and so on and son on until it hits rock <em>bottom</em> (<code><span class="n"><a href="core.html#definition_Object">Object</a></span></code>). You can grab the current top-level object via the keyword <code><span class="kr">this</span></code>.</p><p>To illustrate the power of this sytem, let's try putting scope objects to use. <code><span class="n"><a href="blocks.html#definition_Block">Block</a></span></code>s provide a <code><span class="n"><a href="blocks.html#definition_context">context</a></span></code> method for grabbing the context in which they were written. Putting the pieces together, <code><span class="n"><a href="blocks.html#definition_in-context">in-context</a></span></code> is easily defined - which converts a block into one that is evalulated in its original scope:
+
+</p><div class="highlight"><pre><span class="p">(</span><span class="nf">b:</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span><span class="p">)</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_in-context">in-context</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t">
+  </span><span class="n">b</span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_do:">do:</a></span><span class="t">
+    </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_context">context</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:">join:</a></span><span class="t"> </span><span class="n">b</span><span class="t">
+      </span><span class="nf"><a href="blocks.html#definition_call:">call:</a></span><span class="t"> </span><span class="n">vs</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_context">context</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:with:">join:</a></span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:with:">with:</a></span><span class="t"> </span><span class="n">vs</span><span class="t">
+    </span><span class="p">}</span></pre></div><p>Here we've defined a method on all <code><span class="n"><a href="blocks.html#definition_Block">Block</a></span></code>s. This method clones its target, yielding a new object that delegates to the block; any messages it doesn't understand go there. On this new block object, we've overridden the <code><span class="n"><a href="blocks.html#definition_call">call</a></span></code> and <code><span class="nf"><a href="blocks.html#definition_call:">call:</a></span></code> methods. These overrides use <code><span class="n"><a href="blocks.html#definition_context">context</a></span></code> for getting the original block's context, and <code><span class="nf"><a href="blocks.html#definition_join:">join:</a></span></code>s the block itself into its context.</p><p>What <code><span class="nf"><a href="blocks.html#definition_join:">join:</a></span></code> does is call a block with a given toplevel object, keeping the block's context in scope (at a higher priority than the target).
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="mi">2</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:">join:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="p">}</span>
+<span class="mi">3</span>
+<span class="caret">&gt;</span> <span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:">join:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="mi">5</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:">join:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_-">-</a></span><span class="t"> </span><span class="n">ord</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="p">}</span>
+<span class="mi">-97</span>
+<span class="caret">&gt;</span> <span class="n">ord</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">10</span>
+<span class="mi">10</span>
+<span class="caret">&gt;</span> <span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:">join:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="mi">5</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:">join:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_-">-</a></span><span class="t"> </span><span class="n">ord</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="p">}</span>
+<span class="mi">-10</span>
+</pre></div><p>Thus, it is often used for playing around with the scope for some code, which is exactly what we want to do with <code><span class="n"><a href="blocks.html#definition_in-context">in-context</a></span></code> - create a block that is evaluated directly onto its context rather than a nested scope.</p><p>Now let's give it a shot:
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_in-context">in-context</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="mi">2</span>
+</pre><p>Ta-da! Rather than setting <code><span class="n">a</span></code> to <code><span class="mi">2</span></code> inside of the block, it was actually executed in the block's context, thus redefining <code><span class="n">a</span></code>.</p><p>What with the scoping system being objects and all, this means you can go beyond just defining &quot;variables&quot;. When you see <code><span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">1</span></code>, it's not saying &quot;set the variable <code><span class="n">x</span></code> to <code><span class="mi">1</span></code>&quot;, it's saying &quot;insert a slot on the top-level object that responds to <code><span class="n">x</span></code> by yielding <code><span class="mi">1</span></code>.&quot; But you aren't limited to single messages like <code><span class="n">x</span></code>. Oh, no. Feel free to define a keyword method if you want, it works just fine:
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="nf">foo:</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="p">(</span><span class="s">&quot;</span><span class="s">fooing: </span><span class="s">&quot;</span><span class="t"> </span><span class="o"><a href="lists.html#definition_..">..</a></span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="n"><a href="core.html#definition_show">show</a></span><span class="p">)</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="nf">foo:</span><span class="t"> </span><span class="nd">@hi</span>
+fooing: @hi
+<span class="s">&quot;</span><span class="s">fooing: @hi</span><span class="s">&quot;</span>
+</pre><p>Which brings me to...
+
+
+</p></div>
+<div class="section">
+  <h2 class="section-header" id="section_.Keywords_">Keywords!</h2><p>  </p><p>In Atomo, you're either dispatching <em>single messages</em>, such as <code><span class="n">make-sandwich</span></code>, or a keyword-delimited message with multiple values, known as <em>keyword messages</em>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_at:">at:</a></span><span class="t"> </span><span class="mi">0</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_at:put:">at:</a></span><span class="t"> </span><span class="mi">3</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_at:put:">put:</a></span><span class="t"> </span><span class="mi">5</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">]</span>
+</pre></div><p>The syntax for keyword dispatch is very flexible, to ease the flow of writing code that uses chains of them. For example, this syntax is perfectly valid, and is called <em>chaining</em>:
+
+</p><div class="highlight"><pre><span class="mi">1</span><span class="t"> </span><span class="p">(</span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="p">(</span><span class="nf"><a href="numbers.html#definition_divides?:">divides?:</a></span><span class="t"> </span><span class="mi">6</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="boolean.html#definition_not">not</a></span></pre></div><p>This gets parsed as regular ol' dispatching, as in:
+
+</p><div class="highlight"><pre><span class="p">(</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="numbers.html#definition_divides?:">divides?:</a></span><span class="t"> </span><span class="mi">6</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="boolean.html#definition_not">not</a></span></pre></div><p>Those parentheses at the front come at a huge cost to the flow of your writing - every time you want to add a dispatch, you would have to go back to the beginning, add a <code>(</code>, and find where you were. Keyword chains remedy that by allowing you to use parentheses wherever you are to effectively turn them into a single-dispatch syntax.
+
+
+
+</p></div>
+<div class="section">
+  <h2 class="section-header" id="section_.Messages___.Multiple_.Dispatch">Messages &amp; Multiple Dispatch</h2><p>  </p><p>In Atomo, there is no &quot;call a method Y on object X.&quot; It's all just sending messages. When you send a message to something, it may or may not understand it - it isn't a reference to a solid method definition in any sense. So if it doesn't know how to handle the message, you get &quot;message not understood,&quot; not &quot;method not found.&quot;</p><p>This way of thinking makes a huge difference in how you reason about things in Atomo, especially when it comes to <em>multiple dispatch</em>. In a nutshell, multiple dispatch means you define your methods in terms of everything involved - not just one object. When you define a keyword method, it has a number of roles - objects that the method involves. If a message is not understood by one role, it moves on to the next, and so on.</p><p>If no roles understand the message, it sends either <code><span class="nf">did-not-understand:</span></code> (for single messages) or <code><span class="nf">did-not-understand:</span><span class="nf">at:</span></code> (for keyword messages) to each object involved until one handles it. If none of them respond, you get an error.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="nf">did-not-understand:</span><span class="t"> </span><span class="n">m</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">I have no idea what you mean by this: </span><span class="s">&quot;</span><span class="t"> </span><span class="o"><a href="lists.html#definition_..">..</a></span><span class="t"> </span><span class="n">m</span><span class="t"> </span><span class="n"><a href="core.html#definition_show">show</a></span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="n">make-me-a-sandwich</span>
+<span class="s">&quot;</span><span class="s">I have no idea what you mean by this: &lt;message &lt;object&gt; make-me-a-sandwich&gt;</span><span class="s">&quot;</span>
+</pre></div><p>That's a lot to take in at once, so let's just dive in and play around with this thing. We'll write a small Rock-Paper-Scissors game. First we'll define the three different objects involved in the game:
+
+
+
+</p><div class="highlight"><pre><span class="n">Rock</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span><span class="t">
+</span><span class="n">Paper</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span><span class="t">
+</span><span class="n">Scissors</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span></pre></div><p>Pretty simple - to make a new object just clone <code><span class="n"><a href="core.html#definition_Object">Object</a></span></code>. Here we have <code><span class="n">Rock</span></code>, <code><span class="n">Paper</span></code>, and <code><span class="n">Scissors</span></code> defined and ready for action. Now comes the fun part - defining how the game works!
+
+</p><div class="highlight"><pre><span class="n">Rock</span><span class="t"> </span><span class="nf">beats?:</span><span class="t"> </span><span class="n">Scissors</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="kc">True</span><span class="t">
+</span><span class="n">Paper</span><span class="t"> </span><span class="nf">beats?:</span><span class="t"> </span><span class="n">Rock</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="kc">True</span><span class="t">
+</span><span class="n">Scissors</span><span class="t"> </span><span class="nf">beats?:</span><span class="t"> </span><span class="n">Paper</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="kc">True</span><span class="t">
+</span><span class="n">_</span><span class="t"> </span><span class="nf">beats?:</span><span class="t"> </span><span class="n">_</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="kc">False</span></pre></div><p>The <code><span class="nf">beats?:</span></code> method has two <em>roles</em> - the first one is being checked to see if it &quot;beats&quot; the second one in our game. In this case, the standard rules apply - rock beats scissors, paper beats rock, and scissors beats paper. Let's try it out!
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">Rock</span><span class="t"> </span><span class="nf">beats?:</span><span class="t"> </span><span class="n">Paper</span>
+<span class="kc">False</span>
+<span class="caret">&gt;</span> <span class="n">Rock</span><span class="t"> </span><span class="nf">beats?:</span><span class="t"> </span><span class="n">Scissors</span>
+<span class="kc">True</span>
+</pre><p>Hooray! It works! Above we defined the three winning cases, and left all the other cases to fall into the catch-all - the one defined with <code><span class="n">_</span></code> in place of both roles. This method is the least precise out of all of them, so it only gets chosen if none of the other, more specific, definitions match the dispatch. Hence, all losing combinations yield <code><span class="kc">False</span></code>.</p><p>You may be wondering where these methods actually end up when they involve multiple roles. Let's take a peek:
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">Rock</span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+  </span><span class="nf">beats?:</span><span class="t"> </span><span class="go">&lt;o</span><span class="go">bject</span><span class="go">&gt;</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="kc">True</span><span class="t">
+</span>
+<span class="caret">&gt;</span> <span class="n">Paper</span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+  </span><span class="nf">beats?:</span><span class="t"> </span><span class="go">&lt;o</span><span class="go">bject</span><span class="go">&gt;</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="kc">True</span><span class="t">
+</span>
+<span class="caret">&gt;</span> <span class="n">Scissors</span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+  </span><span class="nf">beats?:</span><span class="t"> </span><span class="go">&lt;o</span><span class="go">bject</span><span class="go">&gt;</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="kc">True</span><span class="t">
+</span>
+</pre><p>As you can see, our definitions were only placed on the first role involved, rather than duplicated for each object. This is because searching for a method always begins with the first role, and from then on it's just pattern-matching for the rest of the roles. It's not very clear here, since it just says <code>&lt;object&gt;</code> for the other roles, but the second roles are <code><span class="n">Scissors</span></code>, <code><span class="n">Rock</span></code>, and <code><span class="n">Paper</span></code>, respectively. Our catch-all, <code><span class="n">_</span><span class="t"> </span><span class="nf">beats?:</span><span class="t"> </span><span class="n">_</span></code> ended up being placed on <code><span class="n"><a href="core.html#definition_Object">Object</a></span></code>, which is a bit too large to just &quot;take a peek.&quot;</p><p>In a cleaner system you would use something like <code><span class="n">RPS</span></code> as the &quot;catch-all&quot;, and define each object in the game as a clone of that, rather than <code><span class="n"><a href="core.html#definition_Object">Object</a></span></code>.
+
+
+
+</p></div>
+<div class="section">
+  <h2 class="section-header" id="section_.Wrapping_.Up">Wrapping Up</h2><p>  </p><p>That's about all there is to it; Atomo is a simple language, so once you know everything here you can go quite far. I recommend moving on to <a href="syntax.html">Syntax</a> so you know what you're typing, and then perhaps to <a href="ecosystem.html">The Ecosystem</a> if you plan on sharing your code or using other libraries. The other sections are mostly references for the various systems and types of values in Atomo; you should check those out too!
+
+</p></div>
+
+    </div>
+  </body>
+</html>

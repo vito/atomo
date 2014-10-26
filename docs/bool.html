@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Boolean</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+  </head>
+  <body>
+    <div id="sidebar">
+       <h4>On this page:</h4>
+<ol class="toc"><li><a href="bool.html#section_.Logic">Logic</a></li><li><a href="bool.html#section_.Control_.Flow">Control Flow</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="index.html">Atomo</a><ol><li><a href="getting-started.html">Getting Started</a><ol><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li></ol></li><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="lists.html">Lists</a></li><li><a href="strings.html">Strings</a></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="exceptions.html">Exception Handling</a></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="bool.html">Boolean</a><ol><li><a href="bool.html#section_.Logic">Logic</a></li><li><a href="bool.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="parameters.html">Parameterization</a></li><li><a href="association.html">Associations</a></li></ol></li></ol>
+    </div>
+    <div id="content">
+      <h1>Boolean</h1>
+
+
+<div class="section">
+  <h2 class="section-header" id="section_.Logic">Logic</h2>
+  
+
+<div class="definition" id="definition_Bool">
+  <pre class="thumb"><span class="dispatch single"><a href="bool.html#definition_Bool">Bool</a></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">Object</span></pre><p>Boolean values.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_True">
+  <pre class="thumb"><span class="dispatch single"><a href="bool.html#definition_True">True</a></span> <span class="definition-result-arrow">→</span> <span class="dispatch single"><a href="bool.html#definition_Bool">Bool</a></span></pre><p>Truthiness.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_False">
+  <pre class="thumb"><span class="dispatch single"><a href="bool.html#definition_False">False</a></span> <span class="definition-result-arrow">→</span> <span class="dispatch single"><a href="bool.html#definition_Bool">Bool</a></span></pre><p>Falsiness.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_&amp;&amp;:">
+  <pre class="thumb"><span class="dispatch keyword"><span class="dispatch single">a</span> <a href="bool.html#definition_&amp;&amp;:">&amp;&amp;</a> <span class="dispatch single">b</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch keyword"><a href="lists.html#definition_in?:">in?:</a> [<span class="dispatch single"><a href="bool.html#definition_True">True</a></span>, <span class="dispatch single"><a href="bool.html#definition_False">False</a></span>]</span>
+  | <span class="dispatch keyword"><span class="dispatch single">a</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="bool.html#definition_Bool">Bool</a></span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">b</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="bool.html#definition_Bool">Bool</a></span></span></pre><p>Test whether <code><span class="dispatch single">a</span></code> and <code><span class="dispatch single">b</span></code> are both <code><span class="dispatch single"><a href="bool.html#definition_True">True</a></span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="dispatch keyword"><span class="dispatch single"><a href="bool.html#definition_True">True</a></span> <a href="bool.html#definition_&amp;&amp;:">&amp;&amp;</a> <span class="dispatch single"><a href="bool.html#definition_False">False</a></span></span>
+False
+<span class="caret">&gt;</span> <span class="dispatch keyword"><span class="dispatch keyword">(<span class="number integer">1</span> <a href="comparable.html#definition_==:">==</a> <span class="number integer">1</span>)</span> <a href="bool.html#definition_&amp;&amp;:">&amp;&amp;</a> <span class="dispatch keyword">(<span class="char">'a'</span> <a href="comparable.html#definition_/=:">/=</a> <span class="char">'b'</span>)</span></span>
+True
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_||:">
+  <pre class="thumb"><span class="dispatch keyword"><span class="dispatch single">a</span> <a href="bool.html#definition_||:">||</a> <span class="dispatch single">b</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch keyword"><a href="lists.html#definition_in?:">in?:</a> [<span class="dispatch single"><a href="bool.html#definition_True">True</a></span>, <span class="dispatch single"><a href="bool.html#definition_False">False</a></span>]</span>
+  | <span class="dispatch keyword"><span class="dispatch single">a</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="bool.html#definition_Bool">Bool</a></span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">b</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="bool.html#definition_Bool">Bool</a></span></span></pre><p>Test if either <code><span class="dispatch single">a</span></code> or <code><span class="dispatch single">b</span></code> are <code><span class="dispatch single"><a href="bool.html#definition_True">True</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_and:">
+  <pre class="thumb"><span class="dispatch keyword"><span class="dispatch single">a</span> <a href="bool.html#definition_and:">and:</a> <span class="dispatch single">b</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch keyword"><a href="lists.html#definition_in?:">in?:</a> [<span class="dispatch single"><a href="bool.html#definition_True">True</a></span>, <span class="dispatch single"><a href="bool.html#definition_False">False</a></span>]</span>
+  | <span class="dispatch keyword"><span class="dispatch single">a</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="bool.html#definition_Bool">Bool</a></span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">b</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span></pre><p>A short-circuiting form of <code><span class="dispatch keyword"><a href="bool.html#definition_&amp;&amp;:">&amp;&amp;</a></span></code>, only <code><span class="dispatch single"><a href="blocks.html#definition_call">call</a></span></code>ing the right-hand side if <code><span class="dispatch single">a</span></code> is <code><span class="dispatch single"><a href="bool.html#definition_True">True</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_or:">
+  <pre class="thumb"><span class="dispatch keyword"><span class="dispatch single">a</span> <a href="bool.html#definition_or:">or:</a> <span class="dispatch single">b</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch keyword"><a href="lists.html#definition_in?:">in?:</a> [<span class="dispatch single"><a href="bool.html#definition_True">True</a></span>, <span class="dispatch single"><a href="bool.html#definition_False">False</a></span>]</span>
+  | <span class="dispatch keyword"><span class="dispatch single">a</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="bool.html#definition_Bool">Bool</a></span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">b</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span></pre><p>A short-circuiting form of <code><span class="dispatch keyword"><a href="bool.html#definition_||:">||</a></span></code>, only <code><span class="dispatch single"><a href="blocks.html#definition_call">call</a></span></code>ing the right-hand side if <code><span class="dispatch single">a</span></code> is <code><span class="dispatch single"><a href="bool.html#definition_False">False</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_not">
+  <pre class="thumb"><span class="dispatch single">a</span> <span class="dispatch single"><a href="bool.html#definition_not">not</a></span> <span class="definition-result-arrow">→</span> <span class="dispatch keyword"><a href="lists.html#definition_in?:">in?:</a> [<span class="dispatch single"><a href="bool.html#definition_True">True</a></span>, <span class="dispatch single"><a href="bool.html#definition_False">False</a></span>]</span>
+  | <span class="dispatch keyword"><span class="dispatch single">a</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="bool.html#definition_Bool">Bool</a></span></span></pre><p>Negate <code><span class="dispatch single">a</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="dispatch single"><a href="bool.html#definition_True">True</a></span> <span class="dispatch single"><a href="bool.html#definition_not">not</a></span>
+False
+<span class="caret">&gt;</span> <span class="dispatch single"><a href="bool.html#definition_False">False</a></span> <span class="dispatch single"><a href="bool.html#definition_not">not</a></span>
+True
+<span class="caret">&gt;</span> <span class="dispatch single"><a href="bool.html#definition_True">True</a></span> <span class="dispatch single"><a href="bool.html#definition_not">not</a></span> <span class="dispatch single"><a href="bool.html#definition_not">not</a></span>
+True
+</pre></div>
+
+
+
+</div>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_.Control_.Flow">Control Flow</h2>
+  
+
+<div class="definition" id="definition_if:then:else:">
+  <pre class="thumb"><span class="dispatch keyword"><a href="bool.html#definition_if:then:else:">if:</a> <span class="dispatch single">test</span> <a href="bool.html#definition_if:then:else:">then:</a> <span class="dispatch single">yes</span> <a href="bool.html#definition_if:then:else:">else:</a> <span class="dispatch single">no</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">any</span>
+  | <span class="dispatch keyword"><span class="dispatch single">test</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="bool.html#definition_Bool">Bool</a></span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">yes</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">no</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span></pre><p>Basic if-then-else control flow. If <code><span class="dispatch single">test</span></code> is <code><span class="dispatch single"><a href="bool.html#definition_True">True</a></span></code>, <code><span class="dispatch single">yes</span></code> is <code><span class="dispatch single"><a href="blocks.html#definition_call">call</a></span></code>ed, otherwise <code><span class="dispatch single">no</span></code> is. The result is the result of whichever block is called.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="dispatch keyword"><a href="bool.html#definition_if:then:else:">if:</a> <span class="dispatch keyword">(<span class="number integer">1</span> <a href="comparable.html#definition_==:">==</a> <span class="number integer">0</span>)</span> <a href="bool.html#definition_if:then:else:">then:</a> <span class="block">{ <span class="string">&quot;Uh-oh.&quot;</span> }</span> <a href="bool.html#definition_if:then:else:">else:</a> <span class="block">{ <span class="string">&quot;We're good!&quot;</span> }</span></span>
+<span class="string">&quot;We're good!&quot;</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_when:do:">
+  <pre class="thumb"><span class="dispatch keyword"><a href="bool.html#definition_when:do:">when:</a> <span class="dispatch single">test</span> <a href="bool.html#definition_when:do:">do:</a> <span class="dispatch single">action</span></span> <span class="definition-result-arrow">→</span> <span class="particle">@<span class="name">ok</span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">test</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="bool.html#definition_Bool">Bool</a></span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">action</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span></pre><p>Sends <code><span class="dispatch single"><a href="blocks.html#definition_call">call</a></span></code> to <code><span class="dispatch single">action</span> <span class="dispatch single"><a href="blocks.html#definition_in-context">in-context</a></span></code> if <code><span class="dispatch single">test</span></code> is <code><span class="dispatch single"><a href="bool.html#definition_True">True</a></span></code>, always returning <code><span class="particle">@<span class="name">ok.</span></span></code>
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="pattern">a</span> = <span class="number integer">0</span>
+<span class="number integer">0</span>
+<span class="caret">&gt;</span> <span class="pattern">b</span> := <span class="dispatch keyword"><a href="bool.html#definition_when:do:">when:</a> <span class="dispatch keyword">(<span class="dispatch single">a</span> <a href="comparable.html#definition_==:">==</a> <span class="number integer">1</span>)</span> <a href="bool.html#definition_when:do:">do:</a> <span class="block">{ <span class="string">&quot;a is 1!&quot;</span> <span class="dispatch single"><a href="io.html#definition_print">print</a></span> }</span></span>
+<span class="particle">@<span class="name">ok</span></span>
+<span class="caret">&gt;</span> <span class="dispatch single">b</span>
+<span class="particle">@<span class="name">ok</span></span>
+<span class="caret">&gt;</span> <span class="pattern">a</span> = <span class="number integer">1</span>
+<span class="number integer">1</span>
+<span class="caret">&gt;</span> <span class="dispatch single">b</span>
+a is 1!
+<span class="particle">@<span class="name">ok</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_while:do:">
+  <pre class="thumb"><span class="dispatch keyword"><a href="bool.html#definition_while:do:">while:</a> <span class="dispatch single">test</span> <a href="bool.html#definition_while:do:">do:</a> <span class="dispatch single">action</span></span> <span class="definition-result-arrow">→</span> <span class="particle">@<span class="name">ok</span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">test</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">action</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span></pre><p>Continually sends <code><span class="dispatch single"><a href="blocks.html#definition_call">call</a></span></code> to <code><span class="dispatch single">action</span> <span class="dispatch single"><a href="blocks.html#definition_in-context">in-context</a></span></code> until <code><span class="dispatch single">test</span></code> yields <code><span class="dispatch single"><a href="bool.html#definition_False">False</a></span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="pattern">a</span> = <span class="number integer">1</span>
+<span class="number integer">1</span>
+<span class="caret">&gt;</span> <span class="dispatch keyword"><a href="bool.html#definition_while:do:">while:</a> <span class="block">{ <span class="dispatch keyword"><span class="dispatch single">a</span> <a href="comparable.html#definition_&lt;:">&lt;</a> <span class="number integer">10</span></span> }</span> <a href="bool.html#definition_while:do:">do:</a> <span class="block">{ <span class="pattern">a</span> = <span class="dispatch keyword"><span class="dispatch single">a</span> <a href="numbers.html#definition_+:">+</a> <span class="number integer">1</span></span> }</span></span>
+<span class="particle">@<span class="name">ok</span></span>
+<span class="caret">&gt;</span> <span class="dispatch single">a</span>
+<span class="number integer">10</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_condition:">
+  <pre class="thumb"><span class="dispatch keyword"><a href="bool.html#definition_condition:">condition:</a> <span class="dispatch single">branches</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">any</span>
+  | <span class="dispatch keyword"><span class="dispatch single">branches</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span></pre><p>Similar to Scheme's <code>cond</code>, this construct takes a block pairing tests with their branch, and goes through each pairing until a test yields <code><span class="dispatch single"><a href="bool.html#definition_True">True</a></span></code>, in which case it evaluates the expression that test was associated with.</p><p>If no branches yield <code><span class="dispatch single"><a href="bool.html#definition_True">True</a></span></code>, <code><span class="particle">@<span class="name">no-true-branches</span></span></code> is raised.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="dispatch keyword"><a href="bool.html#definition_condition:">condition:</a> <span class="block">{ <span class="dispatch keyword"><span class="dispatch single"><a href="bool.html#definition_False">False</a></span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="string">&quot;Hello!&quot;</span> <span class="dispatch single"><a href="io.html#definition_print">print</a></span></span>; <span class="dispatch keyword"><span class="dispatch single"><a href="bool.html#definition_True">True</a></span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="string">&quot;Goodbye!&quot;</span> <span class="dispatch single"><a href="io.html#definition_print">print</a></span></span> }</span></span>
+Goodbye!
+<span class="string">&quot;Goodbye!&quot;</span>
+<span class="caret">&gt;</span> <span class="dispatch keyword"><a href="bool.html#definition_condition:">condition:</a> <span class="block">{ <span class="dispatch keyword"><span class="dispatch keyword">(<span class="number integer">1</span> <a href="comparable.html#definition_==:">==</a> <span class="number integer">1</span>)</span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="number integer">0</span></span>; <span class="dispatch keyword"><span class="dispatch single"><a href="bool.html#definition_otherwise">otherwise</a></span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="number integer">1</span></span> }</span></span>
+<span class="number integer">0</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_otherwise">
+  <pre class="thumb"><span class="dispatch single"><a href="bool.html#definition_otherwise">otherwise</a></span> <span class="definition-result-arrow">→</span> <span class="dispatch single"><a href="bool.html#definition_True">True</a></span></pre><p>Alias for <code><span class="dispatch single"><a href="bool.html#definition_True">True</a></span></code> for use in <code><span class="dispatch keyword"><a href="bool.html#definition_condition:">condition:</a></span></code>, or anywhere else where it would look nicer.
+
+
+
+</p></div>
+
+
+</div>
+
+    </div>
+  </body>
+</html>

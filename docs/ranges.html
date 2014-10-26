@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Ranges</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+    <script src="jquery.js" type="text/javascript"></script>
+    <script src="jquery.hotkeys.js" type="text/javascript"></script>
+    <script src="tags.js" type="text/javascript"></script>
+    <script src="main.js" type="text/javascript"></script>
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+      <form class="search" action="javascript:void(0)">
+        <input type="text" id="search" placeholder="Search&hellip;" />
+      </form>
+      <ul class="search-results"></ul>
+      <h4>On this page:</h4>
+<ol class="toc"><li><a href="ranges.html">Ranges</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="reference.html">Reference</a><ol><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>Ranges</h1><p>Generic ranges for any value that is <code><span class="n"><a href="ordered.html#definition_Ordered">Ordered</a></span></code>. Range objects are <code><span class="n">Enumerable</span></code>.
+
+</p><div class="definition" id="definition_Range">
+  <pre class="thumb"><span class="n"><a href="ranges.html#definition_Range">Range</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span></pre><p>An object containing a range's beginning, end, and exclusivity.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_..">
+  <pre class="thumb"><span class="n">a</span><span class="t"> </span><span class="o"><a href="ranges.html#definition_..">..</a></span><span class="t"> </span><span class="n">b</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="ranges.html#definition_Range">Range</a></span></pre><p>Create an inclusive <code><span class="n"><a href="ranges.html#definition_Range">Range</a></span></code> from <code><span class="n">a</span></code> to <code><span class="n">b</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_...">
+  <pre class="thumb"><span class="n">a</span><span class="t"> </span><span class="o"><a href="ranges.html#definition_...">...</a></span><span class="t"> </span><span class="n">b</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="ranges.html#definition_Range">Range</a></span></pre><p>Create an exclusive <code><span class="n"><a href="ranges.html#definition_Range">Range</a></span></code> from <code><span class="n">a</span></code> to <code><span class="n">b</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_start">
+  <pre class="thumb"><span class="n">r</span><span class="t"> </span><span class="n"><a href="ranges.html#definition_start">start</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">r</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="ranges.html#definition_Range">Range</a></span></pre><p>The start of the range.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="ranges.html#definition_..">..</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">z</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="ranges.html#definition_start">start</a></span>
+<span class="sc">$</span><span class="sc">a</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_end">
+  <pre class="thumb"><span class="n">r</span><span class="t"> </span><span class="n"><a href="ranges.html#definition_end">end</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">r</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="ranges.html#definition_Range">Range</a></span></pre><p>The end of the range.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="ranges.html#definition_..">..</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">z</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="ranges.html#definition_end">end</a></span>
+<span class="sc">$</span><span class="sc">z</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_exclusive?">
+  <pre class="thumb"><span class="n">r</span><span class="t"> </span><span class="n"><a href="ranges.html#definition_exclusive?">exclusive?</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span>
+  | <span class="n">r</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="ranges.html#definition_Range">Range</a></span></pre><p>Is a range exclusive?
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="ranges.html#definition_..">..</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">z</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="ranges.html#definition_exclusive?">exclusive?</a></span>
+<span class="kc">False</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="ranges.html#definition_...">...</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">z</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="ranges.html#definition_exclusive?">exclusive?</a></span>
+<span class="kc">True</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_matches?:">
+  <pre class="thumb"><span class="n">r</span><span class="t"> </span><span class="nf"><a href="ranges.html#definition_matches?:">matches?:</a></span><span class="t"> </span><span class="n">x</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span>
+  | <span class="n">r</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="ranges.html#definition_Range">Range</a></span></pre><p>Test if <code><span class="n">x</span></code> is within the bounds of the range. This is useful for <code><span class="nf"><a href="core.html#definition_case-of:">case-of:</a></span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="ranges.html#definition_..">..</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">z</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="ranges.html#definition_matches?:">matches?:</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">z</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="ranges.html#definition_...">...</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">z</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="ranges.html#definition_matches?:">matches?:</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">z</span>
+<span class="kc">False</span>
+<span class="caret">&gt;</span> <span class="sc">$</span><span class="sc">z</span><span class="t"> </span><span class="nf"><a href="core.html#definition_case-of:">case-of:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="ranges.html#definition_..">..</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">w</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="nd">@foo</span><span class="p">;</span><span class="t"> </span><span class="sc">$</span><span class="sc">x</span><span class="t"> </span><span class="o"><a href="ranges.html#definition_..">..</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">z</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="nd">@bar</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@bar</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_step">
+  <pre class="thumb"><span class="n">r</span><span class="t"> </span><span class="n"><a href="ranges.html#definition_step">step</a></span><span class="t"> </span><span class="nf">&amp;size:</span><span class="t"> </span><span class="mi">1</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">r</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="ranges.html#definition_Range">Range</a></span></pre><p>Returns a list of the values in the range, increasing by <code><span class="n">size</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="ranges.html#definition_..">..</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">f</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="ranges.html#definition_step">step</a></span>
+<span class="p">[</span><span class="sc">$</span><span class="sc">a</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">b</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">c</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">d</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">e</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">f</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="ranges.html#definition_..">..</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">f</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="ranges.html#definition_step">step</a></span><span class="t"> </span><span class="nf">&amp;size:</span><span class="t"> </span><span class="mi">2</span>
+<span class="p">[</span><span class="sc">$</span><span class="sc">a</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">c</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">e</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_step:">
+  <pre class="thumb"><span class="n">r</span><span class="t"> </span><span class="nf">step:</span><span class="t"> </span><span class="n">action</span><span class="t"> </span><span class="nf">&amp;size:</span><span class="t"> </span><span class="mi">1</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">r</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="ranges.html#definition_Range">Range</a></span></pre><p>Returns a list of the values in the range, increasing by <code><span class="n">size</span></code>, sent to <code><span class="n">action</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="ranges.html#definition_..">..</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">f</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="ranges.html#definition_step:">step:</a></span><span class="t"> </span><span class="nd">@show</span>
+<span class="p">[</span><span class="s">&quot;</span><span class="s">$a</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">$b</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">$c</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">$d</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">$e</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">$f</span><span class="s">&quot;</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="ranges.html#definition_..">..</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">f</span><span class="p">)</span><span class="t"> </span><span class="nf">step:</span><span class="t"> </span><span class="nd">@show</span><span class="t"> </span><span class="nf">&amp;size:</span><span class="t"> </span><span class="mi">2</span>
+<span class="p">[</span><span class="s">&quot;</span><span class="s">$a</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">$c</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">$e</span><span class="s">&quot;</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_collect:">
+  <pre class="thumb"><span class="n">r</span><span class="t"> </span><span class="nf"><a href="ranges.html#definition_collect:">collect:</a></span><span class="t"> </span><span class="n">action</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">r</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="ranges.html#definition_Range">Range</a></span></pre><p>Alias for <code><span class="nf"><a href="ranges.html#definition_step:">step:</a></span></code>.
+
+
+
+</p></div>
+
+    </div>
+  </body>
+</html>

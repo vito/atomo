@@ -1,0 +1,349 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>Pretty-Printing</title>
+<link rel="stylesheet" type="text/css" href="public/doodle.css">
+<script type="text/javascript" src="public/jquery.js"></script><script type="text/javascript" src="public/jquery.hotkeys.js"></script><script type="text/javascript" src="public/tags.js"></script><script type="text/javascript" src="public/main.js"></script><link rel="stylesheet" type="text/css" href="public/highlight.css">
+</head>
+<body>
+<div id="main"><div id="content"><div class="section">
+<h1 class="section_header">Pretty-Printing</h1>
+<div class="section" id="section_documents">
+<h2 class="section_header">Documents</h2>
+<p>    A document is a structural collection of text. The following are the     various types of documents, usually created with various combinators     provided below.
+  </p>
+<div id="definition_Empty" class="definition">
+<pre class="thumb"><span class="no">Empty</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Class</span></pre>
+<p>The empty document, with a height and width of <code><span class="mi">0</span></code>.</p>
+</div>
+<div id="definition_Beside" class="definition">
+<pre class="thumb"><span class="no">Beside</span><span class="p">(</span><span class="vi">@left</span><span class="p">,</span><span class="t"> </span><span class="vi">@right</span><span class="p">,</span><span class="t"> </span><span class="vi">@space?</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Class</span></pre>
+<p>A document comprised of two documents positioned beside each other, with     an optional space in-between.</p>
+</div>
+<div id="definition_Above" class="definition">
+<pre class="thumb"><span class="no">Above</span><span class="p">(</span><span class="vi">@above</span><span class="p">,</span><span class="t"> </span><span class="vi">@below</span><span class="p">,</span><span class="t"> </span><span class="vi">@overlap?</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Class</span></pre>
+<p>A document comprised of two documents positioned above and below each     other, optionally overlapping if possible.</p>
+</div>
+<div id="definition_Nest" class="definition">
+<pre class="thumb"><span class="no">Nest</span><span class="p">(</span><span class="vi">@body</span><span class="p">,</span><span class="t"> </span><span class="vi">@depth</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Class</span></pre>
+<p>A document indented to a given depth.</p>
+</div>
+<div id="definition_Text" class="definition">
+<pre class="thumb"><span class="no">Text</span><span class="p">(</span><span class="vi">@value</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Class</span></pre>
+<p>A document containing arbitrary text, with a height of <code><span class="mi">1</span></code>.</p>
+</div>
+<div id="definition_empty?" class="definition">
+<pre class="thumb"><span class="no">Doc</span><span class="t"> </span><span class="n"><a href="documents.html#definition_empty?">empty?</a></span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Boolean</span></pre>
+<p>Trivial emptiness check. <code><span class="kc">true</span></code> for <code><span class="no">Empty</span></code>, <code><span class="kc">false</span></code> for     everything else.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">empty</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="documents.html#definition_empty?">empty?</a></span><span class="t">
+</span><span class="kc">true</span>
+<span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">abc</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="documents.html#definition_empty?">empty?</a></span><span class="t">
+</span><span class="kc">false</span>
+<span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="documents.html#definition_empty?">empty?</a></span><span class="t">
+</span><span class="kc">false</span>
+</pre>
+</div>
+</div>
+<div id="definition_width" class="definition">
+<pre class="thumb"><span class="no">Doc</span><span class="t"> </span><span class="n"><a href="documents.html#definition_width">width</a></span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Integer</span></pre>
+<p>Calculate the width of the document, in characters.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">empty</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="documents.html#definition_width">width</a></span><span class="t">
+</span><span class="mi">0</span>
+<span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">abc</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="documents.html#definition_width">width</a></span><span class="t">
+</span><span class="mi">3</span>
+</pre>
+</div>
+</div>
+<div id="definition_height" class="definition">
+<pre class="thumb"><span class="no">Doc</span><span class="t"> </span><span class="n"><a href="documents.html#definition_height">height</a></span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Integer</span></pre>
+<p>Calculate the height of the document, in lines.</p>
+<p>Note that an empty document has a height of 0.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">empty</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="documents.html#definition_height">height</a></span><span class="t">
+</span><span class="mi">0</span>
+<span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">abc</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="documents.html#definition_height">height</a></span><span class="t">
+</span><span class="mi">1</span>
+</pre>
+</div>
+</div>
+<div id="definition_render" class="definition">
+<pre class="thumb"><span class="no">Doc</span><span class="t"> </span><span class="n"><a href="documents.html#definition_render">render</a></span> <span class="definition_result_arrow">&rArr;</span> <span class="no">String</span></pre>
+<p>Render the document as a <code><span class="no">String</span></code>.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">empty</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="documents.html#definition_render">render</a></span><span class="t">
+</span><span class="s">"</span><span class="s">"</span>
+<span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">abc</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="documents.html#definition_render">render</a></span><span class="t">
+</span><span class="s">"</span><span class="s">abc</span><span class="s">"</span>
+<span class="caret">&gt; </span><span class="err">'</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o">+</span><span class="t"> </span><span class="mi">1</span><span class="p">)</span><span class="t"> </span><span class="n">pretty</span><span class="t"> </span><span class="n"><a href="documents.html#definition_render">render</a></span><span class="t">
+</span><span class="s">"</span><span class="s">1 + 1</span><span class="s">"</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="section_constructing">
+<h2 class="section_header">Constructing</h2>
+<div id="definition_&lt;+&gt;" class="definition">
+<pre class="thumb"><span class="p">(</span><span class="n">left</span><span class="o">:</span><span class="t"> </span><span class="no">Doc</span><span class="p">)</span><span class="t"> </span><span class="o">&lt;</span><span class="o">+</span><span class="o">&gt;</span><span class="t"> </span><span class="p">(</span><span class="n">right</span><span class="o">:</span><span class="t"> </span><span class="no">Doc</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Position one document beside another, separated by a space, unless either    side is empty.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">x</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="o">&lt;</span><span class="o">+</span><span class="o">&gt;</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_value">value</a></span><span class="p">(</span><span class="mi">42</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="n">x</span><span class="t"> </span><span class="mi">42</span>
+<span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">empty</span><span class="t"> </span><span class="o">&lt;</span><span class="o">+</span><span class="o">&gt;</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_value">value</a></span><span class="p">(</span><span class="mi">42</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="mi">42</span>
+</pre>
+</div>
+</div>
+<div id="definition_&lt;&gt;" class="definition">
+<pre class="thumb"><span class="p">(</span><span class="n">left</span><span class="o">:</span><span class="t"> </span><span class="no">Doc</span><span class="p">)</span><span class="t"> </span><span class="o">&lt;</span><span class="o">&gt;</span><span class="t"> </span><span class="p">(</span><span class="n">right</span><span class="o">:</span><span class="t"> </span><span class="no">Doc</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Position one document beside another unless either side is empty.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">x</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="o">&lt;</span><span class="o">&gt;</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_value">value</a></span><span class="p">(</span><span class="mi">42</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="n">x42</span>
+<span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">empty</span><span class="t"> </span><span class="o">&lt;</span><span class="o">&gt;</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_value">value</a></span><span class="p">(</span><span class="mi">42</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="mi">42</span>
+</pre>
+</div>
+</div>
+<div id="definition_//" class="definition">
+<pre class="thumb"><span class="p">(</span><span class="n">above</span><span class="o">:</span><span class="t"> </span><span class="no">Doc</span><span class="p">)</span><span class="t"> </span><span class="o">/</span><span class="o">/</span><span class="t"> </span><span class="p">(</span><span class="n">below</span><span class="o">:</span><span class="t"> </span><span class="no">Doc</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Position one document above another, unless either are empty.</p>
+<p>If the last line of the first argument stops at least one position before    the first line of the second begins, these two lines are overlapped.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">hi</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="o">/</span><span class="o">/</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">there</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="constructing.html#definition_nest">nest</a></span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="n">hi</span><span class="t">
+ </span><span class="n">there</span>
+<span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">hi</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="o">/</span><span class="o">/</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">there</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="constructing.html#definition_nest">nest</a></span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="n">hi</span><span class="t">   </span><span class="n">there</span>
+</pre>
+</div>
+</div>
+<div id="definition_/+/" class="definition">
+<pre class="thumb"><span class="p">(</span><span class="n">above</span><span class="o">:</span><span class="t"> </span><span class="no">Doc</span><span class="p">)</span><span class="t"> </span><span class="o">/</span><span class="o">+</span><span class="o">/</span><span class="t"> </span><span class="p">(</span><span class="n">below</span><span class="o">:</span><span class="t"> </span><span class="no">Doc</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Position one document above another, without overlapping, unless either     are empty.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">hi</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="o">/</span><span class="o">+</span><span class="o">/</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">there</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="constructing.html#definition_nest">nest</a></span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="n">hi</span><span class="t">
+ </span><span class="n">there</span>
+<span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">hi</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="o">/</span><span class="o">+</span><span class="o">/</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">there</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="constructing.html#definition_nest">nest</a></span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="n">hi</span><span class="t">
+     </span><span class="n">there</span>
+</pre>
+</div>
+</div>
+<div id="definition_nest" class="definition">
+<pre class="thumb"><span class="no">Doc</span><span class="t"> </span><span class="n"><a href="constructing.html#definition_nest">nest</a></span><span class="p">(</span><span class="n">depth</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span>
+  | <span class="n">depth</span><span class="t"> </span><span class="n">is-a?</span><span class="p">(</span><span class="no">Integer</span><span class="p">)</span></pre>
+<p>Indent the document to the given <code><span class="n">depth</span></code>. For <code><span class="no">Nest</span></code>, this just     increases its indentation level.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">hi</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="constructing.html#definition_nest">nest</a></span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="t">     </span><span class="n">hi</span>
+<span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">hi</span><span class="s">"</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="constructing.html#definition_nest">nest</a></span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="constructing.html#definition_nest">nest</a></span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="t">           </span><span class="n">hi</span>
+</pre>
+</div>
+</div>
+<div id="definition_punctuate" class="definition">
+<pre class="thumb"><span class="p">(</span><span class="n">delimiter</span><span class="o">:</span><span class="t"> </span><span class="no">Doc</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="constructing.html#definition_punctuate">punctuate</a></span><span class="p">(</span><span class="n">documents</span><span class="o">:</span><span class="t"> </span><span class="no">List</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">List</span>
+  | <span class="n">documents</span><span class="t"> </span><span class="n">all?</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">#is-a?</span><span class="p">(</span><span class="no">Doc</span><span class="p">)</span><span class="p">)</span></pre>
+<p>Intersperse <code><span class="n">delimiter</span></code> document through <code><span class="n">documents</span></code>.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">semi</span><span class="t"> </span><span class="n"><a href="constructing.html#definition_punctuate">punctuate</a></span><span class="p">(</span><span class="p">[</span><span class="n"><a href="shortcuts.html#definition_value">value</a></span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="p">,</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_value">value</a></span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="p">,</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_value">value</a></span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="p">]</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="p">[</span><span class="mi">1</span><span class="p">;</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">;</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="caret">&gt; </span><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="combining.html#definition_hsep">hsep</a></span><span class="p">(</span><span class="n">semi</span><span class="t"> </span><span class="n"><a href="constructing.html#definition_punctuate">punctuate</a></span><span class="p">(</span><span class="p">[</span><span class="n"><a href="shortcuts.html#definition_value">value</a></span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="p">,</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_value">value</a></span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="p">,</span><span class="t"> </span><span class="n"><a href="shortcuts.html#definition_value">value</a></span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="p">]</span><span class="p">)</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="mi">2</span><span class="p">;</span><span class="t"> </span><span class="mi">3</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="section_helpers">
+<h2 class="section_header">Helpers</h2>
+<div id="definition_doc" class="definition">
+<pre class="thumb"><span class="n"><a href="helpers.html#definition_doc">doc</a></span><span class="p">(</span><span class="o">&amp;</span><span class="n">body</span><span class="p">)</span> </pre>
+<p>Shortcut for <code><span class="no">Doc</span><span class="t"> </span><span class="n">onto</span><span class="p">(</span><span class="o">&amp;</span><span class="n">body</span><span class="p">)</span></code>. This provides the various helper     methods below, which are also available in the <code><span class="no">Pretty</span></code> module.</p>
+</div>
+<div class="section" id="section_shortcuts">
+<h3 class="section_header">Shortcuts</h3>
+<p>        These shortcuts are primarily for quickly creating <code><span class="no">Text</span></code>         documents, especially for things commonly found in syntax.
+      </p>
+<div id="definition_text" class="definition">
+<pre class="thumb"><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span>
+  | <span class="n">s</span><span class="t"> </span><span class="n">is-a?</span><span class="p">(</span><span class="no">String</span><span class="p">)</span></pre>
+<p>Create a <code><span class="no">Text</span></code> document with the given contents.</p>
+</div>
+<div id="definition_value" class="definition">
+<pre class="thumb"><span class="n"><a href="shortcuts.html#definition_value">value</a></span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Create a <code><span class="no">Text</span></code> document with <code><span class="n">x</span><span class="t"> </span><span class="n">inspect</span></code>.</p>
+</div>
+<div id="definition_semi:@" class="definition">
+<pre class="thumb"><span class="n">semi</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Shortcut for <code><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">;</span><span class="s">"</span><span class="p">)</span></code>.</p>
+</div>
+<div id="definition_comma:@" class="definition">
+<pre class="thumb"><span class="n">comma</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Shortcut for <code><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">,</span><span class="s">"</span><span class="p">)</span></code>.</p>
+</div>
+<div id="definition_colon:@" class="definition">
+<pre class="thumb"><span class="n">colon</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Shortcut for <code><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">:</span><span class="s">"</span><span class="p">)</span></code>.</p>
+</div>
+<div id="definition_space:@" class="definition">
+<pre class="thumb"><span class="n">space</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Shortcut for <code><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s"> </span><span class="s">"</span><span class="p">)</span></code>.</p>
+</div>
+<div id="definition_equals:@" class="definition">
+<pre class="thumb"><span class="n">equals</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Shortcut for <code><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">=</span><span class="s">"</span><span class="p">)</span></code>.</p>
+</div>
+<div id="definition_lparen:@" class="definition">
+<pre class="thumb"><span class="n">lparen</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Shortcut for <code><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">(</span><span class="s">"</span><span class="p">)</span></code>.</p>
+</div>
+<div id="definition_rparen:@" class="definition">
+<pre class="thumb"><span class="n">rparen</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Shortcut for <code><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">)</span><span class="s">"</span><span class="p">)</span></code>.</p>
+</div>
+<div id="definition_lbrack:@" class="definition">
+<pre class="thumb"><span class="n">lbrack</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Shortcut for <code><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">[</span><span class="s">"</span><span class="p">)</span></code>.</p>
+</div>
+<div id="definition_rbrack:@" class="definition">
+<pre class="thumb"><span class="n">rbrack</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Shortcut for <code><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">]</span><span class="s">"</span><span class="p">)</span></code>.</p>
+</div>
+<div id="definition_lbrace:@" class="definition">
+<pre class="thumb"><span class="n">lbrace</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Shortcut for <code><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">{</span><span class="s">"</span><span class="p">)</span></code>.</p>
+</div>
+<div id="definition_rbrace:@" class="definition">
+<pre class="thumb"><span class="n">rbrace</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Shortcut for <code><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">(</span><span class="s">"</span><span class="s">}</span><span class="s">"</span><span class="p">)</span></code>.</p>
+</div>
+</div>
+<div class="section" id="section_wrapping">
+<h3 class="section_header">Wrapping</h3>
+<p>        More shortcuts for common cases in pretty-printing, dealing with         wrapping a document in delimiters.
+      </p>
+<div id="definition_parens" class="definition">
+<pre class="thumb"><span class="n"><a href="wrapping.html#definition_parens">parens</a></span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Wrap a document in parentheses.</p>
+</div>
+<div id="definition_brackets" class="definition">
+<pre class="thumb"><span class="n"><a href="wrapping.html#definition_brackets">brackets</a></span><span class="p">(</span><span class="n">d</span><span class="o">:</span><span class="t"> </span><span class="no">Doc</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Wrap a document in brackets (<code>[]</code>).</p>
+</div>
+<div id="definition_braces" class="definition">
+<pre class="thumb"><span class="n"><a href="wrapping.html#definition_braces">braces</a></span><span class="p">(</span><span class="n">d</span><span class="o">:</span><span class="t"> </span><span class="no">Doc</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Wrap a document in braces (<code>{}</code>).</p>
+</div>
+<div id="definition_quotes" class="definition">
+<pre class="thumb"><span class="n"><a href="wrapping.html#definition_quotes">quotes</a></span><span class="p">(</span><span class="n">d</span><span class="o">:</span><span class="t"> </span><span class="no">Doc</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Wrap a document in single-quotes.</p>
+</div>
+<div id="definition_double_quotes" class="definition">
+<pre class="thumb"><span class="n">double-quotes</span><span class="p">(</span><span class="n">d</span><span class="o">:</span><span class="t"> </span><span class="no">Doc</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>Wrap a document in double-quotes.</p>
+</div>
+</div>
+<div class="section" id="section_combining">
+<h3 class="section_header">Combining</h3>
+<p>        Helpers for creating a single document from many.
+      </p>
+<div id="definition_empty:@" class="definition">
+<pre class="thumb"><span class="n">empty</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span></pre>
+<p>An empty document. The identity for <code><span class="o">&lt;</span><span class="o">&gt;</span></code>, <code><span class="o">&lt;</span><span class="o">+</span><span class="o">&gt;</span></code>, <code><span class="o">/</span><span class="o">/</span></code>,         <code><span class="o">/</span><span class="o">+</span><span class="o">/</span></code>, and anywhere in the following methods.</p>
+</div>
+<div id="definition_hcat" class="definition">
+<pre class="thumb"><span class="n"><a href="combining.html#definition_hcat">hcat</a></span><span class="p">(</span><span class="n">ds</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span>
+  | <span class="n">ds</span><span class="t"> </span><span class="n">all?</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">#is-a?</span><span class="p">(</span><span class="no">Doc</span><span class="p">)</span><span class="p">)</span></pre>
+<p>Reduce a list of documents with <code><span class="o">&lt;</span><span class="o">&gt;</span></code>.</p>
+</div>
+<div id="definition_hsep" class="definition">
+<pre class="thumb"><span class="n"><a href="combining.html#definition_hsep">hsep</a></span><span class="p">(</span><span class="n">ds</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span>
+  | <span class="n">ds</span><span class="t"> </span><span class="n">all?</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">#is-a?</span><span class="p">(</span><span class="no">Doc</span><span class="p">)</span><span class="p">)</span></pre>
+<p>Reduce a list of documents with <code><span class="o">&lt;</span><span class="o">+</span><span class="o">&gt;</span></code>.</p>
+</div>
+<div id="definition_vcat" class="definition">
+<pre class="thumb"><span class="n"><a href="combining.html#definition_vcat">vcat</a></span><span class="p">(</span><span class="n">ds</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Doc</span>
+  | <span class="n">ds</span><span class="t"> </span><span class="n">all?</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">#is-a?</span><span class="p">(</span><span class="no">Doc</span><span class="p">)</span><span class="p">)</span></pre>
+<p>Reduce a list of documents with <code><span class="o">/</span><span class="o">/</span></code>.</p>
+</div>
+</div>
+</div>
+</div></div></div>
+<div class="search">
+<form action="javascript:void(0)"><input autocomplete="off" type="text" placeholder="Search&hellip;" id="search"></form>
+<ul class="search_results"></ul>
+</div>
+<div id="sidebar">
+<h4>On this page:</h4>
+<ol class="toc">
+<li><a href="pretty-printing.html#section_documents">Documents</a></li>
+<li><a href="pretty-printing.html#section_constructing">Constructing</a></li>
+<li>
+<a href="pretty-printing.html#section_helpers">Helpers</a><ol>
+<li><a href="pretty-printing.html#section_shortcuts">Shortcuts</a></li>
+<li><a href="pretty-printing.html#section_wrapping">Wrapping</a></li>
+<li><a href="pretty-printing.html#section_combining">Combining</a></li>
+</ol>
+</li>
+</ol>
+<h4>Up one level:</h4>
+<ol class="toc"><li>
+<a href="reference.html">Reference</a><ol>
+<li>
+<a href="concurrency.html">Concurrency</a><ol>
+<li><a href="concurrency.html#section_sending-and-receiving">Sending &amp; Receiving</a></li>
+<li><a href="concurrency.html#section_spawning">Spawning</a></li>
+</ol>
+</li>
+<li>
+<a href="condition-system.html">Condition System</a><ol>
+<li><a href="condition-system.html#section_conditions">Conditions</a></li>
+<li><a href="condition-system.html#section_handling">Handling</a></li>
+<li><a href="condition-system.html#section_signalling">Signalling</a></li>
+<li><a href="condition-system.html#section_debuggers">Debuggers</a></li>
+</ol>
+</li>
+<li>
+<a href="pretty-printing.html">Pretty-Printing</a><ol>
+<li><a href="pretty-printing.html#section_documents">Documents</a></li>
+<li><a href="pretty-printing.html#section_constructing">Constructing</a></li>
+<li>
+<a href="pretty-printing.html#section_helpers">Helpers</a><ol>
+<li><a href="pretty-printing.html#section_shortcuts">Shortcuts</a></li>
+<li><a href="pretty-printing.html#section_wrapping">Wrapping</a></li>
+<li><a href="pretty-printing.html#section_combining">Combining</a></li>
+</ol>
+</li>
+</ol>
+</li>
+<li>
+<a href="input-and-output.html">Input &amp; Output</a><ol>
+<li><a href="input-and-output.html#section_output">Output</a></li>
+<li><a href="input-and-output.html#section_input">Input</a></li>
+</ol>
+</li>
+<li><a href="the-repl.html">The REPL</a></li>
+<li>
+<a href="testing-with-therie.html">Testing with Therie</a><ol>
+<li><a href="testing-with-therie.html#section_structure">Structure</a></li>
+<li><a href="testing-with-therie.html#section_tests">Tests</a></li>
+</ol>
+</li>
+</ol>
+</li></ol>
+</div>
+</body>
+</html>

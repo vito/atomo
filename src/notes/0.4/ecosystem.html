@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>The Ecosystem</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+       <h4>On this page:</h4>
+<ol class="toc"><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="index.html#section_index">Atomo</a><ol><li><a href="getting-started.html">Getting Started</a><ol><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li><li><a href="getting-started.html#section_.Wrapping_.Up">Wrapping Up</a></li></ol></li><li><a href="repl.html">The REPL</a></li><li><a href=".Tutorials.html">Tutorials</a><ol><li><a href="ruby.html">Ruby in Atomo</a></li></ol></li><li><a href="syntax.html">Syntax</a><ol><li><a href="syntax.html#section_.General_.Rules">General Rules</a></li><li><a href="syntax.html#section_guidelines">Indentation Guidelines</a></li><li><a href="syntax.html#section_.Comments">Comments</a></li><li><a href="syntax.html#section_literals-syntax">Literals</a></li><li><a href="syntax.html#section_dispatch-syntax">Dispatch</a></li><li><a href="syntax.html#section_macro-syntax"><code><span class="kr">macro</span></code></a></li><li><a href="syntax.html#section_for-macro-syntax"><code><span class="kr">for-macro</span></code></a></li><li><a href="syntax.html#section_operator-syntax"><code><span class="kr">operator</span></code></a></li></ol></li><li><a href="patterns.html">Patterns</a><ol><li><a href="patterns.html#section_types">Types of Patterns</a></li><li><a href="patterns.html#section_definition-target">A Pattern's Object</a></li><li><a href="patterns.html#section_.Pattern_.Objects">Pattern Objects</a></li></ol></li><li><a href="defining.html">Defining Methods</a><ol><li><a href="defining.html#section_variadic">Variadic Roles</a></li><li><a href="defining.html#section_optionals">Optional Roles</a></li><li><a href="defining.html#section_redefining">Redefining Methods</a></li></ol></li><li><a href="macros.html">Macros!</a><ol><li><a href="macros.html#section_defining-macros">Defining Macros</a></li><li><a href="macros.html#section_macro-environment">Macro Environment</a></li><li><a href="macros.html#section_macro-quotes">Macro Quotes</a></li></ol></li><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="enumerable.html">Enumerable</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>The Ecosystem</h1><p>The Ecosystem (Eco for short) represents all packages and their versions used by your application at runtime, including dependency resolution and panicking if there are conflicts/unavailable packages.</p><p>Installed packages go straight to <code>~/.eco</code> - binaries go to <code>~/.eco/bin</code> (so you should put that in your <code>$PATH</code>), and libraries go to <code>~/.eco/lib/(package name)/(version)</code>.
+
+
+</p><div class="section">
+  <h2 class="section-header" id="section_.Eco">Eco</h2>
+  
+
+<div class="definition" id="definition_Eco">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span></pre><p>A global object that manages available and loaded packages. Your application should <code><span class="n"><a href="ecosystem.html#definition_initialize">initialize</a></span></code> it at startup.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_load">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_load">load</a></span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span></pre><p>Scan all installed packages in <code>~/.eco/lib</code>. This is automatically done at startup.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_initialize">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_initialize">initialize</a></span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span></pre><p>&quot;Initialize&quot; the ecosystem. Loads your package's <code>package.eco</code> file and initializes each of its dependencies, recursively.</p><p>After the initialization stage, the only packages possible to load with <code><span class="nf"><a href="ecosystem.html#definition_use:">use:</a></span></code> will be the ones determined to be &quot;safe&quot; by the dependency resolution.</p><p>If a required package is not available, <code><span class="nd">@package-unavailable:needed:</span></code> is raised.</p><p>If no versions of a package satisfy given constraints, <code><span class="nd">@no-versions-of:satisfy:for:</span></code> is raised.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_path-to:">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_path-to:">path-to:</a></span><span class="t"> </span><span class="n">pkg</span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="p">(</span><span class="n">pkg</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Package">Package</a></span><span class="p">)</span><span class="t"> </span><span class="o"><a href="boolean.html#definition_||:">||</a></span><span class="t"> </span><span class="p">(</span><span class="n">pkg</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span><span class="p">)</span></pre><p>Returns the full path to <code>~/.eco/lib/(package name)</code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_path-to:version:">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_path-to:version:">path-to:</a></span><span class="t"> </span><span class="n">pkg</span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_path-to:version:">version:</a></span><span class="t"> </span><span class="n">v</span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="p">(</span><span class="n">pkg</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Package">Package</a></span><span class="p">)</span><span class="t"> </span><span class="o"><a href="boolean.html#definition_||:">||</a></span><span class="t"> </span><span class="p">(</span><span class="n">pkg</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span><span class="p">)</span>
+  | <span class="n">v</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Version">Version</a></span></pre><p>Returns the full path to <code>~/.eco/lib/(package name)/(version)</code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_executable:">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_executable:">executable:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span></pre><p>Returns the full path to <code>~/.eco/bin/(executable name)</code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_install:">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_install:">install:</a></span><span class="t"> </span><span class="n">path</span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span>
+  | <span class="n">path</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span></pre><p>Install the package at <code><span class="n">path</span></code> to <code>~/.eco</code>.</p><p>Required files: <code>main.atomo</code>, <code>package.eco</code>.</p><p>The two required files and anything listed in the package's <code><span class="nf"><a href="ecosystem.html#definition_include:">include:</a></span></code> field are recursively copied to <code>~/.eco/(package name)/(package version)</code>.</p><p>Files listed in the package's <code><span class="nf"><a href="ecosystem.html#definition_executables:">executables:</a></span></code> field are copied to <code>~/.eco/bin</code> and their executable flag is set to True (ie, <code>+x</code>).
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_uninstall:version:">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_uninstall:version:">uninstall:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_uninstall:version:">version:</a></span><span class="t"> </span><span class="n">version</span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span>
+  | <span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span>
+  | <span class="n">version</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Version">Version</a></span></pre><p>Uninstall a package version. Removes its directory from <code>~/.eco/lib</code>, and removes any executables.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_uninstall:">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_uninstall:">uninstall:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span>
+  | <span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span></pre><p>Uninstalls all versions of a package.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_use:">
+  <pre class="thumb"><span class="n">top</span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_use:">use:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span>
+  | <span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span></pre><p>Alias for <code><span class="n">top</span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_use:version:">use:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_use:version:">version:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="kc">True</span><span class="t"> </span><span class="p">}</span></code> (that is, a constraint always yielding <code><span class="kc">True</span></code>).
+
+</p><div class="example"><p><em>Example:</em></p><div class="highlight"><pre><span class="nf"><a href="ecosystem.html#definition_use:">use:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">ehtml</span><span class="s">&quot;</span></pre></div></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_use:version:">
+  <pre class="thumb"><span class="n">top</span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_use:version:">use:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_use:version:">version:</a></span><span class="t"> </span><span class="n">constraint</span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span>
+  | <span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span>
+  | <span class="p">(</span><span class="n">constraint</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span><span class="p">)</span><span class="t"> </span><span class="o"><a href="boolean.html#definition_||:">||</a></span><span class="t"> </span><span class="p">(</span><span class="n">constraint</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Version">Version</a></span><span class="p">)</span></pre><p>Load the highset version of package <code><span class="n"><a href="patterns.html#definition_name">name</a></span></code> satisfying the constraint (or matching the version) <code><span class="n">constraint</span></code> onto <code><span class="n">top</span></code>.</p><p>Note that this should be called after <code><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_initialize">initialize</a></span></code>, which filters out versions that do not satisfy the package's dependency constraints.
+
+</p><div class="example"><p><em>Example:</em></p><div class="highlight"><pre><span class="nf"><a href="ecosystem.html#definition_use:version:">use:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">ecss</span><span class="s">&quot;</span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_use:version:">version:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_&lt;:">&lt;</a></span><span class="t"> </span><span class="p">(</span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="p">}</span></pre></div></div><p>Four possible exceptions may be raised:
+
+</p><dl><dt><code><span class="nd">@</span><span class="p">(</span><span class="nf">package-unavailable:</span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span><span class="p">)</span></code></dt><dd><p>if the package is not installed.</p></dd>
+
+<dt><code><span class="nd">@</span><span class="p">(</span><span class="nf">no-package-versions:</span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span><span class="p">)</span></code></dt><dd><p>if the package is installed, but no versions are valid (this should never happen).</p></dd>
+
+<dt><code><span class="nd">@</span><span class="p">(</span><span class="nf">no-versions-of:</span><span class="t"> </span><span class="p">(</span><span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n">versions</span><span class="p">)</span><span class="t"> </span><span class="nf">satisfy:</span><span class="t"> </span><span class="n">constraint</span><span class="p">)</span></code></dt><dd><p>if none of the package versions installed are satisfactory.</p></dd>
+
+<dt><code><span class="nd">@</span><span class="p">(</span><span class="nf">incompatible-version-loaded:</span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="nf">needed:</span><span class="t"> </span><span class="n">constraint</span><span class="p">)</span></code></dt><dd><p>if the package was already loaded, but the version that was loaded does not satisfy <code><span class="n">constraint</span></code>. This may happen if you don't use <code><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_initialize">initialize</a></span></code> and just use <code><span class="nf"><a href="ecosystem.html#definition_use:version:">use:</a></span><span class="nf"><a href="ecosystem.html#definition_use:version:">version:</a></span></code> everywhere, which is not recommended.</p></dd></dl>
+
+
+
+</div>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_.Packages">Packages</h2>
+  
+
+<div class="definition" id="definition_Package">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Package">Package</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span></pre><p>Represents a package, of a particular version, in the ecosystem.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_load-from:">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Package">Package</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_load-from:">load-from:</a></span><span class="t"> </span><span class="n">filename</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Package">Package</a></span>
+  | <span class="n">file</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span></pre><p>Loads a package from <code><span class="n">filename</span></code>, typically named <code>package.eco</code>.</p><p>Example file:
+
+</p><div class="highlight"><pre><span class="nf"><a href="ecosystem.html#definition_name:">name:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">ehtml</span><span class="s">&quot;</span><span class="t">
+</span><span class="nf"><a href="ecosystem.html#definition_description:">description:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">embedded html dsl</span><span class="s">&quot;</span><span class="t">
+</span><span class="nf"><a href="ecosystem.html#definition_version:">version:</a></span><span class="t"> </span><span class="p">(</span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">1</span><span class="p">)</span><span class="t">
+</span><span class="nf"><a href="ecosystem.html#definition_author:">author:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">Alex Suraci</span><span class="s">&quot;</span></pre></div><p>Note that <code><span class="n">filename</span></code> should be valid Atomo source code; that's all it is. The file is loaded as-is on a new <code><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Package">Package</a></span></code>; each of those lines is a dispatch.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_name:">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Package">Package</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_name:">name:</a></span><span class="t"> </span><span class="n">n</span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span></pre><p>Sets the package's name to <code><span class="n">n</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_description:">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Package">Package</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_description:">description:</a></span><span class="t"> </span><span class="n">d</span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="n">d</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span></pre><p>Sets the package's description to <code><span class="n">d</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_version:">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Package">Package</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_version:">version:</a></span><span class="t"> </span><span class="n">v</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="ecosystem.html#definition_Version">Version</a></span>
+  | <span class="n">v</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Version">Version</a></span></pre><p>Sets the package's version to <code><span class="n">v</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_author:">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Package">Package</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_author:">author:</a></span><span class="t"> </span><span class="n">n</span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span></pre><p>Sets the package's author to <code><span class="n">n</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_include:">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Package">Package</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_include:">include:</a></span><span class="t"> </span><span class="n">filenames</span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="n">filenames</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Sets the package's include field to <code><span class="n">filenames</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_depends-on:">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Package">Package</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_depends-on:">depends-on:</a></span><span class="t"> </span><span class="n">dependencies</span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="n">dependencies</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Sets the package's dependencies field to <code><span class="n">dependencies</span></code>.</p><p>Values in the list should be either <code><span class="n"><a href="association.html#definition_Association">Association</a></span></code>s from package names to a block for checking the package version, or just package names.</p><p>For example, to depend on any version of <code>ehtml</code>, and versions greater than <code>0.1</code> of <code>ecss</code>:
+
+</p><div class="highlight"><pre><span class="nf"><a href="ecosystem.html#definition_depends-on:">depends-on:</a></span><span class="t"> </span><span class="p">[</span><span class="s">&quot;</span><span class="s">ehtml</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">eccs</span><span class="s">&quot;</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_&gt;:">&gt;</a></span><span class="t"> </span><span class="p">(</span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">1</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="p">]</span></pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_executables:">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Eco">Eco</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Package">Package</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_executables:">executables:</a></span><span class="t"> </span><span class="n">filenames</span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="n">filenames</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Sets the package's executables field to <code><span class="n">filenames</span></code>.
+
+
+
+</p></div>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_.Versions">Versions</h2><p>  </p><p>Proper comparable version numbers. All of the usual suspects for anything that's comparable are implemented: <code><span class="o"><a href="comparable.html#definition_==:">==</a></span></code>, <code><span class="o"><a href="comparable.html#definition_&gt;:">&gt;</a></span></code>, <code><span class="o"><a href="comparable.html#definition_&lt;:">&lt;</a></span></code>, <code><span class="o"><a href="comparable.html#definition_&gt;=:">&gt;=</a></span></code>, and <code><span class="o"><a href="comparable.html#definition_&lt;=:">&lt;=</a></span></code>. These methods are defined for all combinations of <code><span class="n"><a href="ecosystem.html#definition_Version">Version</a></span></code> and <code><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">1</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_&lt;:">&lt;</a></span><span class="t"> </span><span class="p">(</span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="mi">2</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_&gt;:">&gt;</a></span><span class="t"> </span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">9</span><span class="p">)</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">1</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_&lt;=:">&lt;=</a></span><span class="t"> </span><span class="p">(</span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">1</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_==:">==</a></span><span class="t"> </span><span class="p">(</span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">1</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_==:">==</a></span><span class="t"> </span><span class="p">(</span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="mi">2</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_==:">==</a></span><span class="t"> </span><span class="p">(</span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="kc">True</span>
+</pre></div><p>Note that the parentheses used in version constructors below are not necessary; they are merely here because the documentation scanner parses Atomo source and pretty-prints it, which makes the parentheses explicit.
+
+</p><div class="definition" id="definition_Version">
+  <pre class="thumb"><span class="n"><a href="ecosystem.html#definition_Version">Version</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span></pre><p>A version number.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_.:">
+  <pre class="thumb"><span class="n">major</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="n">minor</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="ecosystem.html#definition_Version">Version</a></span>
+  | <span class="n">major</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span>
+  | <span class="p">(</span><span class="n">minor</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span><span class="p">)</span><span class="t"> </span><span class="o"><a href="boolean.html#definition_||:">||</a></span><span class="t"> </span><span class="p">(</span><span class="n">minor</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Version">Version</a></span><span class="p">)</span></pre><p>The primary <code><span class="n"><a href="ecosystem.html#definition_Version">Version</a></span></code> constructor.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">0</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(did-not-understand: </span><span class="go">&lt;</span><span class="go">message </span><span class="go">&lt;</span><span class="go">object</span><span class="go">&gt;</span><span class="go"> text: &quot;.&quot;</span><span class="go">&gt;</span><span class="go">)</span><span class="go">&gt;</span></span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">3</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(did-not-understand: </span><span class="go">&lt;</span><span class="go">message </span><span class="go">&lt;</span><span class="go">object</span><span class="go">&gt;</span><span class="go"> text: &quot;.&quot;</span><span class="go">&gt;</span><span class="go">)</span><span class="go">&gt;</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_as:">
+  <pre class="thumb"><span class="n">v</span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_as:">as:</a></span><span class="t"> </span><span class="n">String</span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="n">v</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Version">Version</a></span></pre><p>Converts a <code><span class="n"><a href="ecosystem.html#definition_Version">Version</a></span></code> to the typical textual representation of version numbers.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_as:">as:</a></span><span class="t"> </span><span class="n">String</span>
+<span class="s">&quot;</span><span class="s">0.1.2</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_to:">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Version">Version</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="ecosystem.html#definition_Version">Version</a></span>
+  | <span class="p">(</span><span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span><span class="p">)</span><span class="t"> </span><span class="o"><a href="boolean.html#definition_||:">||</a></span><span class="t"> </span><span class="p">(</span><span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span><span class="p">)</span></pre><p>Conversion from <code><span class="n">String</span></code> is the converse of <code><span class="n"><a href="ecosystem.html#definition_Version">Version</a></span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_as:">as:</a></span><span class="t"> </span><span class="n">String</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="s">&quot;</span><span class="s">0.1.2</span><span class="s">&quot;</span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Version">Version</a></span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(did-not-understand: </span><span class="go">&lt;</span><span class="go">message </span><span class="go">&lt;</span><span class="go">object</span><span class="go">&gt;</span><span class="go"> text: &quot;.&quot;</span><span class="go">&gt;</span><span class="go">)</span><span class="go">&gt;</span></span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="p">(</span><span class="nf"><a href="ecosystem.html#definition_as:">as:</a></span><span class="t"> </span><span class="n">String</span><span class="p">)</span><span class="t"> </span><span class="p">(</span><span class="nf"><a href="ecosystem.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Version">Version</a></span><span class="p">)</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(did-not-understand: </span><span class="go">&lt;</span><span class="go">message </span><span class="go">&lt;</span><span class="go">object</span><span class="go">&gt;</span><span class="go"> text: &quot;.&quot;</span><span class="go">&gt;</span><span class="go">)</span><span class="go">&gt;</span></span>
+</pre></div><p>Conversion from <code><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span></code> simply uses it as <code><span class="n">major</span></code> and <code><span class="mi">0</span></code> as <code><span class="n">minor</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="ecosystem.html#definition_as:">as:</a></span><span class="t"> </span><span class="n"><a href="ecosystem.html#definition_Version">Version</a></span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(did-not-understand: </span><span class="go">&lt;</span><span class="go">message </span><span class="go">&lt;</span><span class="go">object</span><span class="go">&gt;</span><span class="go"> text: &quot;.&quot;</span><span class="go">&gt;</span><span class="go">)</span><span class="go">&gt;</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+</div>
+
+    </div>
+  </body>
+</html>

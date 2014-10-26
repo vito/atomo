@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Exception Handling</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+  </head>
+  <body>
+    <div id="sidebar">
+       <h4>On this page:</h4>
+<ol class="toc"><li><a href="exceptions.html">Exception Handling</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="index.html">Atomo</a><ol><li><a href="getting-started.html">Getting Started</a><ol><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li></ol></li><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="lists.html">Lists</a></li><li><a href="strings.html">Strings</a></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="exceptions.html">Exception Handling</a></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="parameters.html">Parameterization</a></li><li><a href="association.html">Associations</a></li></ol></li></ol>
+    </div>
+    <div id="content">
+      <h1>Exception Handling</h1>
+
+
+<div class="definition" id="definition_error:">
+  <pre class="thumb"><span class="dispatch keyword"><a href="exceptions.html#definition_error:">error:</a> <span class="dispatch single">v</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">undefined</span></pre><p>Signals <code><span class="dispatch single">v</span></code> as an error. If the signal exits normally, a debugger is started; hence, this method never exits normally.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="block">{ <span class="string">&quot;x&quot;</span> <span class="dispatch single"><a href="io.html#definition_print">print</a></span>; <span class="dispatch keyword"><a href="exceptions.html#definition_error:">error:</a> <span class="number integer">1</span></span>; <span class="string">&quot;y&quot;</span> <span class="dispatch single"><a href="io.html#definition_print">print</a></span> }</span> <span class="dispatch single"><a href="blocks.html#definition_call">call</a></span>
+x
+<span class="error"><span class="number integer">&lt;error 1&gt;</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_catch:">
+  <pre class="thumb"><span class="dispatch keyword"><span class="dispatch single">action</span> <a href="exceptions.html#definition_catch:">catch:</a> <span class="dispatch single">recover</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">any</span>
+  | <span class="dispatch keyword"><span class="dispatch single">action</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">recover</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span></pre><p>Execute <code><span class="dispatch single">action</span> <span class="dispatch single"><a href="blocks.html#definition_call">call</a></span></code>, catching any errors and passing them to <code><span class="dispatch single">recover</span></code> for handling.</p><p>Yields the result of <code><span class="dispatch single">action</span></code> or <code><span class="dispatch single">recover</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="dispatch keyword"><span class="block">{ <span class="dispatch keyword"><a href="exceptions.html#definition_error:">error:</a> <span class="particle">@<span class="name">error</span></span></span> }</span> <a href="exceptions.html#definition_catch:">catch:</a> <span class="block">{ <span class="pattern">e</span> | <span class="particle">@(<span class="names">got:</span> <span class="dispatch single">e</span>)</span> }</span></span>
+<span class="particle">@(<span class="names">got:</span> <span class="particle">@<span class="name">error</span></span>)</span>
+<span class="caret">&gt;</span> <span class="dispatch keyword"><span class="block">{ <span class="particle">@<span class="name">ok</span></span> }</span> <a href="exceptions.html#definition_catch:">catch:</a> <span class="block">{ <span class="particle">@<span class="name">caught</span></span> }</span></span>
+<span class="particle">@<span class="name">ok</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_catch:ensuring:">
+  <pre class="thumb"><span class="dispatch keyword"><span class="dispatch single">action</span> <a href="exceptions.html#definition_catch:ensuring:">catch:</a> <span class="dispatch single">recover</span> <a href="exceptions.html#definition_catch:ensuring:">ensuring:</a> <span class="dispatch single">cleanup</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">any</span>
+  | <span class="dispatch keyword">[<span class="dispatch single">action</span>, <span class="dispatch single">recover</span>, <span class="dispatch single">cleanup</span>] <a href="lists.html#definition_all?:">all?:</a> <span class="particle">@(<span class="names">is-a?:</span> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span>)</span></span></pre><p>Execute <code><span class="dispatch single">action</span> <span class="dispatch single"><a href="blocks.html#definition_call">call</a></span></code>, catching any errors and passing them to <code><span class="dispatch single">recover</span></code> for handling, and ensuring that <code><span class="dispatch single">cleanup</span></code> is called after the action is executed.</p><p>Yields the result of <code><span class="dispatch single">action</span></code> or <code><span class="dispatch single">recover</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="dispatch keyword"><span class="block">{ <span class="particle">@<span class="name">ok</span></span> }</span> <a href="exceptions.html#definition_catch:ensuring:">catch:</a> <span class="block">{ <span class="particle">@<span class="name">caught</span></span> }</span> <a href="exceptions.html#definition_catch:ensuring:">ensuring:</a> <span class="block">{ <span class="string">&quot;cleaning up&quot;</span> <span class="dispatch single"><a href="io.html#definition_print">print</a></span> }</span></span>
+cleaning up
+<span class="particle">@<span class="name">ok</span></span>
+<span class="caret">&gt;</span> <span class="dispatch keyword"><span class="block">{ <span class="dispatch keyword"><a href="exceptions.html#definition_error:">error:</a> <span class="particle">@<span class="name">not-ok</span></span></span> }</span> <a href="exceptions.html#definition_catch:ensuring:">catch:</a> <span class="block">{ <span class="particle">@<span class="name">caught</span></span> }</span> <a href="exceptions.html#definition_catch:ensuring:">ensuring:</a> <span class="block">{ <span class="string">&quot;cleaning up&quot;</span> <span class="dispatch single"><a href="io.html#definition_print">print</a></span> }</span></span>
+cleaning up
+<span class="particle">@<span class="name">caught</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_handle:">
+  <pre class="thumb"><span class="dispatch keyword"><span class="dispatch single">action</span> <a href="exceptions.html#definition_handle:">handle:</a> <span class="dispatch single">branches</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">any</span>
+  | <span class="dispatch keyword"><span class="dispatch single">action</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">branches</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span></pre><p>Similar to <code><span class="dispatch keyword"><a href="exceptions.html#definition_catch:">catch:</a></span></code>, but <code><span class="dispatch single">branches</span></code> is a block containing exception patterns bound to the action to take if they're thrown. If none of the exceptions match any of the patterns, the exception is re-thrown.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="dispatch keyword"><span class="block">{ <span class="dispatch keyword"><a href="exceptions.html#definition_error:">error:</a> <span class="particle">@<span class="name">foo</span></span></span> }</span> <a href="exceptions.html#definition_handle:">handle:</a> <span class="block">{ <span class="dispatch keyword"><span class="particle">@<span class="name">foo</span></span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="number integer">1</span></span>; <span class="dispatch keyword"><span class="particle">@<span class="name">bar</span></span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="number integer">2</span></span> }</span></span>
+<span class="number integer">1</span>
+<span class="caret">&gt;</span> <span class="dispatch keyword"><span class="block">{ <span class="dispatch keyword"><a href="exceptions.html#definition_error:">error:</a> <span class="particle">@<span class="name">bar</span></span></span> }</span> <a href="exceptions.html#definition_handle:">handle:</a> <span class="block">{ <span class="dispatch keyword"><span class="particle">@<span class="name">foo</span></span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="number integer">1</span></span>; <span class="dispatch keyword"><span class="particle">@<span class="name">bar</span></span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="number integer">2</span></span> }</span></span>
+<span class="number integer">2</span>
+<span class="caret">&gt;</span> <span class="dispatch keyword"><span class="block">{ <span class="dispatch keyword"><a href="exceptions.html#definition_error:">error:</a> <span class="particle">@<span class="name">baz</span></span></span> }</span> <a href="exceptions.html#definition_handle:">handle:</a> <span class="block">{ <span class="dispatch keyword"><span class="particle">@<span class="name">foo</span></span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="number integer">1</span></span>; <span class="dispatch keyword"><span class="particle">@<span class="name">bar</span></span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="number integer">2</span></span> }</span></span>
+<span class="error"><span class="particle">@<span class="name">baz</span></span></span>
+<span class="caret">&gt;</span> <span class="dispatch keyword"><span class="block">{ <span class="particle">@<span class="name">ok</span></span> }</span> <a href="exceptions.html#definition_handle:">handle:</a> <span class="block">{ <span class="dispatch keyword"><span class="particle">@<span class="name">foo</span></span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="number integer">1</span></span>; <span class="dispatch keyword"><span class="particle">@<span class="name">bar</span></span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="number integer">2</span></span> }</span></span>
+<span class="particle">@<span class="name">ok</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_handle:ensuring:">
+  <pre class="thumb"><span class="dispatch keyword"><span class="dispatch single">action</span> <a href="exceptions.html#definition_handle:ensuring:">handle:</a> <span class="dispatch single">branches</span> <a href="exceptions.html#definition_handle:ensuring:">ensuring:</a> <span class="dispatch single">cleanup</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">any</span>
+  | <span class="dispatch keyword">[<span class="dispatch single">action</span>, <span class="dispatch single">branches</span>, <span class="dispatch single">cleanup</span>] <a href="lists.html#definition_all?:">all?:</a> <span class="particle">@(<span class="names">is-a?:</span> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span>)</span></span></pre><p>Similar to <code><span class="dispatch keyword"><a href="exceptions.html#definition_handle:">handle:</a></span></code>, but with an <code><span class="dispatch keyword"><a href="exceptions.html#definition_ensuring:">ensuring:</a></span></code> block.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="dispatch keyword"><span class="block">{ <span class="dispatch keyword"><a href="exceptions.html#definition_error:">error:</a> <span class="particle">@<span class="name">foo</span></span></span> }</span> <a href="exceptions.html#definition_handle:ensuring:">handle:</a> <span class="block">{ <span class="dispatch keyword"><span class="particle">@<span class="name">foo</span></span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="number integer">1</span></span> }</span> <a href="exceptions.html#definition_handle:ensuring:">ensuring:</a> <span class="block">{ <span class="string">&quot;hi&quot;</span> <span class="dispatch single"><a href="io.html#definition_print">print</a></span> }</span></span>
+hi
+<span class="number integer">1</span>
+<span class="caret">&gt;</span> <span class="dispatch keyword"><span class="block">{ <span class="dispatch keyword"><a href="exceptions.html#definition_error:">error:</a> <span class="particle">@<span class="name">baz</span></span></span> }</span> <a href="exceptions.html#definition_handle:ensuring:">handle:</a> <span class="block">{ <span class="dispatch keyword"><span class="particle">@<span class="name">foo</span></span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="number integer">1</span></span> }</span> <a href="exceptions.html#definition_handle:ensuring:">ensuring:</a> <span class="block">{ <span class="string">&quot;hi&quot;</span> <span class="dispatch single"><a href="io.html#definition_print">print</a></span> }</span></span>
+hi
+<span class="error"><span class="particle">@<span class="name">baz</span></span></span>
+<span class="caret">&gt;</span> <span class="dispatch keyword"><span class="block">{ <span class="particle">@<span class="name">ok</span></span> }</span> <a href="exceptions.html#definition_handle:ensuring:">handle:</a> <span class="block">{ <span class="dispatch keyword"><span class="particle">@<span class="name">foo</span></span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="number integer">1</span></span> }</span> <a href="exceptions.html#definition_handle:ensuring:">ensuring:</a> <span class="block">{ <span class="string">&quot;hi&quot;</span> <span class="dispatch single"><a href="io.html#definition_print">print</a></span> }</span></span>
+hi
+<span class="particle">@<span class="name">ok</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_ensuring:">
+  <pre class="thumb"><span class="dispatch keyword"><span class="dispatch single">action</span> <a href="exceptions.html#definition_ensuring:">ensuring:</a> <span class="dispatch single">cleanup</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">any</span>
+  | <span class="dispatch keyword"><span class="dispatch single">action</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">cleanup</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span></pre><p>Execute <code><span class="dispatch single">action</span> <span class="dispatch single"><a href="blocks.html#definition_call">call</a></span></code>, ensuring that <code><span class="dispatch single">cleanup</span></code> is called after the action is executed.</p><p>Yields the result of <code><span class="dispatch single">action</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="dispatch keyword"><span class="block">{ <span class="particle">@<span class="name">ok</span></span> }</span> <a href="exceptions.html#definition_ensuring:">ensuring:</a> <span class="block">{ <span class="string">&quot;cleaning up&quot;</span> <span class="dispatch single"><a href="io.html#definition_print">print</a></span> }</span></span>
+cleaning up
+<span class="particle">@<span class="name">ok</span></span>
+<span class="caret">&gt;</span> <span class="dispatch keyword"><span class="block">{ <span class="dispatch keyword"><a href="exceptions.html#definition_error:">error:</a> <span class="particle">@<span class="name">not-ok</span></span></span> }</span> <a href="exceptions.html#definition_ensuring:">ensuring:</a> <span class="block">{ <span class="string">&quot;cleaning up&quot;</span> <span class="dispatch single"><a href="io.html#definition_print">print</a></span> }</span></span>
+cleaning up
+<span class="error"><span class="particle">@<span class="name">not-ok</span></span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_ensuring:do:">
+  <pre class="thumb"><span class="dispatch keyword"><span class="dispatch single">value</span> <a href="exceptions.html#definition_ensuring:do:">ensuring:</a> <span class="dispatch single">cleanup</span> <a href="exceptions.html#definition_ensuring:do:">do:</a> <span class="dispatch single">action</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">any</span>
+  | <span class="dispatch keyword"><span class="dispatch single">cleanup</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">action</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span></pre><p>Similar to <code><span class="dispatch keyword"><a href="exceptions.html#definition_ensuring:">ensuring:</a></span></code>, but <code><span class="dispatch single">value</span></code> is passed to both blocks. This makes things like file opening and closing very natural.</p><p>Yields the result of <code><span class="dispatch single">action</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="dispatch keyword"><span class="dispatch keyword">(<span class="dispatch single">File</span> <a href="core.html#definition_new:">new:</a> <span class="string">&quot;example-file&quot;</span>)</span> <a href="exceptions.html#definition_ensuring:do:">ensuring:</a> <span class="particle">@<span class="name">close</span></span> <a href="exceptions.html#definition_ensuring:do:">do:</a> <span class="particle">@(<span class="names">display:</span> <span class="string">&quot;Hello!&quot;</span>)</span></span>
+<span class="string">&quot;Hello!&quot;</span>
+</pre></div>
+
+
+
+
+
+</div>
+
+
+    </div>
+  </body>
+</html>

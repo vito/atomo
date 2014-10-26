@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Atomo v0.4 Release Notes</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+       <h4>On this page:</h4>
+<ol class="toc"><li><a href="0..4.html#section_.Language_.Design_.Features">Language Design Features</a><ol><li><a href="0..4.html#section_.Tuples___.Variadic_.Roles">Tuples & Variadic Roles</a></li><li><a href="0..4.html#section_.Optional_.Roles">Optional Roles</a></li><li><a href="0..4.html#section_.Macro-.Quotes">Macro-Quotes</a></li><li><a href="0..4.html#section_.Regular_.Expressions">Regular Expressions</a></li><li><a href="0..4.html#section_.String_.Formatting">String Formatting</a></li></ol></li><li><a href="0..4.html#section_.Additions">Additions</a></li><li><a href="0..4.html#section_.Changes">Changes</a></li><li><a href="0..4.html#section_.The_.Raw_.Log">The Raw Log</a></li><li><a href="0..4.html#section_index">Atomo</a><ol><li><a href="getting-started.html">Getting Started</a><ol><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li><li><a href="getting-started.html#section_.Wrapping_.Up">Wrapping Up</a></li></ol></li><li><a href="repl.html">The REPL</a></li><li><a href=".Tutorials.html">Tutorials</a><ol><li><a href="ruby.html">Ruby in Atomo</a></li></ol></li><li><a href="syntax.html">Syntax</a><ol><li><a href="syntax.html#section_.General_.Rules">General Rules</a></li><li><a href="syntax.html#section_guidelines">Indentation Guidelines</a></li><li><a href="syntax.html#section_.Comments">Comments</a></li><li><a href="syntax.html#section_literals-syntax">Literals</a></li><li><a href="syntax.html#section_dispatch-syntax">Dispatch</a></li><li><a href="syntax.html#section_macro-syntax"><code><span class="kr">macro</span></code></a></li><li><a href="syntax.html#section_for-macro-syntax"><code><span class="kr">for-macro</span></code></a></li><li><a href="syntax.html#section_operator-syntax"><code><span class="kr">operator</span></code></a></li></ol></li><li><a href="patterns.html">Patterns</a><ol><li><a href="patterns.html#section_types">Types of Patterns</a></li><li><a href="patterns.html#section_definition-target">A Pattern's Object</a></li><li><a href="patterns.html#section_.Pattern_.Objects">Pattern Objects</a></li></ol></li><li><a href="defining.html">Defining Methods</a><ol><li><a href="defining.html#section_variadic">Variadic Roles</a></li><li><a href="defining.html#section_optionals">Optional Roles</a></li><li><a href="defining.html#section_redefining">Redefining Methods</a></li></ol></li><li><a href="macros.html">Macros!</a><ol><li><a href="macros.html#section_defining-macros">Defining Macros</a></li><li><a href="macros.html#section_macro-environment">Macro Environment</a></li><li><a href="macros.html#section_macro-quotes">Macro Quotes</a></li></ol></li><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="enumerable.html">Enumerable</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol>
+
+    </div>
+
+    <div id="content">
+<h1>Atomo v0.4 Release Notes</h1><p>Version 0.4 introduces many, many new goodies and tweaks from the previous versions. See <a href="http://darcsden.com/alex/atomo/changes" class="external">the changes list</a> for all details.
+
+</p><div class="section">
+  <h2 class="section-header" id="section_.Language_.Design_.Features">Language Design Features</h2>
+  
+
+<div class="section">
+  <h2 class="section-header" id="section_.Tuples___.Variadic_.Roles">Tuples &amp; Variadic Roles</h2><p>  </p><p>Tuples are throwaway data, used to temporarily group together arbitrary values.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="p">)</span>
+<span class="p">(</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="sc">$</span><span class="sc">a</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="p">(</span><span class="sc">$</span><span class="sc">a</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">)</span>
+</pre></div><p>Their primary application is variadic roles, where they can be used to send along zero or more than one values (sending one value is done by just using the value itself; there is no one-element tuple).
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nf">foo:</span><span class="t"> </span><span class="p">(</span><span class="o"><a href="ranges.html#definition_...:">...</a></span><span class="t"> </span><span class="n">args</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="n">args</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="nf">foo:</span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="p">[</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="nf">foo:</span><span class="t"> </span><span class="mi">1</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="nf">foo:</span><span class="t"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">x</span><span class="p">)</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">x</span><span class="p">]</span>
+</pre></div><p>As you can see, they are converted to lists on the receiving end. You can't do much with tuples themselves (except for pattern-match them), but converting to a list is trivial (and fast).
+
+
+
+</p></div>
+<div class="section">
+  <h2 class="section-header" id="section_.Optional_.Roles">Optional Roles</h2><p>  </p><p>Methods can now be defined with optional roles, which can be overridden by the sender. Their default must be specified, which is an expression that will be evaluated to yield the value for the body.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nf">foo:</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="nf">&amp;bar:</span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="n">bar</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="nf">foo:</span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">3</span>
+<span class="caret">&gt;</span> <span class="nf">foo:</span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="nf">&amp;bar:</span><span class="t"> </span><span class="mi">3</span>
+<span class="mi">4</span>
+</pre></div><p>As you can see, we're using <code>&amp;</code> at the start of a keyword role for optionals. A single name can be used as well, e.g. <code><span class="mi">1</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="n">&amp;bar</span></code>, which implies <code><span class="mi">1</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="nf">&amp;bar:</span><span class="t"> </span><span class="kc">True</span></code>.
+
+
+
+</p></div>
+<div class="section">
+  <h2 class="section-header" id="section_.Macro-.Quotes">Macro-Quotes</h2><p>  </p><p>Version 0.4 introduces new syntax for generalized string quoting. A macro-quote is a literal expression containing a raw string and optional flags. Using them sends a message at macroexpansion time, which determines what value it expands to.</p><p>This trivial macro-quoter expands a block of text into its words at macroexpansion time:
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">w{</span><span class="sx">foo bar baz</span><span class="sx">}</span>
+<span class="p">[</span><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">bar</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">baz</span><span class="s">&quot;</span><span class="p">]</span>
+</pre><p>The application for these is already far-reaching, fostering the formatting and regular expression features listed below.
+
+
+
+</p></div>
+<div class="section">
+  <h2 class="section-header" id="section_.Regular_.Expressions">Regular Expressions</h2><p>  </p><p>Atomo now comes with PCRE-style regexp functionality. Regexp literals can be created with the <code>r</code> macro-quoter.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">r&quot;</span><span class="sx">(</span><span class="sx">\d</span><span class="sx">+)-</span><span class="sx">\w</span><span class="sx">+</span><span class="sx">&quot;</span>
+<span class="sx">r{</span><span class="sx">(</span><span class="sx">\d</span><span class="sx">+)-</span><span class="sx">\w</span><span class="sx">+</span><span class="sx">}</span>
+</pre></div><p>For a full reference on how to use these, see Regexp.
+
+
+
+</p></div>
+<div class="section">
+  <h2 class="section-header" id="section_.String_.Formatting">String Formatting</h2><p>  </p><p>A new string formatting system has been custom-built for Atomo, inspired by Common Lisp's <code>FORMAT</code> directive, with a bit friendlier (<code>printf</code>-like) syntax, and parsed at macroexpansion time via the <code>f</code> macro-quoter.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%s</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%:">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">hello!</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">hello!</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%0.2f</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%:">%</a></span><span class="t"> </span><span class="mf">10.567</span>
+<span class="s">&quot;</span><span class="s">10.57</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%{%a%^, }</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%:">%</a></span><span class="t"> </span><span class="p">[</span><span class="sc">$</span><span class="sc">a</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="nd">@foo</span><span class="p">]</span>
+<span class="s">&quot;</span><span class="s">$a, hi, @foo</span><span class="s">&quot;</span>
+</pre></div><p>See <a href="0..4.html#section_.String_.Formatting">String Formatting</a>.
+</p></div>
+
+</div>
+
+<div class="section">
+  <h2 class="section-header" id="section_.Additions">Additions</h2><p>  </p><p>The following are new features as part of the standard library, or implementation-level additions.
+
+</p><ul><li><p>Particles can now have the first role filled in. Accordingly, a <code><span class="n">complete</span></code> method was added, which is just <code><span class="nf"><a href="particles.html#definition_complete:">complete:</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nd">@</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span><span class="p">)</span>
+<span class="nd">@</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="nd">@</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span><span class="p">)</span><span class="t"> </span><span class="n">complete</span>
+<span class="go">&lt;m</span><span class="go">essage 1 sqrt</span><span class="go">&gt;</span>
+</pre></div></li>
+
+<li><p>A class-objects system, providing <code>module</code>, <code>include</code>, and <code>class</code> functionality similar to Ruby, is now included in the prelude.</p><p>See <a href="class-objects.html">Class Objects</a>.</p></li>
+
+<li><p>Added <code><span class="n"><a href="ordered.html#definition_Ordered">Ordered</a></span></code> and <code><span class="n"><a href="ranges.html#definition_Range">Range</a></span></code>.</p></li>
+
+<li><p>A new <a href="pretty.html">Pretty-Printing</a> system.</p></li>
+
+<li><p>Added <code><span class="nf"><a href="core.html#definition_case-of:">case-of:</a></span></code>, which chooses a match based on <code><span class="nf"><a href="regexps.html#definition_matches?:">matches?:</a></span></code>.</p></li>
+
+<li><p>Added <code><span class="nf"><a href="core.html#definition_set!:">set!:</a></span></code> and <code><span class="nf"><a href="core.html#definition_set!:to:">set!:</a></span><span class="nf"><a href="core.html#definition_set!:to:">to:</a></span></code> for explicitly updating a slot rather than defining one.</p></li>
+
+<li><p>Added <code><span class="nf"><a href="core.html#definition_has-slot?:">has-slot?:</a></span></code> for determining if an object has a given slot defined on it directly.</p></li>
+
+<li><p>Added <code><span class="n"><a href="core.html#definition_id">id</a></span></code>, a trivial method which just yields its target.</p></li>
+
+<li><p><code>w</code> and <code>raw</code> macro-quoters, for word lists and raw strings, respectively.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">w{</span><span class="sx">foo bar baz</span><span class="sx">}</span>
+<span class="p">[</span><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">bar</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">baz</span><span class="s">&quot;</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="sx">raw{</span><span class="sx">hello</span><span class="sx">\b</span><span class="sx">world, I</span><span class="sx">\'</span><span class="sx">m pretty </span><span class="sx">\r</span><span class="sx">\a</span><span class="sx">\w</span><span class="sx">.</span><span class="sx">}</span>
+<span class="s">&quot;</span><span class="s">hello</span><span class="se">\</span><span class="se">\</span><span class="s">bworld, I</span><span class="se">\</span><span class="se">\</span><span class="s">'m pretty </span><span class="se">\</span><span class="se">\</span><span class="s">r</span><span class="se">\</span><span class="se">\</span><span class="s">a</span><span class="se">\</span><span class="se">\</span><span class="s">w.</span><span class="s">&quot;</span>
+</pre></div></li>
+
+<li><p>A new, better, faster lexer and parser.</p></li>
+
+<li><p>TextMate/Sublime Text 2 editor stuff is now included in <code>etc/</code>.</p></li>
+
+<li><p>The REPL now intelligently accepts multiline input.</p></li>
+
+<li><p>Many other little methods, some not yet documented.</p></li></ul>
+</div>
+
+<div class="section">
+  <h2 class="section-header" id="section_.Changes">Changes</h2><p>  </p><p>The following is a list of major changes in this version which are backwards-incompatible.
+
+</p><ul><li><p>Defining and dispatching now only uses the first role as the target. Pattern-matching provides the rest of the &quot;multiple dispatch.&quot;</p></li>
+
+<li><p>Countless <a href="http://atomo-lang.org/docs" class="external">documentation</a> updates and additions.</p></li>
+
+<li><p>Linebreaks and other special characters are now accepted in string literals.</p></li>
+
+<li><p>Implicit gensyms now use <code>!</code> rather than <code>#</code> as a prefix.</p></li>
+
+<li><p>Condition handlers are now properly removed from the stack to prevent a handler from handling itself.</p></li>
+
+<li><p>Many methods, including <code><span class="nf"><a href="blocks.html#definition_call:">call:</a></span></code>, now use tuples rather than lists to provide multiple arguments.</p></li>
+
+<li><p>A few methods, notably <code><span class="nf"><a href="lists.html#definition_zip:">zip:</a></span></code>, now use optional roles.</p></li>
+
+<li><p><code><span class="nf"><a href="lists.html#definition_zip:">zip:</a></span></code> now returns a list of lists and accepts multiple lists to zip with.</p></li>
+
+<li><p><code><span class="nf"><a href="blocks.html#definition_join:">join:</a></span></code> now searches the block's context before the target's delegates.</p></li>
+
+<li><p><code><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span></code> now accepts a less-complete particle, and does partial matching based on which roles are filled and not filled.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@+</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="kc">False</span>
+</pre></div></li>
+
+<li><p><code><span class="o"><a href="lists.html#definition_&lt;&lt;:">&lt;&lt;</a></span></code> and <code><span class="o"><a href="lists.html#definition_&gt;&gt;:">&gt;&gt;</a></span></code> operators are now macros intended for destructive update.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="lists.html#definition_&lt;&lt;:">&lt;&lt;</a></span><span class="t"> </span><span class="mi">3</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+</pre></div></li>
+
+<li><p><code><span class="n"><a href="blocks.html#definition_Block">Block</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_repeat">repeat</a></span></code> and <code><span class="n"><a href="blocks.html#definition_Block">Block</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_repeat:">repeat:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span></code> now call the block in-context.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">0</span>
+<span class="mi">0</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o">+=</span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_repeat:">repeat:</a></span><span class="t"> </span><span class="mi">10</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">,</span><span class="t"> </span><span class="mi">7</span><span class="p">,</span><span class="t"> </span><span class="mi">8</span><span class="p">,</span><span class="t"> </span><span class="mi">9</span><span class="p">,</span><span class="t"> </span><span class="mi">10</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="mi">10</span>
+</pre></div></li>
+
+<li><p><code><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_match:">match:</a></span><span class="t"> </span><span class="n">_</span></code> now yields <code><span class="nd">@none</span></code> or <code><span class="nd">@ok</span></code> rather than <code><span class="nd">@no</span></code> or <code><span class="nd">@yes:</span></code>.</p></li>
+
+<li><p><code><span class="n"><a href="lists.html#definition_List">List</a></span><span class="t"> </span><span class="n">to-string</span></code> is now <code><span class="n"><a href="lists.html#definition_List">List</a></span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n">String</span></code>.</p></li>
+
+<li><p><code><span class="n">Char</span></code> is now <code><span class="n">Character</span></code>.</p></li>
+
+<li><p>File and directory I/O methods now check that the file/directory exists, etc., to prevent hard crashes.</p></li>
+
+<li><p>The Atomo library is not installed by default; use <code>-flib</code>.</p></li>
+
+<li><p>Many internal cleanups and fixes.</p></li></ul>
+</div>
+
+<div class="section">
+  <h2 class="section-header" id="section_.The_.Raw_.Log">The Raw Log</h2>
+  
+
+<pre class="verbatim">Sun Feb  6 15:16:40 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated string formatting docs
+
+Sun Feb  6 15:15:53 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * providing both `&lt;` and `&gt;` flags to a justifier now implies `=`
+
+Sun Feb  6 15:03:05 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * allow `&lt;`, `&gt;`, and `=` flags in justification formatter, which are like `:`, `@`, and `:@` from FORMAT. closes #42.
+
+Sun Feb  6 14:20:31 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * cleanups
+
+Sun Feb  6 14:20:02 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * allow &amp;foo to mean &amp;foo: True. closes #44.
+
+Sun Feb  6 14:19:36 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added `raw` macro-quoter. closes #43.
+
+Sat Feb  5 21:08:00 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * include range docs
+
+Sat Feb  5 18:33:08 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added Range docs and updated List docs. closes #10.
+
+Sat Feb  5 18:31:20 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added Ordered docs. closes #25.
+
+Sat Feb  5 18:30:31 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * rename @begin to @start in Range
+
+Sat Feb  5 18:30:15 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * more efficient/simpler @shift: for Ordered
+
+Sat Feb  5 17:58:37 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * a bunch of Range corrections
+
+Sat Feb  5 16:54:21 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * formatting docs updates
+
+Sat Feb  5 16:42:15 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added initial string formatting docs. closes #37.
+
+Sat Feb  5 14:13:42 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * removed ePretty field of EVM record
+
+Sat Feb  5 14:12:18 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * promoted @match: to a first-class expression
+
+Sat Feb  5 14:11:50 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * expand a macro body's gensyms beforehand
+
+Fri Feb  4 12:43:40 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated class-object docs and ruby tutorial
+
+Fri Feb  4 12:42:55 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * expand through quasiquotes, and corrected !bang decorating
+
+Thu Feb  3 23:17:05 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @pretty-expression
+
+Thu Feb  3 23:16:57 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added Valuable Prettied instance
+
+Thu Feb  3 22:56:17 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected exporting of various condition methods
+
+Thu Feb  3 22:53:06 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * class-object documentation updates
+
+Thu Feb  3 22:52:29 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * @class: now uses an optional for extending a given object (defaults to Object)
+
+Thu Feb  3 22:48:42 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * optionals roles with macros. closes #40.
+
+Wed Feb  2 22:20:18 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * Added initial class-objects system documentation. Closes #9.
+
+Wed Feb  2 22:19:48 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * provide a @pretty method for class-objects created with @(class: Dispatch)
+
+Wed Feb  2 22:19:26 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * @module: macro now expands to @ok
+
+Wed Feb  2 14:19:35 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * Char -&gt; Character. Closes #39.
+
+Wed Feb  2 00:28:50 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * pretty-printing docs. closes #7.
+
+Tue Feb  1 21:57:36 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated sync-docs script
+
+Tue Feb  1 18:06:40 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * pattern object docs. closes #16.
+
+Tue Feb  1 17:55:26 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * conversion to patterns is now called @to: rather than @as: to indicate the possibility of failure
+
+Tue Feb  1 17:54:53 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated ruby tutorial
+
+Tue Feb  1 12:40:31 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added REPL docs. closes #22.
+
+Tue Feb  1 12:00:12 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * minor cleanups
+
+Tue Feb  1 11:59:53 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added Regexp docs
+
+Tue Feb  1 02:01:51 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * ruby.atomo -&gt; ruby.anatomy
+
+Tue Feb  1 02:00:33 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * minor cleanups
+
+Tue Feb  1 02:00:13 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * TM lexer: rationals support
+
+Tue Feb  1 01:52:19 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * .atomo -&gt; .anatomy
+
+Mon Jan 31 13:42:45 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * Formatting -&gt; Formatter
+
+Mon Jan 31 13:42:32 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * list formatting modules in cabal file
+
+Mon Jan 31 13:29:52 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected @\ macro; first role doesn't have to be a dispatch
+
+Mon Jan 31 13:28:15 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @\ macro for parentheses-free message chaining
+
+Mon Jan 31 13:17:17 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * finished pretty-printing for AtomoError. closes #15.
+
+Mon Jan 31 13:17:07 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * suppress orphan instance warning in Atomo.Pretty
+
+Mon Jan 31 12:43:33 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * minor tweak
+
+Mon Jan 31 12:38:47 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected iterating with * using all inputs rather than the rest, and added breaking from a sublist iteration via %.^. closes #38.
+
+Sun Jan 30 22:21:29 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @replace:with: and @replace-all:with:. closes #3.
+
+Sun Jan 30 16:30:44 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * rename sublime text/textmate folder
+
+Sun Jan 30 16:29:42 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added textmate/sublime text stuff to etc/
+
+Sun Jan 30 14:48:51 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * tabs -&gt; spaces
+
+Sun Jan 30 13:59:49 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added initial formatting tests
+
+Sun Jan 30 13:59:32 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected . flag for iteration (sublists)
+
+Sun Jan 30 13:59:02 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * capitalizing formatter now lowercases the rest of the word
+
+Sun Jan 30 13:58:43 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * give a better error in `i2d`
+
+Sun Jan 30 13:58:07 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * minor cleanups
+
+Sun Jan 30 11:23:55 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * properly parse hex as %x rather than %h
+
+Sun Jan 30 11:23:19 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * use a custom int-to-digit that goes up to Z
+
+Sat Jan 29 16:44:06 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected handler popping
+
+Sat Jan 29 16:02:59 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * handlers are popped from the stack as they're called to ensure they don't handle their own handlers
+
+Sat Jan 29 16:01:59 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected @(Simple-Error pretty) and @(Simple-Warning pretty)
+
+Sat Jan 29 15:49:19 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added disabled error debugging helper
+
+Sat Jan 29 15:49:07 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated tests for new @zip: behaviour
+
+Sat Jan 29 15:48:12 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * SInteger -&gt; SDecimal
+
+Sat Jan 29 15:37:45 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * capitalize now takes a number for how many words to capitalize
+
+Sat Jan 29 15:30:06 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * formatter cleanups
+
+Sat Jan 29 15:22:35 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * load comparable prelude a bit sooner
+
+Sat Jan 29 15:21:57 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * initial string formatting system
+
+Sat Jan 29 15:21:48 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @(String plural)
+
+Sat Jan 29 15:13:25 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * more general parser types in Atomo.Lexer.Base
+
+Sat Jan 29 15:12:00 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * use a Prettied alias for the Pretty class (for Doc), added Typeable instance
+
+Sat Jan 29 15:11:46 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected regexps in @case-of: not introducing bindings
+
+Sat Jan 29 15:11:32 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * remove -funfolding-use-threshold flag
+
+Tue Jan 25 23:24:59 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * cleaner regexp compilation failures. closes #36.
+
+Tue Jan 25 12:39:15 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added prettyFrom for PEForMacro and PEMacroQuote
+
+Tue Jan 25 12:38:53 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * use a custom eof that pretty-prints the token rather than `show's it
+
+Tue Jan 25 12:38:30 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * allow linebreaks and other characters in string literals
+
+Tue Jan 25 12:38:07 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * use findString before fromString in a few places
+
+Tue Jan 25 12:37:39 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * improved parse error describing
+
+Tue Jan 25 12:37:28 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * cleaned up macro-quote docs
+
+Tue Jan 25 12:36:21 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * replaced @show definitions with @pretty, removed @show for True/False
+
+Mon Jan 24 20:33:10 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * improved parse error pretty-printing
+
+Mon Jan 24 20:32:40 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated syntax docs; split it up into three additional documents: Patterns, Defining Methods, and Macros!
+
+Mon Jan 24 13:05:41 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * magic quotes -&gt; macro-quotes
+
+Mon Jan 24 13:01:54 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added PEForMacro and PEMagicQuote patterns
+
+Mon Jan 24 02:49:11 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * more complete Eq instances for Pattern and Expr
+
+Mon Jan 24 02:37:05 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * inserting methods ignores optionals when checking message pattern equivalence; also added manual Eq instances for Message and Option
+
+Sun Jan 23 21:34:24 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added macro-quote docs. closes #5.
+
+Sun Jan 23 21:34:16 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * tweaked operator syntax docs
+
+Sun Jan 23 21:34:03 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * Regexp values now pretty-print as a macro-quote
+
+Sun Jan 23 21:33:48 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected unknown quoter error
+
+Sun Jan 23 21:33:21 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * ignore ?&lt;= and ?&lt;! when looking for named bindings
+
+Sun Jan 23 21:33:00 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * tuples documentation fix
+
+Sun Jan 23 19:56:50 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * tuples documentation. closes #4.
+
+Sun Jan 23 19:56:27 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * define @(Pretty pretty) rather than @(Pretty show)
+
+Sun Jan 23 19:04:57 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated Getting Started to explain how methods are defined and found. closes #8.
+
+Sun Jan 23 18:55:11 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @case-of: docs. closes #12.
+
+Sun Jan 23 18:54:31 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * @case-of: - _ as a test acts as a wildcard; no matches now yields @ok; moved to comparable prelude
+
+Sun Jan 23 18:24:27 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected @regexp?: to return False for other types
+
+Sun Jan 23 18:19:01 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * moved @case-of: to core prelude, corrected debug printing
+
+Sun Jan 23 16:45:21 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * document ! gensym mechanism. closes #32.
+
+Sun Jan 23 16:41:14 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @set!: and @set!:to: docs, removed contracts from @= and @:= docs. closes #20.
+
+Sun Jan 23 16:37:06 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @set-slot:to:, @set!:to: now takes a String rather than a Pattern
+
+Sun Jan 23 16:28:43 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @with-restarts:bind: docs. closes #23.
+
+Sun Jan 23 16:25:27 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated @catch: docs. closes #24.
+
+Sun Jan 23 16:24:30 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated @(Block repeat: Integer) docs, relocated to Block section (and the method definition as well)
+
+Sun Jan 23 16:21:56 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * @(Assocation == Association) docs. closes #30.
+
+Sun Jan 23 16:20:36 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated @responds-to?: docs. closes #31.
+
+Sun Jan 23 16:17:27 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @(has-slot?: String) docs. closes #21.
+
+Sun Jan 23 16:17:21 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * relocated @id docs
+
+Sun Jan 23 16:14:40 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * @(List to: String) documentation. closes #26.
+
+Sun Jan 23 16:14:29 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated particle docs. closes #11.
+
+Sun Jan 23 16:13:28 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @id documentation. closes #13.
+
+Sun Jan 23 14:52:40 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated docs for variadic roles, cleaned up one bit in continuation docs. closes #18.
+
+Sun Jan 23 14:45:27 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated @&gt;&gt; and @&lt;&lt; docs, added @push: and @cons: docs. closes #29.
+
+Sun Jan 23 14:39:40 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated @zip: documentation. closes #14.
+
+Sun Jan 23 14:22:38 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated repository location in docs. closes #19.
+
+Sun Jan 23 14:20:30 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * allow reserved words in particles/dispatch chains
+
+Sun Jan 23 14:20:04 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * a more general `continue'
+
+Sun Jan 23 14:19:32 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added some helper functions for lexing
+
+Sun Jan 23 14:19:04 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * @(File new: String) - only check if the file exists if they're opening in @read more
+
+Sun Jan 23 14:01:58 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * moved prettyVM to Atomo.Helpers
+
+Sat Jan 22 16:30:51 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * version bump to 0.4
+
+Sat Jan 22 15:15:47 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * removed @(Expression pretty)
+
+Sat Jan 22 14:17:27 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * rollback pcre packaging
+
+Sat Jan 22 13:55:42 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * experimental: package pcre 8.12 with atomo
+
+Sat Jan 22 13:55:10 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added trivial @id method, just yields the object it's sent to
+
+Sat Jan 22 13:54:58 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected pretty-printing of a single particle with optionals
+
+Sat Jan 22 13:53:48 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * @zip: now takes a variadic role, for zipping multiple lists. now returns a list of lists rather than a list of Associations.
+
+Sat Jan 22 03:09:49 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * removed PrettyVM module
+
+Fri Jan 21 23:50:33 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @(Tuple pretty)
+
+Fri Jan 21 23:46:41 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added creating a list from a tuple via varargs
+
+Fri Jan 21 22:03:37 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated benchmark tests
+
+Fri Jan 21 20:14:44 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added regexp example
+
+Fri Jan 21 20:12:36 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * pretty-printing tweaks
+
+Fri Jan 21 20:11:40 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added an interface for Text.PrettyPrint, @show now uses @pretty. closes #2.
+
+Fri Jan 21 20:08:46 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * only define and dispatch on the first role
+
+Fri Jan 21 20:02:56 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * minor cleanups
+
+Thu Jan 20 15:50:39 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * minor cleanup
+
+Wed Jan 19 11:08:04 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * merge lIdentifier and lMagicQuote so `try' isn't needed
+
+Wed Jan 19 10:56:04 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * allow magic quotes to span multiple lines
+
+Wed Jan 19 10:47:03 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @contents and @flags for magic-quote expressions
+
+Wed Jan 19 10:44:42 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added w magic-quoter, for creating word lists
+
+Wed Jan 19 10:44:28 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added DidNotUnderstand error pretty-printing
+
+Wed Jan 19 10:43:51 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * allow more reserved punctuation for magic quotes, no longer allow / and &lt;
+
+Wed Jan 19 10:43:32 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @name for getting a magic quote's name
+
+Wed Jan 19 10:43:16 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * correct EMagicQuote evaluation
+
+Wed Jan 19 10:43:05 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected regexp check in @case-of?:
+
+Wed Jan 19 10:42:42 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * just use a tuple for making a Match expression
+
+Wed Jan 19 03:07:20 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * Atomo.Pretty cleanups
+
+Wed Jan 19 03:04:57 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * removed regexp literals in favor of a generalized magic-quoting mechanism
+
+Wed Jan 19 03:04:47 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @(Regexp new: String &amp;flags: String)
+
+Wed Jan 19 03:02:34 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * @(Regexp match: String) now returns a RegexpBindings object; remember the regexp's named captures for this
+
+Wed Jan 19 02:59:42 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * allow fully-completed particles (i.e. with a filled first role)
+
+Wed Jan 19 02:59:13 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * @case-of: with a regexp evaluates the branch with the bindings
+
+Tue Jan 18 13:35:04 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * initial regular expressions work, added a prettier Show Value instance, and other minor cleanups in Atomo.Types
+
+Tue Jan 18 13:34:30 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added equality test for Pattern values
+
+Tue Jan 18 13:17:10 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * pretty-printer cleanups
+
+Tue Jan 18 13:16:31 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected `head' crash when lexing an unmatched closing punctuation
+
+Tue Jan 18 13:15:37 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * @(Pattern match: _) now returns @none or @ok: rather than @no or @yes:
+
+Tue Jan 18 13:13:17 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added `findTuple'
+
+Sun Jan 16 20:02:24 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * up is low, low is up
+
+Sun Jan 16 18:12:43 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * cleanups and completeness
+
+Sun Jan 16 17:57:12 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * target for variable role is Object
+
+Sun Jan 16 17:52:04 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected @spawn: usage to use variable role, @call/cc: now uses variable role
+
+Sun Jan 16 17:45:30 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * use variable roles for @call:, @spawn:, @join:with:, @do:with:, @restart:with:, @(Restart jump: _)
+
+Sun Jan 16 14:08:19 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * tuples and variable-length arguments
+
+Sun Jan 16 13:37:50 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added flag for installing atomo library, off by default
+
+Sun Jan 16 03:33:54 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated rectangle example
+
+Sun Jan 16 03:33:04 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated monad example
+
+Sun Jan 16 03:30:23 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated exceptions example
+
+Sun Jan 16 03:28:42 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated coroutine example
+
+Sun Jan 16 03:27:58 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected @set!:to: to use recursion rather than just go one level deep
+
+Sun Jan 16 03:21:23 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * skip whitespace at the start of lexing
+
+Sun Jan 16 03:21:02 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * updated generator example
+
+Sun Jan 16 03:20:17 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @set!: and @(target set!: Particle to: value) for overwriting (not adding) a definition
+
+Sun Jan 16 03:19:02 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @(has-slot?: String) for checking if an object has a slot defined on it (and not its delegates)
+
+Sun Jan 16 03:10:59 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @(Port buffering) and @(Port set-buffering: Particle)
+
+Sat Jan 15 20:28:30 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * @(Block repeat) now calls the block in its context
+
+Sat Jan 15 13:41:21 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * multiline REPL input
+
+Sat Jan 15 13:40:55 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @with-restarts:bind: macro
+
+Sat Jan 15 04:06:28 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * cleaned up unmatched paren/brace/bracket error in the lexer
+
+Sat Jan 15 04:06:07 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * more robust parse error values
+
+Sat Jan 15 04:05:43 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * @catch: now accepts any object as its second role (e.g. a particle)
+
+Sat Jan 15 04:05:07 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * cleanups
+
+Tue Jan 11 19:27:59 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * allow more precise definitions of @shift: for e.g. doubles and rationals
+
+Tue Jan 11 16:15:07 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * ordering -&gt; ordered
+
+Tue Jan 11 16:14:11 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * tweaked Ordered module
+
+Tue Jan 11 13:39:21 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added Ordering module, include on ordered primitives to provide @to:by:, @up-to:, and @down-to:
+
+Tue Jan 11 13:38:55 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @case-of:, which does a match based on @matches?:
+
+Tue Jan 11 13:38:13 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added Enumerable and Range, which replaces @.. and @...
+
+Tue Jan 11 13:37:08 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * add class-objects to the prelude
+
+Mon Jan 10 14:28:03 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * @to-string -&gt; @(to: String)
+
+Mon Jan 10 14:27:05 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added spaceship operator, @sort and @sort-by: use it by default (&amp;comparison: optional), @sort-by: now does something closer to what its name suggests
+
+Mon Jan 10 14:26:06 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @(Expression optionals), and creating dispatch expressions with optionals
+
+Sun Jan  9 02:12:16 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * search outer scope before an object's delegates in @join:
+
+Sun Jan  9 01:35:45 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * more optional arguments use (@center:, @left-justify:, @right-justify:) + some cleanups
+
+Sun Jan  9 01:35:16 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * use an optional argument for @zip:
+
+Sun Jan  9 01:32:16 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * @(Block repeat: Integer) now calls the block in-context
+
+Sun Jan  9 01:29:27 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * use optional argument for port mode
+
+Sun Jan  9 01:29:03 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * parser cleanups, plus some clearer parser errors in two cases
+
+Sun Jan  9 01:26:19 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * @&lt;&lt; and @&gt;&gt; are now macros which update the target
+
+Sat Jan  8 03:33:30 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added a quick particles + optionals test
+
+Sat Jan  8 03:33:20 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected @(Particle show) on keyword particles
+
+Sat Jan  8 03:33:10 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @(Association == Association)
+
+Sat Jan  8 01:00:33 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @(Message optionals)
+
+Sat Jan  8 00:57:36 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * improved particle completion (now completes optionals)
+
+Sat Jan  8 00:57:23 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * particle pretty-printing now includes optionals
+
+Sat Jan  8 00:57:02 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @(Particle optionals)
+
+Sat Jan  8 00:56:23 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected expansion and parsing of particles with blank optionals
+
+Sat Jan  8 00:55:33 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added Valuable instances for (x, y) (as Association) and Maybe a (as @ok:/@none)
+
+Fri Jan  7 20:10:14 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * @responds-to?: now accepts particles missing more than one value; uses a fuzzy match, where only filled-in values are checked as the roles
+
+Fri Jan  7 18:29:16 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * slight wording tweak in optionals tests
+
+Fri Jan  7 18:28:05 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * removed superfluous parentheses
+
+Fri Jan  7 18:26:49 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added some optionals tests
+
+Fri Jan  7 18:26:17 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected single dispatch in a keyword role getting its optionals overridden
+
+Fri Jan  7 17:39:05 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * parse singles with optionals in cSingle, as (foo &amp;bar: 2)
+
+Fri Jan  7 17:38:54 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * minor cleanups
+
+Fri Jan  7 17:38:11 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected a keyword dispatch's optionals being eaten by a single-dispatch role
+
+Fri Jan  7 17:37:28 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected particle expression evaluation to retain the (evaluated) optionals
+
+Fri Jan  7 16:11:16 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * pretty-print optionals
+
+Fri Jan  7 16:10:56 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected particle expansion eating its optionals
+
+Fri Jan  7 15:46:49 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * parse single dispatch with optionals
+
+Fri Jan  7 15:24:28 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added some file/directory-exists checks to a bunch of methods
+
+Fri Jan  7 15:24:13 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * parser simplification
+
+Fri Jan  7 15:23:37 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * some optionals cleanups and small optimizations
+
+Thu Jan  6 23:15:20 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * re-implemented automatic gensyms
+
+Thu Jan  6 22:16:59 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * shiny new parser (+ lexer), and initial work on optional arguments
+
+Thu Jan  6 20:49:54 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * catch infinite error loops
+
+Wed Jan  5 02:41:46 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * replace Particle data type with an alias to Message (Maybe v)
+
+Sat Jan  1 13:55:53 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * good ol' manual labour
+
+Sat Jan  1 13:42:27 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * rollback darcs replace job
+
+Sat Jan  1 13:37:33 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added @(Expression pretty) and @(Expression location)
+
+Sat Jan  1 04:25:58 EST 2011  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * move PExpr up with the normal fellas
+
+Fri Dec 31 22:02:37 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected a few expr patterns from the last batch replace
+
+Fri Dec 31 21:56:22 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * cleanups; all Expr constructors now start with E, plus improved haddock
+
+Wed Dec 29 19:11:50 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * ruby tutorial updates
+
+Wed Dec 29 13:03:39 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added Ruby in Atomo macro tutorial
+
+Wed Dec 29 13:03:17 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * added boringfile
+
+Wed Dec 29 13:02:00 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * documentation corrections
+
+Wed Dec 29 13:01:40 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * use ! rather than # for gensyms in quasiquotes
+
+Wed Dec 29 13:01:12 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * corrected pretty-printing of particular object definition patterns
+
+Mon Dec 27 13:42:18 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * the last of the anatomy updates?
+
+Mon Dec 27 13:33:25 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * #atomo:1/2 -&gt; #hl:{1/2}
+
+Mon Dec 27 13:31:04 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * #atomo:&quot;foo&quot; -&gt; #hl:{&quot;foo&quot;} and other fixes
+
+Mon Dec 27 13:27:44 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * #atomo:foo; -&gt; #hl:{foo};
+
+Mon Dec 27 13:26:29 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * #atomo:@(foo: 2 baz: _) -&gt; #hl:{@(foo: 2 baz: _)}
+
+Mon Dec 27 13:24:37 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * #atomo:@foo -&gt; #hl:{@foo}
+
+Mon Dec 27 13:20:09 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * #atomo:foo's -&gt; #hl:{foo}'s
+
+Mon Dec 27 13:17:39 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * a few more replacements for #atomo:foo -&gt; #hl:{foo}
+
+Mon Dec 27 13:16:11 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * a few edge-cases the last record didn't catch
+
+Mon Dec 27 13:14:59 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * #atomo:(bunch of stuff) -&gt; #hl:{bunch of stuff}
+
+Mon Dec 27 13:09:55 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * #atomo:x? -&gt; #hl:{x}?
+
+Mon Dec 27 13:06:32 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * #atomo:foo -&gt; #hl:{foo}
+
+Mon Dec 27 13:01:46 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * #atomo:(*) -&gt; #hl:{*}
+
+Mon Dec 27 12:46:42 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * documentation updates for upcoming version of Anatomy
+
+Wed Dec 31 19:00:00 EST 1969  Anonymous Tagger &lt;&gt;
+  tagged refs/remotes/origin/master
+
+Wed Dec 31 19:00:00 EST 1969  Anonymous Tagger &lt;&gt;
+  tagged refs/remotes/origin/master
+
+Wed Dec 31 19:00:00 EST 1969  Anonymous Tagger &lt;&gt;
+  tagged refs/heads/master
+
+Tue Dec 14 21:17:46 EST 2010  Alex Suraci &lt;i.am@toogeneric.com&gt;
+  * specify GHC 6 support for now</pre>
+</div>
+
+
+
+    </div>
+  </body>
+</html>

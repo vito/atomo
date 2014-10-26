@@ -1,0 +1,100 @@
+load: "templates.atomo"
+
+main = this
+
+when: (responds-to?: @loaded?) not do: {
+    load: "snap.hs"
+    load: "anatomy.hs"
+
+    Docs = A new: "/home/alex/atomo/doc/main/start.atomo"
+
+    Site = Website clone do: {
+        routes = [
+            "/" -> @index
+        ]
+    }
+
+    "Starting..." print
+    { Site start-on: 4700 } spawn
+}
+
+loaded? = True
+
+(b: Block) pretty :=
+    with: [multiline-pretty? -> True, docs-root -> "/docs/"] do: {
+        b contents (map: { e | Docs pretty: e }) (join: "\n")
+    }
+
+greeter = {
+    Greeter = Object clone
+
+    Greeter new: n := Greeter clone do: { name = n }
+    (g: Greeter) say-hi :=
+        (g name .. ": Hi!") print
+
+    Greeter (new: "Alex") say-hi
+} pretty
+
+i/o = {
+    with-output-to: "out-file" do: {
+        "Hello, world!" print
+    }
+} pretty
+
+fib = {
+    0 fib = 1
+    1 fib = 1
+    (n: Integer) fib := (n - 2) fib + (n - 1) fib
+} pretty
+
+numbers = {
+    [1, 2, 3] sum
+    (0 .. 5) map: @(* 2)
+    22.0 / 7.0
+} pretty
+
+Site index = main: {
+    p: "atomo is a small, simple, insanely flexible and expressive programming language. its design is inspired by Scheme (small, simple core), Slate (multiple dispatch, keywords), Ruby (very DSL-friendly), and Erlang (message-passing concurrency). it is written in and piggybacks on the Haskell runtime, permitting access to all of its power (and libraries!) through a thin layer."
+
+    section: {
+        nav: {
+            ul: {
+                li: { a: "documentation" href: "/docs" }
+                li: { a: "irc channel" href: "irc://irc.freenode.net:6667/atomo" }
+                li: { a: "source" href: "http://darcsden.com/alex/atomo" }
+            }
+        }
+
+        section: {
+            h3: "laundry list"
+
+            ul: {
+                li: "BSD licensed"
+                li: "small codebase"
+                li: "tiny core design, very consistent"
+                li: "multiple dispatch"
+                li: "prototype-based object-orientation"
+                li: "pattern-matching"
+                li: "dynamically typed"
+                li: "message-passing concurrency"
+                li: "haskell interface"
+            }
+        } class: "features"
+    } class: "info"
+
+    aside: {
+        h3: "examples"
+
+        [greeter, i/o, fib, numbers] each: { e | pre: e }
+    } class: "examples"
+}
+
+{
+    read-line match: {
+        "r" -> {
+            "Reloading..." print
+            main load: "main.atomo"
+        } call
+        _ -> halt
+    }
+} repeat

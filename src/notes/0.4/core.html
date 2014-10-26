@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Core</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+       <h4>On this page:</h4>
+<ol class="toc"><li><a href="core.html">Core</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="index.html#section_index">Atomo</a><ol><li><a href="getting-started.html">Getting Started</a><ol><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li><li><a href="getting-started.html#section_.Wrapping_.Up">Wrapping Up</a></li></ol></li><li><a href="repl.html">The REPL</a></li><li><a href=".Tutorials.html">Tutorials</a><ol><li><a href="ruby.html">Ruby in Atomo</a></li></ol></li><li><a href="syntax.html">Syntax</a><ol><li><a href="syntax.html#section_.General_.Rules">General Rules</a></li><li><a href="syntax.html#section_guidelines">Indentation Guidelines</a></li><li><a href="syntax.html#section_.Comments">Comments</a></li><li><a href="syntax.html#section_literals-syntax">Literals</a></li><li><a href="syntax.html#section_dispatch-syntax">Dispatch</a></li><li><a href="syntax.html#section_macro-syntax"><code><span class="kr">macro</span></code></a></li><li><a href="syntax.html#section_for-macro-syntax"><code><span class="kr">for-macro</span></code></a></li><li><a href="syntax.html#section_operator-syntax"><code><span class="kr">operator</span></code></a></li></ol></li><li><a href="patterns.html">Patterns</a><ol><li><a href="patterns.html#section_types">Types of Patterns</a></li><li><a href="patterns.html#section_definition-target">A Pattern's Object</a></li><li><a href="patterns.html#section_.Pattern_.Objects">Pattern Objects</a></li></ol></li><li><a href="defining.html">Defining Methods</a><ol><li><a href="defining.html#section_variadic">Variadic Roles</a></li><li><a href="defining.html#section_optionals">Optional Roles</a></li><li><a href="defining.html#section_redefining">Redefining Methods</a></li></ol></li><li><a href="macros.html">Macros!</a><ol><li><a href="macros.html#section_defining-macros">Defining Macros</a></li><li><a href="macros.html#section_macro-environment">Macro Environment</a></li><li><a href="macros.html#section_macro-quotes">Macro Quotes</a></li></ol></li><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="enumerable.html">Enumerable</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>Core</h1>
+
+<div class="definition" id="definition_Object">
+  <pre class="thumb"><span class="n"><a href="core.html#definition_Object">Object</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span></pre><p>The &quot;root&quot; of everything. Everything delegates to <code><span class="n"><a href="core.html#definition_Object">Object</a></span></code>, including toplevel objects.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="kc">True</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span>
+<span class="kc">True</span>
+</pre></div><p>Generally, to create new objects you send <code><span class="n"><a href="core.html#definition_clone">clone</a></span></code> to this if there's nothing more specific.
+
+</p><div class="example"><p><em>Example:</em></p><div class="highlight"><pre><span class="n">MyBoolean</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span><span class="t">
+</span><span class="n">MyTrue</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span><span class="t">
+</span><span class="n">MyFalse</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span></pre></div></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_:=:">
+  <pre class="thumb"><span class="n">p</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="n">e</span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span></pre><p>Defines <code><span class="n">e</span></code> to be evaluated when the message described by <code><span class="n">p</span></code> is dispatched to any of its targets. Returns <code><span class="nd">@ok</span></code>. See definition-syntax.</p><p>When defining a method of the same name as an existing one, it will be inserted with the most precise first. If two patterns are equivalent, the new method replaces the old.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">0</span><span class="t"> </span><span class="n">fib</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="n">fib</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="nf">n:</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span><span class="p">)</span><span class="t"> </span><span class="n">fib</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="p">(</span><span class="n">n</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_-:">-</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="n">fib</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="p">(</span><span class="n">n</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_-:">-</a></span><span class="t"> </span><span class="mi">1</span><span class="p">)</span><span class="t"> </span><span class="n">fib</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="mi">5</span><span class="t"> </span><span class="n">fib</span>
+<span class="mi">8</span>
+</pre></div><p>This defines three <code><span class="n">fib</span></code> methods on <code><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span></code>. The order of the definitions doesn't matter; they are inserted in order of precision, so the methods that pattern-match on <code><span class="mi">0</span></code> and <code><span class="mi">1</span></code> are always chosen over the more general <code><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span></code> match.</p><p>The method's expression <code><span class="n">e</span></code> is evaluated with a new toplevel object containing the bindings from the pattern-match as methods, and delegating to the context of the method definition.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">x</span><span class="t"> </span><span class="nf">foo:</span><span class="t"> </span><span class="p">[</span><span class="n">y</span><span class="p">,</span><span class="t"> </span><span class="n">z</span><span class="p">]</span><span class="t"> </span><span class="nf">bar:</span><span class="t"> </span><span class="n">_</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="kr">this</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf">foo:</span><span class="t"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">3</span><span class="p">]</span><span class="t"> </span><span class="nf">bar:</span><span class="t"> </span><span class="mi">4</span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+  </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">1</span><span class="t">
+  </span><span class="n">y</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">2</span><span class="t">
+  </span><span class="n">z</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">3</span>
+<span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="n">foo</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="n">a</span><span class="p">]</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="n">foo</span>
+<span class="mi">10</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">3</span><span class="p">;</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span>
+<span class="mi">10</span>
+</pre></div><p>Here we're using <code><span class="kr">this</span></code> to simply return the toplevel object that the expression is evaluated in.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_=:">
+  <pre class="thumb"><span class="n">p</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n">v</span> <span class="definition-result-arrow">→</span> <span class="n">v</span></pre><p>Pattern-match <code><span class="n">p</span></code> on <code><span class="n">v</span></code>, inserting the bindings from the match into the current scope. Returns the value it's matching on (<code><span class="n">v</span></code>). See pattern-syntax.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="t"> </span><span class="n">y</span><span class="p">]</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="n">foo</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="t"> </span><span class="n">x</span><span class="p">,</span><span class="t"> </span><span class="n">y</span><span class="p">,</span><span class="t"> </span><span class="n">foo</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">10</span><span class="p">]</span>
+</pre></div><p>In addition to simple pattern-matching, <code><span class="o"><a href="core.html#definition_=:">=</a></span></code> can also define methods. However, it always evaluates the right-hand side before insertion, and roles in a message pattern are all objects (not patterns), unlike its brethren <code><span class="o"><a href="core.html#definition_:=:">:=</a></span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="mi">3</span>
+<span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="n">b</span>
+<span class="mi">3</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_set!:">
+  <pre class="thumb"><span class="n">x</span><span class="t"> </span><span class="nf"><a href="core.html#definition_set!:">set!:</a></span><span class="t"> </span><span class="n">y</span> <span class="definition-result-arrow">→</span> <span class="n">y</span></pre><p>A macro for <code><span class="nf"><a href="core.html#definition_set!:to:">set!:</a></span><span class="nf"><a href="core.html#definition_set!:to:">to:</a></span></code>; updates a slot to a given value. Will not add a new slot, as <code><span class="o"><a href="core.html#definition_=:">=</a></span></code> would in nested scopes, and panics if the slot isn't found.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="nf"><a href="core.html#definition_set!:">set!:</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_set!:">set!:</a></span><span class="t"> </span><span class="nd">@uh-oh</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(undefined: &quot;b&quot;)</span><span class="go">&gt;</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_set!:to:">
+  <pre class="thumb"><span class="n">x</span><span class="t"> </span><span class="nf"><a href="core.html#definition_set!:to:">set!:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_set!:to:">to:</a></span><span class="t"> </span><span class="n">value</span> <span class="definition-result-arrow">→</span> <span class="n">value</span>
+  | <span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span></pre><p>Update slot <code><span class="n"><a href="patterns.html#definition_name">name</a></span></code> on <code><span class="n">x</span></code> to <code><span class="n">value</span></code>, searching for where the slot is defined (following delegates) to ensure it is updated rather than overridden. If the slot is not found, it panics.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nf"><a href="core.html#definition_set!:to:">set!:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">a</span><span class="s">&quot;</span><span class="t"> </span><span class="nf"><a href="core.html#definition_set!:to:">to:</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="nf"><a href="core.html#definition_set!:to:">set!:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">b</span><span class="s">&quot;</span><span class="t"> </span><span class="nf"><a href="core.html#definition_set!:to:">to:</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(undefined: &quot;b&quot;)</span><span class="go">&gt;</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_clone">
+  <pre class="thumb"><span class="n">o</span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span> <span class="definition-result-arrow">→</span> <span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">o</span></pre><p>Returns a new object, delegating to <code><span class="n">o</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_copy">
+  <pre class="thumb"><span class="n">o</span><span class="t"> </span><span class="n"><a href="core.html#definition_copy">copy</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span></pre><p>Copies object <code><span class="n">o</span></code>, creating a new object with the same methods and delegates.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_new">
+  <pre class="thumb"><span class="n">o</span><span class="t"> </span><span class="n"><a href="core.html#definition_new">new</a></span> <span class="definition-result-arrow">→</span> <span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">o</span></pre><p>Similar to <code><span class="n"><a href="core.html#definition_clone">clone</a></span></code>, but often does certain initialization stuff like setting default values.</p><p>Note: this method, along with <code><span class="nf"><a href="core.html#definition_new:">new:</a></span></code>, is just listed here so that links in the documentation will point to these more general descriptions rather than a more specific, but wrong, definition. It is not defined for <code><span class="n"><a href="core.html#definition_Object">Object</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_new:">
+  <pre class="thumb"><span class="n">o</span><span class="t"> </span><span class="nf"><a href="core.html#definition_new:">new:</a></span><span class="t"> </span><span class="n">x</span> <span class="definition-result-arrow">→</span> <span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">o</span></pre><p>Similar to <code><span class="n"><a href="core.html#definition_new">new</a></span></code>, but with an additional argument used for initialization.</p><p>Note: this method, along with <code><span class="n"><a href="core.html#definition_new">new</a></span></code>, is just listed here so that links in the documentation will point to these more general descriptions rather than a more specific, but wrong, definition. It is not defined for <code><span class="n"><a href="core.html#definition_Object">Object</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_id">
+  <pre class="thumb"><span class="n">o</span><span class="t"> </span><span class="n"><a href="core.html#definition_id">id</a></span> <span class="definition-result-arrow">→</span> <span class="n">o</span></pre><p>Trivial method that returns its target.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="n"><a href="core.html#definition_id">id</a></span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="nd">@id</span><span class="t"> </span><span class="n"><a href="core.html#definition_id">id</a></span>
+<span class="nd">@id</span>
+<span class="caret">&gt;</span> <span class="nd">@id</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_call:">call:</a></span><span class="t"> </span><span class="nd">@ok</span>
+<span class="nd">@ok</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_delegating-to:">
+  <pre class="thumb"><span class="n">x</span><span class="t"> </span><span class="nf"><a href="core.html#definition_delegating-to:">delegating-to:</a></span><span class="t"> </span><span class="n">y</span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span></pre><p>Yields a new object with <code><span class="n">x</span></code>'s method table and <code><span class="n">y</span></code> affixed to its delegates list.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_with-delegates:">
+  <pre class="thumb"><span class="n">x</span><span class="t"> </span><span class="nf"><a href="core.html#definition_with-delegates:">with-delegates:</a></span><span class="t"> </span><span class="n">ds</span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span>
+  | <span class="n">ds</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Yields a new object with <code><span class="n">x</span></code>'s method table and <code><span class="n">ds</span></code> as its delegates list.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_delegates-to?:">
+  <pre class="thumb"><span class="n">x</span><span class="t"> </span><span class="nf"><a href="core.html#definition_delegates-to?:">delegates-to?:</a></span><span class="t"> </span><span class="n">y</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span></pre><p>Returns <code><span class="kc">True</span></code> if <code><span class="n">x</span></code> delegates to <code><span class="n">y</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="n">Y</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="n">Y</span><span class="t"> </span><span class="nf"><a href="core.html#definition_delegates-to?:">delegates-to?:</a></span><span class="t"> </span><span class="n">X</span>
+<span class="kc">False</span>
+<span class="caret">&gt;</span> <span class="n">Y</span><span class="t"> </span><span class="p">(</span><span class="nf"><a href="core.html#definition_delegating-to:">delegating-to:</a></span><span class="t"> </span><span class="n">X</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="core.html#definition_delegates-to?:">delegates-to?:</a></span><span class="t"> </span><span class="n">X</span>
+<span class="kc">True</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_delegates">
+  <pre class="thumb"><span class="n">x</span><span class="t"> </span><span class="n"><a href="core.html#definition_delegates">delegates</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Returns a list of <code><span class="n">x</span></code>'s delegates.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="n">x</span><span class="t"> </span><span class="n"><a href="core.html#definition_delegates">delegates</a></span>
+<span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="n">x</span><span class="t"> </span><span class="p">(</span><span class="nf"><a href="core.html#definition_delegating-to:">delegating-to:</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="core.html#definition_delegates">delegates</a></span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_super">
+  <pre class="thumb"><span class="n">x</span><span class="t"> </span><span class="n"><a href="core.html#definition_super">super</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span></pre><p>Returns the first value that <code><span class="n">x</span></code> delegates to.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_super">super</a></span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span><span class="t"> </span><span class="p">(</span><span class="nf"><a href="core.html#definition_delegating-to:">delegating-to:</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="core.html#definition_super">super</a></span>
+<span class="mi">1</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_is-a?:">
+  <pre class="thumb"><span class="n">x</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">y</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span></pre><p>Returns <code><span class="kc">True</span></code> if <code><span class="n">x</span></code> is equal to <code><span class="n">y</span></code> or delegates to it, directly or indirectly.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="n">Y</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">X</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="n">Y</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">X</span>
+<span class="kc">False</span>
+<span class="caret">&gt;</span> <span class="n">Y</span><span class="t"> </span><span class="p">(</span><span class="nf"><a href="core.html#definition_delegating-to:">delegating-to:</a></span><span class="t"> </span><span class="n">X</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">X</span>
+<span class="kc">True</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_responds-to?:">
+  <pre class="thumb"><span class="n">x</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="n">p</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span>
+  | <span class="n">p</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="particles.html#definition_Particle">Particle</a></span></pre><p>Check if object <code><span class="n">x</span></code> would respond to the partial message <code><span class="n">p</span></code>.</p><p>The particle can have any number of roles missing; the first slot is filled and a &quot;partial match&quot; is done. That is, when searching for a method, only the filled-in roles are matched with; empty slots are a match for any role in a method's message pattern.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@foo</span>
+<span class="kc">False</span>
+<span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">42</span>
+<span class="mi">42</span>
+<span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@foo</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@+</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="kc">False</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="kc">False</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_has-slot?:">
+  <pre class="thumb"><span class="n">x</span><span class="t"> </span><span class="nf"><a href="core.html#definition_has-slot?:">has-slot?:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span>
+  | <span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span></pre><p>Check if object <code><span class="n">x</span></code> directly (that is, not through delegates) contains a slot called <code><span class="n"><a href="patterns.html#definition_name">name</a></span></code>.</p><p>Implies <code><span class="n">x</span><span class="t"> </span><span class="nf">replies-to?:</span><span class="t"> </span><span class="p">(</span><span class="n"><a href="particles.html#definition_Particle">Particle</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_new:">new:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span><span class="p">)</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="n">x</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="n">x</span><span class="t"> </span><span class="nf"><a href="core.html#definition_has-slot?:">has-slot?:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">a</span><span class="s">&quot;</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="n">x</span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_has-slot?:">has-slot?:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">a</span><span class="s">&quot;</span>
+<span class="kc">False</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_show">
+  <pre class="thumb"><span class="n">x</span><span class="t"> </span><span class="n"><a href="core.html#definition_show">show</a></span> <span class="definition-result-arrow">→</span> <span class="n">String</span></pre><p>Convert <code><span class="n">x</span></code> to a proper representation of that value in code (if possible).
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">10</span><span class="t"> </span><span class="n"><a href="core.html#definition_show">show</a></span>
+<span class="s">&quot;</span><span class="s">10</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="core.html#definition_show">show</a></span>
+<span class="s">&quot;</span><span class="se">\</span><span class="se">&quot;</span><span class="s">foo</span><span class="se">\</span><span class="se">&quot;</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="kc">False</span><span class="t"> </span><span class="n"><a href="core.html#definition_show">show</a></span>
+<span class="s">&quot;</span><span class="s">False</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_load:">
+  <pre class="thumb"><span class="n">top</span><span class="t"> </span><span class="nf"><a href="core.html#definition_load:">load:</a></span><span class="t"> </span><span class="n">filename</span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span>
+  | <span class="n">filename</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span></pre><p>Executes the file <code><span class="n">filename</span></code> with <code><span class="n">top</span></code> as its top scope.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_require:">
+  <pre class="thumb"><span class="n">top</span><span class="t"> </span><span class="nf"><a href="core.html#definition_require:">require:</a></span><span class="t"> </span><span class="n">filename</span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span>
+  | <span class="n">filename</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span></pre><p>Like <code><span class="nf"><a href="core.html#definition_load:">load:</a></span></code>, but loaded files are remembered (by their canonicalized, absolute path), so subsequent attempts to require them will be a no-op, returning <code><span class="nd">@ok</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_match:">
+  <pre class="thumb"><span class="n">v</span><span class="t"> </span><span class="nf"><a href="core.html#definition_match:">match:</a></span><span class="t"> </span><span class="n">branches</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">branches</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Pattern-match <code><span class="n">v</span></code> on the patterns described by <code><span class="n">branches</span></code>, evaluating the first branch that matches the value.</p><p>Errors with <code><span class="nd">@</span><span class="p">(</span><span class="nf">no-match-for:</span><span class="t"> </span><span class="n">v</span><span class="p">)</span></code> if none of the branches match the value.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="core.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nd">@nope</span><span class="p">;</span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nd">@yep</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@yep</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="core.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nd">@nope</span><span class="t"> </span><span class="p">}</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(no-match-for: 1)</span><span class="go">&gt;</span></span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="core.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="n">b</span><span class="p">]</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">got:</span><span class="t"> </span><span class="n">b</span><span class="p">)</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@</span><span class="p">(</span><span class="nf">got:</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_case-of:">
+  <pre class="thumb"><span class="n">v</span><span class="t"> </span><span class="nf"><a href="core.html#definition_case-of:">case-of:</a></span><span class="t"> </span><span class="n">branches</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">branches</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Similar to <code><span class="nf"><a href="core.html#definition_match:">match:</a></span></code>, but performs some case-specific matching via <code><span class="nf"><a href="regexps.html#definition_matches?:">matches?:</a></span></code>. For example, a <code><span class="n"><a href="ranges.html#definition_Range">Range</a></span></code> matches if a value is within the range, and a <code><span class="n"><a href="regexps.html#definition_Regexp">Regexp</a></span></code> test will perform the match on the string.</p><p>Using <code><span class="n">_</span></code> as the test acts as a catch-all.</p><p>Yields <code><span class="nd">@ok</span></code> if none of the branches match the value.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="core.html#definition_case-of:">case-of:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">1</span><span class="p">;</span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">2</span><span class="t"> </span><span class="p">}</span>
+<span class="sc">$</span><span class="sc">1</span>
+<span class="caret">&gt;</span> <span class="mi">2</span><span class="t"> </span><span class="nf"><a href="core.html#definition_case-of:">case-of:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">1</span><span class="p">;</span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">2</span><span class="t"> </span><span class="p">}</span>
+<span class="sc">$</span><span class="sc">2</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="core.html#definition_case-of:">case-of:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">2</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="core.html#definition_case-of:">case-of:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">2</span><span class="p">;</span><span class="t"> </span><span class="n">_</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nd">@unknown</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@unknown</span>
+<span class="caret">&gt;</span> <span class="mi">5</span><span class="t"> </span><span class="nf"><a href="core.html#definition_case-of:">case-of:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="p">(</span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="lists.html#definition_..:">..</a></span><span class="t"> </span><span class="mi">4</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">0-4</span><span class="s">&quot;</span><span class="p">;</span><span class="t"> </span><span class="p">(</span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="lists.html#definition_..:">..</a></span><span class="t"> </span><span class="mi">10</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">0-10</span><span class="s">&quot;</span><span class="t"> </span><span class="p">}</span>
+<span class="s">&quot;</span><span class="s">0-10</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+</div>
+
+
+    </div>
+  </body>
+</html>

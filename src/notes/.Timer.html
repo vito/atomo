@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Timer</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+       <h4>On this page:</h4>
+<ol class="toc"><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="index.html#section_index">Atomo</a><ol><li><a href="getting-started.html">Getting Started</a><ol><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li><li><a href="getting-started.html#section_.Wrapping_.Up">Wrapping Up</a></li></ol></li><li><a href="repl.html">The REPL</a></li><li><a href=".Tutorials.html">Tutorials</a><ol><li><a href="ruby.html">Ruby in Atomo</a></li></ol></li><li><a href="syntax.html">Syntax</a><ol><li><a href="syntax.html#section_.General_.Rules">General Rules</a></li><li><a href="syntax.html#section_guidelines">Indentation Guidelines</a></li><li><a href="syntax.html#section_.Comments">Comments</a></li><li><a href="syntax.html#section_literals-syntax">Literals</a></li><li><a href="syntax.html#section_dispatch-syntax">Dispatch</a></li><li><a href="syntax.html#section_macro-syntax"><code><span class="kr">macro</span></code></a></li><li><a href="syntax.html#section_for-macro-syntax"><code><span class="kr">for-macro</span></code></a></li><li><a href="syntax.html#section_operator-syntax"><code><span class="kr">operator</span></code></a></li></ol></li><li><a href="patterns.html">Patterns</a><ol><li><a href="patterns.html#section_types">Types of Patterns</a></li><li><a href="patterns.html#section_definition-target">A Pattern's Object</a></li><li><a href="patterns.html#section_.Pattern_.Objects">Pattern Objects</a></li></ol></li><li><a href="defining.html">Defining Methods</a><ol><li><a href="defining.html#section_variadic">Variadic Roles</a></li><li><a href="defining.html#section_optionals">Optional Roles</a></li><li><a href="defining.html#section_redefining">Redefining Methods</a></li></ol></li><li><a href="macros.html">Macros!</a><ol><li><a href="macros.html#section_defining-macros">Defining Macros</a></li><li><a href="macros.html#section_macro-environment">Macro Environment</a></li><li><a href="macros.html#section_macro-quotes">Macro Quotes</a></li></ol></li><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="enumerable.html">Enumerable</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>Timer</h1>
+
+<div class="section">
+  <h2 class="section-header" id="section_.The_.Timer_.Object">The Timer Object</h2>
+  
+
+<div class="definition" id="definition_Timer">
+  <pre class="thumb"><span class="n"><a href=".Timer.html#definition_Timer">Timer</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span></pre><p>An object containing various methods related to timing of events and processes.</p><p>Not to be confused for a more robust date and time system - everything in this object is to be used &quot;relatively.&quot;
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_now">
+  <pre class="thumb"><span class="n"><a href=".Timer.html#definition_Timer">Timer</a></span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_now">now</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Double">Double</a></span></pre><p>Returns the current UNIX timestamp in seconds.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n"><a href=".Timer.html#definition_Timer">Timer</a></span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_now">now</a></span><span class="t"> </span>
+<span class="mf">1.297049761144438e9</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_sleep:">
+  <pre class="thumb"><span class="n"><a href=".Timer.html#definition_Timer">Timer</a></span><span class="t"> </span><span class="nf"><a href=".Timer.html#definition_sleep:">sleep:</a></span><span class="t"> </span><span class="n">duration</span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span>
+  | <span class="n">duration</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>Delays the current process's execution by <code><span class="n">duration</span></code> microseconds.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n"><a href=".Timer.html#definition_Timer">Timer</a></span><span class="t"> </span><span class="nf"><a href=".Timer.html#definition_sleep:">sleep:</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_millisecond">millisecond</a></span>
+<span class="nd">@ok</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_do:every:">
+  <pre class="thumb"><span class="n"><a href=".Timer.html#definition_Timer">Timer</a></span><span class="t"> </span><span class="nf"><a href=".Timer.html#definition_do:every:">do:</a></span><span class="t"> </span><span class="n">action</span><span class="t"> </span><span class="nf"><a href=".Timer.html#definition_do:every:">every:</a></span><span class="t"> </span><span class="n">duration</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="concurrency.html#definition_Process">Process</a></span>
+  | <span class="n">action</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">duration</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>Spawns a new process that repeatedly calls <code><span class="n">action</span></code> at intervals of <code><span class="n">duration</span></code> microseconds.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">p</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_Timer">Timer</a></span><span class="t"> </span><span class="nf"><a href=".Timer.html#definition_do:every:">do:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hello</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href=".Timer.html#definition_do:every:">every:</a></span><span class="t"> </span><span class="mf">0.125</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_seconds">seconds</a></span>
+<span class="go">&lt;p</span><span class="go">rocess 47</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="n"><a href=".Timer.html#definition_Timer">Timer</a></span><span class="t"> </span><span class="nf"><a href=".Timer.html#definition_sleep:">sleep:</a></span><span class="t"> </span><span class="mf">0.25</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_seconds">seconds</a></span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="n">p</span><span class="t"> </span><span class="n"><a href="concurrency.html#definition_stop">stop</a></span>
+<span class="nd">@ok</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_do:after:">
+  <pre class="thumb"><span class="n"><a href=".Timer.html#definition_Timer">Timer</a></span><span class="t"> </span><span class="nf"><a href=".Timer.html#definition_do:after:">do:</a></span><span class="t"> </span><span class="n">action</span><span class="t"> </span><span class="nf"><a href=".Timer.html#definition_do:after:">after:</a></span><span class="t"> </span><span class="n">duration</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="concurrency.html#definition_Process">Process</a></span>
+  | <span class="n">action</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">duration</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>Spawns a new process that calls <code><span class="n">action</span></code> after <code><span class="n">duration</span></code> microseconds.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">p</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_Timer">Timer</a></span><span class="t"> </span><span class="nf"><a href=".Timer.html#definition_do:after:">do:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hello</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href=".Timer.html#definition_do:after:">after:</a></span><span class="t"> </span><span class="mf">0.125</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_seconds">seconds</a></span>
+<span class="go">&lt;p</span><span class="go">rocess 50</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="n"><a href=".Timer.html#definition_Timer">Timer</a></span><span class="t"> </span><span class="nf"><a href=".Timer.html#definition_sleep:">sleep:</a></span><span class="t"> </span><span class="mf">0.25</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_seconds">seconds</a></span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="n">p</span><span class="t"> </span><span class="n"><a href="concurrency.html#definition_stop">stop</a></span>
+<span class="nd">@ok</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_time">
+  <pre class="thumb"><span class="n">action</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_time">time</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Double">Double</a></span>
+  | <span class="n">action</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Times how long it takes for <code><span class="n">action</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span></code> to complete, returning the duration in seconds.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_Timer">Timer</a></span><span class="t"> </span><span class="nf"><a href=".Timer.html#definition_sleep:">sleep:</a></span><span class="t"> </span><span class="mf">0.1</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_seconds">seconds</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_time">time</a></span>
+<span class="mf">0.1001131534576416</span>
+</pre></div>
+
+
+
+</div>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_.Unit_.Helpers">Unit Helpers</h2><p>  </p><p>There are many methods defined for use with <code><span class="n"><a href=".Timer.html#definition_Timer">Timer</a></span></code> so you don't have to do a bunch of calculations or repeat a bunch of 0s.
+
+</p><div class="definition" id="definition_us">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_us">us</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>Yields <code><span class="n">n</span></code> microseconds. This is effectively a no-op, returning the same number back, since Timer already uses microsecond precision.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_microseconds">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_microseconds">microseconds</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>See <code><span class="n"><a href=".Timer.html#definition_us">us</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_microsecond">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_microsecond">microsecond</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>See <code><span class="n"><a href=".Timer.html#definition_us">us</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_ms">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_ms">ms</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>Yields <code><span class="n">n</span></code> milliseconds.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_milliseconds">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_milliseconds">milliseconds</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>See <code><span class="n"><a href=".Timer.html#definition_ms">ms</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_millisecond">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_millisecond">millisecond</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>See <code><span class="n"><a href=".Timer.html#definition_ms">ms</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_seconds">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_seconds">seconds</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>Yields <code><span class="n">n</span></code> in seconds.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_second">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_second">second</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>See <code><span class="n"><a href=".Timer.html#definition_seconds">seconds</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_minutes">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_minutes">minutes</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>Yields <code><span class="n">n</span></code> in minutes.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_minute">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_minute">minute</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>See <code><span class="n"><a href=".Timer.html#definition_minutes">minutes</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_hours">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_hours">hours</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>Yields <code><span class="n">n</span></code> in hours.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_hour">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_hour">hour</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>See <code><span class="n"><a href=".Timer.html#definition_hours">hours</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_days">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_days">days</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>Yields <code><span class="n">n</span></code> in days.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_day">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_day">day</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>See <code><span class="n"><a href=".Timer.html#definition_days">days</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_weeks">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_weeks">weeks</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>Yields <code><span class="n">n</span></code> in weeks.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_week">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_week">week</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>See <code><span class="n"><a href=".Timer.html#definition_weeks">weeks</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_months">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_months">months</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>Yields <code><span class="n">n</span></code> in months.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_month">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_month">month</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>See <code><span class="n"><a href=".Timer.html#definition_months">months</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_years">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_years">years</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>Yields <code><span class="n">n</span></code> in years.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_year">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="n"><a href=".Timer.html#definition_year">year</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Number">Number</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Number">Number</a></span></pre><p>See <code><span class="n"><a href=".Timer.html#definition_years">years</a></span></code>.
+
+
+
+</p></div>
+
+
+</div>
+
+    </div>
+  </body>
+</html>

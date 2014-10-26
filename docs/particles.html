@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Particles</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+    <script src="jquery.js" type="text/javascript"></script>
+    <script src="jquery.hotkeys.js" type="text/javascript"></script>
+    <script src="tags.js" type="text/javascript"></script>
+    <script src="main.js" type="text/javascript"></script>
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+      <form class="search" action="javascript:void(0)">
+        <input type="text" id="search" placeholder="Search&hellip;" />
+      </form>
+      <ul class="search-results"></ul>
+      <h4>On this page:</h4>
+<ol class="toc"><li><a href="particles.html">Particles</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="reference.html">Reference</a><ol><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>Particles</h1>
+
+<div class="definition" id="definition_Particle">
+  <pre class="thumb"><span class="n"><a href="particles.html#definition_Particle">Particle</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span></pre><p>Ah, particles - an Atomo programmer's best friend. Although their primary purpose is to represent &quot;partial messages&quot; like <code><span class="nd">@sqrt</span></code> or <code><span class="nd">@</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="nf">bar:</span><span class="t"> </span><span class="n">_</span><span class="p">)</span></code>, their use gracefully extends far beyond that. The fact that they can be pattern-matched makes their use as error values and success indicators very handy.</p><p>For example, <code><span class="nf"><a href="association.html#definition_lookup:">lookup:</a></span></code> uses them to indicate whether it was able to find a given key in a list of <code><span class="n"><a href="association.html#definition_Association">Association</a></span></code>s. If it finds the association, it returns the associated value wrapped in <code><span class="nd">@ok:</span></code>. If it doesn't find it, it returns <code><span class="nd">@none</span></code>. It is the dispatcher's job to decide what they want to do from there.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">b</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="association.html#definition_lookup:">lookup:</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">b</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="association.html#definition_lookup:">lookup:</a></span><span class="t"> </span><span class="mi">3</span>
+<span class="nd">@none</span>
+</pre></div><p>Many errors are also encoded as simple &quot;structured error messages&quot; using particles. For example, when indexing a list out of bounds:
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_at:">at:</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_at:">at:</a></span><span class="t"> </span><span class="mi">3</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(out-of-bounds: 3 for-list: [1, 2, 3])</span><span class="go">&gt;</span></span>
+</pre><p>This value can be caught and pattern-matched, with the keywords in the particle clearly explaining the importance and meaning of every value involved:
+
+</p><div class="highlight"><pre><span class="p">{</span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_at:">at:</a></span><span class="t"> </span><span class="mi">3</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_handle:">handle:</a></span><span class="t"> </span><span class="p">{</span><span class="t">
+  </span><span class="nd">@</span><span class="p">(</span><span class="nf">out-of-bounds:</span><span class="t"> </span><span class="n">idx</span><span class="t"> </span><span class="nf">for-list:</span><span class="t"> </span><span class="n">_</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t">
+    </span><span class="s">&quot;</span><span class="s">out of bounds: </span><span class="s">&quot;</span><span class="t"> </span><span class="p">(</span><span class="o"><a href="lists.html#definition_..">..</a></span><span class="t"> </span><span class="n">idx</span><span class="t"> </span><span class="n"><a href="core.html#definition_show">show</a></span><span class="p">)</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t">
+</span><span class="p">}</span></pre></div><p>And, since they respond to <code><span class="nf"><a href="particles.html#definition_call:">call:</a></span></code>, they can be used most places where you would otherwise have a block that takes certain arguments:
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_map:">map:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="p">}</span>
+<span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_map:">map:</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">9</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_map:">map:</a></span><span class="t"> </span><span class="nd">@sqrt</span>
+<span class="p">[</span><span class="mf">1.0</span><span class="p">,</span><span class="t"> </span><span class="mf">2.0</span><span class="p">,</span><span class="t"> </span><span class="mf">3.0</span><span class="p">]</span>
+</pre><p>In this case, the values fill up the empty slots in the particle (in order), and the &quot;completed&quot; message is dispatched, yielding its result.</p><p>There are two kinds of particles: single particles and keyword particles, which reflects the two types of messages.</p><p>Single particles are simple names, like <code><span class="nd">@sqrt</span></code>, or if the target is filled, <code><span class="nd">@</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span><span class="p">)</span></code>.</p><p>Keyword particles may contain more &quot;filled-in&quot; values, such as <code><span class="nd">@</span><span class="p">(</span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span></code> or <code><span class="nd">@foo:</span></code> or even <code><span class="nd">@</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">1</span><span class="p">)</span></code>. Single particles only have one unfilled value; keyword particles can have any number of them, but they are keyword-delimited.</p><p>Keyword particles have varying forms of syntax. <code><span class="nd">@+</span></code> is equivalent to <code><span class="nd">@</span><span class="p">(</span><span class="n">_</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="n">_</span><span class="p">)</span></code>. <code><span class="nd">@foo:bar:</span></code> is equivalent to <code><span class="nd">@</span><span class="p">(</span><span class="n">_</span><span class="t"> </span><span class="nf">foo:</span><span class="t"> </span><span class="n">_</span><span class="t"> </span><span class="nf">bar:</span><span class="t"> </span><span class="n">_</span><span class="p">)</span></code>. <code><span class="nd">@</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span></code> is equivalent to <code><span class="nd">@</span><span class="p">(</span><span class="n">_</span><span class="t"> </span><span class="nf">foo:</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_complete:">
+  <pre class="thumb"><span class="n">p</span><span class="t"> </span><span class="nf"><a href="particles.html#definition_complete:">complete:</a></span><span class="t"> </span><span class="p">(</span><span class="o"><a href="ranges.html#definition_...">...</a></span><span class="t"> </span><span class="n"><a href="particles.html#definition_targets">targets</a></span><span class="p">)</span> <span class="definition-result-arrow">→</span> <span class="n">Message</span>
+  | <span class="n">p</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="particles.html#definition_Particle">Particle</a></span></pre><p>Complete the particle <code><span class="n">p</span></code> by filling it in with values from <code><span class="n">values</span></code>, in order. If there are not enough values in the list to complete the particle, <code><span class="nd">@particle-needed:given:</span></code> is thrown.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nd">@sqrt</span><span class="t"> </span><span class="nf"><a href="particles.html#definition_complete:">complete:</a></span><span class="t"> </span><span class="mi">10</span>
+<span class="go">&lt;m</span><span class="go">essage 10 sqrt</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="nd">@+</span><span class="t"> </span><span class="nf"><a href="particles.html#definition_complete:">complete:</a></span><span class="t"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="go">&lt;m</span><span class="go">essage 1 + 2</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="nd">@+</span><span class="t"> </span><span class="nf"><a href="particles.html#definition_complete:">complete:</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(particle-needed: 2 given: 1)</span><span class="go">&gt;</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_call:">
+  <pre class="thumb"><span class="n">p</span><span class="t"> </span><span class="nf"><a href="particles.html#definition_call:">call:</a></span><span class="t"> </span><span class="p">(</span><span class="o"><a href="ranges.html#definition_...">...</a></span><span class="t"> </span><span class="n">values</span><span class="p">)</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">p</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="particles.html#definition_Particle">Particle</a></span></pre><p>Complete the particle <code><span class="n">p</span></code> by filling it in with values from <code><span class="n">values</span></code>, in order, and <code><span class="n">dispatch</span></code> the completed message.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nd">@sqrt</span><span class="t"> </span><span class="nf"><a href="particles.html#definition_call:">call:</a></span><span class="t"> </span><span class="mi">10</span>
+<span class="mf">3.1622776601683795</span>
+<span class="caret">&gt;</span> <span class="nd">@+</span><span class="t"> </span><span class="nf"><a href="particles.html#definition_call:">call:</a></span><span class="t"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="mi">3</span>
+<span class="caret">&gt;</span> <span class="nd">@+</span><span class="t"> </span><span class="nf"><a href="particles.html#definition_call:">call:</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(particle-needed: 2 given: 1)</span><span class="go">&gt;</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_name">
+  <pre class="thumb"><span class="n">p</span><span class="t"> </span><span class="n"><a href="particles.html#definition_name">name</a></span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="n">p</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="particles.html#definition_Particle">Particle</a></span></pre><p>Returns the name of the single particle <code><span class="n">p</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nd">@sqrt</span><span class="t"> </span><span class="n"><a href="particles.html#definition_name">name</a></span>
+<span class="s">&quot;</span><span class="s">sqrt</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_names">
+  <pre class="thumb"><span class="n">p</span><span class="t"> </span><span class="n"><a href="particles.html#definition_names">names</a></span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="n">p</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="particles.html#definition_Particle">Particle</a></span></pre><p>Returns the names in the keyword particle <code><span class="n">p</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nd">@+</span><span class="t"> </span><span class="n"><a href="particles.html#definition_names">names</a></span>
+<span class="p">[</span><span class="s">&quot;</span><span class="s">+</span><span class="s">&quot;</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="nd">@foo:bar:</span><span class="t"> </span><span class="n"><a href="particles.html#definition_names">names</a></span>
+<span class="p">[</span><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">bar</span><span class="s">&quot;</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_target">
+  <pre class="thumb"><span class="n">p</span><span class="t"> </span><span class="n"><a href="particles.html#definition_target">target</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">p</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="particles.html#definition_Particle">Particle</a></span></pre><p>Returns the single particle <code><span class="n">p</span></code>'s target wrapped in <code><span class="nd">@ok:</span></code>, or <code><span class="n">none</span></code> if it does not exist.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nd">@foo</span><span class="t"> </span><span class="n"><a href="particles.html#definition_target">target</a></span>
+<span class="nd">@none</span>
+<span class="caret">&gt;</span> <span class="nd">@</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span><span class="p">)</span><span class="t"> </span><span class="n"><a href="particles.html#definition_target">target</a></span>
+<span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_targets">
+  <pre class="thumb"><span class="n">p</span><span class="t"> </span><span class="n"><a href="particles.html#definition_targets">targets</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">p</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="particles.html#definition_Particle">Particle</a></span></pre><p>Returns a list of the keyword particle <code><span class="n">p</span></code>'s targets, indicating the absense of a value with <code><span class="nd">@none</span></code> and wrapping existing values in <code><span class="nd">@ok:</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nd">@+</span><span class="t"> </span><span class="n"><a href="particles.html#definition_targets">targets</a></span>
+<span class="p">[</span><span class="nd">@none</span><span class="p">,</span><span class="t"> </span><span class="nd">@none</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="nd">@</span><span class="p">(</span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="particles.html#definition_targets">targets</a></span>
+<span class="p">[</span><span class="nd">@none</span><span class="p">,</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="nd">@</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="n">_</span><span class="t"> </span><span class="nf">bar:</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="particles.html#definition_targets">targets</a></span>
+<span class="p">[</span><span class="nd">@none</span><span class="p">,</span><span class="t"> </span><span class="nd">@none</span><span class="p">,</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">)</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="nd">@</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="particles.html#definition_targets">targets</a></span>
+<span class="p">[</span><span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="mi">1</span><span class="p">)</span><span class="p">,</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_type">
+  <pre class="thumb"><span class="n">p</span><span class="t"> </span><span class="n"><a href="particles.html#definition_type">type</a></span> <span class="definition-result-arrow">→</span> <span class="nf"><a href="lists.html#definition_in?:">in?:</a></span><span class="t"> </span><span class="p">[</span><span class="nd">@single</span><span class="p">,</span><span class="t"> </span><span class="nd">@keyword</span><span class="p">]</span>
+  | <span class="n">p</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="particles.html#definition_Particle">Particle</a></span></pre><p>Yields the type of the keyword - single or keyword.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nd">@sqrt</span><span class="t"> </span><span class="n"><a href="particles.html#definition_type">type</a></span>
+<span class="nd">@single</span>
+<span class="caret">&gt;</span> <span class="nd">@+</span><span class="t"> </span><span class="n"><a href="particles.html#definition_type">type</a></span>
+<span class="nd">@keyword</span>
+<span class="caret">&gt;</span> <span class="nd">@foo:bar:</span><span class="t"> </span><span class="n"><a href="particles.html#definition_type">type</a></span>
+<span class="nd">@keyword</span>
+</pre></div>
+
+
+
+</div>
+
+
+    </div>
+  </body>
+</html>

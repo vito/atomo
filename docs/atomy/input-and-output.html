@@ -1,0 +1,279 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>Input &amp; Output</title>
+<link rel="stylesheet" type="text/css" href="public/doodle.css">
+<script type="text/javascript" src="public/jquery.js"></script><script type="text/javascript" src="public/jquery.hotkeys.js"></script><script type="text/javascript" src="public/tags.js"></script><script type="text/javascript" src="public/main.js"></script><link rel="stylesheet" type="text/css" href="public/highlight.css">
+</head>
+<body>
+<div id="main"><div id="content"><div class="section">
+<h1 class="section_header">Input &amp; Output</h1>
+<div id="definition_^@" class="definition">
+<pre class="thumb"><span class="o">^</span><span class="n">output-port</span> <span class="definition_result_arrow">&rArr;</span> <span class="o">$</span><span class="n">stdout</span></pre>
+<p>Where to write normal output.</p>
+</div>
+<div id="definition_^@" class="definition">
+<pre class="thumb"><span class="o">^</span><span class="n">input-port</span> <span class="definition_result_arrow">&rArr;</span> <span class="o">$</span><span class="n">stdin</span></pre>
+<p>Where to read input from.</p>
+</div>
+<div id="definition_^@" class="definition">
+<pre class="thumb"><span class="o">^</span><span class="n">error-port</span> <span class="definition_result_arrow">&rArr;</span> <span class="o">$</span><span class="n">stderr</span></pre>
+<p>Where to write error/warning output.</p>
+</div>
+<div class="section" id="section_output">
+<h2 class="section_header">Output</h2>
+<div id="definition_print" class="definition">
+<pre class="thumb"><span class="n">x</span><span class="t"> </span><span class="n"><a href="output.html#definition_print">print</a></span> <span class="definition_result_arrow">&rArr;</span> <span class="n">x</span></pre>
+<p>Write <code><span class="n">x</span><span class="t"> </span><span class="n">to-s</span></code> to <code><span class="o">^</span><span class="n">output-port</span></code>, followed by a linebreak.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="output.html#definition_print">print</a></span><span class="t">
+</span>1
+<span class="mi">1</span>
+<span class="caret">&gt; </span><span class="s">"</span><span class="s">hello</span><span class="s">"</span><span class="t"> </span><span class="n"><a href="output.html#definition_print">print</a></span><span class="t">
+</span>hello
+<span class="s">"</span><span class="s">hello</span><span class="s">"</span>
+</pre>
+</div>
+</div>
+<div id="definition_display" class="definition">
+<pre class="thumb"><span class="n">x</span><span class="t"> </span><span class="n"><a href="output.html#definition_display">display</a></span> <span class="definition_result_arrow">&rArr;</span> <span class="n">x</span></pre>
+<p>Write <code><span class="n">x</span><span class="t"> </span><span class="n">to-s</span></code> to <code><span class="o">^</span><span class="n">output-port</span></code>.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="output.html#definition_display">display</a></span><span class="t">
+</span>1<span class="mi">1</span>
+<span class="caret">&gt; </span><span class="s">"</span><span class="s">hello</span><span class="s">"</span><span class="t"> </span><span class="n"><a href="output.html#definition_display">display</a></span><span class="t">
+</span>hello<span class="s">"</span><span class="s">hello</span><span class="s">"</span>
+</pre>
+</div>
+</div>
+<div id="definition_write" class="definition">
+<pre class="thumb"><span class="n">x</span><span class="t"> </span><span class="n"><a href="output.html#definition_write">write</a></span> <span class="definition_result_arrow">&rArr;</span> <span class="n">x</span></pre>
+<p>Write <code><span class="n">x</span><span class="t"> </span><span class="n">show</span></code> to <code><span class="o">^</span><span class="n">output-port</span></code>.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="output.html#definition_write">write</a></span><span class="t">
+</span>1
+<span class="mi">1</span>
+<span class="caret">&gt; </span><span class="s">"</span><span class="s">hello</span><span class="s">"</span><span class="t"> </span><span class="n"><a href="output.html#definition_write">write</a></span><span class="t">
+</span>"hello"
+<span class="s">"</span><span class="s">hello</span><span class="s">"</span>
+</pre>
+</div>
+</div>
+<div id="definition_with_output_to" class="definition">
+<pre class="thumb"><span class="n">with-output-to</span><span class="p">(</span><span class="n">filename</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="no">String</span><span class="t"> </span><span class="p">}</span><span class="p">,</span><span class="t"> </span><span class="n">mode</span><span class="t"> </span><span class="o">=</span><span class="t"> </span><span class="s">"</span><span class="s">w</span><span class="s">"</span><span class="p">,</span><span class="t"> </span><span class="o">&amp;</span><span class="n">action</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="n">any</span>
+  | <span class="n">filename</span><span class="t"> </span><span class="n">is-a?</span><span class="p">(</span><span class="no">String</span><span class="p">)</span>
+  | <span class="n">mode</span><span class="t"> </span><span class="n">is-a?</span><span class="p">(</span><span class="no">String</span><span class="p">)</span></pre>
+<p>Set <code><span class="o">^</span><span class="n">output-port</span></code> to write output to <code><span class="n">filename</span></code> for the duration     of <code><span class="n">action</span></code>, ensuring that the file is closed.</p>
+<p>Returns the result of <code><span class="n">action</span></code>.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n">with-output-to</span><span class="p">(</span><span class="s">"</span><span class="s">foo</span><span class="s">"</span><span class="p">)</span><span class="o">:</span><span class="t"> </span><span class="mi">42</span><span class="t"> </span><span class="n"><a href="output.html#definition_print">print</a></span><span class="t">
+</span><span class="mi">42</span>
+<span class="caret">&gt; </span><span class="n">with-output-to</span><span class="p">(</span><span class="s">"</span><span class="s">foo</span><span class="s">"</span><span class="p">,</span><span class="t"> </span><span class="s">"</span><span class="s">a</span><span class="s">"</span><span class="p">)</span><span class="o">:</span><span class="t"> </span><span class="s">"</span><span class="s">hello</span><span class="s">"</span><span class="t"> </span><span class="n"><a href="output.html#definition_print">print</a></span><span class="t">
+</span><span class="s">"</span><span class="s">hello</span><span class="s">"</span>
+<span class="caret">&gt; </span><span class="no">File</span><span class="t"> </span><span class="n">open</span><span class="p">(</span><span class="s">"</span><span class="s">foo</span><span class="s">"</span><span class="p">,</span><span class="t"> </span><span class="o">&amp;</span><span class="ss">#read</span><span class="p">)</span><span class="t">
+</span><span class="s">"</span><span class="s">42</span><span class="se">\</span><span class="se">n</span><span class="s">hello</span><span class="se">\</span><span class="se">n</span><span class="s">"</span>
+</pre>
+</div>
+</div>
+<div id="definition_with_output_to" class="definition">
+<pre class="thumb"><span class="n">with-output-to</span><span class="p">(</span><span class="n">io</span><span class="p">,</span><span class="t"> </span><span class="o">&amp;</span><span class="n">action</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="n">any</span></pre>
+<p>Set <code><span class="o">^</span><span class="n">output-port</span></code> to write to <code><span class="n">io</span></code> for the duration of <code><span class="n">action</span></code>.</p>
+<p>Returns the result of <code><span class="n">action</span></code>.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n">require</span><span class="p">(</span><span class="s">"</span><span class="s">stringio</span><span class="s">"</span><span class="p">)</span><span class="t">
+</span><span class="kc">false</span>
+<span class="caret">&gt; </span><span class="n">x</span><span class="t"> </span><span class="o">=</span><span class="t"> </span><span class="no">StringIO</span><span class="t"> </span><span class="n">new</span><span class="t">
+</span><span class="o">#</span><span class="o">&lt;</span><span class="no">StringIO</span><span class="o">:</span><span class="mh">0x4b048</span><span class="t"> </span><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">]</span><span class="o">&gt;</span>
+<span class="caret">&gt; </span><span class="n">with-output-to</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">:</span><span class="t"> </span><span class="s">"</span><span class="s">hello!</span><span class="s">"</span><span class="t"> </span><span class="n"><a href="output.html#definition_write">write</a></span><span class="t">
+</span><span class="s">"</span><span class="s">hello!</span><span class="s">"</span>
+<span class="caret">&gt; </span><span class="n">x</span><span class="t"> </span><span class="n">string</span><span class="t">
+</span><span class="s">"</span><span class="se">\</span><span class="se">"</span><span class="s">hello!</span><span class="se">\</span><span class="se">"</span><span class="se">\</span><span class="se">n</span><span class="s">"</span>
+</pre>
+</div>
+</div>
+<div id="definition_with_error_to" class="definition">
+<pre class="thumb"><span class="n">with-error-to</span><span class="p">(</span><span class="n">filename</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="no">String</span><span class="t"> </span><span class="p">}</span><span class="p">,</span><span class="t"> </span><span class="n">mode</span><span class="t"> </span><span class="o">=</span><span class="t"> </span><span class="s">"</span><span class="s">w</span><span class="s">"</span><span class="p">,</span><span class="t"> </span><span class="o">&amp;</span><span class="n">action</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="n">any</span>
+  | <span class="n">filename</span><span class="t"> </span><span class="n">is-a?</span><span class="p">(</span><span class="no">String</span><span class="p">)</span>
+  | <span class="n">mode</span><span class="t"> </span><span class="n">is-a?</span><span class="p">(</span><span class="no">String</span><span class="p">)</span></pre>
+<p>Set <code><span class="o">^</span><span class="n">error-port</span></code> to write error output to <code><span class="n">filename</span></code> for the     duration of <code><span class="n">action</span></code>, ensuring that the file is closed.</p>
+<p>Returns the result of <code><span class="n">action</span></code>.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n">with-error-to</span><span class="p">(</span><span class="s">"</span><span class="s">foo</span><span class="s">"</span><span class="p">,</span><span class="t"> </span><span class="s">"</span><span class="s">a</span><span class="s">"</span><span class="p">)</span><span class="o">:</span><span class="t"> </span><span class="n">warning</span><span class="p">(</span><span class="ss">#some-warning</span><span class="p">)</span><span class="t">
+</span><span class="kc">nil</span>
+<span class="caret">&gt; </span><span class="no">File</span><span class="t"> </span><span class="n">open</span><span class="p">(</span><span class="s">"</span><span class="s">foo</span><span class="s">"</span><span class="p">,</span><span class="t"> </span><span class="o">&amp;</span><span class="ss">#read</span><span class="p">)</span><span class="t">
+</span><span class="s">"</span><span class="s">42</span><span class="se">\</span><span class="se">n</span><span class="s">hello</span><span class="se">\</span><span class="se">n</span><span class="s">some_warning</span><span class="se">\</span><span class="se">n</span><span class="s">"</span>
+</pre>
+</div>
+</div>
+<div id="definition_with_error_to" class="definition">
+<pre class="thumb"><span class="n">with-error-to</span><span class="p">(</span><span class="n">io</span><span class="p">,</span><span class="t"> </span><span class="o">&amp;</span><span class="n">action</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="n">any</span></pre>
+<p>Set <code><span class="o">^</span><span class="n">error-port</span></code> to write to <code><span class="n">io</span></code> for the duration of <code><span class="n">action</span></code>.</p>
+<p>Returns the result of <code><span class="n">action</span></code>.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n">require</span><span class="p">(</span><span class="s">"</span><span class="s">stringio</span><span class="s">"</span><span class="p">)</span><span class="t">
+</span><span class="kc">false</span>
+<span class="caret">&gt; </span><span class="n">x</span><span class="t"> </span><span class="o">=</span><span class="t"> </span><span class="no">StringIO</span><span class="t"> </span><span class="n">new</span><span class="t">
+</span><span class="o">#</span><span class="o">&lt;</span><span class="no">StringIO</span><span class="o">:</span><span class="mh">0x4d2f8</span><span class="t"> </span><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">]</span><span class="o">&gt;</span>
+<span class="caret">&gt; </span><span class="n">with-error-to</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">:</span><span class="t"> </span><span class="n">warning</span><span class="p">(</span><span class="ss">#foo</span><span class="p">)</span><span class="t">
+</span><span class="kc">nil</span>
+<span class="caret">&gt; </span><span class="n">x</span><span class="t"> </span><span class="n">string</span><span class="t">
+</span><span class="s">"</span><span class="s">foo</span><span class="se">\</span><span class="se">n</span><span class="s">"</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="section_input">
+<h2 class="section_header">Input</h2>
+<div id="definition_read_line" class="definition">
+<pre class="thumb"><span class="n">read-line</span><span class="p">(</span><span class="n">sep</span><span class="t"> </span><span class="o">=</span><span class="t"> </span><span class="o">$</span><span class="n">separator</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">String</span></pre>
+<p>Read a line of text from <code><span class="o">^</span><span class="n">input-port</span></code>, signalling <code><span class="no">EndOfFile</span></code> on     end of file. Lines are separated by <code><span class="n">sep</span></code>. A separator of <code><span class="kc">nil</span></code>     reads the entire contents, and a zero-length separator reads the input     one paragraph at a time (separated by two linebreaks).</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n">with-input-from</span><span class="p">(</span><span class="s">"</span><span class="s">foo</span><span class="s">"</span><span class="p">)</span><span class="o">:</span><span class="t"> </span><span class="n">read-line</span><span class="t">
+</span><span class="s">"</span><span class="s">42</span><span class="se">\</span><span class="se">n</span><span class="s">"</span>
+</pre>
+</div>
+</div>
+<div id="definition_read_lines" class="definition">
+<pre class="thumb"><span class="n">read-lines</span><span class="p">(</span><span class="n">sep</span><span class="t"> </span><span class="o">=</span><span class="t"> </span><span class="o">$</span><span class="n">separator</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">String</span></pre>
+<p>Read all lines of text from <code><span class="o">^</span><span class="n">input-port</span></code>. Lines are separated by     <code><span class="n">sep</span></code>. A separator of <code><span class="kc">nil</span></code> reads the entire contents as one     segment, and a zero-length separator reads the input one paragraph at a     time (separated by two linebreaks).</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n">with-input-from</span><span class="p">(</span><span class="s">"</span><span class="s">foo</span><span class="s">"</span><span class="p">)</span><span class="o">:</span><span class="t"> </span><span class="n">read-lines</span><span class="t">
+</span><span class="p">[</span><span class="s">"</span><span class="s">42</span><span class="se">\</span><span class="se">n</span><span class="s">"</span><span class="p">,</span><span class="t"> </span><span class="s">"</span><span class="s">hello</span><span class="se">\</span><span class="se">n</span><span class="s">"</span><span class="p">,</span><span class="t"> </span><span class="s">"</span><span class="s">some_warning</span><span class="se">\</span><span class="se">n</span><span class="s">"</span><span class="p">]</span>
+</pre>
+</div>
+</div>
+<div id="definition_read_byte:@" class="definition">
+<pre class="thumb"><span class="n">read-byte</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Integer</span></pre>
+<p>Read a single byte from <code><span class="o">^</span><span class="n">input-port</span></code>, signalling <code><span class="no">EndOfFile</span></code> on     end of file.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n">with-input-from</span><span class="p">(</span><span class="s">"</span><span class="s">foo</span><span class="s">"</span><span class="p">)</span><span class="o">:</span><span class="t"> </span><span class="n">read-byte</span><span class="t">
+</span><span class="mi">52</span>
+</pre>
+</div>
+</div>
+<div id="definition_read_char:@" class="definition">
+<pre class="thumb"><span class="n">read-char</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">String</span></pre>
+<p>Same as <code><span class="n">read-byte</span><span class="t"> </span><span class="n">chr</span></code>.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n">with-input-from</span><span class="p">(</span><span class="s">"</span><span class="s">foo</span><span class="s">"</span><span class="p">)</span><span class="o">:</span><span class="t"> </span><span class="n">read-char</span><span class="t">
+</span><span class="s">"</span><span class="s">4</span><span class="s">"</span>
+</pre>
+</div>
+</div>
+<div id="definition_read" class="definition">
+<pre class="thumb"><span class="n"><a href="input.html#definition_read">read</a></span><span class="p">(</span><span class="n">length</span><span class="t"> </span><span class="o">=</span><span class="t"> </span><span class="kc">nil</span><span class="p">,</span><span class="t"> </span><span class="n">buffer</span><span class="t"> </span><span class="o">=</span><span class="t"> </span><span class="kc">nil</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="p">(</span><span class="no">String</span><span class="t"> </span><span class="o">|</span><span class="o">|</span><span class="t"> </span><span class="n">buffer</span><span class="p">)</span><span class="t"> </span><span class="o">|</span><span class="o">|</span><span class="t"> </span><span class="kc">nil</span>
+  | <span class="n">length</span><span class="t"> </span><span class="kc">nil</span><span class="o">?</span><span class="t"> </span><span class="o">|</span><span class="o">|</span><span class="t"> </span><span class="p">(</span><span class="n">length</span><span class="t"> </span><span class="o">&gt;</span><span class="o">=</span><span class="t"> </span><span class="mi">0</span><span class="p">)</span>
+  | <span class="n">buffer</span><span class="t"> </span><span class="kc">nil</span><span class="o">?</span><span class="t"> </span><span class="o">|</span><span class="o">|</span><span class="t"> </span><span class="n">buffer</span><span class="t"> </span><span class="n">is-a?</span><span class="p">(</span><span class="no">String</span><span class="p">)</span></pre>
+<p>Read at most <code><span class="n">length</span></code> bytes from <code><span class="o">^</span><span class="n">input-port</span></code>, or to the end of     file if <code><span class="n">length</span></code> is <code><span class="kc">nil</span></code>. If <code><span class="n">buffer</span></code> is given, the data read     will be written to it.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n">x</span><span class="t"> </span><span class="o">=</span><span class="t"> </span><span class="s">"</span><span class="s">"</span><span class="t">
+</span><span class="s">"</span><span class="s">"</span>
+<span class="caret">&gt; </span><span class="n">with-input-from</span><span class="p">(</span><span class="s">"</span><span class="s">foo</span><span class="s">"</span><span class="p">)</span><span class="o">:</span><span class="t"> </span><span class="n"><a href="input.html#definition_read">read</a></span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="t">
+</span><span class="s">"</span><span class="s">42</span><span class="se">\</span><span class="se">n</span><span class="s">hello</span><span class="se">\</span><span class="se">n</span><span class="s">s</span><span class="s">"</span>
+<span class="caret">&gt; </span><span class="n">with-input-from</span><span class="p">(</span><span class="s">"</span><span class="s">foo</span><span class="s">"</span><span class="p">)</span><span class="o">:</span><span class="t"> </span><span class="n"><a href="input.html#definition_read">read</a></span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="t"> </span><span class="n">x</span><span class="p">)</span><span class="t">
+</span><span class="s">"</span><span class="s">42</span><span class="se">\</span><span class="se">n</span><span class="s">hello</span><span class="se">\</span><span class="se">n</span><span class="s">s</span><span class="s">"</span>
+<span class="caret">&gt; </span><span class="n">x</span><span class="t">
+</span><span class="s">"</span><span class="s">42</span><span class="se">\</span><span class="se">n</span><span class="s">hello</span><span class="se">\</span><span class="se">n</span><span class="s">s</span><span class="s">"</span>
+</pre>
+</div>
+</div>
+<div id="definition_with_input_from" class="definition">
+<pre class="thumb"><span class="n">with-input-from</span><span class="p">(</span><span class="n">filename</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="no">String</span><span class="t"> </span><span class="p">}</span><span class="p">,</span><span class="t"> </span><span class="n">mode</span><span class="t"> </span><span class="o">=</span><span class="t"> </span><span class="s">"</span><span class="s">r</span><span class="s">"</span><span class="p">,</span><span class="t"> </span><span class="o">&amp;</span><span class="n">action</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="n">any</span>
+  | <span class="n">filename</span><span class="t"> </span><span class="n">is-a?</span><span class="p">(</span><span class="no">String</span><span class="p">)</span>
+  | <span class="n">mode</span><span class="t"> </span><span class="n">is-a?</span><span class="p">(</span><span class="no">String</span><span class="p">)</span></pre>
+<p>Set <code><span class="o">^</span><span class="n">input-port</span></code> to read input from <code><span class="n">filename</span></code> for the duration     of <code><span class="n">action</span></code>, ensuring that the file is closed.</p>
+<p>Returns the result of <code><span class="n">action</span></code>.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n">with-input-from</span><span class="p">(</span><span class="s">"</span><span class="s">foo</span><span class="s">"</span><span class="p">)</span><span class="o">:</span><span class="t"> </span><span class="n">read-line</span><span class="t">
+</span><span class="s">"</span><span class="s">42</span><span class="se">\</span><span class="se">n</span><span class="s">"</span>
+</pre>
+</div>
+</div>
+<div id="definition_with_input_from" class="definition">
+<pre class="thumb"><span class="n">with-input-from</span><span class="p">(</span><span class="n">io</span><span class="p">,</span><span class="t"> </span><span class="o">&amp;</span><span class="n">action</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="n">any</span></pre>
+<p>Set <code><span class="o">^</span><span class="n">input-port</span></code> to write to <code><span class="n">io</span></code> for the duration of <code><span class="n">action</span></code>.</p>
+<p>Returns the result of <code><span class="n">action</span></code>.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n">require</span><span class="p">(</span><span class="s">"</span><span class="s">stringio</span><span class="s">"</span><span class="p">)</span><span class="t">
+</span><span class="kc">false</span>
+<span class="caret">&gt; </span><span class="n">x</span><span class="t"> </span><span class="o">=</span><span class="t"> </span><span class="no">StringIO</span><span class="t"> </span><span class="n">new</span><span class="p">(</span><span class="s">"</span><span class="s">hello</span><span class="se">\</span><span class="se">n</span><span class="s">goodbye</span><span class="se">\</span><span class="se">n</span><span class="s">"</span><span class="p">)</span><span class="t">
+</span><span class="o">#</span><span class="o">&lt;</span><span class="no">StringIO</span><span class="o">:</span><span class="mh">0x52a10</span><span class="t"> </span><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">]</span><span class="o">&gt;</span>
+<span class="caret">&gt; </span><span class="n">with-input-from</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">:</span><span class="t"> </span><span class="n">read-line</span><span class="t">
+</span><span class="s">"</span><span class="s">hello</span><span class="se">\</span><span class="se">n</span><span class="s">"</span>
+</pre>
+</div>
+</div>
+</div>
+</div></div></div>
+<div class="search">
+<form action="javascript:void(0)"><input autocomplete="off" type="text" placeholder="Search&hellip;" id="search"></form>
+<ul class="search_results"></ul>
+</div>
+<div id="sidebar">
+<h4>On this page:</h4>
+<ol class="toc">
+<li><a href="input-and-output.html#section_output">Output</a></li>
+<li><a href="input-and-output.html#section_input">Input</a></li>
+</ol>
+<h4>Up one level:</h4>
+<ol class="toc"><li>
+<a href="reference.html">Reference</a><ol>
+<li>
+<a href="concurrency.html">Concurrency</a><ol>
+<li><a href="concurrency.html#section_sending-and-receiving">Sending &amp; Receiving</a></li>
+<li><a href="concurrency.html#section_spawning">Spawning</a></li>
+</ol>
+</li>
+<li>
+<a href="condition-system.html">Condition System</a><ol>
+<li><a href="condition-system.html#section_conditions">Conditions</a></li>
+<li><a href="condition-system.html#section_handling">Handling</a></li>
+<li><a href="condition-system.html#section_signalling">Signalling</a></li>
+<li><a href="condition-system.html#section_debuggers">Debuggers</a></li>
+</ol>
+</li>
+<li>
+<a href="pretty-printing.html">Pretty-Printing</a><ol>
+<li><a href="pretty-printing.html#section_documents">Documents</a></li>
+<li><a href="pretty-printing.html#section_constructing">Constructing</a></li>
+<li>
+<a href="pretty-printing.html#section_helpers">Helpers</a><ol>
+<li><a href="pretty-printing.html#section_shortcuts">Shortcuts</a></li>
+<li><a href="pretty-printing.html#section_wrapping">Wrapping</a></li>
+<li><a href="pretty-printing.html#section_combining">Combining</a></li>
+</ol>
+</li>
+</ol>
+</li>
+<li>
+<a href="input-and-output.html">Input &amp; Output</a><ol>
+<li><a href="input-and-output.html#section_output">Output</a></li>
+<li><a href="input-and-output.html#section_input">Input</a></li>
+</ol>
+</li>
+<li><a href="the-repl.html">The REPL</a></li>
+<li>
+<a href="testing-with-therie.html">Testing with Therie</a><ol>
+<li><a href="testing-with-therie.html#section_structure">Structure</a></li>
+<li><a href="testing-with-therie.html#section_tests">Tests</a></li>
+</ol>
+</li>
+</ol>
+</li></ol>
+</div>
+</body>
+</html>

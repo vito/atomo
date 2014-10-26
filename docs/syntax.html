@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Syntax</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+    <script src="jquery.js" type="text/javascript"></script>
+    <script src="jquery.hotkeys.js" type="text/javascript"></script>
+    <script src="tags.js" type="text/javascript"></script>
+    <script src="main.js" type="text/javascript"></script>
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+      <form class="search" action="javascript:void(0)">
+        <input type="text" id="search" placeholder="Search&hellip;" />
+      </form>
+      <ul class="search-results"></ul>
+      <h4>On this page:</h4>
+<ol class="toc"><li><a href="syntax.html#section_.General_.Rules">General Rules</a></li><li><a href="syntax.html#section_guidelines">Indentation Guidelines</a></li><li><a href="syntax.html#section_.Comments">Comments</a></li><li><a href="syntax.html#section_literals-syntax">Literals</a></li><li><a href="syntax.html#section_dispatch-syntax">Dispatch</a></li><li><a href="syntax.html#section_macro-syntax"><code><span class="kr">macro</span></code></a></li><li><a href="syntax.html#section_for-macro-syntax"><code><span class="kr">for-macro</span></code></a></li><li><a href="syntax.html#section_operator-syntax"><code><span class="kr">operator</span></code></a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="index.html">Atomo</a><ol><li><a href="getting-started.html">Getting Started</a><ol><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li><li><a href="getting-started.html#section_.Wrapping_.Up">Wrapping Up</a></li></ol></li><li><a href="repl.html">The REPL</a></li><li><a href=".Tutorials.html">Tutorials</a><ol><li><a href="ruby.html">Ruby in Atomo</a></li></ol></li><li><a href="syntax.html">Syntax</a><ol><li><a href="syntax.html#section_.General_.Rules">General Rules</a></li><li><a href="syntax.html#section_guidelines">Indentation Guidelines</a></li><li><a href="syntax.html#section_.Comments">Comments</a></li><li><a href="syntax.html#section_literals-syntax">Literals</a></li><li><a href="syntax.html#section_dispatch-syntax">Dispatch</a></li><li><a href="syntax.html#section_macro-syntax"><code><span class="kr">macro</span></code></a></li><li><a href="syntax.html#section_for-macro-syntax"><code><span class="kr">for-macro</span></code></a></li><li><a href="syntax.html#section_operator-syntax"><code><span class="kr">operator</span></code></a></li></ol></li><li><a href="patterns.html">Patterns</a><ol><li><a href="patterns.html#section_types">Types of Patterns</a></li><li><a href="patterns.html#section_definition-target">A Pattern's Object</a></li><li><a href="patterns.html#section_.Pattern_.Objects">Pattern Objects</a></li></ol></li><li><a href="defining.html">Defining Methods</a><ol><li><a href="defining.html#section_variadic">Variadic Roles</a></li><li><a href="defining.html#section_optionals">Optional Roles</a></li><li><a href="defining.html#section_redefining">Redefining Methods</a></li></ol></li><li><a href="macros.html">Macros!</a><ol><li><a href="macros.html#section_defining-macros">Defining Macros</a></li><li><a href="macros.html#section_macro-environment">Macro Environment</a></li><li><a href="macros.html#section_macro-quotes">Macro Quotes</a></li></ol></li><li><a href="reference.html">Reference</a><ol><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>Syntax</h1><p>Atomo has a rather simple-to-use syntax, enabled by the powerful Parsec library it uses for parsing.
+
+
+</p><div class="section">
+  <h2 class="section-header" id="section_.General_.Rules">General Rules</h2><p>  </p><p>Atomo is whitespace-sensitive. Operators and keywords must be surrounded by whitespace, and indentation provides hints to the parser when you don't want to use semicolons. For example; <code><span class="m">1/2</span></code> is a <code><span class="n"><a href="numbers.html#definition_Rational">Rational</a></span></code>, while <code><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_/">/</a></span><span class="t"> </span><span class="mi">2</span></code> is integral division. <code><span class="n">foo-bar</span></code> is an identifier, while <code><span class="n">foo</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_-">-</a></span><span class="t"> </span><span class="n">bar</span></code> is subtraction.</p><p>Requiring whitespace around operators enables the use of more symbols in identifier names, allowing pleasant conventions like questions marks (e.g. <code><span class="n"><a href="lists.html#definition_empty?">empty?</a></span></code>) and exclamation points (e.g. <code><span class="n">do-something-destructive!</span></code>) for indicating the behaviour of a method.</p><p>Atomo's whitespace indentation rules are similar to Haskell's - they are not as strict as Python's, you just increase the spacing amount to indicate continuing the previous line, and continue that indentation amount to indicate continuing the current &quot;block&quot; of code.</p><p>Using significant whitespace, this block:
+
+</p><div class="highlight"><pre><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t">
+  </span><span class="n">goodbye</span><span class="t">
+  </span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="t">
+</span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span></pre></div><p>is equivalent to:
+
+</p><div class="highlight"><pre><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="p">;</span><span class="t"> </span><span class="n">goodbye</span><span class="p">;</span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span></pre></div><p>With these simple line-continuing rules in place, you can spread a single chain of messages across multiple lines:
+
+</p><div class="highlight"><pre><span class="n">something</span><span class="t">
+  </span><span class="n">foo</span><span class="t">
+  </span><span class="p">(</span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t">
+  </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span></pre></div><p>Which is parsed as:
+
+</p><div class="highlight"><pre><span class="n">something</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="p">(</span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span></pre></div><p>The same goes for keyword messages:
+
+</p><div class="highlight"><pre><span class="nf">if:</span><span class="t"> </span><span class="n">x</span><span class="t">
+  </span><span class="nf">then:</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">y</span><span class="t"> </span><span class="p">}</span><span class="t">
+  </span><span class="nf">else:</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">z</span><span class="t"> </span><span class="p">}</span></pre></div><p>It is recommended that continued keyword roles are indented relative to the initial keyword, though this is not necessary. As long as it is indented more than the first role, the message is &quot;continued.&quot;</p><p>These are all OK:
+
+</p><div class="highlight"><pre><span class="mi">0</span><span class="t"> </span><span class="nf"><a href="ordered.html#definition_up-to:">up-to:</a></span><span class="t"> </span><span class="mi">5</span><span class="t">
+    </span><span class="nf"><a href="blocks.html#definition_do:">do:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t">
+
+</span><span class="n">something</span><span class="t"> </span><span class="nf"><a href="ordered.html#definition_up-to:">up-to:</a></span><span class="t"> </span><span class="mi">5</span><span class="t">
+  </span><span class="nf"><a href="blocks.html#definition_do:">do:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t">
+
+</span><span class="n">something</span><span class="t"> </span><span class="nf"><a href="ordered.html#definition_up-to:">up-to:</a></span><span class="t"> </span><span class="mi">5</span><span class="t">
+            </span><span class="nf"><a href="blocks.html#definition_do:">do:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t">
+
+</span><span class="n">something</span><span class="t">
+  </span><span class="nf"><a href="ordered.html#definition_up-to:">up-to:</a></span><span class="t"> </span><span class="mi">5</span><span class="t">
+    </span><span class="nf"><a href="blocks.html#definition_do:">do:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span></pre></div><p>The same rules apply to operators, which are equivalent to keywords:
+
+</p><div class="highlight"><pre><span class="n">x</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t">
+  </span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">1</span><span class="t">
+    </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t">
+  </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span></pre></div><p>Which is parsed as:
+
+</p><div class="highlight"><pre><span class="n">x</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span><span class="t"> </span></pre></div>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_guidelines">Indentation Guidelines</h2><p>  </p><p>Two spaces for indentation is highly recommended, as it often aligns things neatly on one column. For example, a block's arguments, its contents, and the message sent to the block all end up on the same column:
+
+</p><div class="highlight"><pre><span class="p">{</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="o">|</span><span class="t">
+  </span><span class="nf">do-something:</span><span class="t"> </span><span class="n">foo</span><span class="t">
+  </span><span class="n">foo</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_*">*</a></span><span class="t"> </span><span class="mi">2</span><span class="t">
+  </span><span class="p">[</span><span class="t"> </span><span class="n">foo</span><span class="t">
+    </span><span class="n">foo</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t">
+    </span><span class="n">foo</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_*">*</a></span><span class="t"> </span><span class="mi">2</span><span class="t">
+  </span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_length">length</a></span><span class="t">
+</span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_call:">call:</a></span><span class="t"> </span><span class="mi">2</span></pre></div><p>Using this convention you also avoid stray closing braces, which would be common with other indentation styles.</p><p>Usually, don't do this:
+
+</p><div class="highlight"><pre><span class="n">foo</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_map:">map:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="o">|</span><span class="t">
+  </span><span class="c1">-- ...</span><span class="t">
+</span><span class="p">}</span></pre></div><p>as it indicates the final closing brace is somehow related to <code><span class="n">foo</span></code>, when really it's just the ending delimiter for the block passed to <code><span class="nf"><a href="lists.html#definition_map:">map:</a></span></code>.</p><p>There are some exceptions, though; for example, if a block's body is more important than the message being sent, or if it's used structurally as part of a DSL, it is highly recommended to just use the hanging-brace style, so you don't have to indent too far. <code><span class="nf"><a href="patterns.html#definition_match:">match:</a></span></code>, <code><span class="nf"><a href="boolean.html#definition_condition:">condition:</a></span></code>, <code><span class="nf"><a href="core.html#definition_case-of:">case-of:</a></span></code> and many more are examples of these. Another &quot;rule of thumb&quot; is, if the block takes arguments, you should use the two-space-indentation style. Otherwise, it's fair game.
+
+
+
+</p></div>
+<div class="section">
+  <h2 class="section-header" id="section_.Comments">Comments</h2><p>  </p><p>Atomo uses the same comment syntax as Haskell: <code><span class="c1">--</span></code> for linewise comments, <code><span class="cm">{-</span><span class="cm"> </span><span class="cm">-}</span></code> for block comments (which can be nested).
+
+</p><div class="highlight"><pre><span class="mi">1</span><span class="t"> </span><span class="c1">-- The number, &quot;one.&quot;</span><span class="t">
+</span><span class="p">(</span><span class="cm">{-</span><span class="cm"> Blah blah blah, </span><span class="cm">{-</span><span class="cm"> yo dawg </span><span class="cm">-}</span><span class="cm">, fizz buzz! </span><span class="cm">-}</span><span class="t"> </span><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span></pre></div>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_literals-syntax">Literals</h2>
+  
+
+<dl><dt>integers</dt><dd><p><code><span class="mi">1</span></code>, <code><span class="mi">-1</span></code>, <code><span class="mh">0xdeadbeef</span></code>, <code><span class="mo">0o644</span></code>, <code><span class="mh">-0x10</span></code>, <code><span class="mo">-0o10</span></code> ...</p></dd>
+
+<dt>doubles</dt><dd><p><code><span class="mf">1.0</span></code>, <code><span class="mf">-1.5</span></code>, <code><span class="mf">1.5e10</span></code>, <code><span class="mf">1.4e-3</span></code>, <code><span class="mf">-1.4e4</span></code>...</p></dd>
+
+<dt>characters</dt><dd><p><code><span class="sc">$</span><span class="sc">a</span></code>, <code><span class="sc">$</span><span class="sc">b</span></code>, <code><span class="sc">$</span><span class="se">\n</span></code>, <code><span class="sc">$</span><span class="se">\1234</span></code> (unicode number)...</p><p>Escape codes supported (in addition to numeric escapes):
+
+</p><pre class="verbatim">ascii-2:
+  \b \t \n \v \f \r \SO \SI \EM \FS \GS \RS \US ␣ (space)
+  \BS \HT \LF \VT \FF \CR \SO \SI \EM \BS \GS \RS \US \SP
+
+ascii-3:
+  \NUL \SOH \STX \ETX \EOT \ENQ \ACK \a \DLE \DC1 \DC2
+  \DC3 \DC4 \NAK \SYN \ETB \CAN \SUB \ESC \DEL</pre></dd>
+
+<dt>rationals</dt><dd><p><code><span class="m">1/2</span></code>, <code><span class="m">30/500</span></code>, <code><span class="m">-1/2</span></code>, <code><span class="m">1/-2</span></code>, ...</p></dd>
+
+<dt>strings</dt><dd><p><code><span class="s">&quot;</span><span class="s">&quot;</span></code>, <code><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span></code>, <code><span class="s">&quot;</span><span class="s">fizz </span><span class="se">\</span><span class="se">&quot;</span><span class="s">buzz</span><span class="se">\</span><span class="se">&quot;</span><span class="s">&quot;</span></code>, containing the above-mentioned escape codes</p></dd>
+
+<dt>macro-quotes</dt><dd><p><code><span class="sx">r{</span><span class="sx">\d</span><span class="sx">+</span><span class="sx">}m</span></code>, <code><span class="sx">w{</span><span class="sx">foo bar</span><span class="sx">}</span></code>, ...</p><p>See <a href="macros.html#section_macro-quotes">Macro Quotes</a>.</p><p>General format:
+
+</p><pre class="verbatim">name(d1)content*(d2)[flag*]
+  where
+    name = identifier
+    content = arbitrary, raw text
+    flag = case-sensitive alphabetic character
+    (d1) = one of ({[&quot;$|`'~@
+    (d2) = the matching delimiter for (d1)</pre><p>Note that a large number of delimiters may be used; these are punctuation characters that are already reserved for other uses, so that the <code>name</code> will not &quot;flow&quot; into them, because they're not valid characters for use in an identifier. That is, allowing <code>/</code> as a delimiter, for example, would lead to parsing ambiguity with <code><span class="n">foo/</span><span class="t"> </span><span class="n">bar/</span></code>.</p><p>The content between the delimiters is parsed with no escapes except for the delimiters. That is, <code><span class="sx">r&quot;</span><span class="sx">foo</span><span class="sx">\&quot;</span><span class="sx">bar</span><span class="sx">&quot;</span></code> is the same as <code><span class="sx">r{</span><span class="sx">foo&quot;bar</span><span class="sx">}</span></code>, and <code><span class="sx">r&quot;</span><span class="sx">foo</span><span class="sx">\b</span><span class="sx">ar</span><span class="sx">&quot;</span></code> is sent with <code><span class="s">&quot;</span><span class="s">foo</span><span class="se">\</span><span class="se">\</span><span class="s">bar</span><span class="s">&quot;</span></code> as the contents.</p></dd>
+
+<dt>boolean</dt><dd><p><code><span class="kc">True</span></code> and <code><span class="kc">False</span></code></p></dd>
+
+<dt>lists</dt><dd><p><code><span class="p">[</span><span class="p">]</span></code>, <code><span class="p">[</span><span class="mi">1</span><span class="p">]</span></code>, <code><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span></code>, <code><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">2</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">three</span><span class="s">&quot;</span><span class="p">]</span></code>, ...</p></dd>
+
+<dt>tuples</dt><dd><p><code><span class="p">(</span><span class="p">)</span></code>, <code><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span></code>, <code><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">2</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">three</span><span class="s">&quot;</span><span class="p">)</span></code>, ...</p><p>Note that there is no such thing as a tuple with only one value.</p></dd>
+
+<dt>expressions</dt><dd><dl><dt>quoted</dt><dd><p>An apostrophe (<code>'</code>) before an expression &quot;quotes&quot; it, turning it into an expression literal:
+
+</p><div class="example"><p><em>Example:</em></p><div class="highlight"><pre><span class="ss">'1</span><span class="t">
+</span><span class="ss">'a</span><span class="t">
+</span><span class="ss">'</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">1</span><span class="p">)</span><span class="t">
+</span><span class="ss">'</span><span class="ss">'</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="n">b</span><span class="p">)</span><span class="t">
+</span><span class="ss">'</span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span></pre></div></div></dd>
+
+<dt>quasiquoted</dt><dd><p>Atomo supports quasiquotation as seen in most Lisps, most similarly Clojure. A backquote (<code>`</code>) begins a quasiquote, inside of which you can use tilde (<code>~</code>) to &quot;unquote&quot;.</p><p>These can be nested infinitely; unquoting works inside of aggregate expressions such as lists, blocks, and definitions.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="ss">`1</span>
+<span class="ss">'</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="ss">`</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="si">~</span><span class="p">(</span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="p">)</span>
+<span class="ss">'</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="ss">`</span><span class="ss">`</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="si">~~</span><span class="p">(</span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="p">)</span>
+<span class="ss">'</span><span class="p">(</span><span class="ss">`</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="si">~4</span><span class="p">)</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="ss">`</span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="si">~</span><span class="p">(</span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="p">}</span>
+<span class="ss">'</span><span class="p">(</span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">4</span><span class="t"> </span><span class="p">}</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="ss">`</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="si">~</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="p">]</span>
+<span class="ss">'</span><span class="p">(</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="p">)</span>
+</pre></div><p>Note that unquoting too far throws an <code><span class="nd">@out-of-quote:</span></code> error.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="ss">`~~</span><span class="p">(</span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(out-of-quote: '(2 + 2))</span><span class="go">&gt;</span></span>
+</pre></div><p>Identifiers beginning with <code>!</code> inside of a quasiquote are decorated with a clock value to ensure name collision does not occur in a macro's expansion. This is similar to Common Lisp's <code><span class="n">gensym</span></code> mechanism, but it is automated and more implicit.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="ss">'</span><span class="p">{</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="p">}</span>
+<span class="ss">'</span><span class="p">(</span><span class="p">{</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="p">}</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="ss">`</span><span class="p">{</span><span class="t"> </span><span class="n">!x</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="si">~a</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n">expand</span>
+<span class="ss">'</span><span class="p">(</span><span class="p">{</span><span class="t"> </span><span class="nf">x:</span><span class="mi">1134</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="p">}</span><span class="p">)</span>
+</pre></div></dd></dl></dd>
+
+<dt>particles</dt><dd><p>Particles begin with an at-sign (<code>@</code>), followed by a &quot;partial message.&quot;</p><p>Regular single messages look like this:
+
+</p><div class="highlight"><pre><span class="nd">@foo</span><span class="t">
+</span><span class="nd">@fizz-buzz</span></pre></div><p>The message's target can be specified, in which case the message isn't actually &quot;partial&quot;:
+
+</p><div class="highlight"><pre><span class="nd">@</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="n">foo</span><span class="p">)</span><span class="t">
+</span><span class="nd">@</span><span class="p">(</span><span class="s">&quot;</span><span class="s">whatever</span><span class="s">&quot;</span><span class="t"> </span><span class="n">bar</span><span class="p">)</span></pre></div><p>Optional roles in single particles require parentheses surrounding the message portion:
+
+</p><div class="highlight"><pre><span class="nd">@</span><span class="p">(</span><span class="n">foo</span><span class="t"> </span><span class="nf">&amp;bar:</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t">
+</span><span class="nd">@</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span><span class="t"> </span><span class="nf">&amp;fizz:</span><span class="t"> </span><span class="n">_</span><span class="p">)</span></pre></div><p>Keyword particles are similar:
+
+</p><div class="highlight"><pre><span class="nd">@</span><span class="p">(</span><span class="nf"><a href="io.html#definition_print:">print:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi!</span><span class="s">&quot;</span><span class="p">)</span><span class="t">
+</span><span class="nd">@</span><span class="p">(</span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t">
+</span><span class="nd">@</span><span class="p">(</span><span class="nf"><a href="lists.html#definition_from:to:">from:</a></span><span class="t"> </span><span class="n">_</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_from:to:">to:</a></span><span class="t"> </span><span class="mi">3</span><span class="p">)</span><span class="t">
+</span><span class="nd">@</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="nf">&amp;foo:</span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="nf">&amp;bar:</span><span class="t"> </span><span class="n">_</span><span class="p">)</span><span class="t">
+</span><span class="nd">@</span><span class="p">(</span><span class="kr">this</span><span class="t"> </span><span class="nf">foo:</span><span class="t"> </span><span class="n">_</span><span class="t"> </span><span class="nf">&amp;bar:</span><span class="t"> </span><span class="mi">100</span><span class="p">)</span></pre></div><p>Additionally, the roles in a keyword particle may be omitted entirely, leaving only selector names:
+
+</p><div class="highlight"><pre><span class="nd">@from:to:</span><span class="t">
+</span><span class="nd">@+</span></pre></div><p>These are equivalent to <code><span class="nd">@</span><span class="p">(</span><span class="nf"><a href="lists.html#definition_from:to:">from:</a></span><span class="t"> </span><span class="n">_</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_from:to:">to:</a></span><span class="t"> </span><span class="n">_</span><span class="p">)</span></code> and <code><span class="nd">@</span><span class="p">(</span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="n">_</span><span class="p">)</span></code>, respectively. Note that <code><span class="nd">@</span><span class="p">(</span><span class="nf">from:</span><span class="t"> </span><span class="n">_</span><span class="p">)</span></code> means <code><span class="nd">@</span><span class="p">(</span><span class="n">_</span><span class="t"> </span><span class="nf">from:</span><span class="t"> </span><span class="n">_</span><span class="p">)</span></code>, not <code><span class="nd">@</span><span class="p">(</span><span class="kr">this</span><span class="t"> </span><span class="nf">from:</span><span class="t"> </span><span class="n">_</span><span class="p">)</span></code>.</p></dd>
+
+<dt>blocks</dt><dd><p>Blocks are surrounded by curly braces (<code>{ }</code>) and contain 0 or more expressions separated by semicolons or whitespace.</p><p>A block may have arguments, which are patterns separated by spaces. The arguments are placed after the opening brace, and are terminated by a pipe (<code>|</code>), followed by the block's contents (if any).
+
+</p><div class="example"><p><em>Example:</em></p><div class="highlight"><pre><span class="p">{</span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_*">*</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="p">{</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="p">;</span><span class="t"> </span><span class="n">another</span><span class="p">;</span><span class="t"> </span><span class="mi">6</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_*">*</a></span><span class="t"> </span><span class="mi">7</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="p">(</span><span class="n">b</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.">.</a></span><span class="t"> </span><span class="n">c</span><span class="p">)</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">x</span><span class="p">;</span><span class="t"> </span><span class="n">y</span><span class="p">;</span><span class="t"> </span><span class="n">z</span><span class="t"> </span><span class="p">}</span></pre></div></div><p>Block parsing is whitespace-aware; see <a href="syntax.html#section_.General_.Rules">General Rules</a>.</p></dd>
+
+<dt>scope</dt><dd><p><code><span class="kr">this</span></code> is a reserved word that always refers to the current toplevel object.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="kr">this</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+  </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="kr">this</span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+  </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="go">&lt;o</span><span class="go">bject</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">them:</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="nf">me:</span><span class="t"> </span><span class="kr">this</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span>
+<span class="nd">@</span><span class="p">(</span><span class="nf">them:</span><span class="t"> </span><span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+          </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="go">&lt;o</span><span class="go">bject</span><span class="go">&gt;</span><span class="t"> </span><span class="nf">me:</span><span class="t"> </span><span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+                              </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">)</span>
+</pre></div></dd></dl>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_dispatch-syntax">Dispatch</h2><p>  </p><p>Atomo's dispatch syntax is similar to the Smalltalk family, naming conventions aside. There are two types of messages to dispatch: single messages and keyword messages.</p><p>To dispatch a single message to some target, the message name is placed after the target value, separated by whitespace.
+
+</p><div class="example"><p><em>Example:</em></p><div class="highlight"><pre><span class="mi">1</span><span class="t"> </span><span class="n">foo</span><span class="t">
+</span><span class="p">{</span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span></pre></div></div><p>If there is no &quot;target&quot; for the message, the implied target is <code><span class="kr">this</span></code> (the toplevel object representing the current scope).</p><p>Keyword messages are slightly different in that they have more than one target, each separated by a &quot;keyword&quot; which is part of one whole message. Like single messages, if there is no initial role, <code><span class="kr">this</span></code> is assumed.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">3</span><span class="t"> </span><span class="nf"><a href="numbers.html#definition_divides?:">divides?:</a></span><span class="t"> </span><span class="mi">12</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="mi">3</span>
+<span class="caret">&gt;</span> <span class="nf"><a href="core.html#definition_delegating-to:">delegating-to:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 2 objects)</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="lists.html#definition_..">..</a></span><span class="t"> </span><span class="mi">10</span><span class="p">)</span><span class="t"> </span><span class="p">(</span><span class="nf"><a href="ecosystem.html#definition_as:">as:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_from:to:">from:</a></span><span class="t"> </span><span class="mi">3</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_from:to:">to:</a></span><span class="t"> </span><span class="mi">5</span>
+<span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">]</span>
+</pre></div><p>Keyword message dispatch normally requires parentheses to chain multiple message sends, starting from the start of the chain to the end of the current dispatch. This leads to a lot of jumping around whenever you want to add another keyword dispatch:
+
+</p><div class="highlight"><pre><span class="p">(</span><span class="p">(</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="nf">x:</span><span class="t"> </span><span class="n">a</span><span class="p">)</span><span class="t"> </span><span class="nf">y:</span><span class="t"> </span><span class="n">b</span><span class="p">)</span><span class="t"> </span><span class="nf">z:</span><span class="t"> </span><span class="n">c</span><span class="p">)</span><span class="t"> </span><span class="n">foo</span></pre></div><p>Atomo remedies this by allowing parentheses to be used inside the chain of sends itself, effectively turning keyword message dispatch into something that's as easily chained as single messages:
+
+</p><div class="highlight"><pre><span class="mi">1</span><span class="t"> </span><span class="p">(</span><span class="nf">x:</span><span class="t"> </span><span class="n">a</span><span class="p">)</span><span class="t"> </span><span class="p">(</span><span class="nf">y:</span><span class="t"> </span><span class="n">b</span><span class="p">)</span><span class="t"> </span><span class="p">(</span><span class="nf">z:</span><span class="t"> </span><span class="n">c</span><span class="p">)</span><span class="t"> </span><span class="n">foo</span></pre></div><p>Messages can also have optional roles, which have the same syntax as keyword roles but are prefixed by a <code>&amp;</code> (ampersand).
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf">zip:</span><span class="t"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">]</span><span class="t"> </span><span class="nf">&amp;zipper:</span><span class="t"> </span><span class="nd">@*</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">,</span><span class="t"> </span><span class="mi">12</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span><span class="t"> </span><span class="nf">&amp;foo:</span><span class="t"> </span><span class="mi">2</span>
+<span class="mf">1.0</span>
+</pre></div><p>This also works in chained message dispatches which requires parentheses to disambiguate it from the other messages:
+
+</p><div class="highlight"><pre><span class="mi">1</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span><span class="t"> </span><span class="p">(</span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">3</span><span class="t"> </span><span class="nf">&amp;fizz:</span><span class="t"> </span><span class="nd">@buzz</span><span class="p">)</span><span class="t"> </span><span class="p">(</span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span><span class="t"> </span><span class="nf">&amp;foo:</span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="nf">&amp;bar:</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span></pre></div>
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_macro-syntax"><code><span class="kr">macro</span></code></h2><p>  </p><p>The <code><span class="kr">macro</span></code> keyword is used to define macros; the format is as follows:</p><p>See <a href="macros.html#section_defining-macros">Defining Macros</a>.
+
+</p><pre class="verbatim">macro (pattern) expression
+  where
+    pattern = a message pattern
+    expression = the macro's body</pre>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_for-macro-syntax"><code><span class="kr">for-macro</span></code></h2><p>  </p><p>The <code><span class="kr">for-macro</span></code> keyword is used to specify that an expression should be evaluated before the macroexpansion phase. The format is as follows:</p><p>See <a href="macros.html#section_macro-environment">Macro Environment</a>.
+
+</p><pre class="verbatim">for-macro expression
+  where
+    expression = the expression to evaluate</pre>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_operator-syntax"><code><span class="kr">operator</span></code></h2><p>  </p><p>You can control how Atomo parses binary operators like <code><span class="o"><a href="numbers.html#definition_+">+</a></span></code> and <code><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span></code> via the <code><span class="kr">operator</span></code> keyword. The syntax is as follows:
+
+</p><pre class="verbatim">operator [associativity] [precedence] operators
+  where
+    associativity = &quot;right&quot; | &quot;left&quot;
+    precedence = integer
+    operators = operator +</pre><p>An omitted associativity implies left, and an omitted precedence implies 5 (the default). One of the two must be provided.
+
+</p><div class="example"><p><em>Example:</em></p><div class="highlight"><pre><span class="kr">operator</span><span class="t"> </span><span class="n">right</span><span class="t"> </span><span class="mi">0</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t">
+</span><span class="kr">operator</span><span class="t"> </span><span class="n">right</span><span class="t"> </span><span class="mi">8</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_^">^</a></span><span class="t">
+</span><span class="kr">operator</span><span class="t"> </span><span class="mi">7</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="o"><a href="numbers.html#definition_*">*</a></span><span class="t"> </span><span class="o"><a href="numbers.html#definition_/">/</a></span><span class="t">
+</span><span class="kr">operator</span><span class="t"> </span><span class="mi">6</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="o"><a href="numbers.html#definition_-">-</a></span></pre></div></div><p>Operator expressions, when evaluated, just return <code><span class="nd">@ok</span></code>.
+
+</p></div>
+
+    </div>
+  </body>
+</html>

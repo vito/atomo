@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Class Objects</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+    <script src="jquery.js" type="text/javascript"></script>
+    <script src="jquery.hotkeys.js" type="text/javascript"></script>
+    <script src="tags.js" type="text/javascript"></script>
+    <script src="main.js" type="text/javascript"></script>
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+      <form class="search" action="javascript:void(0)">
+        <input type="text" id="search" placeholder="Search&hellip;" />
+      </form>
+      <ul class="search-results"></ul>
+      <h4>On this page:</h4>
+<ol class="toc"><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="reference.html">Reference</a><ol><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>Class Objects</h1><p>The class-objects system is a trivial implementation of modules, mixins, and classes, included in the prelude.</p><p>Classes defined with this system are essentially alternative syntax for creating objects and their methods. Thus, you're always just dealing with objects, and to the outside world there is no real distinction between those defined with this system and those not.</p><p>Defining a module (see <code><span class="nf"><a href="class-objects.html#definition_module:">module:</a></span></code>) registers its body associated with its name into the <a href="macros.html#section_macro-environment">Macro Environment</a>. An <code><span class="nf"><a href="class-objects.html#definition_include:">include:</a></span></code> dispatch expands that module's body &quot;onto&quot; its target.</p><p>Class object and module bodies used with these macros are very similar - indeed, they are evaluated with the exact same translations, just in different contexts. A class definition's body is evaluated upon class creation, to set up the meta-object. A module's body is evaluated wherever it is <code><span class="nf"><a href="class-objects.html#definition_include:">include:</a></span></code>d.</p><p>Inside of these definition bodies, <code><span class="o"><a href="core.html#definition_:=">:=</a></span></code> has a certain context implied for the right hand side. For class objects, it's the object receiving the message, and for modules it's the target being included onto. This context can be referred to explicitly as <code><span class="n"><a href="class-objects.html#definition_me">me</a></span></code>, which is similar to <code>self</code> or <code>this</code> in other languages (but it's not a keyword in Atomo).</p><p>In addition to this rule, methods named <code>new</code> or beginning with <code>new.</code> are assumed to be initializers. Their right-hand side should be a block containing expressions to evaluate on the new instance.
+
+
+</p><div class="section">
+  <h2 class="section-header" id="section_.Defining_.Classes">Defining Classes</h2>
+  
+
+<div class="definition" id="definition_class:">
+  <pre class="thumb"><span class="nf">class:</span><span class="t"> </span><span class="n">body</span><span class="t"> </span><span class="nf">&amp;extends:</span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span>
+  | <span class="n">body</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Creates an anonymous class object with a given body, cloning a specified parent, or <code><span class="n"><a href="core.html#definition_Object">Object</a></span></code> by default.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="nf"><a href="class-objects.html#definition_class:">class:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="core.html#definition_new">new</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="p">}</span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+  </span><span class="p">(</span><span class="nf">me:</span><span class="t"> </span><span class="go">&lt;t</span><span class="go">his</span><span class="go">&gt;</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="core.html#definition_new">new</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="nf">o:</span><span class="mi">1282</span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span><span class="t"> </span><span class="nf">do:</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span>
+<span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="n"><a href="core.html#definition_new">new</a></span><span class="t"> </span><span class="n">foo</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="n">Y</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="nf"><a href="class-objects.html#definition_class:">class:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="core.html#definition_new">new</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf">&amp;extends:</span><span class="t"> </span><span class="mi">1</span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+  </span><span class="p">(</span><span class="nf">me:</span><span class="t"> </span><span class="go">&lt;t</span><span class="go">his</span><span class="go">&gt;</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="core.html#definition_new">new</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="nf">o:</span><span class="mi">1287</span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span><span class="t"> </span><span class="nf">do:</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span>
+<span class="caret">&gt;</span> <span class="n">Y</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="n">Y</span><span class="t"> </span><span class="n"><a href="core.html#definition_new">new</a></span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="mi">3</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_class:">
+  <pre class="thumb"><span class="nf"><a href="class-objects.html#definition_class:">class:</a></span><span class="t"> </span><span class="n">x</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span>
+  | <span class="n">x</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">Dispatch</span></pre><p>Creates a class object, specifying a name along with the body. The full form is <code><span class="nf">class:</span><span class="t"> </span><span class="nf">A:</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="o"><a href="ranges.html#definition_...">...</a></span><span class="t"> </span><span class="p">}</span></code>; hence <code><span class="n">x</span></code> is a keyword dispatch, with the message name being the name of the class.</p><p>If the class does not exist, it is defined as the given name. If it does exist, the classes body is evaluated on it, behaving very similarly to the &quot;reopening&quot; semantics found in Ruby.</p><p>Class objects defined with this method get a <code><span class="n"><a href="pretty.html#definition_pretty">pretty</a></span></code> definiton for free, which pretty-prints as the classes name. This can be overridden in the class body.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nf">class:</span><span class="t"> </span><span class="nf">X:</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="core.html#definition_new">new</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="p">}</span>
+<span class="n">X</span>
+<span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="n"><a href="core.html#definition_new">new</a></span>
+<span class="n">X</span>
+<span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="n"><a href="core.html#definition_new">new</a></span><span class="t"> </span><span class="n">foo</span>
+<span class="mi">1</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_me">
+  <pre class="thumb"><span class="n"><a href="class-objects.html#definition_me">me</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span></pre><p>When running a method, this is bound to the to the current object instance or. In the class body, this refers to the meta-object.
+
+
+
+</p></div>
+
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_.Modules___.Mixins">Modules &amp; Mixins</h2>
+  
+
+<div class="definition" id="definition_module:">
+  <pre class="thumb"><span class="nf"><a href="class-objects.html#definition_module:">module:</a></span><span class="t"> </span><span class="n">x</span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span>
+  | <span class="n">x</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">Dispatch</span></pre><p>Registers a module, specifying the name along with the body. The full form is <code><span class="nf">module:</span><span class="t"> </span><span class="nf">A:</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="o"><a href="ranges.html#definition_...">...</a></span><span class="t"> </span><span class="p">}</span></code>; hence <code><span class="n">x</span></code> is a keyword dispatch, with the message name being the name of the module.</p><p>This macro just expands to <code><span class="nd">@ok</span></code>; its sole use is for its side-effects.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nf">module:</span><span class="t"> </span><span class="nf">A:</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@ok</span>
+</pre></div><p>See <code><span class="nf"><a href="class-objects.html#definition_include:">include:</a></span></code> for where things get interesting.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_include:">
+  <pre class="thumb"><span class="n"><a href="particles.html#definition_target">target</a></span><span class="t"> </span><span class="nf"><a href="class-objects.html#definition_include:">include:</a></span><span class="t"> </span><span class="n"><a href="particles.html#definition_name">name</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n"><a href="particles.html#definition_name">name</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">Dispatch</span></pre><p>Expand a module's body onto <code><span class="n"><a href="particles.html#definition_target">target</a></span></code>, finding the module via <code><span class="n"><a href="particles.html#definition_name">name</a></span></code>.</p><p>If the module cannot be found, <code><span class="nd">@unknown-module:</span></code> is signaled.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nf">module:</span><span class="t"> </span><span class="nf">A:</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="nf"><a href="class-objects.html#definition_include:">include:</a></span><span class="t"> </span><span class="n">A</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="n">foo</span>
+<span class="mi">10</span>
+<span class="caret">&gt;</span> <span class="nf"><a href="class-objects.html#definition_include:">include:</a></span><span class="t"> </span><span class="n">B</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(unknown-module: &quot;B&quot;)</span><span class="go">&gt;</span></span>
+</pre></div><p>When used inside of a module or class object body, it specifically targets the meta-object or module target, respectively. That is, a module can be included into another module or into a class.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nf">module:</span><span class="t"> </span><span class="nf">Subtractable:</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nf">sub:</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="nf">add:</span><span class="t"> </span><span class="p">(</span><span class="mi">-1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_*">*</a></span><span class="t"> </span><span class="n">x</span><span class="p">)</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="nf">class:</span><span class="t"> </span><span class="nf">Adder:</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nf">include:</span><span class="t"> </span><span class="n">Subtractable</span><span class="p">;</span><span class="t"> </span><span class="nf">add:</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">adding:</span><span class="t"> </span><span class="n">n</span><span class="p">)</span><span class="t"> </span><span class="p">}</span>
+<span class="n">Adder</span>
+<span class="caret">&gt;</span> <span class="n">Adder</span><span class="t"> </span><span class="nf">add:</span><span class="t"> </span><span class="mi">10</span>
+<span class="nd">@</span><span class="p">(</span><span class="nf">adding:</span><span class="t"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="n">Adder</span><span class="t"> </span><span class="nf">sub:</span><span class="t"> </span><span class="mi">10</span>
+<span class="nd">@</span><span class="p">(</span><span class="nf">adding:</span><span class="t"> </span><span class="mi">-10</span><span class="p">)</span>
+</pre></div><p>This mixing-in can also be done on an arbitrary target.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nf">module:</span><span class="t"> </span><span class="nf">Subtractable:</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nf">sub:</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="nf">add:</span><span class="t"> </span><span class="p">(</span><span class="mi">-1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_*">*</a></span><span class="t"> </span><span class="n">x</span><span class="p">)</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="nf">class:</span><span class="t"> </span><span class="nf">Adder:</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nf">add:</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">adding:</span><span class="t"> </span><span class="n">n</span><span class="p">)</span><span class="t"> </span><span class="p">}</span>
+<span class="n">Adder</span>
+<span class="caret">&gt;</span> <span class="n">Adder</span><span class="t"> </span><span class="nf"><a href="class-objects.html#definition_include:">include:</a></span><span class="t"> </span><span class="n">Subtractable</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="n">Adder</span><span class="t"> </span><span class="nf">add:</span><span class="t"> </span><span class="mi">10</span>
+<span class="nd">@</span><span class="p">(</span><span class="nf">adding:</span><span class="t"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="n">Adder</span><span class="t"> </span><span class="nf">sub:</span><span class="t"> </span><span class="mi">10</span>
+<span class="nd">@</span><span class="p">(</span><span class="nf">adding:</span><span class="t"> </span><span class="mi">-10</span><span class="p">)</span>
+</pre></div>
+
+
+
+</div>
+
+</div>
+
+    </div>
+  </body>
+</html>

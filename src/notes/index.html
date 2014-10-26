@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Atomo v0.4 Release Notes</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+       <h4>On this page:</h4>
+<ol class="toc"><li><a href="index.html#section_.Language_.Design_.Features">Language Design Features</a><ol><li><a href="index.html#section_.Tuples___.Variadic_.Roles">Tuples & Variadic Roles</a></li><li><a href="index.html#section_.Optional_.Roles">Optional Roles</a></li><li><a href="index.html#section_.Macro-.Quotes">Macro-Quotes</a></li></ol></li><li><a href="index.html#section_.New_.Features">New Features</a></li><li><a href="index.html#section_.Changes">Changes</a></li><li><a href="index.html#section_.The_.Raw_.Log">The Raw Log</a></li><li><a href="index.html#section_index">Atomo</a><ol><li><a href="getting-started.html">Getting Started</a><ol><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li><li><a href="getting-started.html#section_.Wrapping_.Up">Wrapping Up</a></li></ol></li><li><a href="repl.html">The REPL</a></li><li><a href=".Tutorials.html">Tutorials</a><ol><li><a href="ruby.html">Ruby in Atomo</a></li></ol></li><li><a href="syntax.html">Syntax</a><ol><li><a href="syntax.html#section_.General_.Rules">General Rules</a></li><li><a href="syntax.html#section_guidelines">Indentation Guidelines</a></li><li><a href="syntax.html#section_.Comments">Comments</a></li><li><a href="syntax.html#section_literals-syntax">Literals</a></li><li><a href="syntax.html#section_dispatch-syntax">Dispatch</a></li><li><a href="syntax.html#section_macro-syntax"><code><span class="kr">macro</span></code></a></li><li><a href="syntax.html#section_for-macro-syntax"><code><span class="kr">for-macro</span></code></a></li><li><a href="syntax.html#section_operator-syntax"><code><span class="kr">operator</span></code></a></li></ol></li><li><a href="patterns.html">Patterns</a><ol><li><a href="patterns.html#section_types">Types of Patterns</a></li><li><a href="patterns.html#section_definition-target">A Pattern's Object</a></li><li><a href="patterns.html#section_.Pattern_.Objects">Pattern Objects</a></li></ol></li><li><a href="defining.html">Defining Methods</a><ol><li><a href="defining.html#section_variadic">Variadic Roles</a></li><li><a href="defining.html#section_optionals">Optional Roles</a></li><li><a href="defining.html#section_redefining">Redefining Methods</a></li></ol></li><li><a href="macros.html">Macros!</a><ol><li><a href="macros.html#section_defining-macros">Defining Macros</a></li><li><a href="macros.html#section_macro-environment">Macro Environment</a></li><li><a href="macros.html#section_macro-quotes">Macro Quotes</a></li></ol></li><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="enumerable.html">Enumerable</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol>
+
+    </div>
+
+    <div id="content">
+<h1>Atomo v0.4 Release Notes</h1>
+
+<div class="section">
+  <h2 class="section-header" id="section_.Language_.Design_.Features">Language Design Features</h2>
+  
+
+<div class="section">
+  <h2 class="section-header" id="section_.Tuples___.Variadic_.Roles">Tuples &amp; Variadic Roles</h2><p>  </p><p>Tuples are &quot;temporary&quot; groupings of arbitary data. They are similar to lists, but do much less, as they are meant to be gone as soon as they're used; they're not for persistent data.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="p">)</span>
+<span class="p">(</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="sc">$</span><span class="sc">a</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="p">(</span><span class="sc">$</span><span class="sc">a</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">)</span>
+</pre></div><p>Their primary application is variadic roles, where they can be used to send along zero or more than one values (sending one value is done by just using the value itself; there is no one-element tuple).
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nf">foo:</span><span class="t"> </span><span class="p">(</span><span class="o"><a href="ranges.html#definition_...:">...</a></span><span class="t"> </span><span class="n">args</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="n">args</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="nf">foo:</span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="p">[</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="nf">foo:</span><span class="t"> </span><span class="mi">1</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="nf">foo:</span><span class="t"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">x</span><span class="p">)</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">x</span><span class="p">]</span>
+</pre></div><p>As you can see, they are converted to lists on the receiving end. You can't do much with tuples themselves (except for pattern-match them), but converting to a list is trivial (and fast).
+
+
+
+</p></div>
+<div class="section">
+  <h2 class="section-header" id="section_.Optional_.Roles">Optional Roles</h2><p>  </p><p>Methods can now be defined with optional roles, which can be overridden by the sender. Their default must be specified, which is an expression that will be evaluated to yield the value for the body.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nf">foo:</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="nf">&amp;bar:</span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="n">bar</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="nf">foo:</span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">3</span>
+<span class="caret">&gt;</span> <span class="nf">foo:</span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="nf">&amp;bar:</span><span class="t"> </span><span class="mi">3</span>
+<span class="mi">4</span>
+</pre></div><p>As you can see, we're using <code>&amp;</code> at the start of a keyword role for optionals. A non-keyword name can be used like a flag, e.g. <code><span class="mi">1</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="n">&amp;bar</span></code>, which is equivalent to <code><span class="mi">1</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="nf">&amp;bar:</span><span class="t"> </span><span class="kc">True</span></code>.
+
+
+
+</p></div>
+<div class="section">
+  <h2 class="section-header" id="section_.Macro-.Quotes">Macro-Quotes</h2>
+  
+
+<p><a href="macros.html#section_macro-quotes">Macro Quotes</a> provide a generalized string quotation mechanism, allowing arbitrary literal values to be implemented. Using them sends a message at macroexpansion time, which determines what value it expands to.</p><p>This trivial macro-quoter expands a block of text into a list of its words:
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">w{</span><span class="sx">foo bar baz</span><span class="sx">}</span>
+<span class="p">[</span><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">bar</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">baz</span><span class="s">&quot;</span><span class="p">]</span>
+</pre><p>The application for these is already far-reaching, fostering the formatting and regular expression features listed below. In the future they may be used for things like URL literals, byte strings, paths, and more.
+</p></div>
+
+</div>
+
+<div class="section">
+  <h2 class="section-header" id="section_.New_.Features">New Features</h2><p>  </p><p>The following are new features as part of the standard library, or implementation-level additions.
+
+</p><ul><li><p>PCRE-style regular expressions. Regexp literals can be created with the <code>r</code> macro-quoter. See <a href="regexps.html">Regular Expressions</a>,
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">r&quot;</span><span class="sx">(</span><span class="sx">\d</span><span class="sx">+)-</span><span class="sx">\w</span><span class="sx">+</span><span class="sx">&quot;</span>
+<span class="sx">r{</span><span class="sx">(</span><span class="sx">\d</span><span class="sx">+)-</span><span class="sx">\w</span><span class="sx">+</span><span class="sx">}</span>
+<span class="caret">&gt;</span> <span class="s">&quot;</span><span class="s">123-hello</span><span class="s">&quot;</span><span class="t"> </span><span class="nf"><a href="core.html#definition_case-of:">case-of:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="sx">r&quot;</span><span class="sx">(</span><span class="sx">\d</span><span class="sx">+)-</span><span class="sx">\w</span><span class="sx">+</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n">\1</span><span class="t"> </span><span class="p">}</span>
+<span class="s">&quot;</span><span class="s">123</span><span class="s">&quot;</span>
+</pre></div></li>
+
+<li><p>A new <a href="formatting.html">String Formatting</a> system has been custom-built for Atomo, modeled on Common Lisp's <code>FORMAT</code> function, with <code>printf</code>-like syntax. The <code>f</code> macro-quoter is used to parse these into <code><span class="n">Formatter</span></code>s at macro-expansion time.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%s</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%:">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">hello!</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">hello!</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%0.2f</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%:">%</a></span><span class="t"> </span><span class="mf">10.567</span>
+<span class="s">&quot;</span><span class="s">10.57</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%{%a%^, }</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%:">%</a></span><span class="t"> </span><span class="p">[</span><span class="sc">$</span><span class="sc">a</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="nd">@foo</span><span class="p">]</span>
+<span class="s">&quot;</span><span class="s">$a, hi, @foo</span><span class="s">&quot;</span>
+</pre></div></li>
+
+<li><p>Particles can now have the first role filled in. Accordingly, a <code><span class="n">complete</span></code> method was added, which is just <code><span class="nf"><a href="particles.html#definition_complete:">complete:</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nd">@</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span><span class="p">)</span>
+<span class="nd">@</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="nd">@</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span><span class="p">)</span><span class="t"> </span><span class="n">complete</span>
+<span class="go">&lt;m</span><span class="go">essage 1 sqrt</span><span class="go">&gt;</span>
+</pre></div></li>
+
+<li><p><a href="class-objects.html">Class Objects</a>, providing <code>module</code>, <code>include</code>, and <code>class</code> functionality similar to Ruby, is now included in the prelude.</p></li>
+
+<li><p><code><span class="n"><a href="ordered.html#definition_Ordered">Ordered</a></span></code> and <code><span class="n"><a href="ranges.html#definition_Range">Range</a></span></code>.</p></li>
+
+<li><p>A new <a href="pretty.html">Pretty-Printing</a> system.</p></li>
+
+<li><p>Added <code><span class="nf"><a href="core.html#definition_case-of:">case-of:</a></span></code>, which chooses a match based on <code><span class="nf"><a href="regexps.html#definition_matches?:">matches?:</a></span></code>.</p></li>
+
+<li><p>Added <code><span class="nf"><a href="core.html#definition_set!:">set!:</a></span></code> and <code><span class="nf"><a href="core.html#definition_set!:to:">set!:</a></span><span class="nf"><a href="core.html#definition_set!:to:">to:</a></span></code> for explicitly updating a slot rather than defining one.</p></li>
+
+<li><p>Added <code><span class="nf"><a href="core.html#definition_has-slot?:">has-slot?:</a></span></code> for determining if an object has a given slot defined on it directly.</p></li>
+
+<li><p>Added <code><span class="n"><a href="core.html#definition_id">id</a></span></code>, a trivial method which just yields its target.</p></li>
+
+<li><p><code>w</code> and <code>raw</code> macro-quoters, for word lists and raw strings, respectively.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">w{</span><span class="sx">foo bar baz</span><span class="sx">}</span>
+<span class="p">[</span><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">bar</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">baz</span><span class="s">&quot;</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="sx">raw'</span><span class="sx">hello</span><span class="sx">\n</span><span class="sx">world, I</span><span class="sx">\'</span><span class="sx">m pretty </span><span class="sx">\'</span><span class="sx">\r</span><span class="sx">\a</span><span class="sx">\w</span><span class="sx">\'</span><span class="sx">.</span><span class="sx">'</span>
+<span class="s">&quot;</span><span class="s">hello</span><span class="se">\</span><span class="se">\</span><span class="s">nworld, I'm pretty '</span><span class="se">\</span><span class="se">\</span><span class="s">r</span><span class="se">\</span><span class="se">\</span><span class="s">a</span><span class="se">\</span><span class="se">\</span><span class="s">w'.</span><span class="s">&quot;</span>
+</pre></div></li>
+
+<li><p>A new, better, faster lexer and parser.</p></li>
+
+<li><p>TextMate/Sublime Text 2 editor stuff is now included in <code>etc/</code>.</p></li>
+
+<li><p>The REPL now intelligently accepts multiline input.</p></li>
+
+<li><p>Many other little methods, some not yet documented.</p></li></ul>
+</div>
+
+<div class="section">
+  <h2 class="section-header" id="section_.Changes">Changes</h2><p>  </p><p>The following is a list of major changes in this version which are backwards-incompatible.
+
+</p><ul><li><p>Defining and dispatching now only uses the first role as the target. Pattern-matching provides the rest of the &quot;multiple dispatch.&quot;</p></li>
+
+<li><p>Countless <a href="http://atomo-lang.org/docs" class="external">documentation</a> updates and additions.</p></li>
+
+<li><p>Linebreaks and other special characters are now accepted in string literals.</p></li>
+
+<li><p>Implicit gensyms now use <code>!</code> rather than <code>#</code> as a prefix.</p></li>
+
+<li><p>Condition handlers are now properly removed from the stack to prevent a handler from handling itself.</p></li>
+
+<li><p>Many methods, including <code><span class="nf"><a href="blocks.html#definition_call:">call:</a></span></code>, now use tuples rather than lists to provide multiple arguments.</p></li>
+
+<li><p>A few methods, notably <code><span class="nf"><a href="lists.html#definition_zip:">zip:</a></span></code>, now use optional roles.</p></li>
+
+<li><p><code><span class="nf"><a href="lists.html#definition_zip:">zip:</a></span></code> now returns a list of lists and accepts multiple lists to zip with.</p></li>
+
+<li><p><code><span class="nf"><a href="blocks.html#definition_join:">join:</a></span></code> now searches the block's context before the target's delegates.</p></li>
+
+<li><p><code><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span></code> now accepts a less-complete particle, and does partial matching based on which roles are filled and not filled.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@+</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="kc">False</span>
+</pre></div></li>
+
+<li><p><code><span class="o"><a href="lists.html#definition_&lt;&lt;:">&lt;&lt;</a></span></code> and <code><span class="o"><a href="lists.html#definition_&gt;&gt;:">&gt;&gt;</a></span></code> operators are now macros intended for destructive update.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="lists.html#definition_&lt;&lt;:">&lt;&lt;</a></span><span class="t"> </span><span class="mi">3</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+</pre></div></li>
+
+<li><p><code><span class="n"><a href="blocks.html#definition_Block">Block</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_repeat">repeat</a></span></code> and <code><span class="n"><a href="blocks.html#definition_Block">Block</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_repeat:">repeat:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span></code> now call the block in-context.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">0</span>
+<span class="mi">0</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o">+=</span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_repeat:">repeat:</a></span><span class="t"> </span><span class="mi">10</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">,</span><span class="t"> </span><span class="mi">7</span><span class="p">,</span><span class="t"> </span><span class="mi">8</span><span class="p">,</span><span class="t"> </span><span class="mi">9</span><span class="p">,</span><span class="t"> </span><span class="mi">10</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="mi">10</span>
+</pre></div></li>
+
+<li><p><code><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_match:">match:</a></span><span class="t"> </span><span class="n">_</span></code> now yields <code><span class="nd">@none</span></code> or <code><span class="nd">@ok</span></code> rather than <code><span class="nd">@no</span></code> or <code><span class="nd">@yes:</span></code>.</p></li>
+
+<li><p><code><span class="n"><a href="lists.html#definition_List">List</a></span><span class="t"> </span><span class="n">to-string</span></code> is now <code><span class="n"><a href="lists.html#definition_List">List</a></span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n">String</span></code>.</p></li>
+
+<li><p><code><span class="n">Char</span></code> is now <code><span class="n">Character</span></code>.</p></li>
+
+<li><p>File and directory I/O methods now check that the file/directory exists, etc., to prevent hard crashes.</p></li>
+
+<li><p>The Atomo library is not installed by default; use <code>-flib</code>.</p></li>
+
+<li><p>Many internal cleanups and fixes.</p></li></ul>
+</div>
+
+<div class="section">
+  <h2 class="section-header" id="section_.The_.Raw_.Log">The Raw Log</h2><p>  </p><p>The most recent changes are at the top:
+
+</p><pre class="verbatim">* updated string formatting docs
+
+* providing both `&lt;` and `&gt;` flags to a justifier now implies `=`
+
+* allow `&lt;`, `&gt;`, and `=` flags in justification formatter, which are like `:`, `@`, and `:@` from FORMAT. closes #42.
+
+* cleanups
+
+* allow &amp;foo to mean &amp;foo: True. closes #44.
+
+* added `raw` macro-quoter. closes #43.
+
+* include range docs
+
+* added Range docs and updated List docs. closes #10.
+
+* added Ordered docs. closes #25.
+
+* rename @begin to @start in Range
+
+* more efficient/simpler @shift: for Ordered
+
+* a bunch of Range corrections
+
+* formatting docs updates
+
+* added initial string formatting docs. closes #37.
+
+* removed ePretty field of EVM record
+
+* promoted @match: to a first-class expression
+
+* expand a macro body's gensyms beforehand
+
+* updated class-object docs and ruby tutorial
+
+* expand through quasiquotes, and corrected !bang decorating
+
+* added @pretty-expression
+
+* added Valuable Prettied instance
+
+* corrected exporting of various condition methods
+
+* class-object documentation updates
+
+* @class: now uses an optional for extending a given object (defaults to Object)
+
+* optionals roles with macros. closes #40.
+
+* Added initial class-objects system documentation. Closes #9.
+
+* provide a @pretty method for class-objects created with @(class: Dispatch)
+
+* @module: macro now expands to @ok
+
+* Char -&gt; Character. Closes #39.
+
+* pretty-printing docs. closes #7.
+
+* updated sync-docs script
+
+* pattern object docs. closes #16.
+
+* conversion to patterns is now called @to: rather than @as: to indicate the possibility of failure
+
+* updated ruby tutorial
+
+* added REPL docs. closes #22.
+
+* minor cleanups
+
+* added Regexp docs
+
+* ruby.atomo -&gt; ruby.anatomy
+
+* minor cleanups
+
+* TM lexer: rationals support
+
+* .atomo -&gt; .anatomy
+
+* Formatting -&gt; Formatter
+
+* list formatting modules in cabal file
+
+* corrected @\ macro; first role doesn't have to be a dispatch
+
+* added @\ macro for parentheses-free message chaining
+
+* finished pretty-printing for AtomoError. closes #15.
+
+* suppress orphan instance warning in Atomo.Pretty
+
+* minor tweak
+
+* corrected iterating with * using all inputs rather than the rest, and added breaking from a sublist iteration via %.^. closes #38.
+
+* added @replace:with: and @replace-all:with:. closes #3.
+
+* rename sublime text/textmate folder
+
+* added textmate/sublime text stuff to etc/
+
+* tabs -&gt; spaces
+
+* added initial formatting tests
+
+* corrected . flag for iteration (sublists)
+
+* capitalizing formatter now lowercases the rest of the word
+
+* give a better error in `i2d`
+
+* minor cleanups
+
+* properly parse hex as %x rather than %h
+
+* use a custom int-to-digit that goes up to Z
+
+* corrected handler popping
+
+* handlers are popped from the stack as they're called to ensure they don't handle their own handlers
+
+* corrected @(Simple-Error pretty) and @(Simple-Warning pretty)
+
+* added disabled error debugging helper
+
+* updated tests for new @zip: behaviour
+
+* SInteger -&gt; SDecimal
+
+* capitalize now takes a number for how many words to capitalize
+
+* formatter cleanups
+
+* load comparable prelude a bit sooner
+
+* initial string formatting system
+
+* added @(String plural)
+
+* more general parser types in Atomo.Lexer.Base
+
+* use a Prettied alias for the Pretty class (for Doc), added Typeable instance
+
+* corrected regexps in @case-of: not introducing bindings
+
+* remove -funfolding-use-threshold flag
+
+* cleaner regexp compilation failures. closes #36.
+
+* added prettyFrom for PEForMacro and PEMacroQuote
+
+* use a custom eof that pretty-prints the token rather than `show's it
+
+* allow linebreaks and other characters in string literals
+
+* use findString before fromString in a few places
+
+* improved parse error describing
+
+* cleaned up macro-quote docs
+
+* replaced @show definitions with @pretty, removed @show for True/False
+
+* improved parse error pretty-printing
+
+* updated syntax docs; split it up into three additional documents: Patterns, Defining Methods, and Macros!
+
+* magic quotes -&gt; macro-quotes
+
+* added PEForMacro and PEMagicQuote patterns
+
+* more complete Eq instances for Pattern and Expr
+
+* inserting methods ignores optionals when checking message pattern equivalence; also added manual Eq instances for Message and Option
+
+* added macro-quote docs. closes #5.
+
+* tweaked operator syntax docs
+
+* Regexp values now pretty-print as a macro-quote
+
+* corrected unknown quoter error
+
+* ignore ?&lt;= and ?&lt;! when looking for named bindings
+
+* tuples documentation fix
+
+* tuples documentation. closes #4.
+
+* define @(Pretty pretty) rather than @(Pretty show)
+
+* updated Getting Started to explain how methods are defined and found. closes #8.
+
+* added @case-of: docs. closes #12.
+
+* @case-of: - _ as a test acts as a wildcard; no matches now yields @ok; moved to comparable prelude
+
+* corrected @regexp?: to return False for other types
+
+* moved @case-of: to core prelude, corrected debug printing
+
+* document ! gensym mechanism. closes #32.
+
+* added @set!: and @set!:to: docs, removed contracts from @= and @:= docs. closes #20.
+
+* added @set-slot:to:, @set!:to: now takes a String rather than a Pattern
+
+* added @with-restarts:bind: docs. closes #23.
+
+* updated @catch: docs. closes #24.
+
+* updated @(Block repeat: Integer) docs, relocated to Block section (and the method definition as well)
+
+* @(Assocation == Association) docs. closes #30.
+
+* updated @responds-to?: docs. closes #31.
+
+* added @(has-slot?: String) docs. closes #21.
+
+* relocated @id docs
+
+* @(List to: String) documentation. closes #26.
+
+* updated particle docs. closes #11.
+
+* added @id documentation. closes #13.
+
+* updated docs for variadic roles, cleaned up one bit in continuation docs. closes #18.
+
+* updated @&gt;&gt; and @&lt;&lt; docs, added @push: and @cons: docs. closes #29.
+
+* updated @zip: documentation. closes #14.
+
+* updated repository location in docs. closes #19.
+
+* allow reserved words in particles/dispatch chains
+
+* a more general `continue'
+
+* added some helper functions for lexing
+
+* @(File new: String) - only check if the file exists if they're opening in @read more
+
+* moved prettyVM to Atomo.Helpers
+
+* version bump to 0.4
+
+* removed @(Expression pretty)
+
+* rollback pcre packaging
+
+* experimental: package pcre 8.12 with atomo
+
+* added trivial @id method, just yields the object it's sent to
+
+* corrected pretty-printing of a single particle with optionals
+
+* @zip: now takes a variadic role, for zipping multiple lists. now returns a list of lists rather than a list of Associations.
+
+* removed PrettyVM module
+
+* added @(Tuple pretty)
+
+* added creating a list from a tuple via varargs
+
+* updated benchmark tests
+
+* added regexp example
+
+* pretty-printing tweaks
+
+* added an interface for Text.PrettyPrint, @show now uses @pretty. closes #2.
+
+* only define and dispatch on the first role
+
+* minor cleanups
+
+* minor cleanup
+
+* merge lIdentifier and lMagicQuote so `try' isn't needed
+
+* allow magic quotes to span multiple lines
+
+* added @contents and @flags for magic-quote expressions
+
+* added w magic-quoter, for creating word lists
+
+* added DidNotUnderstand error pretty-printing
+
+* allow more reserved punctuation for magic quotes, no longer allow / and &lt;
+
+* added @name for getting a magic quote's name
+
+* correct EMagicQuote evaluation
+
+* corrected regexp check in @case-of?:
+
+* just use a tuple for making a Match expression
+
+* Atomo.Pretty cleanups
+
+* removed regexp literals in favor of a generalized magic-quoting mechanism
+
+* added @(Regexp new: String &amp;flags: String)
+
+* @(Regexp match: String) now returns a RegexpBindings object; remember the regexp's named captures for this
+
+* allow fully-completed particles (i.e. with a filled first role)
+
+* @case-of: with a regexp evaluates the branch with the bindings
+
+* initial regular expressions work, added a prettier Show Value instance, and other minor cleanups in Atomo.Types
+
+* added equality test for Pattern values
+
+* pretty-printer cleanups
+
+* corrected `head' crash when lexing an unmatched closing punctuation
+
+* @(Pattern match: _) now returns @none or @ok: rather than @no or @yes:
+
+* added `findTuple'
+
+* up is low, low is up
+
+* cleanups and completeness
+
+* target for variable role is Object
+
+* corrected @spawn: usage to use variable role, @call/cc: now uses variable role
+
+* use variable roles for @call:, @spawn:, @join:with:, @do:with:, @restart:with:, @(Restart jump: _)
+
+* tuples and variable-length arguments
+
+* added flag for installing atomo library, off by default
+
+* updated rectangle example
+
+* updated monad example
+
+* updated exceptions example
+
+* updated coroutine example
+
+* corrected @set!:to: to use recursion rather than just go one level deep
+
+* skip whitespace at the start of lexing
+
+* updated generator example
+
+* added @set!: and @(target set!: Particle to: value) for overwriting (not adding) a definition
+
+* added @(has-slot?: String) for checking if an object has a slot defined on it (and not its delegates)
+
+* added @(Port buffering) and @(Port set-buffering: Particle)
+
+* @(Block repeat) now calls the block in its context
+
+* multiline REPL input
+
+* added @with-restarts:bind: macro
+
+* cleaned up unmatched paren/brace/bracket error in the lexer
+
+* more robust parse error values
+
+* @catch: now accepts any object as its second role (e.g. a particle)
+
+* cleanups
+
+* allow more precise definitions of @shift: for e.g. doubles and rationals
+
+* ordering -&gt; ordered
+
+* tweaked Ordered module
+
+* added Ordering module, include on ordered primitives to provide @to:by:, @up-to:, and @down-to:
+
+* added @case-of:, which does a match based on @matches?:
+
+* added Enumerable and Range, which replaces @.. and @...
+
+* add class-objects to the prelude
+
+* @to-string -&gt; @(to: String)
+
+* added spaceship operator, @sort and @sort-by: use it by default (&amp;comparison: optional), @sort-by: now does something closer to what its name suggests
+
+* added @(Expression optionals), and creating dispatch expressions with optionals
+
+* search outer scope before an object's delegates in @join:
+
+* more optional arguments use (@center:, @left-justify:, @right-justify:) + some cleanups
+
+* use an optional argument for @zip:
+
+* @(Block repeat: Integer) now calls the block in-context
+
+* use optional argument for port mode
+
+* parser cleanups, plus some clearer parser errors in two cases
+
+* @&lt;&lt; and @&gt;&gt; are now macros which update the target
+
+* added a quick particles + optionals test
+
+* corrected @(Particle show) on keyword particles
+
+* added @(Association == Association)
+
+* added @(Message optionals)
+
+* improved particle completion (now completes optionals)
+
+* particle pretty-printing now includes optionals
+
+* added @(Particle optionals)
+
+* corrected expansion and parsing of particles with blank optionals
+
+* added Valuable instances for (x, y) (as Association) and Maybe a (as @ok:/@none)
+
+* @responds-to?: now accepts particles missing more than one value; uses a fuzzy match, where only filled-in values are checked as the roles
+
+* slight wording tweak in optionals tests
+
+* removed superfluous parentheses
+
+* added some optionals tests
+
+* corrected single dispatch in a keyword role getting its optionals overridden
+
+* parse singles with optionals in cSingle, as (foo &amp;bar: 2)
+
+* minor cleanups
+
+* corrected a keyword dispatch's optionals being eaten by a single-dispatch role
+
+* corrected particle expression evaluation to retain the (evaluated) optionals
+
+* pretty-print optionals
+
+* corrected particle expansion eating its optionals
+
+* parse single dispatch with optionals
+
+* added some file/directory-exists checks to a bunch of methods
+
+* parser simplification
+
+* some optionals cleanups and small optimizations
+
+* re-implemented automatic gensyms
+
+* shiny new parser (+ lexer), and initial work on optional arguments
+
+* catch infinite error loops
+
+* replace Particle data type with an alias to Message (Maybe v)
+
+* good ol' manual labour
+
+* rollback darcs replace job
+
+* added @(Expression pretty) and @(Expression location)
+
+* move PExpr up with the normal fellas
+
+* corrected a few expr patterns from the last batch replace
+
+* cleanups; all Expr constructors now start with E, plus improved haddock
+
+* ruby tutorial updates
+
+* added Ruby in Atomo macro tutorial
+
+* added boringfile
+
+* documentation corrections
+
+* use ! rather than # for gensyms in quasiquotes
+
+* corrected pretty-printing of particular object definition patterns</pre>
+</div>
+
+
+    </div>
+  </body>
+</html>

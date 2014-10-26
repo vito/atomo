@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Conditions & Restarts</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+       <h4>On this page:</h4>
+<ol class="toc"><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="index.html#section_index">Atomo</a><ol><li><a href="getting-started.html">Getting Started</a><ol><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li><li><a href="getting-started.html#section_.Wrapping_.Up">Wrapping Up</a></li></ol></li><li><a href="repl.html">The REPL</a></li><li><a href=".Tutorials.html">Tutorials</a><ol><li><a href="ruby.html">Ruby in Atomo</a></li></ol></li><li><a href="syntax.html">Syntax</a><ol><li><a href="syntax.html#section_.General_.Rules">General Rules</a></li><li><a href="syntax.html#section_guidelines">Indentation Guidelines</a></li><li><a href="syntax.html#section_.Comments">Comments</a></li><li><a href="syntax.html#section_literals-syntax">Literals</a></li><li><a href="syntax.html#section_dispatch-syntax">Dispatch</a></li><li><a href="syntax.html#section_macro-syntax"><code><span class="kr">macro</span></code></a></li><li><a href="syntax.html#section_for-macro-syntax"><code><span class="kr">for-macro</span></code></a></li><li><a href="syntax.html#section_operator-syntax"><code><span class="kr">operator</span></code></a></li></ol></li><li><a href="patterns.html">Patterns</a><ol><li><a href="patterns.html#section_types">Types of Patterns</a></li><li><a href="patterns.html#section_definition-target">A Pattern's Object</a></li><li><a href="patterns.html#section_.Pattern_.Objects">Pattern Objects</a></li></ol></li><li><a href="defining.html">Defining Methods</a><ol><li><a href="defining.html#section_variadic">Variadic Roles</a></li><li><a href="defining.html#section_optionals">Optional Roles</a></li><li><a href="defining.html#section_redefining">Redefining Methods</a></li></ol></li><li><a href="macros.html">Macros!</a><ol><li><a href="macros.html#section_defining-macros">Defining Macros</a></li><li><a href="macros.html#section_macro-environment">Macro Environment</a></li><li><a href="macros.html#section_macro-quotes">Macro Quotes</a></li></ol></li><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="enumerable.html">Enumerable</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>Conditions & Restarts</h1><p>Atomo uses a condition system very similar to Common Lisp's.
+
+</p><div class="section">
+  <h2 class="section-header" id="section_.Signals">Signals</h2>
+  
+
+<div class="definition" id="definition_signal:">
+  <pre class="thumb"><span class="nf"><a href="conditions.html#definition_signal:">signal:</a></span><span class="t"> </span><span class="n">v</span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span></pre><p>Sends a value to all bound handlers, nearest-first.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nf">signal:</span><span class="t"> </span><span class="nd">@foo</span><span class="p">;</span><span class="t"> </span><span class="nf">signal:</span><span class="t"> </span><span class="nd">@bar</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_bind:">bind:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">fooing</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+fooing
+<span class="nd">@ok</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_error:">
+  <pre class="thumb"><span class="nf"><a href="conditions.html#definition_error:">error:</a></span><span class="t"> </span><span class="n">v</span> <span class="definition-result-arrow">→</span> <span class="n">any</span></pre><p>Signals <code><span class="n">v</span></code> as an error. If the <code><span class="nf"><a href="conditions.html#definition_signal:">signal:</a></span></code> call exits normally, a debugger is started. Hence, this method never exits normally.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">x</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="p">;</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_error:">error:</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="s">&quot;</span><span class="s">y</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span>
+x
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror 1</span><span class="go">&gt;</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_warning:">
+  <pre class="thumb"><span class="nf"><a href="conditions.html#definition_warning:">warning:</a></span><span class="t"> </span><span class="n">v</span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span></pre><p>Similar to <code><span class="nf"><a href="conditions.html#definition_error:">error:</a></span></code>, but instead of starting a debugger, prints the error to <code><span class="n">*error-output*</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">x</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="p">;</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_warning:">warning:</a></span><span class="t"> </span><span class="mi">2</span><span class="p">;</span><span class="t"> </span><span class="s">&quot;</span><span class="s">y</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span>
+x
+<span class="gr">WARNING: 2
+</span>y
+<span class="s">&quot;</span><span class="s">y</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+</div>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_.Handlers">Handlers</h2>
+  
+
+<div class="definition" id="definition_bind:">
+  <pre class="thumb"><span class="n">action</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_bind:">bind:</a></span><span class="t"> </span><span class="n">handlers</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">action</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">handlers</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Performs <code><span class="n">action</span></code>, with a handler for all signals matched in <code><span class="n">handlers</span></code> block. Returns the result of <code><span class="n">action</span></code>.</p><p>The contents of <code><span class="n">handlers</span></code> should be <code><span class="n"><a href="association.html#definition_Association">Association</a></span></code> expressions, e.g. <code><span class="n">pattern</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n">responder</span></code>, where <code><span class="n">pattern</span></code> is a match on the signal value, and <code><span class="n">responder</span></code> is either a <code><span class="n"><a href="blocks.html#definition_Block">Block</a></span></code> (which will be called with the signal value itself as an argument) or an expression to be evaluated in response to the signal.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_signal:">signal:</a></span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_bind:">bind:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">fooed!</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+fooed!
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nf">signal:</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">bar:</span><span class="t"> </span><span class="mi">42</span><span class="p">)</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_bind:">bind:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">bar:</span><span class="t"> </span><span class="n">x</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">fooed:</span><span class="t"> </span><span class="n">x</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+@(fooed: 42)
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_error:">error:</a></span><span class="t"> </span><span class="nd">@uh-oh</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_bind:">bind:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">Error</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">e</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">got-error:</span><span class="t"> </span><span class="n">e</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="p">}</span>
+@(got-error: &lt;error @uh-oh&gt;)
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @uh-oh</span><span class="go">&gt;</span></span>
+</pre></div><p>A <code><span class="n">responder</span></code> may often invoke <code><span class="nf"><a href="conditions.html#definition_restart:">restart:</a></span></code> or <code><span class="nf"><a href="conditions.html#definition_restart:with:">restart:</a></span><span class="nf"><a href="conditions.html#definition_restart:with:">with:</a></span></code>, which is the only way they can affect the return value of <code><span class="n">action</span></code>.</p><p>After a handler responds to a signal, the signal continues outward to the next recently bound handler:
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_signal:">signal:</a></span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_bind:">bind:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">me first!</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_bind:">bind:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">no me!</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+me first!
+no me!
+<span class="nd">@ok</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_with-restarts:">
+  <pre class="thumb"><span class="n">action</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_with-restarts:">with-restarts:</a></span><span class="t"> </span><span class="n">restarts</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">action</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">restarts</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Call <code><span class="n">action</span></code>, binding the restarts described by <code><span class="n">restarts</span></code>. These restarts, when invoked, will replace the result of <code><span class="n">action</span></code>.</p><p>The contents of <code><span class="n">restarts</span></code> should be <code><span class="n"><a href="association.html#definition_Association">Association</a></span></code> expressions, e.g. <code><span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n">expression</span></code>, where <code><span class="n"><a href="patterns.html#definition_name">name</a></span></code> is the name for the restart, and <code><span class="n">expression</span></code> is the action to be performed when the restart is invoked.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_with-restarts:">with-restarts:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">ignore</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nd">@ok</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_bind:">bind:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">Error</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_restart:">restart:</a></span><span class="t"> </span><span class="ss">'ignore</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@ok</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_with-restarts:bind:">
+  <pre class="thumb"><span class="n">action</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_with-restarts:bind:">with-restarts:</a></span><span class="t"> </span><span class="n">restarts</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_with-restarts:bind:">bind:</a></span><span class="t"> </span><span class="n">handlers</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">action</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">restarts</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">handlers</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Trivial macro which just expands to <code><span class="nf"><a href="conditions.html#definition_with-restarts:">with-restarts:</a></span></code> and <code><span class="nf"><a href="conditions.html#definition_bind:">bind:</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_restart:">
+  <pre class="thumb"><span class="nf"><a href="conditions.html#definition_restart:">restart:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">Expression</span></pre><p>Finds restart <code><span class="n"><a href="patterns.html#definition_name">name</a></span></code> and jumps to it.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">action</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_signal:">signal:</a></span><span class="t"> </span><span class="nd">@foo</span><span class="p">;</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_with-restarts:">with-restarts:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">skip</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nd">@skipped</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">action</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_bind:">bind:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_restart:">restart:</a></span><span class="t"> </span><span class="ss">'skip</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@skipped</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_restart:with:">
+  <pre class="thumb"><span class="nf"><a href="conditions.html#definition_restart:with:">restart:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_restart:with:">with:</a></span><span class="t"> </span><span class="p">(</span><span class="o"><a href="ranges.html#definition_...:">...</a></span><span class="t"> </span><span class="n">args</span><span class="p">)</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">Expression</span></pre><p>Invokes restart <code><span class="n"><a href="patterns.html#definition_name">name</a></span></code> with <code><span class="n">args</span></code> passed to the block.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">action</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_signal:">signal:</a></span><span class="t"> </span><span class="nd">@foo</span><span class="p">;</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_with-restarts:">with-restarts:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">use-value</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">v</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">v</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">action</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_bind:">bind:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_restart:with:">restart:</a></span><span class="t"> </span><span class="ss">'use-value</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_restart:with:">with:</a></span><span class="t"> </span><span class="mi">42</span><span class="t"> </span><span class="p">}</span>
+<span class="mi">42</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_find-restart:">
+  <pre class="thumb"><span class="nf"><a href="conditions.html#definition_find-restart:">find-restart:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span> <span class="definition-result-arrow">→</span> <span class="nf"><a href="lists.html#definition_in?:">in?:</a></span><span class="t"> </span><span class="p">[</span><span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="n">Restart</span><span class="p">)</span><span class="p">,</span><span class="t"> </span><span class="nd">@none</span><span class="p">]</span>
+  | <span class="n"><a href="patterns.html#definition_name">name</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">Expression</span></pre><p>Looks for a restart named <code><span class="n"><a href="patterns.html#definition_name">name</a></span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">action</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_signal:">signal:</a></span><span class="t"> </span><span class="nd">@foo</span><span class="p">;</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_with-restarts:">with-restarts:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">skip</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nd">@skipped</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">action</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_bind:">bind:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="p">[</span><span class="nf">find-restart:</span><span class="t"> </span><span class="ss">'skip</span><span class="p">,</span><span class="t"> </span><span class="nf">find-restart:</span><span class="t"> </span><span class="ss">'bar</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(did-not-understand: </span><span class="go">&lt;</span><span class="go">message </span><span class="go">&lt;</span><span class="go">object</span><span class="go">&gt;</span><span class="go"> text: &quot;</span><span class="go">&lt;</span><span class="go">restart&quot;</span><span class="go">&gt;</span><span class="go">)</span><span class="go">&gt;</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_.Traditional_.Exceptions">Traditional Exceptions</h2><p>  </p><p>These methods are specific to errors, and provide a system similar to that of traditional exception handling. They are defined in terms of the more general condition system.
+
+</p><div class="definition" id="definition_catch:">
+  <pre class="thumb"><span class="n">action</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_catch:">catch:</a></span><span class="t"> </span><span class="n">recover</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">action</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">recover</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span></pre><p>Execute <code><span class="n">action</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span></code>, catching any errors and passing them to <code><span class="n">recover</span></code> for handling.</p><p>Yields the result of <code><span class="n">action</span></code> or <code><span class="n">recover</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_error:">error:</a></span><span class="t"> </span><span class="nd">@error</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_catch:">catch:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">e</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">got:</span><span class="t"> </span><span class="n">e</span><span class="p">)</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@</span><span class="p">(</span><span class="nf">got:</span><span class="t"> </span><span class="go">&lt;e</span><span class="go">rror @error</span><span class="go">&gt;</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nd">@ok</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_catch:">catch:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@caught</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_error:">error:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_catch:">catch:</a></span><span class="t"> </span><span class="nd">@print</span>
+&lt;error &quot;hi&quot;&gt;
+<span class="go">&lt;e</span><span class="go">rror &quot;hi&quot;</span><span class="go">&gt;</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_catch:ensuring:">
+  <pre class="thumb"><span class="n">action</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_catch:ensuring:">catch:</a></span><span class="t"> </span><span class="n">recover</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_catch:ensuring:">ensuring:</a></span><span class="t"> </span><span class="n">cleanup</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="p">[</span><span class="n">action</span><span class="p">,</span><span class="t"> </span><span class="n">recover</span><span class="p">,</span><span class="t"> </span><span class="n">cleanup</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_all?:">all?:</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span><span class="p">)</span></pre><p>Execute <code><span class="n">action</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span></code>, catching any errors and passing them to <code><span class="n">recover</span></code> for handling, and ensuring that <code><span class="n">cleanup</span></code> is called after the action is executed.</p><p>Yields the result of <code><span class="n">action</span></code> or <code><span class="n">recover</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nd">@ok</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_catch:ensuring:">catch:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@caught</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_catch:ensuring:">ensuring:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">cleaning up</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+cleaning up
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_error:">error:</a></span><span class="t"> </span><span class="nd">@not-ok</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_catch:ensuring:">catch:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@caught</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_catch:ensuring:">ensuring:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">cleaning up</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+cleaning up
+<span class="nd">@caught</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_handle:">
+  <pre class="thumb"><span class="n">action</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_handle:">handle:</a></span><span class="t"> </span><span class="n">branches</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">action</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">branches</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Similar to <code><span class="nf"><a href="conditions.html#definition_catch:">catch:</a></span></code>, but <code><span class="n">branches</span></code> is a block containing exception patterns bound to the action to take if they're thrown. If none of the exceptions match any of the patterns, the exception is re-thrown.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_error:">error:</a></span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_handle:">handle:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="nd">@bar</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="p">}</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_error:">error:</a></span><span class="t"> </span><span class="nd">@bar</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_handle:">handle:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="nd">@bar</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="p">}</span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_error:">error:</a></span><span class="t"> </span><span class="nd">@baz</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_handle:">handle:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="nd">@bar</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="p">}</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @baz</span><span class="go">&gt;</span></span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nd">@ok</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_handle:">handle:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="nd">@bar</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@ok</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_handle:ensuring:">
+  <pre class="thumb"><span class="n">action</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_handle:ensuring:">handle:</a></span><span class="t"> </span><span class="n">branches</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_handle:ensuring:">ensuring:</a></span><span class="t"> </span><span class="n">cleanup</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="p">[</span><span class="n">action</span><span class="p">,</span><span class="t"> </span><span class="n">branches</span><span class="p">,</span><span class="t"> </span><span class="n">cleanup</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_all?:">all?:</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span><span class="p">)</span></pre><p>Similar to <code><span class="nf"><a href="conditions.html#definition_handle:">handle:</a></span></code>, but with an <code><span class="nf"><a href="conditions.html#definition_ensuring:">ensuring:</a></span></code> block.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_error:">error:</a></span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_handle:ensuring:">handle:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_handle:ensuring:">ensuring:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+hi
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_error:">error:</a></span><span class="t"> </span><span class="nd">@baz</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_handle:ensuring:">handle:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_handle:ensuring:">ensuring:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+hi
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @baz</span><span class="go">&gt;</span></span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nd">@ok</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_handle:ensuring:">handle:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@foo</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_handle:ensuring:">ensuring:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+hi
+<span class="nd">@ok</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_ensuring:">
+  <pre class="thumb"><span class="n">action</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_ensuring:">ensuring:</a></span><span class="t"> </span><span class="n">cleanup</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">action</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">cleanup</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Execute <code><span class="n">action</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span></code>, ensuring that <code><span class="n">cleanup</span></code> is called after the action is executed.</p><p>Yields the result of <code><span class="n">action</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nd">@ok</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_ensuring:">ensuring:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">cleaning up</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+cleaning up
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_error:">error:</a></span><span class="t"> </span><span class="nd">@not-ok</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_ensuring:">ensuring:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">cleaning up</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+cleaning up
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @not-ok</span><span class="go">&gt;</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_ensuring:do:">
+  <pre class="thumb"><span class="n">value</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_ensuring:do:">ensuring:</a></span><span class="t"> </span><span class="n">cleanup</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_ensuring:do:">do:</a></span><span class="t"> </span><span class="n">action</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">cleanup</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">action</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Similar to <code><span class="nf"><a href="conditions.html#definition_ensuring:">ensuring:</a></span></code>, but <code><span class="n">value</span></code> is passed to both blocks. This makes things like file opening and closing very natural.</p><p>Yields the result of <code><span class="n">action</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">File</span><span class="t"> </span><span class="p">(</span><span class="nf"><a href="core.html#definition_new:">new:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">example-file</span><span class="s">&quot;</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_ensuring:do:">ensuring:</a></span><span class="t"> </span><span class="nd">@close</span><span class="t"> </span><span class="nf"><a href="conditions.html#definition_ensuring:do:">do:</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf"><a href="io.html#definition_display:">display:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">Hello!</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">Hello!</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+
+
+</div>
+
+
+</div>
+
+    </div>
+  </body>
+</html>

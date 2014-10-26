@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>The REPL</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+       <h4>On this page:</h4>
+<ol class="toc"><li><a href="repl.html">The REPL</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="index.html#section_index">Atomo</a><ol><li><a href="getting-started.html">Getting Started</a><ol><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li><li><a href="getting-started.html#section_.Wrapping_.Up">Wrapping Up</a></li></ol></li><li><a href="repl.html">The REPL</a></li><li><a href=".Tutorials.html">Tutorials</a><ol><li><a href="ruby.html">Ruby in Atomo</a></li></ol></li><li><a href="syntax.html">Syntax</a><ol><li><a href="syntax.html#section_.General_.Rules">General Rules</a></li><li><a href="syntax.html#section_guidelines">Indentation Guidelines</a></li><li><a href="syntax.html#section_.Comments">Comments</a></li><li><a href="syntax.html#section_literals-syntax">Literals</a></li><li><a href="syntax.html#section_dispatch-syntax">Dispatch</a></li><li><a href="syntax.html#section_macro-syntax"><code><span class="kr">macro</span></code></a></li><li><a href="syntax.html#section_for-macro-syntax"><code><span class="kr">for-macro</span></code></a></li><li><a href="syntax.html#section_operator-syntax"><code><span class="kr">operator</span></code></a></li></ol></li><li><a href="patterns.html">Patterns</a><ol><li><a href="patterns.html#section_types">Types of Patterns</a></li><li><a href="patterns.html#section_definition-target">A Pattern's Object</a></li><li><a href="patterns.html#section_.Pattern_.Objects">Pattern Objects</a></li></ol></li><li><a href="defining.html">Defining Methods</a><ol><li><a href="defining.html#section_variadic">Variadic Roles</a></li><li><a href="defining.html#section_optionals">Optional Roles</a></li><li><a href="defining.html#section_redefining">Redefining Methods</a></li></ol></li><li><a href="macros.html">Macros!</a><ol><li><a href="macros.html#section_defining-macros">Defining Macros</a></li><li><a href="macros.html#section_macro-environment">Macro Environment</a></li><li><a href="macros.html#section_macro-quotes">Macro Quotes</a></li></ol></li><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="enumerable.html">Enumerable</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>The REPL</h1><p>Atomo's REPL (read evaluate print loop) is an interactive environment for reading expressions, evaluating them in some context, and printing the result.</p><p>The prompt is provided by the <a href="http://hackage.haskell.org/package/haskeline" class="external">haskeline</a> library, so it is <code>readline</code>-like, with history navigation.</p><p>The input is parsed as a block of expressions, so you can separate multiple expressions with <code>;</code> or <code>,</code>, in which case they will be evaluated in sequence and the last value will be printed.</p><p>It's also intelligent about multiline input, catching &quot;unexpected ending&quot; parse errors and allowing you to finish the expression:
+
+</p><pre class="verbatim">[0]&gt; &quot;foo
+.... bar&quot;
+&quot;foo\nbar&quot;
+[1]&gt; 1 +
+....   2
+3
+[2]&gt; { a = 1
+....   a + 2
+....         \ print
+.... } call
+3
+3</pre><p>If the REPL jumps the gun and eats up your input before you're done and causes a parse error, an <code><span class="n">incomplete</span></code> restart is provided. Triggering this restart will let you keep adding input.</p><p>To exit the REPL, you can use <code>Ctrl+C</code> or <code>Ctrl+D</code>, followed by <code>y</code> to confirm. Pressing <code>Ctrl+C</code> twice will also force it to exit.</p><p>The REPL is implemented in Atomo, so you can use it in your code.
+
+</p><div class="definition" id="definition_basic-repl">
+  <pre class="thumb"><span class="n">env</span><span class="t"> </span><span class="n"><a href="repl.html#definition_basic-repl">basic-repl</a></span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span></pre><p>Starts up the REPL with <code><span class="n">env</span></code> as the environment for evaluation.</p><p>Signals sent:
+
+</p><dl><dt><code><span class="nd">@prompt</span></code></dt><dd><p>Used to determine a prompt for the input line. To set your own, trigger the <code><span class="n">use-prompt</span></code> restart with your prompt (a string) as an argument.</p></dd>
+
+<dt><code><span class="nd">@quit</span></code></dt><dd><p>Signaled when interaction receives an interrupt (usually by <code>Ctrl+C</code>) or end-of-input (usually by <code>Ctrl-D</code>).</p></dd>
+
+<dt><code><span class="nd">@</span><span class="p">(</span><span class="nf">special:</span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span><span class="p">)</span></code></dt><dd><p>Signaled when a special meta-command is entered. These are arbitrary strings preceded by a colon (<code>:</code>).</p><p>For example, when the main REPL debugger is started, it asks for the restart to use in the form of <code>:1</code>, <code>:2</code>, and so on. When these are entered, <code><span class="nd">@</span><span class="p">(</span><span class="nf">special:</span><span class="t"> </span><span class="s">&quot;</span><span class="s">1</span><span class="s">&quot;</span><span class="p">)</span></code>, <code><span class="nd">@</span><span class="p">(</span><span class="nf">special:</span><span class="t"> </span><span class="s">&quot;</span><span class="s">2</span><span class="s">&quot;</span><span class="p">)</span></code> etc. are signaled.</p></dd>
+
+<dt><code><span class="nd">@loop</span></code></dt><dd><p>Signaled after the REPL has evaluated and printed an input, and is about to start the loop over again.</p></dd></dl>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_repl">
+  <pre class="thumb"><span class="n">env</span><span class="t"> </span><span class="n"><a href="repl.html#definition_repl">repl</a></span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span></pre><p>Starts a full-blown REPL with <code><span class="n">env</span></code> as the environment for evaluation. This is what is run when you just say <code>atomo</code> to start up Atomo's REPL - it wraps <code><span class="n"><a href="repl.html#definition_basic-repl">basic-repl</a></span></code>, providing a debugger, a different prompt, prompts before exiting.</p><p>Example:
+
+</p><pre class="verbatim">[0]&gt; 1 repl
+[0]&gt; + 2
+3
+[1]&gt; sqrt
+1.0
+[2]&gt;
+really quit? (y/n) y
+@ok
+[3]&gt;</pre><p>Note that the <code>[3]&gt;</code> above is the outer REPL - as the inner one was signaling <code><span class="nd">@loop</span></code>, its frame number increase as well.
+
+
+
+</p></div>
+
+    </div>
+  </body>
+</html>

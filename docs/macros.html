@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Macros!</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+    <script src="jquery.js" type="text/javascript"></script>
+    <script src="jquery.hotkeys.js" type="text/javascript"></script>
+    <script src="tags.js" type="text/javascript"></script>
+    <script src="main.js" type="text/javascript"></script>
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+      <form class="search" action="javascript:void(0)">
+        <input type="text" id="search" placeholder="Search&hellip;" />
+      </form>
+      <ul class="search-results"></ul>
+      <h4>On this page:</h4>
+<ol class="toc"><li><a href="macros.html#section_defining-macros">Defining Macros</a></li><li><a href="macros.html#section_macro-environment">Macro Environment</a></li><li><a href="macros.html#section_macro-quotes">Macro Quotes</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="index.html">Atomo</a><ol><li><a href="getting-started.html">Getting Started</a><ol><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li><li><a href="getting-started.html#section_.Wrapping_.Up">Wrapping Up</a></li></ol></li><li><a href="repl.html">The REPL</a></li><li><a href=".Tutorials.html">Tutorials</a><ol><li><a href="ruby.html">Ruby in Atomo</a></li></ol></li><li><a href="syntax.html">Syntax</a><ol><li><a href="syntax.html#section_.General_.Rules">General Rules</a></li><li><a href="syntax.html#section_guidelines">Indentation Guidelines</a></li><li><a href="syntax.html#section_.Comments">Comments</a></li><li><a href="syntax.html#section_literals-syntax">Literals</a></li><li><a href="syntax.html#section_dispatch-syntax">Dispatch</a></li><li><a href="syntax.html#section_macro-syntax"><code><span class="kr">macro</span></code></a></li><li><a href="syntax.html#section_for-macro-syntax"><code><span class="kr">for-macro</span></code></a></li><li><a href="syntax.html#section_operator-syntax"><code><span class="kr">operator</span></code></a></li></ol></li><li><a href="patterns.html">Patterns</a><ol><li><a href="patterns.html#section_types">Types of Patterns</a></li><li><a href="patterns.html#section_definition-target">A Pattern's Object</a></li><li><a href="patterns.html#section_.Pattern_.Objects">Pattern Objects</a></li></ol></li><li><a href="defining.html">Defining Methods</a><ol><li><a href="defining.html#section_variadic">Variadic Roles</a></li><li><a href="defining.html#section_optionals">Optional Roles</a></li><li><a href="defining.html#section_redefining">Redefining Methods</a></li></ol></li><li><a href="macros.html">Macros!</a><ol><li><a href="macros.html#section_defining-macros">Defining Macros</a></li><li><a href="macros.html#section_macro-environment">Macro Environment</a></li><li><a href="macros.html#section_macro-quotes">Macro Quotes</a></li></ol></li><li><a href="reference.html">Reference</a><ol><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>Macros!</h1><p>Atomo sports a macro system similar to that of Common Lisp, in addition to a fancy macro-quoting system similar to Haskell's <code>QuasiQuotes</code> extension.
+
+</p><div class="section">
+  <h2 class="section-header" id="section_defining-macros">Defining Macros</h2><p>  </p><p>To define a macro, you use the <code><span class="kr">macro</span></code> keyword, followed by its dispatch pattern in parentheses, and then the body of the macro (an expression). See also <a href="syntax.html#section_macro-syntax"><code><span class="kr">macro</span></code></a>.</p><p>The entire Atomo runtime is usable during macro expansion; you can do whatever you want in a macro method's body, as long as it yields an <code><span class="n">Expression</span></code> value.</p><p>A macro's dispatch pattern is very similar to definition message patterns, except (and perhaps obviously) it can only match expressions in the message's roles. If a macro's role patterns do not match the expressions in a dispatch, the macro isn't found, so nothing happens and the dispatch is left alone.</p><p>A macro's role patterns are as follows:
+
+</p><dl><dt><code><span class="n">_</span></code>, <code><span class="n">foo</span></code>, ...</dt><dd><p>Possibly-named wildcard matches.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="kr">macro</span><span class="t"> </span><span class="p">(</span><span class="n">x</span><span class="t"> </span><span class="n">squared</span><span class="p">)</span><span class="t"> </span><span class="ss">`</span><span class="p">(</span><span class="si">~x</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_*">*</a></span><span class="t"> </span><span class="si">~x</span><span class="p">)</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="ss">'</span><span class="p">(</span><span class="mi">42</span><span class="t"> </span><span class="n">squared</span><span class="p">)</span><span class="t"> </span><span class="n">expand</span>
+<span class="ss">'</span><span class="p">(</span><span class="mi">42</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_*">*</a></span><span class="t"> </span><span class="mi">42</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="mi">42</span><span class="t"> </span><span class="n">squared</span>
+<span class="mi">1764</span>
+</pre></div></dd>
+
+<dt><code><span class="nf">foo:</span><span class="t"> </span><span class="n">pattern</span></code></dt><dd><p>A named pattern-match. Matches <code><span class="n">pattern</span></code>, binding the expression it matches to <code><span class="n">foo</span></code>.
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="kr">macro</span><span class="t"> </span><span class="p">(</span><span class="p">(</span><span class="nf">x:</span><span class="t"> </span><span class="n">Primitive</span><span class="p">)</span><span class="t"> </span><span class="n">square-root</span><span class="p">)</span><span class="t"> </span><span class="ss">`</span><span class="p">(</span><span class="si">~x</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_^">^</a></span><span class="t"> </span><span class="p">(</span><span class="mf">1.0</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_/">/</a></span><span class="t"> </span><span class="mf">2.0</span><span class="p">)</span><span class="p">)</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="mi">2</span><span class="t"> </span><span class="n">square-root</span>
+<span class="mf">1.4142135623730951</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="t"> </span><span class="n">square-root</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(did-not-understand: </span><span class="go">&lt;</span><span class="go">message [1] square-root</span><span class="go">&gt;</span><span class="go">)</span><span class="go">&gt;</span></span>
+</pre></dd>
+
+<dt><code><span class="n">Dispatch</span></code>, <code><span class="n">Operator</span></code>, <code><span class="n">Primitive</span></code>, <code><span class="n"><a href="blocks.html#definition_Block">Block</a></span></code>, <code><span class="n"><a href="lists.html#definition_List">List</a></span></code>, <code><span class="n">Macro</span></code>, <code><span class="n">ForMacro</span></code>, <code><span class="n"><a href="particles.html#definition_Particle">Particle</a></span></code>, <code><span class="n">Top</span></code>, <code><span class="n">Quote</span></code>, <code><span class="n">Unquote</span></code>, <code><span class="n">MacroQuote</span></code></dt><dd><p>Match on the type of the expression.
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="kr">macro</span><span class="t"> </span><span class="p">(</span><span class="n">Top</span><span class="t"> </span><span class="n">foo</span><span class="p">)</span><span class="t"> </span><span class="ss">`10</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="n">foo</span>
+<span class="mi">10</span>
+<span class="caret">&gt;</span> <span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="n">foo</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(did-not-understand: </span><span class="go">&lt;</span><span class="go">message $a foo</span><span class="go">&gt;</span><span class="go">)</span><span class="go">&gt;</span></span>
+</pre></dd>
+
+<dt><code><span class="ss">`a</span></code>, <code><span class="ss">`</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="si">~b</span><span class="p">)</span></code>, ...</dt><dd><p>Structurally matches an expression recursively. Unquotes serve as named wildcard patterns, with the same recursive semantics as quasiquotation.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="kr">macro</span><span class="t"> </span><span class="p">(</span><span class="ss">`</span><span class="p">(</span><span class="si">~a</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="si">~b</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="association.html#definition_from">from</a></span><span class="p">)</span><span class="t"> </span><span class="n">a</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="association.html#definition_from">from</a></span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="association.html#definition_from">from</a></span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(did-not-understand: </span><span class="go">&lt;</span><span class="go">message 3 from</span><span class="go">&gt;</span><span class="go">)</span><span class="go">&gt;</span></span>
+</pre></div></dd></dl>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_macro-environment">Macro Environment</h2><p>  </p><p>Macro expansion is performed in a separate environment from the runtime, in a clone of <code><span class="n">Lobby</span></code>. The bodies of macro methods are evaluated here, as a kind of sandbox from the &quot;real world.&quot;</p><p>Often you may want to specify some variables for your macros to use during expansion, or just evaluate some expression before everything gets going. Enter <code><span class="kr">for-macro</span></code>. This simple reserved word tells Atomo to evaluate an arbitrary expression in the macro environment, one step before macro expansion begins.
+
+</p><div class="example"><p><em>Example:</em></p><div class="highlight"><pre><span class="kr">for-macro</span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t">
+</span><span class="kr">for-macro</span><span class="t"> </span><span class="n">Foo</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span><span class="t">
+
+</span><span class="c1">-- &quot;escaping&quot; the macro area and defining A in the Lobby</span><span class="t">
+</span><span class="kr">for-macro</span><span class="t"> </span><span class="n"><a href="core.html#definition_super">super</a></span><span class="t"> </span><span class="n">A</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span></pre></div></div>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_macro-quotes">Macro Quotes</h2><p>  </p><p>Macro-quotes are a generalized string quotation mechanism similar to Haskell's <code>QuasiQuotes</code> extension. They are used for creating arbitrary values from a given string at macroexpansion time, and are very cheap.</p><p>They can make code very clear and concise, adding &quot;almost literal&quot; syntax for things like URLs, paths, byte strings, and regular expressions. That being said, please do not write entire DSLs using them; it's much better to just use the language itself.</p><p>Let's take a look at two common macro-quoters, <code>w</code> (word list) and <code>r</code> (regular expression):
+
+</p><div class="highlight"><pre><span class="sx">w{</span><span class="sx">foo bar baz</span><span class="sx">}</span><span class="t">
+</span><span class="sx">r`</span><span class="sx">&quot;</span><span class="sx">\d</span><span class="sx">+&quot;</span><span class="sx">`m</span></pre></div><p>During the macroexpansion phase, these macro-quotes send the following messages, respectively:
+
+</p><div class="highlight"><pre><span class="nf">quote:</span><span class="t"> </span><span class="s">&quot;</span><span class="s">foo bar baz</span><span class="s">&quot;</span><span class="t"> </span><span class="nf">as:</span><span class="t"> </span><span class="nd">@w</span><span class="t">
+</span><span class="nf">quote:</span><span class="t"> </span><span class="s">&quot;</span><span class="se">\</span><span class="se">&quot;</span><span class="se">\</span><span class="se">\</span><span class="s">d+</span><span class="se">\</span><span class="se">&quot;</span><span class="s">&quot;</span><span class="t"> </span><span class="nf">as:</span><span class="t"> </span><span class="nd">@r</span><span class="t"> </span><span class="nf">&amp;flags:</span><span class="t"> </span><span class="p">[</span><span class="sc">$</span><span class="sc">m</span><span class="p">]</span></pre></div><p>To define a macro-quoter, use <code><span class="kr">for-macro</span></code> to define <code><span class="nf">quote:</span><span class="nf">as:</span></code>, pattern-matching the quoter's name as a particle for the <code><span class="nf"><a href="ecosystem.html#definition_as:">as:</a></span></code> role. The value yielded by this method will be what the macro-quote expands to. For example, the <code>w</code> macro-quoter expands into a list of the words in the string:
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">w{</span><span class="sx">foo bar baz</span><span class="sx">}</span>
+<span class="p">[</span><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">bar</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">baz</span><span class="s">&quot;</span><span class="p">]</span>
+</pre><p>The <code>r</code> macro-quoter expands into a <code><span class="n"><a href="regexps.html#definition_Regexp">Regexp</a></span></code> value (which pretty-prints as a macro-quote):
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">r`</span><span class="sx">&quot;</span><span class="sx">\d</span><span class="sx">+&quot;</span><span class="sx">`m</span>
+<span class="sx">r{</span><span class="sx">&quot;</span><span class="sx">\d</span><span class="sx">+&quot;</span><span class="sx">}m</span>
+<span class="caret">&gt;</span> <span class="sx">r`</span><span class="sx">&quot;</span><span class="sx">\d</span><span class="sx">+&quot;</span><span class="sx">`m</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_==">==</a></span><span class="t"> </span><span class="sx">r{</span><span class="sx">&quot;</span><span class="sx">\d</span><span class="sx">+&quot;</span><span class="sx">}m</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="sx">r{</span><span class="sx">&quot;</span><span class="sx">\d</span><span class="sx">+&quot;</span><span class="sx">}m</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="regexps.html#definition_Regexp">Regexp</a></span>
+<span class="kc">True</span>
+</pre><p>Both of these quoters are implemented trivially in <code>prelude/core.atomo</code> like so:
+
+</p><div class="highlight"><pre><span class="kr">for-macro</span><span class="t"> </span><span class="nf">quote:</span><span class="t"> </span><span class="n">s</span><span class="t"> </span><span class="nf">as:</span><span class="t"> </span><span class="nd">@w</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="n">s</span><span class="t"> </span><span class="n">words</span><span class="t">
+
+</span><span class="kr">for-macro</span><span class="t"> </span><span class="nf">quote:</span><span class="t"> </span><span class="n">s</span><span class="t"> </span><span class="nf">as:</span><span class="t"> </span><span class="nd">@r</span><span class="t"> </span><span class="nf">&amp;flags:</span><span class="t"> </span><span class="p">[</span><span class="p">]</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t">
+  </span><span class="n"><a href="regexps.html#definition_Regexp">Regexp</a></span><span class="t"> </span><span class="nf">new:</span><span class="t"> </span><span class="n">s</span><span class="t"> </span><span class="nf">&amp;flags:</span><span class="t"> </span><span class="p">(</span><span class="n">flags</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n">String</span><span class="p">)</span></pre></div><p>Note that the <code>r</code> macro-quoter makes use of the flags added to the end of the literal, by sending them along to <code><span class="n"><a href="regexps.html#definition_Regexp">Regexp</a></span><span class="t"> </span><span class="nf">new:</span><span class="t"> </span><span class="n">_</span><span class="t"> </span><span class="nf">&amp;flags:</span><span class="t"> </span><span class="n">_</span></code>.</p><p>If a macro-quoter is not found, an <code><span class="nd">@unknown-quoter:for:&amp;flags:</span></code> error is signaled:
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">foo{</span><span class="sx">bar</span><span class="sx">}baz</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(unknown-quoter: @foo for: &quot;bar&quot; &amp;flags: [$b, $a, $z])</span><span class="go">&gt;</span></span>
+</pre>
+
+</div>
+
+    </div>
+  </body>
+</html>

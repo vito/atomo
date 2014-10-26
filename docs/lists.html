@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Lists</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+    <script src="jquery.js" type="text/javascript"></script>
+    <script src="jquery.hotkeys.js" type="text/javascript"></script>
+    <script src="tags.js" type="text/javascript"></script>
+    <script src="main.js" type="text/javascript"></script>
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+      <form class="search" action="javascript:void(0)">
+        <input type="text" id="search" placeholder="Search&hellip;" />
+      </form>
+      <ul class="search-results"></ul>
+      <h4>On this page:</h4>
+<ol class="toc"><li><a href="lists.html">Lists</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="reference.html">Reference</a><ol><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>Lists</h1>
+
+<div class="definition" id="definition_List">
+  <pre class="thumb"><span class="n"><a href="lists.html#definition_List">List</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span></pre><p>Lists are immutable vectors of arbitrary values.
+
+</p><div class="example"><p><em>Example:</em></p><div class="highlight"><pre><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">b</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">three</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="mf">4.0</span><span class="p">]</span><span class="t">
+</span><span class="p">[</span><span class="p">]</span></pre></div></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_length">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_length">length</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="numbers.html#definition_Integer">Integer</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Returns the length of the list <code><span class="n">l</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_length">length</a></span>
+<span class="mi">3</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_empty?">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_empty?">empty?</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Is the list <code><span class="n">l</span></code> empty?
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_empty?">empty?</a></span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_empty?">empty?</a></span>
+<span class="kc">False</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_at:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_at:">at:</a></span><span class="t"> </span><span class="n">index</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">index</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span></pre><p>Returns the list's value at <code><span class="n">index</span></code>. If the index is out of bounds, <code><span class="nd">@</span><span class="p">(</span><span class="nf">out-of-bounds:</span><span class="t"> </span><span class="n">index</span><span class="t"> </span><span class="nf">for-list:</span><span class="t"> </span><span class="n">l</span><span class="p">)</span></code> is raised.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_at:">at:</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_at:">at:</a></span><span class="t"> </span><span class="mi">3</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(out-of-bounds: 3 for-list: [1, 2, 3])</span><span class="go">&gt;</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_at:put:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_at:put:">at:</a></span><span class="t"> </span><span class="n">index</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_at:put:">put:</a></span><span class="t"> </span><span class="n">v</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">index</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span></pre><p>Yield a new list with the value at <code><span class="n">index</span></code> replaced with <code><span class="n">v</span></code>. If the index is out of bounds, <code><span class="nd">@</span><span class="p">(</span><span class="nf">out-of-bounds:</span><span class="t"> </span><span class="n">index</span><span class="t"> </span><span class="nf">for-list:</span><span class="t"> </span><span class="n">l</span><span class="p">)</span></code> is raised.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_at:put:">at:</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_at:put:">put:</a></span><span class="t"> </span><span class="mi">5</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_head">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_head">head</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Returns the first value of the list. If the list is empty, <code><span class="nd">@empty-list</span></code> is raised.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_head">head</a></span>
+<span class="mi">1</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_last">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_last">last</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Returns the last value of the list. If the list is empty, <code><span class="nd">@empty-list</span></code> is raised.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_last">last</a></span>
+<span class="mi">3</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_init">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_init">init</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Returns all but the last value of the list. If the list is empty, <code><span class="nd">@empty-list</span></code> is raised.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_init">init</a></span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_tail">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_tail">tail</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Returns all but the first value of the list. If the list is empty, <code><span class="nd">@empty-list</span></code> is raised.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_tail">tail</a></span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_from:to:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_from:to:">from:</a></span><span class="t"> </span><span class="n"><a href="ranges.html#definition_start">start</a></span><span class="t"> </span><span class="nf"><a href="lists.html#definition_from:to:">to:</a></span><span class="t"> </span><span class="n"><a href="ranges.html#definition_end">end</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n"><a href="ranges.html#definition_start">start</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span>
+  | <span class="n"><a href="ranges.html#definition_end">end</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span></pre><p>Returns the slice of elements from <code><span class="n"><a href="ranges.html#definition_start">start</a></span></code> to <code><span class="n"><a href="ranges.html#definition_end">end</a></span></code> of <code><span class="n">l</span></code>. If the range is invalid, <code><span class="nd">@</span><span class="p">(</span><span class="nf">invalid-range:</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf"><a href="lists.html#definition_from:to:">from:</a></span><span class="t"> </span><span class="n"><a href="ranges.html#definition_start">start</a></span><span class="t"> </span><span class="nf"><a href="lists.html#definition_from:to:">to:</a></span><span class="t"> </span><span class="n"><a href="ranges.html#definition_end">end</a></span><span class="p">)</span><span class="t"> </span><span class="nf">for-list:</span><span class="t"> </span><span class="n">l</span><span class="p">)</span></code> is raised. A range is invalid if either <code><span class="n"><a href="ranges.html#definition_start">start</a></span></code> or <code><span class="n"><a href="ranges.html#definition_end">end</a></span></code> are negative, or if either are out of the list's boundaries.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_from:to:">from:</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_from:to:">to:</a></span><span class="t"> </span><span class="mi">3</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_take:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_take:">take:</a></span><span class="t"> </span><span class="n">n</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span></pre><p>Returns a list of the first <code><span class="n">n</span></code> values of the list. If <code><span class="n">n</span></code> is greater than the list's length, it returns as many as it can (i.e., the entire list); the length of the returned list will not always be <code><span class="n">n</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_take:">take:</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_take:">take:</a></span><span class="t"> </span><span class="mi">4</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_drop:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_drop:">drop:</a></span><span class="t"> </span><span class="n">n</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span></pre><p>Returns a list of the values after <code><span class="n">n</span></code> values have been dropped from the start of the list. If <code><span class="n">n</span></code> is greater than the list's length, it returns an empty list.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_drop:">drop:</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">,</span><span class="t"> </span><span class="mi">7</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_drop:">drop:</a></span><span class="t"> </span><span class="mi">5</span>
+<span class="p">[</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_replicate:">
+  <pre class="thumb"><span class="n">v</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_replicate:">replicate:</a></span><span class="t"> </span><span class="n">n</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span></pre><p>Returns a list containing <code><span class="n">v</span></code> replicated <code><span class="n">n</span></code> times.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="s">&quot;</span><span class="s">Odelay!</span><span class="s">&quot;</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_replicate:">replicate:</a></span><span class="t"> </span><span class="mi">5</span>
+<span class="p">[</span><span class="s">&quot;</span><span class="s">Odelay!</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">Odelay!</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">Odelay!</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">Odelay!</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">Odelay!</span><span class="s">&quot;</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_.">
+  <pre class="thumb"><span class="n">x</span><span class="t"> </span><span class="o"><a href="lists.html#definition_.">.</a></span><span class="t"> </span><span class="n">xs</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">xs</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>List constructor; yield a new list with <code><code><span class="n">x</span></code></code> added to the front of <code><code><span class="n">xs</span></code></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="o"><a href="lists.html#definition_.">.</a></span><span class="t"> </span><span class="p">[</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="o"><a href="lists.html#definition_.">.</a></span><span class="t"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_..">
+  <pre class="thumb"><span class="n">a</span><span class="t"> </span><span class="o"><a href="lists.html#definition_..">..</a></span><span class="t"> </span><span class="n">b</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">a</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Appends the two lists <code><span class="n">a</span></code> and <code><span class="n">b</span></code>, returning a new list.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="o"><a href="lists.html#definition_..">..</a></span><span class="t"> </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="p">]</span><span class="t"> </span><span class="o"><a href="lists.html#definition_..">..</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span><span class="t"> </span><span class="o"><a href="lists.html#definition_..">..</a></span><span class="t"> </span><span class="p">[</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_reverse">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_reverse">reverse</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Returns a new list, with all values of <code><span class="n">l</span></code>, in reversed order.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_reverse">reverse</a></span>
+<span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_map:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_map:">map:</a></span><span class="t"> </span><span class="n">a</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">a</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span></pre><p>Returns a new list, with <code><span class="nf"><a href="blocks.html#definition_call:">call:</a></span></code> sent to <code><span class="n">a</span></code> with each value in <code><span class="n">l</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_map:">map:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_map:">map:</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="o"><a href="numbers.html#definition_*">*</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_zip:">
+  <pre class="thumb"><span class="n">x</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_zip:">zip:</a></span><span class="t"> </span><span class="p">(</span><span class="o"><a href="ranges.html#definition_...">...</a></span><span class="t"> </span><span class="n">ys</span><span class="p">)</span><span class="t"> </span><span class="nf">&amp;zipper:</span><span class="t"> </span><span class="nd">@id</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">x</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">zipper</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span></pre><p>&quot;Zips&quot; up the lists <code><span class="n">x</span></code> and <code><span class="n">ys</span></code>. If <code><span class="n">zipper</span></code> is not <code><span class="nd">@id</span></code>, it is <code><span class="nf"><a href="blocks.html#definition_call:">call:</a></span></code>ed with each zipped value as an argument.</p><p>The list it returns is as long as the shortest list.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf">zip:</span><span class="t"> </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">]</span><span class="t"> </span><span class="nf">&amp;zipper:</span><span class="t"> </span><span class="nd">@*</span>
+<span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">10</span><span class="p">,</span><span class="t"> </span><span class="mi">18</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_zip:">zip:</a></span><span class="t"> </span><span class="p">(</span><span class="p">[</span><span class="s">&quot;</span><span class="s">a</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">b</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">c</span><span class="s">&quot;</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="sc">$</span><span class="sc">a</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">b</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">c</span><span class="p">]</span><span class="p">)</span>
+<span class="p">[</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">a</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">b</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">b</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">c</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">c</span><span class="p">]</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_zip:">zip:</a></span><span class="t"> </span><span class="p">(</span><span class="p">[</span><span class="s">&quot;</span><span class="s">a</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">b</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">c</span><span class="s">&quot;</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="sc">$</span><span class="sc">a</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">b</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">c</span><span class="p">]</span><span class="p">)</span><span class="t"> </span><span class="nf">&amp;zipper:</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="n">c</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="n">c</span><span class="t"> </span><span class="p">}</span>
+<span class="p">[</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="p">(</span><span class="s">&quot;</span><span class="s">a</span><span class="s">&quot;</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">)</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="p">(</span><span class="s">&quot;</span><span class="s">b</span><span class="s">&quot;</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">b</span><span class="p">)</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="p">(</span><span class="s">&quot;</span><span class="s">c</span><span class="s">&quot;</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">c</span><span class="p">)</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_take-while:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_take-while:">take-while:</a></span><span class="t"> </span><span class="n">p</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">p</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span></pre><p>Takes values from list <code><span class="n">l</span></code> while <code><span class="n">p</span></code> called on them yields <code><span class="kc">True</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_take-while:">take-while:</a></span><span class="t"> </span><span class="nd">@odd?</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_drop-while:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_drop-while:">drop-while:</a></span><span class="t"> </span><span class="n">p</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">p</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span></pre><p>Removes values from list <code><span class="n">l</span></code> while <code><span class="n">p</span></code> called on them yields <code><span class="kc">True</span></code>, returning a list of the remaining values.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_drop-while:">drop-while:</a></span><span class="t"> </span><span class="nd">@odd?</span>
+<span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_filter:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_filter:">filter:</a></span><span class="t"> </span><span class="n">p</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">p</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span></pre><p>Returns a list of all values in <code><span class="n">l</span></code> that satisfy the predicate <code><span class="n">p</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_filter:">filter:</a></span><span class="t"> </span><span class="nd">@odd?</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_filter:">filter:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_==">==</a></span><span class="t"> </span><span class="mi">3</span><span class="t"> </span><span class="p">}</span>
+<span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_reduce:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_reduce:">reduce:</a></span><span class="t"> </span><span class="n">b</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span></pre><p>Alias for <code><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_tail">tail</a></span><span class="t"> </span><span class="nf"><a href="lists.html#definition_reduce:with:">reduce:</a></span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_reduce:with:">with:</a></span><span class="t"> </span><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_head">head</a></span></code>. If the list is empty, <code><span class="nd">@empty-list</span></code> is raised.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_reduce:">reduce:</a></span><span class="t"> </span><span class="nd">@*</span>
+<span class="mi">120</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_reduce:with:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_reduce:with:">reduce:</a></span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_reduce:with:">with:</a></span><span class="t"> </span><span class="n">v</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span></pre><p>Reduces the list to a single value by &quot;folding&quot; over it, with <code><span class="n">v</span></code> as the initial value.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_reduce:">reduce:</a></span><span class="t"> </span><span class="nd">@*</span>
+<span class="mi">120</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_reduce:with:">reduce:</a></span><span class="t"> </span><span class="nd">@*</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_reduce:with:">with:</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">1</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_reduce-right:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_reduce-right:">reduce-right:</a></span><span class="t"> </span><span class="n">b</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span></pre><p>Similar to <code><span class="nf"><a href="lists.html#definition_reduce:">reduce:</a></span></code>, but right-associative. If the list is empty, <code><span class="nd">@empty-list</span></code> is raised.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_reduce-right:with:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_reduce-right:with:">reduce-right:</a></span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_reduce-right:with:">with:</a></span><span class="t"> </span><span class="n">v</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span></pre><p>Similar to <code><span class="nf"><a href="lists.html#definition_reduce:with:">reduce:</a></span><span class="nf"><a href="lists.html#definition_reduce:with:">with:</a></span></code>, but right-associative.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_concat">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_concat">concat</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Reduces a list by appending all of its values. The list's values must all be lists.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_concat">concat</a></span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_concat">concat</a></span>
+<span class="p">[</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_sum">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_sum">sum</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Reduces a list with <code><span class="o"><a href="numbers.html#definition_+">+</a></span></code> and <code><span class="mi">0</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_sum">sum</a></span>
+<span class="mi">6</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_sum">sum</a></span>
+<span class="mi">0</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_product">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_product">product</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Reduces a list with <code><span class="o"><a href="numbers.html#definition_*">*</a></span></code> and <code><span class="mi">1</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_product">product</a></span>
+<span class="mi">6</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_product">product</a></span>
+<span class="mi">1</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_maximum">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_maximum">maximum</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Reduces a list with <code><span class="nf"><a href="comparable.html#definition_max:">max:</a></span></code>. The list must not be empty.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_maximum">maximum</a></span>
+<span class="mi">3</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_minimum">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_minimum">minimum</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Reduces a list with <code><span class="nf"><a href="comparable.html#definition_min:">min:</a></span></code>. The list must not be empty.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_minimum">minimum</a></span>
+<span class="mi">1</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_all?:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_all?:">all?:</a></span><span class="t"> </span><span class="n">p</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">p</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span></pre><p>Checks if all values in <code><span class="n">l</span></code> satisfy the predicate <code><span class="n">p</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_all?:">all?:</a></span><span class="t"> </span><span class="nd">@odd?</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_all?:">all?:</a></span><span class="t"> </span><span class="nd">@odd?</span>
+<span class="kc">False</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_all?:">all?:</a></span><span class="t"> </span><span class="nd">@odd?</span>
+<span class="kc">True</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_any?:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_any?:">any?:</a></span><span class="t"> </span><span class="n">p</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">p</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span></pre><p>Checks if any values in <code><span class="n">l</span></code> satisfy the predicate <code><span class="n">p</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_any?:">any?:</a></span><span class="t"> </span><span class="nd">@odd?</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_any?:">any?:</a></span><span class="t"> </span><span class="nd">@odd?</span>
+<span class="kc">False</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_any?:">any?:</a></span><span class="t"> </span><span class="nd">@odd?</span>
+<span class="kc">False</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_and">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_and">and</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Check if all values in the list are <code><span class="kc">True</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_==">==</a></span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_==">==</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_and">and</a></span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_==">==</a></span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_==">==</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">b</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_and">and</a></span>
+<span class="kc">False</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_and">and</a></span>
+<span class="kc">True</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_or">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_or">or</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Check if any values in the list are <code><span class="kc">True</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_==">==</a></span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_==">==</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_or">or</a></span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_==">==</a></span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_==">==</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">b</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_or">or</a></span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_==">==</a></span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="comparable.html#definition_==">==</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">c</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_or">or</a></span>
+<span class="kc">False</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_or">or</a></span>
+<span class="kc">False</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_contains?:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_contains?:">contains?:</a></span><span class="t"> </span><span class="n">v</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Check if <code><span class="n">v</span></code> is a member of the list <code><span class="n">l</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="s">&quot;</span><span class="s">abc</span><span class="s">&quot;</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_contains?:">contains?:</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="s">&quot;</span><span class="s">abc</span><span class="s">&quot;</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_contains?:">contains?:</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">d</span>
+<span class="kc">False</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_in?:">
+  <pre class="thumb"><span class="n">v</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_in?:">in?:</a></span><span class="t"> </span><span class="n">l</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Alias for <code><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_contains?:">contains?:</a></span><span class="t"> </span><span class="n">v</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_push:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_push:">push:</a></span><span class="t"> </span><span class="n">v</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Yields a new list with <code><code><span class="n">v</span></code></code> added to the end of <code><code><span class="n">l</span></code></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_push:">push:</a></span><span class="t"> </span><span class="mi">4</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_cons:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_cons:">cons:</a></span><span class="t"> </span><span class="n">v</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>See <code><span class="o"><a href="lists.html#definition_.">.</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_&lt;&lt;">
+  <pre class="thumb"><span class="n">a</span><span class="t"> </span><span class="o"><a href="lists.html#definition_&lt;&lt;">&lt;&lt;</a></span><span class="t"> </span><span class="n">b</span> <span class="definition-result-arrow">→</span> <span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">a</span></pre><p>A macro for <code><span class="nf"><a href="lists.html#definition_push:">push:</a></span></code> with destructive update.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="lists.html#definition_&lt;&lt;">&lt;&lt;</a></span><span class="t"> </span><span class="mi">4</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="ss">'</span><span class="p">(</span><span class="n">a</span><span class="t"> </span><span class="o"><a href="lists.html#definition_&lt;&lt;">&lt;&lt;</a></span><span class="t"> </span><span class="mi">5</span><span class="p">)</span><span class="t"> </span><span class="n">expand</span>
+<span class="ss">'</span><span class="p">(</span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_push:">push:</a></span><span class="t"> </span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_&gt;&gt;">
+  <pre class="thumb"><span class="n">a</span><span class="t"> </span><span class="o"><a href="lists.html#definition_&gt;&gt;">&gt;&gt;</a></span><span class="t"> </span><span class="n">b</span> <span class="definition-result-arrow">→</span> <span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">b</span></pre><p>A macro for <code><span class="nf"><a href="lists.html#definition_cons:">cons:</a></span></code> with destructive update.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="mi">0</span><span class="t"> </span><span class="o"><a href="lists.html#definition_&gt;&gt;">&gt;&gt;</a></span><span class="t"> </span><span class="n">a</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="ss">'</span><span class="p">(</span><span class="mi">-1</span><span class="t"> </span><span class="o"><a href="lists.html#definition_&gt;&gt;">&gt;&gt;</a></span><span class="t"> </span><span class="n">a</span><span class="p">)</span><span class="t"> </span><span class="n">expand</span>
+<span class="ss">'</span><span class="p">(</span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_cons:">cons:</a></span><span class="t"> </span><span class="mi">-1</span><span class="p">)</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_split:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_split:">split:</a></span><span class="t"> </span><span class="n">delimiter</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">delimiter</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Split a list into sublists, separated by <code><span class="n">delimiter</span></code>. Note that strict equality (i.e. <code><span class="nf"><a href="comparable.html#definition_equals?:">equals?:</a></span></code>) is used for matching the delimiter.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_split:">split:</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">]</span>
+<span class="p">[</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_split:">split:</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">]</span>
+<span class="p">[</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="p">]</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_split:">split:</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">]</span>
+<span class="p">[</span><span class="p">[</span><span class="p">]</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_split-on:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_split-on:">split-on:</a></span><span class="t"> </span><span class="n">o</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Split <code><span class="n">l</span></code> into sublists, breaking on every occurrence of <code><span class="n">o</span></code>. Also uses strict equality.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_split-on:">split-on:</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="p">[</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_split-on:">split-on:</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="p">[</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="p">]</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_split-on:">split-on:</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="p">[</span><span class="p">[</span><span class="p">]</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_sort">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_sort">sort</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Returns a sorted list of <code><span class="n">l</span></code>'s values, using the mergesort algorithm. It does this by sending <code><span class="o"><a href="comparable.html#definition_&gt;">&gt;</a></span></code> to determine the larger between two values.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">0</span><span class="p">,</span><span class="t"> </span><span class="mi">10</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_sort">sort</a></span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">,</span><span class="t"> </span><span class="mi">10</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="sc">$</span><span class="sc">z</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">f</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">x</span><span class="p">]</span><span class="t"> </span><span class="n"><a href="lists.html#definition_sort">sort</a></span>
+<span class="p">[</span><span class="sc">$</span><span class="sc">f</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">x</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">z</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_sort-by:">
+  <pre class="thumb"><span class="n">l</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_sort-by:">sort-by:</a></span><span class="t"> </span><span class="n">compare</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">compare</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span></pre><p>Returns a sorted list of <code><span class="n">l</span></code>'s values, using the mergesort algorithm. <code><span class="n">compare</span></code>, when <code><span class="nf"><a href="blocks.html#definition_call:">call:</a></span></code>ed with two values in <code><span class="n">l</span></code>, should return <code><span class="kc">True</span></code> if the first is greater than the second, and <code><span class="kc">False</span></code> otherwise.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">0</span><span class="p">,</span><span class="t"> </span><span class="mi">10</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_sort-by:">sort-by:</a></span><span class="t"> </span><span class="nd">@&gt;</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(particle-needed: 2 given: 1)</span><span class="go">&gt;</span></span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">0</span><span class="p">,</span><span class="t"> </span><span class="mi">10</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_sort-by:">sort-by:</a></span><span class="t"> </span><span class="nd">@&lt;</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(particle-needed: 2 given: 1)</span><span class="go">&gt;</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+    </div>
+  </body>
+</html>

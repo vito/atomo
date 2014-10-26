@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Parameterization</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+  </head>
+  <body>
+    <div id="sidebar">
+       <h4>On this page:</h4>
+<ol class="toc"><li><a href="parameters.html">Parameterization</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="index.html">Atomo</a><ol><li><a href="getting-started.html">Getting Started</a><ol><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li><li><a href="getting-started.html#section_.Wrapping_.Up">Wrapping Up</a></li></ol></li><li><a href="syntax.html">Syntax</a><ol><li><a href="syntax.html#section_.General_.Rules">General Rules</a></li><li><a href="syntax.html#section_.Comments">Comments</a></li><li><a href="syntax.html#section_literals-syntax">Literals</a></li><li><a href="syntax.html#section_pattern-syntax">Pattern-Matching & Inserting Slots</a></li><li><a href="syntax.html#section_definition-syntax">Definitions</a></li><li><a href="syntax.html#section_dispatch-syntax">Dispatch</a></li><li><a href="syntax.html#section_macro-syntax">Defining Macros</a></li><li><a href="syntax.html#section_operator-syntax">Operator Precedence & Associativity</a></li></ol></li><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="lists.html">Lists</a></li><li><a href="strings.html">Strings</a></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="parameters.html">Parameterization</a></li><li><a href="association.html">Associations</a></li></ol></li></ol>
+    </div>
+    <div id="content">
+      <h1>Parameterization</h1>
+
+
+<div class="definition" id="definition_Parameter">
+  <pre class="thumb"><span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span> <span class="definition-result-arrow">→</span> <span class="dispatch single"><a href="core.html#definition_Object">Object</a></span></pre><p>Atomo's <code><span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span></code> system provides thread-safe overriding and defining of global values. They are usually used when it may be ideal for users to override a certain value now and then, but would not be very nice as arguments passed throughout your entire system, or as toplevel values that can be modified willy-nilly.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_new:">
+  <pre class="thumb"><span class="dispatch keyword"><span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span> <a href="parameters.html#definition_new:">new:</a> <span class="dispatch single">v</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span></pre><p>Defines a new parameter containing the initial value of <code><span class="dispatch single">v</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="dispatch single">x</span> <a href="core.html#definition_=:">=</a> <span class="dispatch keyword"><span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span> <a href="parameters.html#definition_new:">new:</a> <span class="number integer">20</span></span>
+<span class="error"><span class="particle">@(<span class="names">did-not-understand:</span> <span class="internal">&lt;message &lt;object&gt; Parameter&gt;</span>)</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition__?">
+  <pre class="thumb"><span class="dispatch single">p</span> <span class="dispatch single"><a href="parameters.html#definition__?">_?</a></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">any</span>
+  | <span class="dispatch keyword"><span class="dispatch single">p</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span></span></pre><p>Retrieves the current value of the parameter.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="dispatch single">x</span> <a href="core.html#definition_=:">=</a> <span class="dispatch keyword"><span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span> <a href="parameters.html#definition_new:">new:</a> <span class="number integer">0</span></span>
+<span class="error"><span class="particle">@(<span class="names">did-not-understand:</span> <span class="internal">&lt;message &lt;object&gt; Parameter&gt;</span>)</span></span>
+<span class="caret">&gt;</span> <span class="dispatch single">x</span> <span class="dispatch single"><a href="parameters.html#definition__?">_?</a></span>
+<span class="error"><span class="particle">@(<span class="names">unknown-dynamic:</span> <span class="string">&quot;x&quot;</span>)</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_=!:">
+  <pre class="thumb"><span class="dispatch keyword"><span class="dispatch single">p</span> <a href="parameters.html#definition_=!:">=!</a> <span class="dispatch single">v</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">v</span>
+  | <span class="dispatch keyword"><span class="dispatch single">p</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span></span></pre><p>Sets <code><span class="dispatch single">p</span></code>'s value in the current process to <code><span class="dispatch single">v</span></code>, returning the same value back.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="dispatch single">x</span> <a href="core.html#definition_=:">=</a> <span class="dispatch keyword"><span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span> <a href="parameters.html#definition_new:">new:</a> <span class="number integer">0</span></span>
+<span class="error"><span class="particle">@(<span class="names">did-not-understand:</span> <span class="internal">&lt;message &lt;object&gt; Parameter&gt;</span>)</span></span>
+<span class="caret">&gt;</span> <span class="dispatch keyword"><span class="dispatch single">x</span> <a href="parameters.html#definition_=!:">=!</a> <span class="number integer">1</span></span>
+<span class="error"><span class="particle">@(<span class="names">unbound-dynamic:</span> <span class="string">&quot;x&quot;</span>)</span></span>
+<span class="caret">&gt;</span> <span class="dispatch single">x</span> <span class="dispatch single"><a href="parameters.html#definition__?">_?</a></span>
+<span class="error"><span class="particle">@(<span class="names">unknown-dynamic:</span> <span class="string">&quot;x&quot;</span>)</span></span>
+</pre></div><p>Note that this will not change the value for new processes:
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="dispatch single">x</span> <a href="core.html#definition_=:">=</a> <span class="dispatch keyword"><span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span> <a href="parameters.html#definition_new:">new:</a> <span class="number integer">0</span></span>
+<span class="error"><span class="particle">@(<span class="names">did-not-understand:</span> <span class="internal">&lt;message &lt;object&gt; Parameter&gt;</span>)</span></span>
+<span class="caret">&gt;</span> <span class="dispatch keyword"><span class="dispatch single">x</span> <a href="parameters.html#definition_=!:">=!</a> <span class="number integer">1</span></span>
+<span class="error"><span class="particle">@(<span class="names">unbound-dynamic:</span> <span class="string">&quot;x&quot;</span>)</span></span>
+<span class="caret">&gt;</span> <span class="block">{ <span class="dispatch single">x</span> <span class="dispatch single"><a href="parameters.html#definition__?">_?</a></span> <span class="dispatch single"><a href="io.html#definition_print">print</a></span> }</span> <span class="dispatch single"><a href="concurrency.html#definition_spawn">spawn</a></span>
+<span class="error"><span class="particle">@(<span class="names">unknown-dynamic:</span> <span class="string">&quot;x&quot;</span>)</span></span>
+<span class="caret">&gt;</span> <span class="dispatch keyword"><span class="dispatch single"><a href=".Timer.html#definition_Timer">Timer</a></span> <a href=".Timer.html#definition_sleep:">sleep:</a> <span class="number integer">1</span> <span class="dispatch single"><a href=".Timer.html#definition_ms">ms</a></span></span>
+<span class="particle">@<span class="name">ok</span></span>
+<span class="caret">&gt;</span> <span class="dispatch single">x</span> <span class="dispatch single"><a href="parameters.html#definition__?">_?</a></span>
+<span class="error"><span class="particle">@(<span class="names">unknown-dynamic:</span> <span class="string">&quot;x&quot;</span>)</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_set-default:">
+  <pre class="thumb"><span class="dispatch keyword"><span class="dispatch single">p</span> <a href="parameters.html#definition_set-default:">set-default:</a> <span class="dispatch single">v</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">v</span>
+  | <span class="dispatch keyword"><span class="dispatch single">p</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span></span></pre><p>Sets the default value for <code><span class="dispatch single">p</span></code> to <code><span class="dispatch single">v</span></code>, returning the same value back.</p><p>This will not affect processes (including the current one) that have set their own values, via <code><span class="dispatch keyword"><a href="parameters.html#definition_=!:">=!</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_with:as:do:">
+  <pre class="thumb"><span class="dispatch keyword"><a href="parameters.html#definition_with:as:do:">with:</a> <span class="dispatch single">p</span> <a href="parameters.html#definition_with:as:do:">as:</a> <span class="dispatch single">new-value</span> <a href="parameters.html#definition_with:as:do:">do:</a> <span class="dispatch single">action</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">any</span>
+  | <span class="dispatch keyword"><span class="dispatch single">p</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">action</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span></pre><p>Temporarily sets the value for <code><span class="dispatch single">p</span></code> in the current process to <code><span class="dispatch single">new-value</span></code>.</p><p>The parameter is guaranteed by <code><span class="dispatch keyword"><a href="continuations.html#definition_before:after:">before:after:</a></span></code> to be set to the new value when entering the <code><span class="dispatch single">action</span></code> continuation, and restored to the old value when leaving (or in the even of an error).</p><p>Returns the result of <code><span class="dispatch single">action</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="dispatch single">x</span> <a href="core.html#definition_=:">=</a> <span class="dispatch keyword"><span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span> <a href="parameters.html#definition_new:">new:</a> <span class="number integer">0</span></span>
+<span class="error"><span class="particle">@(<span class="names">did-not-understand:</span> <span class="internal">&lt;message &lt;object&gt; Parameter&gt;</span>)</span></span>
+<span class="caret">&gt;</span> <span class="dispatch keyword"><a href="parameters.html#definition_with:as:do:">with:</a> <span class="dispatch single">x</span> <a href="parameters.html#definition_with:as:do:">as:</a> <span class="number integer">1</span> <a href="parameters.html#definition_with:as:do:">do:</a> <span class="block">{ <span class="dispatch single">x</span> <span class="dispatch single"><a href="parameters.html#definition__?">_?</a></span> }</span></span>
+<span class="error"><span class="particle">@(<span class="names">unknown-dynamic:</span> <span class="string">&quot;x&quot;</span>)</span></span>
+<span class="caret">&gt;</span> <span class="dispatch single">x</span> <span class="dispatch single"><a href="parameters.html#definition__?">_?</a></span>
+<span class="error"><span class="particle">@(<span class="names">unknown-dynamic:</span> <span class="string">&quot;x&quot;</span>)</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_with-default:as:do:">
+  <pre class="thumb"><span class="dispatch keyword"><a href="parameters.html#definition_with-default:as:do:">with-default:</a> <span class="dispatch single">p</span> <a href="parameters.html#definition_with-default:as:do:">as:</a> <span class="dispatch single">new-value</span> <a href="parameters.html#definition_with-default:as:do:">do:</a> <span class="dispatch single">action</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">any</span>
+  | <span class="dispatch keyword"><span class="dispatch single">p</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">action</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span></pre><p>Similar to <code><span class="dispatch keyword"><a href="parameters.html#definition_with:as:do:">with:as:do:</a></span></code>, but using <code><span class="dispatch keyword"><a href="parameters.html#definition_set-default:">set-default:</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_with:do:">
+  <pre class="thumb"><span class="dispatch keyword"><a href="parameters.html#definition_with:do:">with:</a> <span class="dispatch single">bindings</span> <a href="parameters.html#definition_with:do:">do:</a> <span class="dispatch single">action</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">any</span>
+  | <span class="dispatch keyword"><span class="dispatch single">bindings</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="lists.html#definition_List">List</a></span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">action</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span></pre><p>Similar <code><span class="dispatch keyword"><a href="parameters.html#definition_with:as:do:">with:as:do:</a></span></code>, but with a list of <code><span class="dispatch single"><a href="association.html#definition_Association">Association</a></span></code>s from <code><span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span></code>s to their values.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="dispatch single">x</span> <a href="core.html#definition_=:">=</a> <span class="dispatch keyword"><span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span> <a href="parameters.html#definition_new:">new:</a> <span class="number integer">3</span></span>
+<span class="error"><span class="particle">@(<span class="names">did-not-understand:</span> <span class="internal">&lt;message &lt;object&gt; Parameter&gt;</span>)</span></span>
+<span class="caret">&gt;</span> <span class="dispatch single">y</span> <a href="core.html#definition_=:">=</a> <span class="dispatch keyword"><span class="dispatch single"><a href="parameters.html#definition_Parameter">Parameter</a></span> <a href="parameters.html#definition_new:">new:</a> <span class="number integer">4</span></span>
+<span class="error"><span class="particle">@(<span class="names">did-not-understand:</span> <span class="internal">&lt;message &lt;object&gt; Parameter&gt;</span>)</span></span>
+<span class="caret">&gt;</span> <span class="dispatch keyword"><a href="parameters.html#definition_with:do:">with:</a> [<span class="dispatch keyword"><span class="dispatch single">x</span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="number integer">6</span></span>, <span class="dispatch keyword"><span class="dispatch single">y</span> <a href="association.html#definition_-&gt;:">-&gt;</a> <span class="number integer">7</span></span>] <a href="parameters.html#definition_with:do:">do:</a> <span class="block">{ <span class="dispatch keyword"><span class="dispatch single">x</span> <span class="dispatch single"><a href="parameters.html#definition__?">_?</a></span> <a href="numbers.html#definition_*:">*</a> <span class="dispatch single">y</span> <span class="dispatch single"><a href="parameters.html#definition__?">_?</a></span></span> }</span></span>
+<span class="error"><span class="particle">@(<span class="names">unknown-dynamic:</span> <span class="string">&quot;x&quot;</span>)</span></span>
+<span class="caret">&gt;</span> <span class="dispatch keyword"><span class="dispatch single">x</span> <span class="dispatch single"><a href="parameters.html#definition__?">_?</a></span> <a href="numbers.html#definition_*:">*</a> <span class="dispatch single">y</span> <span class="dispatch single"><a href="parameters.html#definition__?">_?</a></span></span>
+<span class="error"><span class="particle">@(<span class="names">unknown-dynamic:</span> <span class="string">&quot;x&quot;</span>)</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_with-defaults:do:">
+  <pre class="thumb"><span class="dispatch keyword"><a href="parameters.html#definition_with-defaults:do:">with-defaults:</a> <span class="dispatch single">bindings</span> <a href="parameters.html#definition_with-defaults:do:">do:</a> <span class="dispatch single">action</span></span> <span class="definition-result-arrow">→</span> <span class="dispatch single">any</span>
+  | <span class="dispatch keyword"><span class="dispatch single">bindings</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="lists.html#definition_List">List</a></span></span>
+  | <span class="dispatch keyword"><span class="dispatch single">action</span> <a href="core.html#definition_is-a?:">is-a?:</a> <span class="dispatch single"><a href="blocks.html#definition_Block">Block</a></span></span></pre><p>Similar <code><span class="dispatch keyword"><a href="parameters.html#definition_with:do:">with:do:</a></span></code>, but using <code><span class="dispatch keyword"><a href="parameters.html#definition_set-default:">set-default:</a></span></code>.
+
+
+
+</p></div>
+
+
+    </div>
+  </body>
+</html>

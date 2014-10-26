@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>String Formatting</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+    <script src="jquery.js" type="text/javascript"></script>
+    <script src="jquery.hotkeys.js" type="text/javascript"></script>
+    <script src="tags.js" type="text/javascript"></script>
+    <script src="main.js" type="text/javascript"></script>
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+      <form class="search" action="javascript:void(0)">
+        <input type="text" id="search" placeholder="Search&hellip;" />
+      </form>
+      <ul class="search-results"></ul>
+      <h4>On this page:</h4>
+<ol class="toc"><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="reference.html">Reference</a><ol><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>String Formatting</h1><p>Atomo provides <code>printf</code>-like string formatting extended with the power of Common Lisp's <code>FORMAT</code> system (with a different but directly translateable syntax).</p><p>To create a <code><span class="n">Formatter</span></code> object, you use the <code>f</code> macro-quoter.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f{</span><span class="sx">foo bar</span><span class="sx">}</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">Formatter</span>
+<span class="kc">True</span>
+</pre></div><p>A <code><span class="n">Formatter</span></code> object is a pre-parsed formatting string. Because it's a macro-quote, any parse errors are caught at macroexpansion time, rather than when it's used.</p><p>Like Python, we use the <code><span class="o"><a href="numbers.html#definition_%">%</a></span></code> operator for sending values to this <code><span class="n">Formatter</span></code> and getting a formatted <code><span class="n">String</span></code> back.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f{</span><span class="sx">%s</span><span class="sx">}</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f{</span><span class="sx">%.2f: %s</span><span class="sx">}</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="mf">10.579</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">ten point something</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">10.58: ten point something</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f{</span><span class="sx">%0.4f</span><span class="sx">}</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mf">5.6</span>
+<span class="s">&quot;</span><span class="s">5.6000</span><span class="s">&quot;</span>
+</pre></div>
+
+
+<div class="section">
+  <h2 class="section-header" id="section_.Syntax">Syntax</h2><p>  </p><p>Formatters use <code>%</code> as their special character, and some use any of <code>[](){}</code> for wrapping their arguments. Thus, you may occasionally have to escape these, which can be done with a backslash.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">\%</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">%</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%l(</span><span class="sx">\(</span><span class="sx">FoO</span><span class="sx">\)</span><span class="sx">)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">(foo)</span><span class="s">&quot;</span>
+</pre></div><p>There are various flags you can use to individually modify the behaviour of the following formatters. The rules are as follows:
+
+</p><dl><dt><code>(number)</code>, <code>#</code></dt><dd><p>A numeric flag. The <code>#</code> shortcut means &quot;the number of remaining inputs&quot;, and acts as if it were a number flag.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%10s</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">hello</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">hello     </span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%#s</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">hi </span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%#s</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">,</span><span class="t"> </span><span class="mi">5</span><span class="p">,</span><span class="t"> </span><span class="mi">6</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">hi    </span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>.(number)</code></dt><dd><p>A &quot;precision&quot; flag, named for its use in floating-point formatters. This flag is also used for <code>%r</code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%.2f</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mf">1.567</span>
+<span class="s">&quot;</span><span class="s">1.57</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%10.2f</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mf">1.567</span>
+<span class="s">&quot;</span><span class="s">      1.57</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>0</code></dt><dd><p>Zero-pad flag, which must precede either a numeric or a precision flag.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%05d</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">10</span>
+<span class="s">&quot;</span><span class="s">00010</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%010.2f</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mf">10.50</span>
+<span class="s">&quot;</span><span class="s">0000010.50</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>,</code>, <code>+</code>, <code>*</code>, <code>=</code>, <code>&lt;</code>, <code>&gt;</code>, and <code>?</code></dt><dd><p>Various symbols with special meanings for whatever formatter they're paired with.</p></dd></dl>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_.Basic_.Formatters">Basic Formatters</h2><p>  </p><p>These basic formatters render a value to the string, with flags to control padding and alignment. See <a href="formatting.html#section_.Alignment">Alignment</a>.
+
+</p><dl><dt><code>%s</code></dt><dd><p>Format a string.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%s</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">hello!</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">hello!</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>%d</code></dt><dd><p>Format an integer in decimal notation.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%d</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">10</span>
+<span class="s">&quot;</span><span class="s">10</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>%x</code></dt><dd><p>Format an integer in hexadecimal notation.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%x</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">10</span>
+<span class="s">&quot;</span><span class="s">a</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>%o</code></dt><dd><p>Format an integer in octal notation.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%o</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">10</span>
+<span class="s">&quot;</span><span class="s">12</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>%b</code></dt><dd><p>Format an integer in binary notation.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%b</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">10</span>
+<span class="s">&quot;</span><span class="s">1010</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>%r</code></dt><dd><p>Format an integer with a radix specified by a &quot;precision&quot; flag, which must be between 2 and 36.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%.32r</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">62</span>
+<span class="s">&quot;</span><span class="s">1u</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>%f</code></dt><dd><p>Format a double in decimal floating-point notation. The number of decimal points to show is controlled by a precision flag.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%f</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mf">12.345678</span>
+<span class="s">&quot;</span><span class="s">12.345678</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%.2f</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mf">12.345678</span>
+<span class="s">&quot;</span><span class="s">12.35</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>%e</code></dt><dd><p>Format a double in scientific notation. The number of decimal points to show is controlled by a precision flag.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%e</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mf">12.345678</span>
+<span class="s">&quot;</span><span class="s">1.2345678e1</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%.2e</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mf">12.345678</span>
+<span class="s">&quot;</span><span class="s">1.23e1</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>%g</code></dt><dd><p>Format a double in decimal or scientific notation. The number of decimal points to show is controlled by a precision flag.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%g</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mf">12.345678</span>
+<span class="s">&quot;</span><span class="s">12.345678</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%.2g</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mf">12.345678</span>
+<span class="s">&quot;</span><span class="s">12.35</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%g</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mf">12345678901234567890.123456</span>
+<span class="s">&quot;</span><span class="s">1.2345678901234567e19</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%.2g</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mf">12345678901234567890.123456</span>
+<span class="s">&quot;</span><span class="s">1.23e19</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>%c</code></dt><dd><p>Format a character.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%c</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span>
+<span class="s">&quot;</span><span class="s">a</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>%a</code></dt><dd><p>Format any value, converting it to a string via <code><span class="nf"><a href="ecosystem.html#definition_as:">as:</a></span><span class="t"> </span><span class="n">String</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%a</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">hello!</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">hello!</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%a</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span>
+<span class="s">&quot;</span><span class="s">$a</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%a</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">1 -&gt; $a</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>%v</code></dt><dd><p>Format any value, converting it to a string via <code><span class="n"><a href="core.html#definition_show">show</a></span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%v</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">hello!</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="se">\</span><span class="se">&quot;</span><span class="s">hello!</span><span class="se">\</span><span class="se">&quot;</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%v</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span>
+<span class="s">&quot;</span><span class="s">$a</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%v</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;">-&gt;</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">1 -&gt; $a</span><span class="s">&quot;</span>
+</pre></div></dd></dl>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_.Alignment">Alignment</h2><p>  </p><p>The basic formatters above support various flags for controlling padding and alignment.</p><p>Numeric formatters align to the right by default.
+
+</p><dl><dt><code>numeric</code></dt><dd><p>Pad to a given width.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%10s</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">hello!</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">hello!    </span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%5d</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">10</span>
+<span class="s">&quot;</span><span class="s">   10</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>0</code></dt><dd><p>Pad with <code>0</code> rather than spaces. Usually used for numbers.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%05d</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">10</span>
+<span class="s">&quot;</span><span class="s">00010</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%010s</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">hello!</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">hello!0000</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>&lt;</code></dt><dd><p>Align left.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%&lt;10s</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">hello!</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">hello!    </span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%&lt;5d</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">10</span>
+<span class="s">&quot;</span><span class="s">10   </span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>&gt;</code></dt><dd><p>Align right.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%&gt;10s</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">hello!</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">    hello!</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%&gt;5d</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">10</span>
+<span class="s">&quot;</span><span class="s">   10</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>=</code></dt><dd><p>Centered horizontally.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%=10s</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">hello!</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">  hello!  </span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%=5d</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">10</span>
+<span class="s">&quot;</span><span class="s">  10 </span><span class="s">&quot;</span>
+</pre></div></dd></dl>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_.Pluralization">Pluralization</h2><p>  </p><p>The <code>%p</code> formatter is used to pluralize a word based on an integer input. The basic form is <code>%p(foo)</code>, where <code>foo</code> is the word you want pluralized if the input is not <code>1</code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%p(cat)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">0</span>
+<span class="s">&quot;</span><span class="s">cats</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%p(cat)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="s">&quot;</span><span class="s">cat</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%p(cat)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="s">&quot;</span><span class="s">cats</span><span class="s">&quot;</span>
+</pre></div><p>A <code>&gt;</code> flag will cause it to peek ahead, grabbing the number without consuming it.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%&gt;p(cat): %d</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">0</span>
+<span class="s">&quot;</span><span class="s">cats: 0</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%&gt;p(cat): %d</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="s">&quot;</span><span class="s">cat: 1</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%&gt;p(cat): %d</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="s">&quot;</span><span class="s">cats: 2</span><span class="s">&quot;</span>
+</pre></div><p>The pluralization is by no means comprehensive. It knows about basic rules, but should it fail for your word you can provide your own plural form in a second pair of parentheses.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%p(person)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="s">&quot;</span><span class="s">persons</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%p(person)(people)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="s">&quot;</span><span class="s">people</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_.Case_.Conversion">Case Conversion</h2>
+  
+
+<dl><dt><code>%l(...)</code></dt><dd><p>Converts the formatted contents to lowercase.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%l(FoO %s)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">HELLO!</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">foo hello!</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>%u(...)</code></dt><dd><p>Converts the formatted contents to uppercase.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%u(FoO %s)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">HELLO!</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">FOO HELLO!</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>%c(...)</code></dt><dd><p>Capitalizes each word in the string. Note that the words are converted to lowercase before capitalization.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%c(FoO %s)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">HELLO!</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">Foo Hello!</span><span class="s">&quot;</span>
+</pre></div><p>A numeric flag may be provided to limit the capitalization to a certain amount of words.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%1c(FOO bar %s)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">BaZ</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">Foo bar BaZ</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%2c(FOO bar %s)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">BaZ</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">Foo Bar BaZ</span><span class="s">&quot;</span>
+</pre></div></dd></dl>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_.Skipping___.Indirection">Skipping &amp; Indirection</h2>
+  
+
+<dl><dt><code>%_</code></dt><dd><p>Skips an input value. With a numeric flag, it skips a certain number of inputs. With the <code>&lt;</code> flag, it skips backwards.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%_%d</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">2</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%2_%d</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">3</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%d,%&lt;_%d</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">1,1</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%d,%d,%&lt;2_%d</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">1,2,1</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>%%</code></dt><dd><p>&quot;Splices&quot; a formatter given as an input, followed by the formatter's inputs as a list.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%%</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="sx">f&quot;</span><span class="sx">%d</span><span class="sx">&quot;</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">1</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%%</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="sx">f&quot;</span><span class="sx">%d, %d</span><span class="sx">&quot;</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">1, 2</span><span class="s">&quot;</span>
+</pre></div><p>With a <code>*</code> flag, it uses the rest of the main inputs as the spliced formatter's inputs.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%*%</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="sx">f&quot;</span><span class="sx">%d</span><span class="sx">&quot;</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">1</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%*%</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="sx">f&quot;</span><span class="sx">%d, %d</span><span class="sx">&quot;</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">1, 2</span><span class="s">&quot;</span>
+</pre></div></dd></dl>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_.Iteration___.Breaking">Iteration &amp; Breaking</h2><p>  </p><p>This type of formatter, the basic form being <code>%{...}</code>, iterates over a list, formatting the iteration's contents for each of its values.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%{%a, }</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="p">]</span>
+<span class="s">&quot;</span><span class="s">1, $a, hi, </span><span class="s">&quot;</span>
+</pre></div><p>A break, <code>%^</code>, can be used to stop the formatting when it's at the end of the iteration.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%{%a%^, }</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="p">]</span>
+<span class="s">&quot;</span><span class="s">1, $a, hi</span><span class="s">&quot;</span>
+</pre></div><p>Various flags are supported:
+
+</p><dl><dt><code>*</code></dt><dd><p>Iterate over the rest of the inputs.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%*{%a%^, }</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">1, $a, hi</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>.</code></dt><dd><p>Treat each value being iterated over as a list of the inputs for its iteration.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%.{%a, %a; }</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">[</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">b</span><span class="p">]</span><span class="p">]</span>
+<span class="s">&quot;</span><span class="s">1, $a; 2, $b; </span><span class="s">&quot;</span>
+</pre></div><p>Note that when using this flag, <code>%^</code> breaks based on the sublist's inputs; it will not break the entire iteration. For this you must use <code>%.^</code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%.{%a, %a; %^%a, }</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">[</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">b</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">dos</span><span class="s">&quot;</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">c</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span><span class="p">]</span><span class="p">]</span>
+<span class="s">&quot;</span><span class="s">1, $a; 2, $b; dos, 3, $c; foo, </span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%.{%a, %a%.^; }</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">[</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">b</span><span class="p">]</span><span class="p">,</span><span class="t"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">c</span><span class="p">]</span><span class="p">]</span>
+<span class="s">&quot;</span><span class="s">1, $a; 2, $b; 3, $c</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>+</code></dt><dd><p>Always iterate at least once. This is often used with <a href="formatting.html#section_.Conditionals">Conditionals</a> to output something if there are no values.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%+{%#[empty](%d%^, )}</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="s">&quot;</span><span class="s">1, 2, 3</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%+{%#[empty](%d%^, )}</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">[</span><span class="p">]</span>
+<span class="s">&quot;</span><span class="s">empty</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt>numeric</dt><dd><p>Limits the number of iterations.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%2{%d, }</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="s">&quot;</span><span class="s">1, 2, </span><span class="s">&quot;</span>
+</pre></div><p>Note that a limit of <code>0</code> overrides the <code>+</code> flag. Also, <code>%^</code> will not be triggered when it reaches the limit; it always waits for the end.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%0+{hi}</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">[</span><span class="p">]</span>
+<span class="s">&quot;</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%2{%d%^, }</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="s">&quot;</span><span class="s">1, 2, </span><span class="s">&quot;</span>
+</pre></div></dd></dl>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_.Conditionals">Conditionals</h2><p>  </p><p>A conditional formatter looks like this: <code>%[...]+(...)?</code>, where <code>+</code> means one or more and <code>?</code> means optional. The required portion is the branches, and the optional portion is the default.</p><p>By default, using a conditional consumes an integer input, and uses that to decide what to format. If it's <code>0</code>, it formats the first branch, if it's <code>1</code> the second, and so on. If it goes out of the range of the branches you've provided, it formats the default, or if there is no default, nothing is formatted.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%[zero][one](two or more)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">0</span>
+<span class="s">&quot;</span><span class="s">zero</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%[zero][one](two or more)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="s">&quot;</span><span class="s">one</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%[zero][one](two or more)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="s">&quot;</span><span class="s">two or more</span><span class="s">&quot;</span>
+</pre></div><p>A numeric flag can be used to determine the branch (or default) to format. Using a number will be a bit useless, forcing it to always format one branch, but using <code>#</code> is very useful. See <a href="formatting.html#section_.Syntax">Syntax</a>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%0[zero!]</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">zero!</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%0[zero!]</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="s">&quot;</span><span class="s">zero!</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%#[zero][one](two or more)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">zero</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%#[zero][one](two or more)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="s">&quot;</span><span class="s">one</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%#[zero][one](two or more)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">two or more</span><span class="s">&quot;</span>
+</pre></div><p>With a <code>?</code> flag, the conditional is expects a boolean input, and one or two branches. With one branch, its contents are formatted only if the input is <code><span class="kc">True</span></code>. With two, it acts like a &quot;if-then-else&quot;.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%?[hi]</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="kc">False</span>
+<span class="s">&quot;</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%?[hi]</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="kc">True</span>
+<span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%?[hi][bye]</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="kc">False</span>
+<span class="s">&quot;</span><span class="s">bye</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%?[hi][bye]</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="kc">True</span>
+<span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_.Justification">Justification</h2><p>  </p><p>Justifying multiple format segments to a given with can be done via a numeric flag and the <code>%j(...)+</code> form, where <code>+</code> means one or more segments. The numeric flag is the width to justify to, and each segment is a block of text to justify after formatting.</p><p>With two segments, they are justified to the left and right, respectively. As a special case, justifying one segment is aligns it to the right.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%20j(one)(two)(three)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">one    two     three</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%30j(one)(two)(three)(four)(five)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">one  two   three   four   five</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%25j(foo: %s)(bar: %d)(baz: %c)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="sc">$</span><span class="sc">x</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">foo: hi   bar: 1   baz: x</span><span class="s">&quot;</span>
+</pre></div><p>If the number given is smaller than the width of the combined segments, they are just concatentated.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%10j(hello)(goodbye)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">hellogoodbye</span><span class="s">&quot;</span>
+</pre></div><p>Three flags are supported for controlling the spacing. These override the defaults mentioned above.
+
+</p><dl><dt><code>&lt;</code></dt><dd><p>Add spacing before the first segment.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%&lt;20j(one)(two)(three)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">   one   two   three</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%&lt;20j(one)(two)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">       one       two</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%&lt;20j(one)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">one                 </span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>&gt;</code></dt><dd><p>Add spacing after the last segment.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%&gt;20j(one)(two)(three)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">one   two   three   </span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%&gt;20j(one)(two)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">one       two       </span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%&gt;20j(one)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">                 one</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code>=</code></dt><dd><p>Add spacing before and after the first and last segments. This is equivalent to providing both <code>&lt;</code> and <code>&gt;</code> flags.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%=20j(one)(two)(three)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">  one  two  three   </span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%=20j(one)(two)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">    one     two     </span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%=20j(one)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">         one        </span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%&lt;&gt;20j(one)(two)(three)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">  one  two  three   </span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%&lt;&gt;20j(one)(two)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">    one     two     </span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="sx">f&quot;</span><span class="sx">%&lt;&gt;20j(one)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_%">%</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="s">&quot;</span><span class="s">         one        </span><span class="s">&quot;</span>
+</pre></div></dd></dl>
+</div>
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,166 @@
+load: "html.atomo"
+load: "css.atomo"
+
+main: (c: Block) :=
+    HTML (new: {
+        doctype
+        html: {
+            head: {
+                meta charset: "utf-8"
+                title: "atomo"
+                link href: "/public/css/reset.css" rel: "stylesheet"
+
+                style: (
+                    CSS new: {
+                        html: {
+                            font-size: "62.5%"
+                            height: "100%"
+                            background-color: "#fff"
+                            color: "#000"
+                        }
+
+                        body: {
+                            font: "normal 1.4em/1.6em Georgia, Times, 'Times New Roman', serif"
+                            width: "50em"
+                            margin: "2em auto"
+                        }
+
+                        style: "pre, code" as: {
+                            font-size: "1.1em"
+                        }
+
+                        a: {
+                            text-decoration: "underline"
+                            color: "blue"
+                        }
+
+                        style: "a:visited" as: {
+                            color: "purple"
+                        }
+
+                        ol: {
+                            margin-left: "2em"
+
+                            li: {
+                                list-style: "decimal"
+                            }
+                        }
+
+                        strong: { font-weight: "bold" }
+                        em: { font-style: "italic" }
+
+                        h1: {
+                            font-size: "2em"
+                            margin-bottom: ".5em"
+                            line-height: "1.4em"
+                        }
+
+                        h2: {
+                            font-size: "1.75em"
+                            margin-bottom: ".5em"
+                        }
+
+                        h3: {
+                            font-size: "1.5em"
+                            line-height: "2em"
+                        }
+
+                        p: {
+                            padding-bottom: "1em"
+                        }
+
+                        header: {
+                            h1: {
+                                font-size: "3em"
+                                margin-bottom: 0
+                            }
+
+                            p.tagline: {
+                                color: "#999"
+                                font-size: "1.4em"
+                            }
+                        }
+
+                        section.info: {
+                            width: "25em"
+                            float: "left"
+                        }
+
+                        nav: {
+                            font-size: "2em"
+                            line-height: "1.4em"
+                            margin-bottom: "1em"
+
+                            a: { color: "#000" }
+                            style: "a:after" as: {
+                                content: "' \\00BB'"
+                                color: "#999"
+                            }
+                            style: "a:visited" as: {
+                                color: "#000"
+                            }
+
+                            li: {
+                                padding: ".25em 0"
+                            }
+                        }
+
+                        section.features: {
+                            li: {
+                                list-style: "circle"
+                            }
+                        }
+
+                        aside.examples: {
+                            width: "25em"
+                            float: "right"
+
+                            h3: { color: "#999" }
+
+                            pre: {
+                                padding: "1em"
+                                background: "#111"
+                                color: "#fff"
+                                margin-bottom: "1em"
+
+                                a: {
+                                    color: "#fff"
+                                    text-decoration: "none"
+                                    font-weight: "bold"
+                                }
+
+                                span.string: {
+                                    color: "#F28600"
+                                }
+
+                                span.integer: {
+                                    color: "#0086D2"
+                                    font-weight: "bold"
+                                }
+
+                                span.double: {
+                                    color: "#a640D2"
+                                    font-weight: "bold"
+                                }
+
+                                span.particle: {
+                                    color: "#86D200"
+                                }
+                            }
+                        }
+                    }
+                ) type: "text/css"
+            }
+
+            body: {
+                header: {
+                    hgroup: {
+                        h1: "atomo"
+                        p: "the programmer's programmable programming language" class: "tagline"
+                    }
+                }
+
+                join: c
+            }
+        } lang: "en"
+    }) (as: String)

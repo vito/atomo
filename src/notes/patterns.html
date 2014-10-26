@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Patterns</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+       <h4>On this page:</h4>
+<ol class="toc"><li><a href="patterns.html#section_types">Types of Patterns</a></li><li><a href="patterns.html#section_definition-target">A Pattern's Object</a></li><li><a href="patterns.html#section_.Pattern_.Objects">Pattern Objects</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="index.html#section_index">Atomo</a><ol><li><a href="getting-started.html">Getting Started</a><ol><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li><li><a href="getting-started.html#section_.Wrapping_.Up">Wrapping Up</a></li></ol></li><li><a href="repl.html">The REPL</a></li><li><a href=".Tutorials.html">Tutorials</a><ol><li><a href="ruby.html">Ruby in Atomo</a></li></ol></li><li><a href="syntax.html">Syntax</a><ol><li><a href="syntax.html#section_.General_.Rules">General Rules</a></li><li><a href="syntax.html#section_guidelines">Indentation Guidelines</a></li><li><a href="syntax.html#section_.Comments">Comments</a></li><li><a href="syntax.html#section_literals-syntax">Literals</a></li><li><a href="syntax.html#section_dispatch-syntax">Dispatch</a></li><li><a href="syntax.html#section_macro-syntax"><code><span class="kr">macro</span></code></a></li><li><a href="syntax.html#section_for-macro-syntax"><code><span class="kr">for-macro</span></code></a></li><li><a href="syntax.html#section_operator-syntax"><code><span class="kr">operator</span></code></a></li></ol></li><li><a href="patterns.html">Patterns</a><ol><li><a href="patterns.html#section_types">Types of Patterns</a></li><li><a href="patterns.html#section_definition-target">A Pattern's Object</a></li><li><a href="patterns.html#section_.Pattern_.Objects">Pattern Objects</a></li></ol></li><li><a href="defining.html">Defining Methods</a><ol><li><a href="defining.html#section_variadic">Variadic Roles</a></li><li><a href="defining.html#section_optionals">Optional Roles</a></li><li><a href="defining.html#section_redefining">Redefining Methods</a></li></ol></li><li><a href="macros.html">Macros!</a><ol><li><a href="macros.html#section_defining-macros">Defining Macros</a></li><li><a href="macros.html#section_macro-environment">Macro Environment</a></li><li><a href="macros.html#section_macro-quotes">Macro Quotes</a></li></ol></li><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="enumerable.html">Enumerable</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>Patterns</h1><p>The following is a list of expressions that have special meaning when treated as a pattern, whether they're used in a message pattern role, or <code><span class="nf"><a href="patterns.html#definition_match:">match:</a></span></code>, or with <code><span class="o"><a href="core.html#definition_=:">=</a></span></code>. They are always parsed as normal expressions, and usually converted into a <code><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span></code> at the macroexpansion phase, via <code><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span></code>.</p><p>See also: <code><span class="o"><a href="core.html#definition_=:">=</a></span></code>, <code><span class="o"><a href="core.html#definition_:=:">:=</a></span></code>, <a href="defining.html">Defining Methods</a>.
+
+</p><div class="section">
+  <h2 class="section-header" id="section_types">Types of Patterns</h2>
+  
+
+<dl><dt><code><span class="n">_</span></code>, <code><span class="n">foo</span></code>, ...</dt><dd><p>Possibly-named wildcard matches.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">_</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="mi">2</span>
+</pre></div></dd>
+
+<dt><code><span class="mi">1</span></code>, <code><span class="m">2/3</span></code>, <code><span class="mf">4.0</span></code>, <code><span class="sc">$</span><span class="sc">a</span></code>, <code><span class="kc">True</span></code>, <code><span class="kc">False</span></code>, <code><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span></code>, ...</dt><dd><p>Primitive literal values match only on themselves.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(pattern: </span><span class="go">&lt;</span><span class="go">pattern 1</span><span class="go">&gt;</span><span class="go"> did-not-match: 2)</span><span class="go">&gt;</span></span>
+<span class="caret">&gt;</span> <span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span>
+<span class="sc">$</span><span class="sc">a</span>
+<span class="caret">&gt;</span> <span class="m">2/3</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="m">2/3</span>
+<span class="m">2/3</span>
+<span class="caret">&gt;</span> <span class="mf">4.0</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mf">4.0</span>
+<span class="mf">4.0</span>
+<span class="caret">&gt;</span> <span class="mf">4.0</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mf">4.000000000001</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(pattern: </span><span class="go">&lt;</span><span class="go">pattern 4.0</span><span class="go">&gt;</span><span class="go"> did-not-match: 4.000000000001)</span><span class="go">&gt;</span></span>
+<span class="caret">&gt;</span> <span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span>
+</pre></div></dd>
+
+<dt><code><span class="nf">foo:</span><span class="t"> </span><span class="n">pattern</span></code></dt><dd><p>A named pattern-match. Matches <code><span class="n">pattern</span></code>, binding the value it matches to <code><span class="n">foo</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="n">foo</span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(pattern: </span><span class="go">&lt;</span><span class="go">pattern (foo: 2)</span><span class="go">&gt;</span><span class="go"> did-not-match: 1)</span><span class="go">&gt;</span></span>
+</pre></div></dd>
+
+<dt><code><span class="n"><a href="lists.html#definition_head">head</a></span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_tail">tail</a></span></code></dt><dd><p>Matches a non-empty list, matching its first value on <code><span class="n"><a href="lists.html#definition_head">head</a></span></code> and the rest of it on <code><span class="n"><a href="lists.html#definition_tail">tail</a></span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="n">x</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="n">xs</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="n">x</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="n">xs</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+</pre></div></dd>
+
+<dt><code><span class="p">[</span><span class="p">]</span></code>, <code><span class="p">[</span><span class="n">pattern</span><span class="p">,</span><span class="t"> </span><span class="n">pattern-2</span><span class="p">]</span></code>, ...</dt><dd><p>Matches a list of fixed length, recursively matching each <code><span class="n">pattern</span></code> on each of its values.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">[</span><span class="p">]</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="p">[</span><span class="p">]</span>
+<span class="p">[</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="t"> </span><span class="n">b</span><span class="p">]</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">]</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="t"> </span><span class="n">b</span><span class="p">,</span><span class="t"> </span><span class="n">c</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+</pre></div></dd>
+
+<dt><code><span class="p">(</span><span class="p">)</span></code>, <code><span class="p">(</span><span class="n">pattern</span><span class="p">,</span><span class="t"> </span><span class="n">pattern-2</span><span class="p">)</span></code>, ...</dt><dd><p>Matches a tuple, recursively matching each <code><span class="n">pattern</span></code> on each of its values.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="p">(</span><span class="p">)</span>
+<span class="p">(</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="t"> </span><span class="n">b</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="t"> </span><span class="n">b</span><span class="p">,</span><span class="t"> </span><span class="n">c</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+</pre></div></dd>
+
+<dt><code><span class="nd">@foo</span></code>, <code><span class="nd">@</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="n">x</span><span class="p">)</span></code>, <code><span class="nd">@</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="nf">bar:</span><span class="t"> </span><span class="n">_</span><span class="p">)</span></code>, ...</dt><dd><p>Matches a particle value. If it's a single particle, it does regular equality checking; if it's a keyword particle, it recursively pattern-matches the particle's values. A wildcard in a particle pattern matches placeholders, but no other pattern will.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nd">@foo</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="nd">@foo</span>
+<span class="nd">@foo</span>
+<span class="caret">&gt;</span> <span class="nd">@foo</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="nd">@bar</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(pattern: </span><span class="go">&lt;</span><span class="go">pattern @foo</span><span class="go">&gt;</span><span class="go"> did-not-match: @bar)</span><span class="go">&gt;</span></span>
+<span class="caret">&gt;</span> <span class="nd">@</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="n">x</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="nd">@</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="n">x</span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="nd">@</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="n">_</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="n">_</span><span class="p">)</span>
+<span class="nd">@foo:</span>
+<span class="caret">&gt;</span> <span class="nd">@</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="n">_</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="nd">@</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="nd">@</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="n">_</span><span class="p">)</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(pattern: </span><span class="go">&lt;</span><span class="go">pattern @(foo: 2)</span><span class="go">&gt;</span><span class="go"> did-not-match: @foo:)</span><span class="go">&gt;</span></span>
+</pre></div></dd>
+
+<dt><code><span class="ss">`a</span></code>, <code><span class="ss">`</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="si">~b</span><span class="p">)</span></code>, ...</dt><dd><p>Matches expression values recursively. Unquotes serve as named wildcard patterns, with the same recursive semantics as quasiquotation.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="ss">`a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="ss">`a</span>
+<span class="ss">'</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="ss">`</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="si">~b</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="ss">'</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="ss">'</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="ss">`</span><span class="ss">`</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="si">~~c</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="ss">`</span><span class="ss">`</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="si">~3</span><span class="p">)</span>
+<span class="ss">'</span><span class="p">(</span><span class="ss">`</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="si">~3</span><span class="p">)</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span><span class="t"> </span><span class="n">c</span><span class="p">]</span>
+<span class="p">[</span><span class="ss">'</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="p">,</span><span class="t"> </span><span class="ss">'</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="p">]</span>
+</pre></div></dd>
+
+<dt><code><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n">pattern</span></code></dt><dd><p>Matches any object delegating to something matching <code>pattern</code>. Often used to check if something is an &quot;instance&quot; of some object.</p><p>For primitive values, it checks if the value itself matches the pattern, so <code><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span></code> will match <code>(-&gt; List)</code>.</p><p>NOTE: This is only really useful in <code><span class="nf"><a href="patterns.html#definition_match:">match:</a></span></code> and in message patterns; when used with <code><span class="o"><a href="core.html#definition_=:">=</a></span></code> the objects aren't evaluated.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="p">(</span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Double">Double</a></span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nd">@nope</span><span class="p">;</span><span class="t"> </span><span class="p">(</span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nd">@yep</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@yep</span>
+<span class="caret">&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="p">(</span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="t"> </span><span class="n">b</span><span class="p">]</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">yep:</span><span class="t"> </span><span class="p">[</span><span class="n">b</span><span class="p">,</span><span class="t"> </span><span class="n">a</span><span class="p">]</span><span class="p">)</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@</span><span class="p">(</span><span class="nf">yep:</span><span class="t"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">1</span><span class="p">]</span><span class="p">)</span>
+</pre></div></dd>
+
+<dt><code><span class="o"><a href="comparable.html#definition_==:">==</a></span><span class="t"> </span><span class="n">pattern</span></code></dt><dd><p>Matches with strict equality only. This is different from regular matching as it doesn't follow delegates to see if objects match.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="p">(</span><span class="o"><a href="comparable.html#definition_==:">==</a></span><span class="t"> </span><span class="n">X</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nd">@yep</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@yep</span>
+<span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="p">(</span><span class="o"><a href="comparable.html#definition_==:">==</a></span><span class="t"> </span><span class="n">X</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nd">@yep</span><span class="p">;</span><span class="t"> </span><span class="n">_</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nd">@nope</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@nope</span>
+</pre></div></dd>
+
+<dt><code><span class="o"><a href="ranges.html#definition_...:">...</a></span><span class="t"> </span><span class="n">pattern</span></code></dt><dd><p>Matches a variadic role, matching the list of values as <code><span class="n">pattern</span></code>.</p><p>That is, with a single value given for a variadic role, <code><span class="n">pattern</span></code> will be pattern-matching a list with that single value. A role with more than one value given, via tuples, is matched as a list containing all of the values. A role with zero values (the empty tuple, <code><span class="p">(</span><span class="p">)</span></code>) is matched as an empty list.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="p">(</span><span class="o"><a href="ranges.html#definition_...:">...</a></span><span class="t"> </span><span class="n">vs</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n">vs</span><span class="t"> </span><span class="p">}</span>
+<span class="p">[</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="p">(</span><span class="o"><a href="ranges.html#definition_...:">...</a></span><span class="t"> </span><span class="p">[</span><span class="p">]</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">no values!</span><span class="s">&quot;</span><span class="t"> </span><span class="p">}</span>
+<span class="s">&quot;</span><span class="s">no values!</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="p">(</span><span class="o"><a href="ranges.html#definition_...:">...</a></span><span class="t"> </span><span class="n">vs</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n">vs</span><span class="t"> </span><span class="p">}</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="p">(</span><span class="o"><a href="ranges.html#definition_...:">...</a></span><span class="t"> </span><span class="n">vs</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n">vs</span><span class="t"> </span><span class="p">}</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+</pre></div></dd></dl>
+
+
+
+</div>
+<div class="section">
+  <h2 class="section-header" id="section_definition-target">A Pattern's Object</h2><p>  </p><p>The object onto which a method is inserted is determined by the type of the pattern in its message pattern's first role:
+
+</p><dl><dt><code><span class="n">_</span></code>, <code><span class="n">foo</span></code>, <code><span class="n">bar</span></code>, ...</dt><dd><p><code><span class="n"><a href="core.html#definition_Object">Object</a></span></code></p></dd>
+<dt><code><span class="mi">1</span></code>, <code><span class="mi">2</span></code>, ...</dt><dd><p><code><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span></code></p></dd>
+<dt><code><span class="sc">$</span><span class="sc">a</span></code>, <code><span class="sc">$</span><span class="sc">b</span></code>, ...</dt><dd><p><code><span class="n">Character</span></code></p></dd>
+<dt><code><span class="kc">True</span></code>, <code><span class="kc">False</span></code></dt><dd><p><code><span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span></code></p></dd>
+<dt><code><span class="mf">1.0</span></code>, <code><span class="mf">2.0</span></code>, ...</dt><dd><p><code><span class="n"><a href="numbers.html#definition_Double">Double</a></span></code></p></dd>
+<dt><code><span class="m">1/2</span></code>, <code><span class="m">3/4</span></code>, ...</dt><dd><p><code><span class="n"><a href="numbers.html#definition_Rational">Rational</a></span></code></p></dd>
+<dt><code><span class="s">&quot;</span><span class="s">&quot;</span></code>, <code><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span></code>, ...</dt><dd><p><code><span class="n">String</span></code></p></dd>
+<dt><code><span class="n"><a href="lists.html#definition_head">head</a></span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_tail">tail</a></span></code>, <code><span class="p">[</span><span class="p">]</span></code>, <code><span class="p">[</span><span class="n">pattern</span><span class="p">,</span><span class="t"> </span><span class="n">pattern-2</span><span class="p">]</span></code>, ...</dt><dd><p><code><span class="n"><a href="lists.html#definition_List">List</a></span></code></p></dd>
+<dt><code><span class="ss">`x</span></code>, <code><span class="ss">`</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="si">~y</span><span class="p">)</span></code>, ...</dt><dd><p><code><span class="n">Expression</span></code></p></dd>
+<dt><code><span class="nd">@foo</span></code>, <code><span class="nd">@</span><span class="p">(</span><span class="nf">bar:</span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="nf">baz:</span><span class="t"> </span><span class="n">_</span><span class="p">)</span></code>, ...</dt><dd><p><code><span class="n"><a href="particles.html#definition_Particle">Particle</a></span></code></p></dd>
+<dt><code><span class="nf">foo:</span><span class="t"> </span><span class="n">pattern</span></code></dt><dd><p>target of <code>pattern</code></p></dd>
+<dt><code><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n">pattern</span></code></dt><dd><p>target of <code>pattern</code></p></dd>
+<dt><code><span class="o"><a href="comparable.html#definition_==:">==</a></span><span class="t"> </span><span class="n">pattern</span></code></dt><dd><p>target of <code>pattern</code></p></dd>
+<dt><code><span class="o"><a href="ranges.html#definition_...:">...</a></span><span class="t"> </span><span class="n">pattern</span></code></dt><dd><p><code><span class="n"><a href="core.html#definition_Object">Object</a></span></code></p></dd>
+<dt><code><span class="n">Foo</span></code>, <code><span class="n">Foo</span><span class="t"> </span><span class="n">bar</span></code>, <code><span class="p">{</span><span class="t"> </span><span class="n">expr</span><span class="p">;</span><span class="t"> </span><span class="n">expr-2</span><span class="t"> </span><span class="p">}</span></code>, ...</dt><dd><p>the object itself, or the object yielded by the block's execution</p></dd></dl><p>Thus, <code><span class="mi">1</span><span class="t"> </span><span class="nf">foo:</span><span class="t"> </span><span class="sc">$</span><span class="sc">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="n">x</span></code> is a definition placed on <code><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span></code>, while <code><span class="p">(</span><span class="o"><a href="ranges.html#definition_...:">...</a></span><span class="t"> </span><span class="n">args</span><span class="p">)</span><span class="t"> </span><span class="n">foo</span></code> is inserted on <code><span class="n"><a href="core.html#definition_Object">Object</a></span></code>.</p><p>Note that roles beginning with a capital letter are assumed to be targeting a particular object. That is, <code><span class="n">Foo</span></code> means the same as <code><span class="p">{</span><span class="t"> </span><span class="n">Foo</span><span class="t"> </span><span class="p">}</span></code>, while <code><span class="n">foo</span></code> is just a named wildcard targeting <code><span class="n"><a href="core.html#definition_Object">Object</a></span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><div class="highlight"><pre><span class="n">Foo</span><span class="t"> </span><span class="n">bar</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">1</span><span class="t">
+</span><span class="n">Foo</span><span class="t"> </span><span class="nf">bar:</span><span class="t"> </span><span class="n">baz</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">1</span></pre></div></div><p>Above, the first definition is placed on the particular object <code><span class="n">Foo</span></code> (assuming it's defined), while the second definition is placed on the <code><span class="n">Foo</span></code> object as well as <code><span class="n"><a href="core.html#definition_Object">Object</a></span></code> (the second role, a named wildcard), binding the second role value as <code><span class="n">baz</span></code>.</p><p>To define on a particular object that isn't capitalized, wrap it in a block:
+
+</p><div class="example"><p><em>Example:</em></p><div class="highlight"><pre><span class="n">foo</span><span class="t"> </span><span class="n">bar</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">1</span><span class="t">
+</span><span class="p">{</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n">bar</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">2</span><span class="t">
+</span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="p">;</span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf">bar:</span><span class="t"> </span><span class="n">Foo</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">3</span></pre></div></div><p>As in the first example, <code><span class="n">foo</span><span class="t"> </span><span class="n">bar</span></code> matches any object, while <code><span class="p">{</span><span class="t"> </span><span class="n">foo</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n">bar</span></code> is only defined on <code><span class="n">foo</span></code> (the result of the block's execution). <code><span class="p">{</span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf">bar:</span><span class="t"> </span><span class="n">Foo</span></code> is defined on <code><span class="mi">2</span></code> and <code><span class="n">Foo</span></code>.
+
+
+
+</p></div>
+<div class="section">
+  <h2 class="section-header" id="section_.Pattern_.Objects">Pattern Objects</h2><p>  </p><p>On occasion you'll want to create a pattern-match from an expression, or use patterns manually, usually in macros you define. The following methods should come in handy.
+
+</p><div class="definition" id="definition_Pattern">
+  <pre class="thumb"><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span></pre><p>A pattern you can use to match and deconstruct values.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_Role">
+  <pre class="thumb"><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Role">Role</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span></pre><p>A pattern for use in a message pattern.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_Define">
+  <pre class="thumb"><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Define">Define</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span></pre><p>A message pattern for use in a definition.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_to:">
+  <pre class="thumb"><span class="n">expr</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span>
+  | <span class="n">expr</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">Expression</span></pre><p>Convert an expression to the pattern-match it represents.</p><p>If the expression cannot represent a pattern, <code><span class="nd">@unknown-pattern:</span></code> is signaled.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="ss">'1</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span>
+<span class="go">&lt;p</span><span class="go">attern 1</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="ss">'</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="n">x</span><span class="p">]</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span>
+<span class="go">&lt;p</span><span class="go">attern (foo: [1, 2, x])</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="ss">'r</span><span class="s">&quot;</span><span class="s">foo</span><span class="s">&quot;</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(unknown-pattern: '(r{foo}))</span><span class="go">&gt;</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_to:">
+  <pre class="thumb"><span class="n">expr</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Role">Role</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span>
+  | <span class="n">expr</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">Expression</span></pre><p>Convert an expression to the pattern-match it represents, as if it were a role in a message pattern. The main difference is that a capitalized dispatch is considered a &quot;particlar object&quot; rather than a named wildcard. See <a href="syntax.html">Syntax</a>.</p><p>If the expression cannot represent a pattern, <code><span class="nd">@unknown-pattern:</span></code> is signaled.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="ss">'1</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span>
+<span class="go">&lt;p</span><span class="go">attern 1</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="ss">'Integer</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span>
+<span class="go">&lt;p</span><span class="go">attern Integer</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="ss">'</span><span class="p">(</span><span class="nf">foo:</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span>
+<span class="go">&lt;p</span><span class="go">attern (foo: Integer)</span><span class="go">&gt;</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_to:">
+  <pre class="thumb"><span class="n">expr</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Define">Define</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span>
+  | <span class="n">expr</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">Expression</span></pre><p>Convert an expression to a message pattern for a definition, using <code><span class="nd">@</span><span class="p">(</span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Role">Role</a></span><span class="p">)</span></code> for its targets.</p><p>If the expression cannot represent a message pattern, <code><span class="nd">@unknown-pattern:</span></code> is signaled.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="ss">'</span><span class="p">(</span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Double">Double</a></span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Define">Define</a></span>
+<span class="go">&lt;p</span><span class="go">attern Integer + Double</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="ss">'</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Define">Define</a></span>
+<span class="go">&lt;p</span><span class="go">attern 1 sqrt</span><span class="go">&gt;</span>
+<span class="caret">&gt;</span> <span class="ss">'1</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Define">Define</a></span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(unknown-pattern: '(1))</span><span class="go">&gt;</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_name">
+  <pre class="thumb"><span class="n">pat</span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="n">pat</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span></pre><p>Yields the name of a named wildcard match or a single message pattern.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="ss">'a</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="p">)</span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span>
+<span class="s">&quot;</span><span class="s">a</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="ss">'</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Define">Define</a></span><span class="p">)</span><span class="t"> </span><span class="n"><a href="patterns.html#definition_name">name</a></span>
+<span class="s">&quot;</span><span class="s">sqrt</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_names">
+  <pre class="thumb"><span class="n">pat</span><span class="t"> </span><span class="n"><a href="patterns.html#definition_names">names</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">pat</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span></pre><p>Yields the names in a keyword message pattern.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="ss">'</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="nf">plus:</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Define">Define</a></span><span class="p">)</span><span class="t"> </span><span class="n"><a href="patterns.html#definition_names">names</a></span>
+<span class="p">[</span><span class="s">&quot;</span><span class="s">plus</span><span class="s">&quot;</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_target">
+  <pre class="thumb"><span class="n">pat</span><span class="t"> </span><span class="n"><a href="patterns.html#definition_target">target</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span>
+  | <span class="n">pat</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span></pre><p>Yields the target of a single message pattern.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="ss">'</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_sqrt">sqrt</a></span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Define">Define</a></span><span class="p">)</span><span class="t"> </span><span class="n"><a href="patterns.html#definition_target">target</a></span>
+<span class="go">&lt;p</span><span class="go">attern 1</span><span class="go">&gt;</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_targets">
+  <pre class="thumb"><span class="n">pat</span><span class="t"> </span><span class="n"><a href="patterns.html#definition_targets">targets</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">pat</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span></pre><p>Yields the targets of a keyword message pattern.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="ss">'</span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="nf">plus:</span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Define">Define</a></span><span class="p">)</span><span class="t"> </span><span class="n"><a href="patterns.html#definition_targets">targets</a></span>
+<span class="p">[</span><span class="go">&lt;p</span><span class="go">attern 1</span><span class="go">&gt;</span><span class="p">,</span><span class="t"> </span><span class="go">&lt;p</span><span class="go">attern Integer</span><span class="go">&gt;</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_match:">
+  <pre class="thumb"><span class="n">pat</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_match:">match:</a></span><span class="t"> </span><span class="n">v</span> <span class="definition-result-arrow">→</span> <span class="nf"><a href="lists.html#definition_in?:">in?:</a></span><span class="t"> </span><span class="p">[</span><span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="n"><a href="regexps.html#definition_bindings">bindings</a></span><span class="p">)</span><span class="p">,</span><span class="t"> </span><span class="nd">@none</span><span class="p">]</span>
+  | <span class="n">pat</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">Patterh</span></pre><p>Attempts to match the value <code><span class="n">v</span></code> with pattern <code><span class="n">pat</span></code>. If value matches, the bindings from the match are yielded, wrapped in <code><span class="nd">@ok:</span></code>. Otherwise, <code><span class="nd">@none</span></code> is yielded.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="ss">'1</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_match:">match:</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="ss">'1</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_match:">match:</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="nd">@none</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="ss">'</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="n">a</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+        </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_match:on:">
+  <pre class="thumb"><span class="n">top</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_match:on:">match:</a></span><span class="t"> </span><span class="n">pat</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_match:on:">on:</a></span><span class="t"> </span><span class="n">v</span> <span class="definition-result-arrow">→</span> <span class="n">v</span>
+  | <span class="n">pat</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span></pre><p>Pattern-match <code><span class="n">pat</span></code> on <code><span class="n">v</span></code>, inserting the bindings into <code><span class="n">top</span></code>. Similar to <code><span class="o"><a href="core.html#definition_=:">=</a></span></code> and <code><span class="nf"><a href="patterns.html#definition_match:">match:</a></span></code>.</p><p>If the pattern-match fails, <code><span class="nd">@pattern:did-not-match:</span></code> is signaled.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nf"><a href="patterns.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">(</span><span class="ss">'</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="n">a</span><span class="p">,</span><span class="t"> </span><span class="n">b</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="p">)</span><span class="t"> </span><span class="nf">on:</span><span class="t"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="caret">&gt;</span> <span class="kr">this</span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+  </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">2</span><span class="t">
+  </span><span class="n">b</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">3</span>
+<span class="caret">&gt;</span> <span class="nf"><a href="patterns.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">(</span><span class="ss">'</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="n">a</span><span class="p">,</span><span class="t"> </span><span class="n">b</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="patterns.html#definition_to:">to:</a></span><span class="t"> </span><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span><span class="p">)</span><span class="t"> </span><span class="nf">on:</span><span class="t"> </span><span class="mi">2</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(pattern: </span><span class="go">&lt;</span><span class="go">pattern [1, a, b]</span><span class="go">&gt;</span><span class="go"> did-not-match: 2)</span><span class="go">&gt;</span></span>
+</pre></div>
+
+
+
+</div>
+
+</div>
+
+    </div>
+  </body>
+</html>

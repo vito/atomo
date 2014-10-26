@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Blocks</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+       <h4>On this page:</h4>
+<ol class="toc"><li><a href="blocks.html">Blocks</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="index.html#section_index">Atomo</a><ol><li><a href="getting-started.html">Getting Started</a><ol><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li><li><a href="getting-started.html#section_.Wrapping_.Up">Wrapping Up</a></li></ol></li><li><a href="repl.html">The REPL</a></li><li><a href=".Tutorials.html">Tutorials</a><ol><li><a href="ruby.html">Ruby in Atomo</a></li></ol></li><li><a href="syntax.html">Syntax</a><ol><li><a href="syntax.html#section_.General_.Rules">General Rules</a></li><li><a href="syntax.html#section_guidelines">Indentation Guidelines</a></li><li><a href="syntax.html#section_.Comments">Comments</a></li><li><a href="syntax.html#section_literals-syntax">Literals</a></li><li><a href="syntax.html#section_dispatch-syntax">Dispatch</a></li><li><a href="syntax.html#section_macro-syntax"><code><span class="kr">macro</span></code></a></li><li><a href="syntax.html#section_for-macro-syntax"><code><span class="kr">for-macro</span></code></a></li><li><a href="syntax.html#section_operator-syntax"><code><span class="kr">operator</span></code></a></li></ol></li><li><a href="patterns.html">Patterns</a><ol><li><a href="patterns.html#section_types">Types of Patterns</a></li><li><a href="patterns.html#section_definition-target">A Pattern's Object</a></li><li><a href="patterns.html#section_.Pattern_.Objects">Pattern Objects</a></li></ol></li><li><a href="defining.html">Defining Methods</a><ol><li><a href="defining.html#section_variadic">Variadic Roles</a></li><li><a href="defining.html#section_optionals">Optional Roles</a></li><li><a href="defining.html#section_redefining">Redefining Methods</a></li></ol></li><li><a href="macros.html">Macros!</a><ol><li><a href="macros.html#section_defining-macros">Defining Macros</a></li><li><a href="macros.html#section_macro-environment">Macro Environment</a></li><li><a href="macros.html#section_macro-quotes">Macro Quotes</a></li></ol></li><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="enumerable.html">Enumerable</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>Blocks</h1>
+
+<div class="definition" id="definition_Block">
+  <pre class="thumb"><span class="n"><a href="blocks.html#definition_Block">Block</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span></pre><p>Blocks are the bread and butter of Atomo. They represent chunks of unevaluated code - sort of like lists of expressions, but with a reference to the context in which they were evaluated.</p><p>They are first-class values and can be passed around, evaluated, torn apart, created programmatically, sent between processes, etc.
+
+</p><div class="example"><p><em>Example:</em></p><div class="highlight"><pre><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">hi</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="p">;</span><span class="t"> </span><span class="nd">@ok</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="p">{</span><span class="p">}</span></pre></div></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_Block:">
+  <pre class="thumb"><span class="nf"><a href="blocks.html#definition_Block:">Block:</a></span><span class="t"> </span><span class="n">expressions</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">expressions</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Calls <code><span class="nf"><a href="blocks.html#definition_new:in:">new:</a></span><span class="nf"><a href="blocks.html#definition_new:in:">in:</a></span></code> with its sender as the context.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">orig</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span>
+<span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="nf"><a href="blocks.html#definition_Block:">Block:</a></span><span class="t"> </span><span class="n">orig</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_contents">contents</a></span><span class="p">)</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span>
+<span class="mi">2</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_new:in:">
+  <pre class="thumb"><span class="n"><a href="blocks.html#definition_Block">Block</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_new:in:">new:</a></span><span class="t"> </span><span class="n">expressions</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_new:in:">in:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_context">context</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">expressions</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span></pre><p>Returns a new <code><span class="n"><a href="blocks.html#definition_Block">Block</a></span></code> with <code><span class="n">expressions</span></code> as its contents and <code><span class="n"><a href="blocks.html#definition_context">context</a></span></code> as its context.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">orig</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span>
+<span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span>
+<span class="caret">&gt;</span> <span class="n"><a href="blocks.html#definition_Block">Block</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_new:in:">new:</a></span><span class="t"> </span><span class="n">orig</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_contents">contents</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_new:in:">in:</a></span><span class="t"> </span><span class="kr">this</span>
+<span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span>
+<span class="caret">&gt;</span> <span class="n">adder</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_*:">*</a></span><span class="t"> </span><span class="mi">7</span><span class="t"> </span><span class="p">}</span>
+<span class="p">{</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_*:">*</a></span><span class="t"> </span><span class="mi">7</span><span class="t"> </span><span class="p">}</span>
+<span class="caret">&gt;</span> <span class="p">(</span><span class="n"><a href="blocks.html#definition_Block">Block</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_new:in:">new:</a></span><span class="t"> </span><span class="n">adder</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_contents">contents</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_new:in:">in:</a></span><span class="t"> </span><span class="mi">6</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span>
+<span class="mi">42</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_call">
+  <pre class="thumb"><span class="n">b</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Returns the result of evaluating each expression in <code><span class="n">b</span></code>, in order, with a new toplevel object that delegates to the block's context. <code><span class="n"><a href="blocks.html#definition_call">call</a></span></code>ing a block does not affect its context (unless it is a block returned by <code><span class="n"><a href="blocks.html#definition_in-context">in-context</a></span></code>).</p><p>Sending <code><span class="n"><a href="blocks.html#definition_call">call</a></span></code> to an empty block raises a <code><span class="nd">@no-expressions</span></code> error.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">42</span>
+<span class="mi">42</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="mi">42</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @no-expressions</span><span class="go">&gt;</span></span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_call:">
+  <pre class="thumb"><span class="n">b</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_call:">call:</a></span><span class="t"> </span><span class="p">(</span><span class="o"><a href="ranges.html#definition_...:">...</a></span><span class="t"> </span><span class="n">args</span><span class="p">)</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Like <code><span class="n"><a href="blocks.html#definition_call">call</a></span></code>, but passes some extra arguments along to <code><span class="n">b</span></code>. Any number of arguments may be passed to the block; it can use however many it wants.</p><p>Sending <code><span class="nf"><a href="blocks.html#definition_call:">call:</a></span></code> to an empty block raises a <code><span class="nd">@no-expressions</span></code> error.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_call:">call:</a></span><span class="t"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="t"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="mi">5</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_call:">call:</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_call:">call:</a></span><span class="t"> </span><span class="mi">42</span>
+<span class="mi">2</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_call:">call:</a></span><span class="t"> </span><span class="mi">42</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @no-expressions</span><span class="go">&gt;</span></span>
+</pre></div><p>Note that the arguments also do not affect the outer scope:
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">42</span>
+<span class="mi">42</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_call:">call:</a></span><span class="t"> </span><span class="mi">10</span>
+<span class="mi">11</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="mi">42</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_join:">
+  <pre class="thumb"><span class="n">v</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:">join:</a></span><span class="t"> </span><span class="n">b</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Execute <code><span class="n">b</span></code> with <code><span class="n">v</span><span class="t"> </span><span class="nf"><a href="core.html#definition_delegating-to:">delegating-to:</a></span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_context">context</a></span></code> as its toplevel object (i.e., the block's context is accessible). Returns the result of the block's execution.</p><p>Note that <code><span class="n">v</span></code>'s methods take priority over the block's context.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="kc">True</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:">join:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="boolean.html#definition_not">not</a></span><span class="t"> </span><span class="p">}</span>
+<span class="kc">False</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:">join:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="p">}</span>
+<span class="mi">3</span>
+<span class="caret">&gt;</span> <span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">42</span>
+<span class="mi">42</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:">join:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="p">}</span>
+<span class="mi">43</span>
+</pre></div><p>This can be useful for executing a block in the current scope:
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">blk</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="p">}</span>
+<span class="p">{</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="p">}</span>
+<span class="caret">&gt;</span> <span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_do:">do:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">42</span><span class="p">;</span><span class="t"> </span><span class="n">res</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:">join:</a></span><span class="t"> </span><span class="n">blk</span><span class="t"> </span><span class="p">}</span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+  </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">42</span><span class="t">
+  </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">1</span><span class="t">
+  </span><span class="n">res</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">43</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_join:with:">
+  <pre class="thumb"><span class="n">v</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:with:">join:</a></span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:with:">with:</a></span><span class="t"> </span><span class="p">(</span><span class="o"><a href="ranges.html#definition_...:">...</a></span><span class="t"> </span><span class="n">args</span><span class="p">)</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Like <code><span class="nf"><a href="blocks.html#definition_join:">join:</a></span></code>, but with arguments passed to the block.</p><p>Note that <code><span class="n">v</span></code>'s methods take priority over both the arguments and the block's context.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:with:">join:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:with:">with:</a></span><span class="t"> </span><span class="mi">2</span>
+<span class="mi">3</span>
+<span class="caret">&gt;</span> <span class="mi">1</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:with:">join:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_*:">*</a></span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_join:with:">with:</a></span><span class="t"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="t"> </span><span class="mi">3</span><span class="p">)</span>
+<span class="mi">7</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_do:">
+  <pre class="thumb"><span class="n">v</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_do:">do:</a></span><span class="t"> </span><span class="n">b</span> <span class="definition-result-arrow">→</span> <span class="n">v</span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Like <code><span class="nf"><a href="blocks.html#definition_join:">join:</a></span></code>, but returns <code><span class="n">v</span></code>. Handy for quick object creation.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_do:">do:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="p">}</span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+  </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">1</span><span class="t">
+  </span><span class="n">b</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">2</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_do:with:">
+  <pre class="thumb"><span class="n">v</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_do:with:">do:</a></span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_do:with:">with:</a></span><span class="t"> </span><span class="p">(</span><span class="o"><a href="ranges.html#definition_...:">...</a></span><span class="t"> </span><span class="n">args</span><span class="p">)</span> <span class="definition-result-arrow">→</span> <span class="n">v</span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Like <code><span class="nf"><a href="blocks.html#definition_do:">do:</a></span></code>, but with arguments passed to the block.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_Object">Object</a></span><span class="t"> </span><span class="n"><a href="core.html#definition_clone">clone</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_do:with:">do:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="n">a</span><span class="p">;</span><span class="t"> </span><span class="n">y</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_do:with:">with:</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+  </span><span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="mi">1</span><span class="t">
+  </span><span class="n">y</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="n">X</span><span class="t"> </span><span class="n">y</span>
+<span class="mi">2</span>
+</pre></div>
+
+
+
+</div>
+
+
+
+<div class="definition" id="definition_contents">
+  <pre class="thumb"><span class="n">b</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_contents">contents</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Returns a list of the expressions contained in <code><span class="n">b</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_contents">contents</a></span>
+<span class="p">[</span><span class="ss">'</span><span class="p">(</span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">)</span><span class="p">,</span><span class="t"> </span><span class="ss">'</span><span class="p">(</span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="mi">1</span><span class="p">)</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_context">
+  <pre class="thumb"><span class="n">b</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_context">context</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Returns the context that the <code><span class="n">b</span></code> was evaluated in.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_context">context</a></span><span class="t"> </span><span class="n">a</span>
+<span class="mi">1</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_arguments">
+  <pre class="thumb"><span class="n">b</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_arguments">arguments</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Returns a list of the block's arguments, which are <code><span class="n"><a href="patterns.html#definition_Pattern">Pattern</a></span></code>s.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="p">(</span><span class="n">x</span><span class="t"> </span><span class="o"><a href="ecosystem.html#definition_.:">.</a></span><span class="t"> </span><span class="n">_</span><span class="p">)</span><span class="t"> </span><span class="mi">0</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="numbers.html#definition_+:">+</a></span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_arguments">arguments</a></span>
+<span class="p">[</span><span class="go">&lt;p</span><span class="go">attern a</span><span class="go">&gt;</span><span class="p">,</span><span class="t"> </span><span class="go">&lt;p</span><span class="go">attern (x . _)</span><span class="go">&gt;</span><span class="p">,</span><span class="t"> </span><span class="go">&lt;p</span><span class="go">attern 0</span><span class="go">&gt;</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_in-context">
+  <pre class="thumb"><span class="n">b</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_in-context">in-context</a></span> <span class="definition-result-arrow">→</span> <span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Returns an object that delegates to the original block, <code><span class="n">b</span></code>, but has its own <code><span class="n"><a href="blocks.html#definition_call">call</a></span></code> and <code><span class="nf"><a href="blocks.html#definition_call:">call:</a></span></code> methods defined. These overrides evaluate the block in its original scope, as opposed to lexically, via <code><span class="nf"><a href="blocks.html#definition_join:">join:</a></span></code> and <code><span class="nf"><a href="blocks.html#definition_join:with:">join:</a></span><span class="nf"><a href="blocks.html#definition_join:with:">with:</a></span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">42</span>
+<span class="mi">42</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="mi">42</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=:">=</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_in-context">in-context</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_call">call</a></span>
+<span class="mi">1</span>
+<span class="caret">&gt;</span> <span class="n">a</span>
+<span class="mi">1</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_to:by:do:">
+  <pre class="thumb"><span class="n"><a href="ranges.html#definition_start">start</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_to:by:do:">to:</a></span><span class="t"> </span><span class="n"><a href="ranges.html#definition_end">end</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_to:by:do:">by:</a></span><span class="t"> </span><span class="n">diff</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_to:by:do:">do:</a></span><span class="t"> </span><span class="n">b</span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span>
+  | <span class="n"><a href="ranges.html#definition_start">start</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span>
+  | <span class="n"><a href="ranges.html#definition_end">end</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span>
+  | <span class="n">diff</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Calls <code><span class="n">b</span></code> with each integer in the range from <code><span class="n"><a href="ranges.html#definition_start">start</a></span></code> to <code><span class="n"><a href="ranges.html#definition_end">end</a></span></code> inclusive, by adding <code><span class="n">diff</span></code> to the current number.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">0</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_to:by:do:">to:</a></span><span class="t"> </span><span class="mi">5</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_to:by:do:">by:</a></span><span class="t"> </span><span class="mi">2</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_to:by:do:">do:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="p">(</span><span class="s">&quot;</span><span class="s">Counting up... </span><span class="s">&quot;</span><span class="t"> </span><span class="o"><a href="lists.html#definition_..:">..</a></span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="n"><a href="core.html#definition_show">show</a></span><span class="p">)</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+Counting up... 0
+Counting up... 2
+Counting up... 4
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="mi">5</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_to:by:do:">to:</a></span><span class="t"> </span><span class="mi">0</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_to:by:do:">by:</a></span><span class="t"> </span><span class="mi">-1</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_to:by:do:">do:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="p">(</span><span class="s">&quot;</span><span class="s">Counting down... </span><span class="s">&quot;</span><span class="t"> </span><span class="o"><a href="lists.html#definition_..:">..</a></span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="n"><a href="core.html#definition_show">show</a></span><span class="p">)</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+Counting down... 5
+Counting down... 4
+Counting down... 3
+Counting down... 2
+Counting down... 1
+Counting down... 0
+<span class="nd">@ok</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_times:">
+  <pre class="thumb"><span class="n">n</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_times:">times:</a></span><span class="t"> </span><span class="n">b</span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Alias for <code><span class="mi">1</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_up-to:do:">up-to:</a></span><span class="t"> </span><span class="n">n</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_up-to:do:">do:</a></span><span class="t"> </span><span class="n">b</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_in-context">in-context</a></span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="mi">5</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_times:">times:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">Odelay!</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+Odelay!
+Odelay!
+Odelay!
+Odelay!
+Odelay!
+<span class="nd">@ok</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_up-to:do:">
+  <pre class="thumb"><span class="n"><a href="ranges.html#definition_start">start</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_up-to:do:">up-to:</a></span><span class="t"> </span><span class="n"><a href="ranges.html#definition_end">end</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_up-to:do:">do:</a></span><span class="t"> </span><span class="n">b</span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span>
+  | <span class="n"><a href="ranges.html#definition_start">start</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span>
+  | <span class="n"><a href="ranges.html#definition_end">end</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Alias for <code><span class="n"><a href="ranges.html#definition_start">start</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_to:by:do:">to:</a></span><span class="t"> </span><span class="n"><a href="ranges.html#definition_end">end</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_to:by:do:">by:</a></span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_to:by:do:">do:</a></span><span class="t"> </span><span class="n">b</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_down-to:do:">
+  <pre class="thumb"><span class="n"><a href="ranges.html#definition_start">start</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_down-to:do:">down-to:</a></span><span class="t"> </span><span class="n"><a href="ranges.html#definition_end">end</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_down-to:do:">do:</a></span><span class="t"> </span><span class="n">b</span> <span class="definition-result-arrow">→</span> <span class="nd">@ok</span>
+  | <span class="n"><a href="ranges.html#definition_start">start</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span>
+  | <span class="n"><a href="ranges.html#definition_end">end</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Alias for <code><span class="n"><a href="ranges.html#definition_start">start</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_to:by:do:">to:</a></span><span class="t"> </span><span class="n"><a href="ranges.html#definition_end">end</a></span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_to:by:do:">by:</a></span><span class="t"> </span><span class="mi">-1</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_to:by:do:">do:</a></span><span class="t"> </span><span class="n">b</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_repeat">
+  <pre class="thumb"><span class="n">b</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_repeat">repeat</a></span> <span class="definition-result-arrow">→</span> <span class="n">none</span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Repeatedly sends <code><span class="n"><a href="blocks.html#definition_call">call</a></span></code> to <code><span class="n">b</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_in-context">in-context</a></span></code>. Never returns.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_repeat:">
+  <pre class="thumb"><span class="n">b</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_repeat:">repeat:</a></span><span class="t"> </span><span class="n">n</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">b</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">n</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="numbers.html#definition_Integer">Integer</a></span></pre><p>Returns a list containing the results of <code><span class="n">n</span></code> <code><span class="n"><a href="blocks.html#definition_call">call</a></span></code>s of <code><span class="n">b</span><span class="t"> </span><span class="n"><a href="blocks.html#definition_in-context">in-context</a></span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nf">with-input-from:</span><span class="t"> </span><span class="s">&quot;</span><span class="s">doc/main/lists.atomo</span><span class="s">&quot;</span><span class="t"> </span><span class="nf">do:</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="io.html#definition_read-line">read-line</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf">repeat:</span><span class="t"> </span><span class="mi">3</span><span class="t"> </span><span class="p">}</span>
+<span class="gr">ERROR: <span class="go">&lt;e</span><span class="go">rror @(file-not-found: &quot;doc/main/lists.atomo&quot;)</span><span class="go">&gt;</span></span>
+</pre></div><p>Here we're reading 3 lines of text from the file <code><span class="s">&quot;</span><span class="s">doc/main/lists.atomo</span><span class="s">&quot;</span></code> (the source for the documentation you're reading).
+
+
+
+</p></div>
+
+
+    </div>
+  </body>
+</html>

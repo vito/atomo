@@ -1,0 +1,46 @@
+CSS = Object clone
+
+CSS new :=
+    CSS clone do: {
+        selector = ""
+        declarations = []
+        subs = []
+    }
+
+CSS new: c := CSS new do: c
+
+(c: CSS) sub: (s: String) as: (b: Block) :=
+    CSS new: {
+        selector =
+            if: c selector empty?
+                then: { s }
+                else: { c selector .. " " .. s }
+
+        join: b
+    }
+
+(c: CSS) style: (selector: String) as: (b: Block) :=
+    c subs << (c sub: selector as: b)
+
+(c: CSS) did-not-understand: (m: Message) at: 0 :=
+    if: m targets (at: 1) (is-a?: Block)
+        then: {
+            c style: m particle names concat as: m targets (at: 1)
+        }
+        else: {
+            c declarations << (m particle names concat -> m targets (at: 1) (as: String))
+        }
+
+(c: CSS) as: String := {
+    subs = c subs map: @(as: String)
+
+    if: c selector empty?
+        then: { subs join: "\n" }
+        else: {
+            decls = c declarations map: { d |
+                d from .. ": " .. d to (as: String)
+            }
+
+            ((c selector .. " { " .. decls (join: "; ") .. " }") . subs) join: "\n"
+        }
+} call

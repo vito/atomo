@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>Concurrency</title>
+<link rel="stylesheet" type="text/css" href="public/doodle.css">
+<script type="text/javascript" src="public/jquery.js"></script><script type="text/javascript" src="public/jquery.hotkeys.js"></script><script type="text/javascript" src="public/tags.js"></script><script type="text/javascript" src="public/main.js"></script><link rel="stylesheet" type="text/css" href="public/highlight.css">
+</head>
+<body>
+<div id="main"><div id="content"><div class="section">
+<h1 class="section_header">Concurrency</h1>
+<div id="definition_me:@" class="definition">
+<pre class="thumb"><span class="n">me</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Actor</span></pre>
+<p>Get the current actor.</p>
+</div>
+<div class="section" id="section_sending-and-receiving">
+<h2 class="section_header">Sending &amp; Receiving</h2>
+<div id="definition_&lt;-" class="definition">
+<pre class="thumb"><span class="no">Actor</span><span class="t"> </span><span class="o">&lt;</span><span class="o">-</span><span class="t"> </span><span class="n">v</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Actor</span></pre>
+<p>Send message <code>v</code> to the actor.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n">a</span><span class="t"> </span><span class="o">=</span><span class="t"> </span><span class="n"><a href="spawning.html#definition_spawn">spawn</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="sending-and-receiving.html#definition_receive">receive</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="mi">42</span><span class="t"> </span><span class="o">-</span><span class="o">&gt;</span><span class="t"> </span><span class="ss">#ok</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n">write</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="o">#</span><span class="o">&lt;</span><span class="no">Actor</span><span class="o">:</span><span class="mh">0x2dac8</span><span class="t"> </span><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">]</span><span class="o">&gt;</span>
+<span class="caret">&gt; </span><span class="n">a</span><span class="t"> </span><span class="o">&lt;</span><span class="o">-</span><span class="t"> </span><span class="mi">42</span><span class="t">
+</span>#ok
+<span class="o">#</span><span class="o">&lt;</span><span class="no">Actor</span><span class="o">:</span><span class="mh">0x2dac8</span><span class="t"> </span><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">]</span><span class="o">&gt;</span>
+</pre>
+</div>
+</div>
+<div id="definition_receive" class="definition">
+<pre class="thumb"><span class="n"><a href="sending-and-receiving.html#definition_receive">receive</a></span><span class="p">(</span><span class="o">&amp;</span><span class="n">body</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="n">any</span>
+  | <span class="n">body</span><span class="t"> </span><span class="n">contents</span><span class="t"> </span><span class="n">all?</span><span class="t"> </span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">:</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="n">match</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="o">`</span><span class="p">(</span><span class="o">~</span><span class="n">_</span><span class="t"> </span><span class="o">-</span><span class="o">&gt;</span><span class="t"> </span><span class="o">~</span><span class="n">_</span><span class="p">)</span><span class="t"> </span><span class="o">-</span><span class="o">&gt;</span><span class="t"> </span><span class="kc">true</span><span class="p">,</span><span class="t"> </span><span class="n">_</span><span class="t"> </span><span class="o">-</span><span class="o">&gt;</span><span class="t"> </span><span class="kc">false</span><span class="t"> </span><span class="p">}</span></pre>
+<p>Receive a message sent to the current actor that matches any of the     patterns listed in <code><span class="n">body</span></code>. Blocks until a matching message is     received. Non-matching messages are consumed and ignored.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n">a</span><span class="t"> </span><span class="o">=</span><span class="t"> </span><span class="n"><a href="spawning.html#definition_spawn">spawn</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n"><a href="sending-and-receiving.html#definition_receive">receive</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="o">-</span><span class="o">&gt;</span><span class="t"> </span><span class="ss">#got-1</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n">write</span><span class="t"> </span><span class="p">}</span><span class="t">
+</span><span class="o">#</span><span class="o">&lt;</span><span class="no">Actor</span><span class="o">:</span><span class="mh">0x2ec1c</span><span class="t"> </span><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">]</span><span class="o">&gt;</span>
+<span class="caret">&gt; </span><span class="n">a</span><span class="t"> </span><span class="o">&lt;</span><span class="o">-</span><span class="t"> </span><span class="mi">0</span><span class="t">
+</span><span class="o">#</span><span class="o">&lt;</span><span class="no">Actor</span><span class="o">:</span><span class="mh">0x2ec1c</span><span class="t"> </span><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">]</span><span class="o">&gt;</span>
+<span class="caret">&gt; </span><span class="n">a</span><span class="t"> </span><span class="o">&lt;</span><span class="o">-</span><span class="t"> </span><span class="mi">2</span><span class="t">
+</span><span class="o">#</span><span class="o">&lt;</span><span class="no">Actor</span><span class="o">:</span><span class="mh">0x2ec1c</span><span class="t"> </span><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">]</span><span class="o">&gt;</span>
+<span class="caret">&gt; </span><span class="n">a</span><span class="t"> </span><span class="o">&lt;</span><span class="o">-</span><span class="t"> </span><span class="mi">1</span><span class="t">
+</span>#got-1
+<span class="o">#</span><span class="o">&lt;</span><span class="no">Actor</span><span class="o">:</span><span class="mh">0x2ec1c</span><span class="t"> </span><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">]</span><span class="o">&gt;</span>
+</pre>
+</div>
+</div>
+<div id="definition_after" class="definition">
+<pre class="thumb"><span class="n"><a href="sending-and-receiving.html#definition_receive">receive</a></span><span class="p">(</span><span class="o">&amp;</span><span class="n">body</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="sending-and-receiving.html#definition_after">after</a></span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="n">any</span>
+  | <span class="n">body</span><span class="t"> </span><span class="n">contents</span><span class="t"> </span><span class="n">all?</span><span class="t"> </span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">:</span><span class="t"> </span><span class="n">x</span><span class="t"> </span><span class="n">match</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="o">`</span><span class="p">(</span><span class="o">~</span><span class="n">_</span><span class="t"> </span><span class="o">-</span><span class="o">&gt;</span><span class="t"> </span><span class="o">~</span><span class="n">_</span><span class="p">)</span><span class="t"> </span><span class="o">-</span><span class="o">&gt;</span><span class="t"> </span><span class="kc">true</span><span class="p">,</span><span class="t"> </span><span class="n">_</span><span class="t"> </span><span class="o">-</span><span class="o">&gt;</span><span class="t"> </span><span class="kc">false</span><span class="t"> </span><span class="p">}</span>
+  | <span class="n">timeout</span><span class="t"> </span><span class="n">match</span><span class="o">:</span><span class="t"> </span><span class="o">`</span><span class="p">(</span><span class="o">~</span><span class="n">_</span><span class="t"> </span><span class="o">-</span><span class="o">&gt;</span><span class="t"> </span><span class="o">~</span><span class="n">_</span><span class="p">)</span><span class="t"> </span><span class="o">-</span><span class="o">&gt;</span><span class="t"> </span><span class="kc">true</span><span class="p">,</span><span class="t"> </span><span class="n">_</span><span class="t"> </span><span class="o">-</span><span class="o">&gt;</span><span class="t"> </span><span class="kc">false</span></pre>
+<p>Similar to <code>receive</code>, but with a timeout and an action to     perform if it times out.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n"><a href="sending-and-receiving.html#definition_receive">receive</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="mi">1</span><span class="t"> </span><span class="o">-</span><span class="o">&gt;</span><span class="t"> </span><span class="ss">#ok</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="sending-and-receiving.html#definition_after">after</a></span><span class="p">(</span><span class="mi">1</span><span class="t"> </span><span class="o">-</span><span class="o">&gt;</span><span class="t"> </span><span class="ss">#too-slow</span><span class="p">)</span><span class="t">
+</span><span class="ss">#too-slow</span>
+</pre>
+</div>
+</div>
+</div>
+<div class="section" id="section_spawning">
+<h2 class="section_header">Spawning</h2>
+<div id="definition_spawn" class="definition">
+<pre class="thumb"><span class="n"><a href="spawning.html#definition_spawn">spawn</a></span><span class="p">(</span><span class="o">&amp;</span><span class="n">action</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Actor</span></pre>
+<p>Spawn a new actor, performing <code>action</code>.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n"><a href="spawning.html#definition_spawn">spawn</a></span><span class="o">:</span><span class="t"> </span><span class="p">(</span><span class="mi">2</span><span class="t"> </span><span class="o">+</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="n">write</span><span class="t">
+</span>4
+<span class="o">#</span><span class="o">&lt;</span><span class="no">Actor</span><span class="o">:</span><span class="mh">0x30d80</span><span class="t"> </span><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">]</span><span class="o">&gt;</span>
+</pre>
+</div>
+</div>
+<div id="definition_spawn_link" class="definition">
+<pre class="thumb"><span class="n">spawn-link</span><span class="p">(</span><span class="o">&amp;</span><span class="n">action</span><span class="p">)</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Actor</span></pre>
+<p>Spawn a new actor, performing <code>action</code>, linked to the current     actor.</p>
+<div class="example">
+<p><em>Example:</em></p>
+<pre class="interaction"><span class="caret">&gt; </span><span class="n">spawn-link</span><span class="o">:</span><span class="t"> </span><span class="p">(</span><span class="mi">2</span><span class="t"> </span><span class="o">+</span><span class="t"> </span><span class="mi">2</span><span class="p">)</span><span class="t"> </span><span class="n">write</span><span class="t">
+</span>4
+<span class="o">#</span><span class="o">&lt;</span><span class="no">Actor</span><span class="o">:</span><span class="mh">0x3136c</span><span class="t"> </span><span class="p">[</span><span class="o">.</span><span class="o">.</span><span class="o">.</span><span class="p">]</span><span class="o">&gt;</span>
+</pre>
+</div>
+</div>
+</div>
+</div></div></div>
+<div class="search">
+<form action="javascript:void(0)"><input autocomplete="off" type="text" placeholder="Search&hellip;" id="search"></form>
+<ul class="search_results"></ul>
+</div>
+<div id="sidebar">
+<h4>On this page:</h4>
+<ol class="toc">
+<li><a href="concurrency.html#section_sending-and-receiving">Sending &amp; Receiving</a></li>
+<li><a href="concurrency.html#section_spawning">Spawning</a></li>
+</ol>
+<h4>Up one level:</h4>
+<ol class="toc"><li>
+<a href="reference.html">Reference</a><ol>
+<li>
+<a href="concurrency.html">Concurrency</a><ol>
+<li><a href="concurrency.html#section_sending-and-receiving">Sending &amp; Receiving</a></li>
+<li><a href="concurrency.html#section_spawning">Spawning</a></li>
+</ol>
+</li>
+<li>
+<a href="condition-system.html">Condition System</a><ol>
+<li><a href="condition-system.html#section_conditions">Conditions</a></li>
+<li><a href="condition-system.html#section_handling">Handling</a></li>
+<li><a href="condition-system.html#section_signalling">Signalling</a></li>
+<li><a href="condition-system.html#section_debuggers">Debuggers</a></li>
+</ol>
+</li>
+<li>
+<a href="pretty-printing.html">Pretty-Printing</a><ol>
+<li><a href="pretty-printing.html#section_documents">Documents</a></li>
+<li><a href="pretty-printing.html#section_constructing">Constructing</a></li>
+<li>
+<a href="pretty-printing.html#section_helpers">Helpers</a><ol>
+<li><a href="pretty-printing.html#section_shortcuts">Shortcuts</a></li>
+<li><a href="pretty-printing.html#section_wrapping">Wrapping</a></li>
+<li><a href="pretty-printing.html#section_combining">Combining</a></li>
+</ol>
+</li>
+</ol>
+</li>
+<li>
+<a href="input-and-output.html">Input &amp; Output</a><ol>
+<li><a href="input-and-output.html#section_output">Output</a></li>
+<li><a href="input-and-output.html#section_input">Input</a></li>
+</ol>
+</li>
+<li><a href="the-repl.html">The REPL</a></li>
+<li>
+<a href="testing-with-therie.html">Testing with Therie</a><ol>
+<li><a href="testing-with-therie.html#section_structure">Structure</a></li>
+<li><a href="testing-with-therie.html#section_tests">Tests</a></li>
+</ol>
+</li>
+</ol>
+</li></ol>
+</div>
+</body>
+</html>

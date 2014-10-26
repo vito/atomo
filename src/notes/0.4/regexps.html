@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Regular Expressions</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+       <h4>On this page:</h4>
+<ol class="toc"><li><a href="regexps.html">Regular Expressions</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="index.html#section_index">Atomo</a><ol><li><a href="getting-started.html">Getting Started</a><ol><li><a href="getting-started.html#section_.A_quick_introduction_to_.Atomo">A quick introduction to Atomo</a></li><li><a href="getting-started.html#section_.Installation">Installation</a></li><li><a href="getting-started.html#section_.Fire_it_up_">Fire it up!</a></li><li><a href="getting-started.html#section_.Define___.Dispatch">Define & Dispatch</a></li><li><a href="getting-started.html#section_.Lexical_.Scoping_via_.Delegation">Lexical Scoping via Delegation</a></li><li><a href="getting-started.html#section_.Keywords_">Keywords!</a></li><li><a href="getting-started.html#section_.Messages___.Multiple_.Dispatch">Messages & Multiple Dispatch</a></li><li><a href="getting-started.html#section_.Wrapping_.Up">Wrapping Up</a></li></ol></li><li><a href="repl.html">The REPL</a></li><li><a href=".Tutorials.html">Tutorials</a><ol><li><a href="ruby.html">Ruby in Atomo</a></li></ol></li><li><a href="syntax.html">Syntax</a><ol><li><a href="syntax.html#section_.General_.Rules">General Rules</a></li><li><a href="syntax.html#section_guidelines">Indentation Guidelines</a></li><li><a href="syntax.html#section_.Comments">Comments</a></li><li><a href="syntax.html#section_literals-syntax">Literals</a></li><li><a href="syntax.html#section_dispatch-syntax">Dispatch</a></li><li><a href="syntax.html#section_macro-syntax"><code><span class="kr">macro</span></code></a></li><li><a href="syntax.html#section_for-macro-syntax"><code><span class="kr">for-macro</span></code></a></li><li><a href="syntax.html#section_operator-syntax"><code><span class="kr">operator</span></code></a></li></ol></li><li><a href="patterns.html">Patterns</a><ol><li><a href="patterns.html#section_types">Types of Patterns</a></li><li><a href="patterns.html#section_definition-target">A Pattern's Object</a></li><li><a href="patterns.html#section_.Pattern_.Objects">Pattern Objects</a></li></ol></li><li><a href="defining.html">Defining Methods</a><ol><li><a href="defining.html#section_variadic">Variadic Roles</a></li><li><a href="defining.html#section_optionals">Optional Roles</a></li><li><a href="defining.html#section_redefining">Redefining Methods</a></li></ol></li><li><a href="macros.html">Macros!</a><ol><li><a href="macros.html#section_defining-macros">Defining Macros</a></li><li><a href="macros.html#section_macro-environment">Macro Environment</a></li><li><a href="macros.html#section_macro-quotes">Macro Quotes</a></li></ol></li><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="enumerable.html">Enumerable</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>Regular Expressions</h1>
+
+<div class="definition" id="definition_Regexp">
+  <pre class="thumb"><span class="n"><a href="regexps.html#definition_Regexp">Regexp</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span></pre><p>A compiled PCRE-style regular expression, usually created via the <code>r</code> macro-quoter.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">r&quot;</span><span class="sx">foo bar</span><span class="sx">&quot;</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="regexps.html#definition_Regexp">Regexp</a></span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="sx">r&quot;</span><span class="sx">(</span><span class="sx">\d</span><span class="sx">{4,})</span><span class="sx">&quot;</span>
+<span class="sx">r{</span><span class="sx">(</span><span class="sx">\d</span><span class="sx">\{</span><span class="sx">4,</span><span class="sx">\}</span><span class="sx">)</span><span class="sx">}</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_new:">
+  <pre class="thumb"><span class="n"><a href="regexps.html#definition_Regexp">Regexp</a></span><span class="t"> </span><span class="nf">new:</span><span class="t"> </span><span class="n">pattern</span><span class="t"> </span><span class="nf">&amp;flags:</span><span class="t"> </span><span class="n">flags</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="regexps.html#definition_Regexp">Regexp</a></span>
+  | <span class="n">pattern</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span>
+  | <span class="n">flags</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span></pre><p>Creates a <code><span class="n"><a href="regexps.html#definition_Regexp">Regexp</a></span></code> with a given pattern, compiled with the given flags.</p><p>The macro-quoter <code>r</code> is an easyer way of calling this, though it cannot be done programmatically.</p><p>Note that all regular expressions match strings as UTF-8; there is no flag for this.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="n"><a href="regexps.html#definition_Regexp">Regexp</a></span><span class="t"> </span><span class="nf">new:</span><span class="t"> </span><span class="s">&quot;</span><span class="se">\</span><span class="se">\</span><span class="s">d+</span><span class="s">&quot;</span><span class="t"> </span><span class="nf">&amp;flags:</span><span class="t"> </span><span class="s">&quot;</span><span class="s">m</span><span class="s">&quot;</span>
+<span class="sx">r{</span><span class="sx">\d</span><span class="sx">+</span><span class="sx">}m</span>
+<span class="caret">&gt;</span> <span class="n"><a href="regexps.html#definition_Regexp">Regexp</a></span><span class="t"> </span><span class="nf">new:</span><span class="t"> </span><span class="s">&quot;</span><span class="se">\</span><span class="se">\</span><span class="s">d+</span><span class="s">&quot;</span><span class="t"> </span><span class="nf">&amp;flags:</span><span class="t"> </span><span class="s">&quot;</span><span class="s">isa</span><span class="s">&quot;</span>
+<span class="sx">r{</span><span class="sx">\d</span><span class="sx">+</span><span class="sx">}isa</span>
+</pre></div><p>Accepted flags (see <a href="http://perldoc.perl.org/perlre.html#Modifiers" class="external">the PCRE manual</a> for more information):
+
+</p><dl><dt><code>m</code> (<code>multiline</code>)</dt><dd><p>By default, PCRE treats the subject string as consisting of a single line of characters (even if it actually contains newlines). The start of line metacharacter (<code>^</code>) matches only at the start of the string, while the end of line metacharacter (<code>$</code>) matches only at the end of the string, or before a terminating newline (unless <code>dollar_endonly</code> is set). This is the same as Perl.</p><p>When this flag is set, the start of line and end of line constructs match immediately following or immediately before internal newlines in the subject string, respectively, as well as at the very start and end. This is equivalent to Perl's <code>/m</code> option, and it can be changed within a pattern by a <code>(?m)</code> option setting. If there are no newlines in a subject string, or no occur- rences of <code>^</code> or <code>$</code> in a pattern, setting this flag has no effect.</p></dd>
+<dt><code>s</code> (<code>dotall</code>)</dt><dd><p>If this flag is set, a dot metacharater in the pattern matches all characters, including those that indicate newline. Without it, a dot does not match when the current position is at a newline. This option is equivalent to Perl's <code>/s</code> option, and it can be changed within a pattern by a <code>(?s)</code> option setting. A negative class such as <code>[^a]</code> always matches newline characters, independent of the setting of this option.</p></dd>
+<dt><code>i</code> (<code>caseless</code>)</dt><dd><p>Equivalent to Perl's <code>/i</code> option. If set, letters in the pattern match both upper and lower -case letters.</p></dd>
+<dt><code>x</code> (<code>extended</code>)</dt><dd><p>If this bit is set, whitespace data characters in the pattern are totally ignored except when escaped or inside a character class. Whitespace does not include the VT character (code 11). In addition, characters between an unescaped <code>#</code> outside a character class and the next newline, inclusive, are also ignored. This is equivalent to Perl's <code>/x</code> option, and it can be changed within a pattern by a <code>(?x)</code> option setting.</p><p>This option makes it possible to include comments inside complicated patterns. Note, however, that this applies only to data characters. Whitespace characters may never appear within special character sequences in a pattern, for example within the sequence <code>(?(</code> which introduces a conditional subpattern.</p></dd>
+<dt><code>a</code> (<code>anchored</code>)</dt><dd><p>If this flag is set, the pattern is forced to be anchored, that is, it is constrained to match only at the first matching point in the string that is being searched (the subject string). This effect can also be achieved by appropriate constructs in the pattern itself, which is the only way to do it in Perl.</p></dd>
+<dt><code>G</code> (<code>ungreedy</code>)</dt><dd><p>This option inverts the greediness of the quantifiers so that they are not greedy by default, but become greedy if followed by <code>?</code>. It is not compatible with Perl. It can also be set by a <code>(?U)</code> option setting within the pattern.</p></dd>
+<dt><code>e</code> (<code>dollar_endonly</code>)</dt><dd><p>If this flag is set, a dollar metacharacter in the pattern matches only at the end of the subject string. Without this option, a dollar also matches immediately before a newline at the end of the string (but not before any other newlines). This flag is ignored if multiline is set. There is no equivalent to this option in Perl, and no way to set it within a pattern.</p></dd>
+<dt><code>f</code> (<code>firstline</code>)</dt><dd><p>If this flag is set, an unanchored pattern is required to match before or at the first newline in the subject string, though the matched text may continue over the newline.</p></dd>
+<dt><code>C</code> (<code>no_auto_capture</code>)</dt><dd><p>If this option is set, it disables the use of numbered capturing parentheses in the pattern. Any opening paren- thesis that is not followed by <code>?</code> behaves as if it were followed by <code>?:</code> but named parentheses can still be used for capturing (and they acquire numbers in the usual way). There is no equivalent of this option in Perl.</p></dd></dl><p>The above flag descriptions are based on <code>man pcreapi</code>, written by Philip Hazel, 2007.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_matches?:">
+  <pre class="thumb"><span class="n">needle</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_matches?:">matches?:</a></span><span class="t"> </span><span class="n">haystack</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span>
+  | <span class="n">needle</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="regexps.html#definition_Regexp">Regexp</a></span>
+  | <span class="n">haystack</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span></pre><p>Test if a regular expression matches a given string.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">r&quot;</span><span class="sx">abc</span><span class="sx">&quot;</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_matches?:">matches?:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">abc</span><span class="s">&quot;</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="sx">r&quot;</span><span class="sx">^</span><span class="sx">\d</span><span class="sx">+$</span><span class="sx">&quot;</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_matches?:">matches?:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">123</span><span class="s">&quot;</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="sx">r&quot;</span><span class="sx">^</span><span class="sx">\d</span><span class="sx">+$</span><span class="sx">&quot;</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_matches?:">matches?:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">123abc</span><span class="s">&quot;</span>
+<span class="kc">False</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_=~:">
+  <pre class="thumb"><span class="n">a</span><span class="t"> </span><span class="sx">=~</span><span class="sx"> b</span> <span class="definition-result-arrow">→</span> <span class="n"><a href="boolean.html#definition_Boolean">Boolean</a></span></pre><p>Alias for <code><span class="nf"><a href="regexps.html#definition_matches?:">matches?:</a></span></code>, allowing the roles to be swapped.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">r&quot;</span><span class="sx">\d</span><span class="sx">+</span><span class="sx">&quot;</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_matches?:">matches?:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">1</span><span class="s">&quot;</span>
+<span class="kc">True</span>
+<span class="caret">&gt;</span> <span class="s">&quot;</span><span class="s">1</span><span class="s">&quot;</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_matches?:">matches?:</a></span><span class="t"> </span><span class="sx">r&quot;</span><span class="sx">\d</span><span class="sx">+</span><span class="sx">&quot;</span>
+<span class="kc">False</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_match:">
+  <pre class="thumb"><span class="n">r</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="n">s</span> <span class="definition-result-arrow">→</span> <span class="nf"><a href="lists.html#definition_in?:">in?:</a></span><span class="t"> </span><span class="p">[</span><span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="n"><a href="regexps.html#definition_RegexpMatch">RegexpMatch</a></span><span class="p">)</span><span class="p">,</span><span class="t"> </span><span class="nd">@none</span><span class="p">]</span>
+  | <span class="n">r</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="regexps.html#definition_Regexp">Regexp</a></span>
+  | <span class="n">s</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span></pre><p>Attempt a regular expression match, yielding <code><span class="nd">@none</span></code> if there is not match or <code><span class="nd">@ok:</span></code> wrapping a <code><span class="n"><a href="regexps.html#definition_RegexpMatch">RegexpMatch</a></span></code> if it's successful.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="sx">r&quot;</span><span class="sx">\d</span><span class="sx">+</span><span class="sx">&quot;</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">123</span><span class="s">&quot;</span>
+<span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+        </span><span class="n"><a href="regexps.html#definition_captures">captures</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="p">[</span><span class="p">]</span><span class="t">
+        </span><span class="n"><a href="regexps.html#definition_before">before</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">&quot;</span><span class="t">
+        </span><span class="n"><a href="regexps.html#definition_bindings">bindings</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="go">&lt;o</span><span class="go">bject</span><span class="go">&gt;</span><span class="t">
+        </span><span class="n"><a href="regexps.html#definition_after">after</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">&quot;</span><span class="t">
+        </span><span class="n"><a href="regexps.html#definition_match">match</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">123</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="caret">&gt;</span> <span class="sx">r&quot;</span><span class="sx">\d</span><span class="sx">+</span><span class="sx">&quot;</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">abc</span><span class="s">&quot;</span>
+<span class="nd">@none</span>
+</pre></div><p>This is often more cleanly used with <code><span class="nf">case-of?:</span></code>, where the matching case provides implicit bindings, and the non-matching case continues onto the next test:
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="s">&quot;</span><span class="s">123</span><span class="s">&quot;</span><span class="t"> </span><span class="nf"><a href="core.html#definition_case-of:">case-of:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="sx">r&quot;</span><span class="sx">\w</span><span class="sx">+</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="nd">@foo</span><span class="p">;</span><span class="t"> </span><span class="sx">r&quot;</span><span class="sx">(</span><span class="sx">\d</span><span class="sx">+)</span><span class="sx">&quot;</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="kr">this</span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@foo</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_replace:with:">
+  <pre class="thumb"><span class="n">haystack</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_replace:with:">replace:</a></span><span class="t"> </span><span class="n">needle</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_replace:with:">with:</a></span><span class="t"> </span><span class="n">replacement</span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="n">haystack</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span>
+  | <span class="n">needle</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="regexps.html#definition_Regexp">Regexp</a></span>
+  | <span class="p">(</span><span class="n">replacement</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span><span class="p">)</span><span class="t"> </span><span class="o"><a href="boolean.html#definition_||:">||</a></span><span class="t"> </span><span class="p">(</span><span class="n">replacement</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span><span class="p">)</span></pre><p>Replace the first occurrence of <code><span class="n">needle</span></code> in <code><span class="n">haystack</span></code>.</p><p>If <code><span class="n">replacement</span></code> is a block, it is called with the bindings in context.</p><p>If it is a string, it is parsed as a replacement format (at runtime), looking for bindings denoted by <code><span class="sc">$</span></code>. For example, to use the first subcapture, you use <code><span class="s">&quot;</span><span class="s">$1</span><span class="s">&quot;</span></code>. To match a named capture, you use <code><span class="s">&quot;</span><span class="s">$(foo)</span><span class="s">&quot;</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="s">&quot;</span><span class="s">abc 123 foo</span><span class="s">&quot;</span><span class="t"> </span><span class="nf">replace:</span><span class="t"> </span><span class="sx">r{</span><span class="sx">abc (?&lt;num&gt;</span><span class="sx">\d</span><span class="sx">+)</span><span class="sx">}</span><span class="t"> </span><span class="nf">with:</span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">\num</span><span class="t"> </span><span class="o"><a href="lists.html#definition_..:">..</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">!</span><span class="s">&quot;</span><span class="t"> </span><span class="p">}</span>
+<span class="s">&quot;</span><span class="s">123! foo</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="s">&quot;</span><span class="s">abc 123 foo</span><span class="s">&quot;</span><span class="t"> </span><span class="nf">replace:</span><span class="t"> </span><span class="sx">r{</span><span class="sx">abc (?&lt;num&gt;</span><span class="sx">\d</span><span class="sx">+)</span><span class="sx">}</span><span class="t"> </span><span class="nf">with:</span><span class="t"> </span><span class="s">&quot;</span><span class="s">$(num)!</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">123! foo</span><span class="s">&quot;</span>
+<span class="caret">&gt;</span> <span class="s">&quot;</span><span class="s">123 456</span><span class="s">&quot;</span><span class="t"> </span><span class="nf">replace:</span><span class="t"> </span><span class="sx">r{</span><span class="sx">(?&lt;num&gt;</span><span class="sx">\d</span><span class="sx">+)</span><span class="sx">}</span><span class="t"> </span><span class="nf">with:</span><span class="t"> </span><span class="s">&quot;</span><span class="s">($(num))</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">(123) 456</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_replace-all:with:">
+  <pre class="thumb"><span class="n">haystack</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_replace-all:with:">replace-all:</a></span><span class="t"> </span><span class="n">needle</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_replace-all:with:">with:</a></span><span class="t"> </span><span class="n">replacement</span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="n">haystack</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span>
+  | <span class="n">needle</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="regexps.html#definition_Regexp">Regexp</a></span>
+  | <span class="p">(</span><span class="n">replacement</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span><span class="p">)</span><span class="t"> </span><span class="o"><a href="boolean.html#definition_||:">||</a></span><span class="t"> </span><span class="p">(</span><span class="n">replacement</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n">String</span><span class="p">)</span></pre><p>Similar to <code><span class="nf"><a href="regexps.html#definition_replace:with:">replace:</a></span><span class="nf"><a href="regexps.html#definition_replace:with:">with:</a></span></code>, but replaces all occurrences of the match.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="s">&quot;</span><span class="s">123 456</span><span class="s">&quot;</span><span class="t"> </span><span class="nf">replace-all:</span><span class="t"> </span><span class="sx">r{</span><span class="sx">(?&lt;num&gt;</span><span class="sx">\d</span><span class="sx">+)</span><span class="sx">}</span><span class="t"> </span><span class="nf">with:</span><span class="t"> </span><span class="s">&quot;</span><span class="s">($(num))</span><span class="s">&quot;</span>
+<span class="s">&quot;</span><span class="s">(123) (456)</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_RegexpMatch">
+  <pre class="thumb"><span class="n"><a href="regexps.html#definition_RegexpMatch">RegexpMatch</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span></pre><p>A throw-away object containing information about a regular expression match.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="sx">r&quot;</span><span class="sx">a(b)(?&lt;see&gt;c)</span><span class="sx">&quot;</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">abc</span><span class="s">&quot;</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="n">m</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n">m</span><span class="t"> </span><span class="p">}</span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+  </span><span class="n"><a href="regexps.html#definition_captures">captures</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="p">[</span><span class="s">&quot;</span><span class="s">b</span><span class="s">&quot;</span><span class="p">,</span><span class="t"> </span><span class="s">&quot;</span><span class="s">c</span><span class="s">&quot;</span><span class="p">]</span><span class="t">
+  </span><span class="n"><a href="regexps.html#definition_before">before</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">&quot;</span><span class="t">
+  </span><span class="n"><a href="regexps.html#definition_bindings">bindings</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="go">&lt;o</span><span class="go">bject</span><span class="go">&gt;</span><span class="t">
+  </span><span class="n"><a href="regexps.html#definition_after">after</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">&quot;</span><span class="t">
+  </span><span class="n"><a href="regexps.html#definition_match">match</a></span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">abc</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_match">
+  <pre class="thumb"><span class="n">m</span><span class="t"> </span><span class="n"><a href="regexps.html#definition_match">match</a></span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="n">m</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="regexps.html#definition_RegexpMatch">RegexpMatch</a></span></pre><p>Yields the matched text.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="sx">r&quot;</span><span class="sx">b</span><span class="sx">&quot;</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">abc</span><span class="s">&quot;</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="n">m</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n">m</span><span class="t"> </span><span class="n"><a href="regexps.html#definition_match">match</a></span><span class="t"> </span><span class="p">}</span>
+<span class="s">&quot;</span><span class="s">b</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_captures">
+  <pre class="thumb"><span class="n">m</span><span class="t"> </span><span class="n"><a href="regexps.html#definition_captures">captures</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="lists.html#definition_List">List</a></span>
+  | <span class="n">m</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="regexps.html#definition_RegexpMatch">RegexpMatch</a></span></pre><p>Yields the captured matches.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="sx">r&quot;</span><span class="sx">a(b)c</span><span class="sx">&quot;</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">abc</span><span class="s">&quot;</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="n">m</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n">m</span><span class="t"> </span><span class="n"><a href="regexps.html#definition_captures">captures</a></span><span class="t"> </span><span class="p">}</span>
+<span class="p">[</span><span class="s">&quot;</span><span class="s">b</span><span class="s">&quot;</span><span class="p">]</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_before">
+  <pre class="thumb"><span class="n">m</span><span class="t"> </span><span class="n"><a href="regexps.html#definition_before">before</a></span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="n">m</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="regexps.html#definition_RegexpMatch">RegexpMatch</a></span></pre><p>Yields the text preceding a match.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="sx">r&quot;</span><span class="sx">b</span><span class="sx">&quot;</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">abc</span><span class="s">&quot;</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="n">m</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n">m</span><span class="t"> </span><span class="n"><a href="regexps.html#definition_before">before</a></span><span class="t"> </span><span class="p">}</span>
+<span class="s">&quot;</span><span class="s">a</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_after">
+  <pre class="thumb"><span class="n">m</span><span class="t"> </span><span class="n"><a href="regexps.html#definition_after">after</a></span> <span class="definition-result-arrow">→</span> <span class="n">String</span>
+  | <span class="n">m</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="regexps.html#definition_RegexpMatch">RegexpMatch</a></span></pre><p>Yields the text following a match.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="sx">r&quot;</span><span class="sx">b</span><span class="sx">&quot;</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">abc</span><span class="s">&quot;</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="n">m</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n">m</span><span class="t"> </span><span class="n"><a href="regexps.html#definition_after">after</a></span><span class="t"> </span><span class="p">}</span>
+<span class="s">&quot;</span><span class="s">c</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_RegexpBindings">
+  <pre class="thumb"><span class="n"><a href="regexps.html#definition_RegexpBindings">RegexpBindings</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span></pre><p>A throw-away object containing the bindings from a regular expression match, as methods preceded by a backslash. Captures are named from their offset, and named matches are bound by their name.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="sx">r&quot;</span><span class="sx">a(b)(?&lt;see&gt;c)</span><span class="sx">&quot;</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">abc</span><span class="s">&quot;</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="n">m</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n">m</span><span class="t"> </span><span class="n"><a href="regexps.html#definition_bindings">bindings</a></span><span class="t"> </span><span class="p">}</span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+  </span><span class="n">\0</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">abc</span><span class="s">&quot;</span><span class="t">
+  </span><span class="n">\1</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">b</span><span class="s">&quot;</span><span class="t">
+  </span><span class="n">\2</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">c</span><span class="s">&quot;</span><span class="t">
+  </span><span class="n">\see</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">c</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_bindings">
+  <pre class="thumb"><span class="n">m</span><span class="t"> </span><span class="n"><a href="regexps.html#definition_bindings">bindings</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="regexps.html#definition_RegexpBindings">RegexpBindings</a></span>
+  | <span class="n">m</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="regexps.html#definition_RegexpMatch">RegexpMatch</a></span></pre><p>Yields the bind following a match.</p><p>Yields the <code><span class="n"><a href="regexps.html#definition_RegexpBindings">RegexpBindings</a></span></code> for a match.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">(</span><span class="sx">r&quot;</span><span class="sx">(b)(?&lt;see&gt;c)</span><span class="sx">&quot;</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">abc</span><span class="s">&quot;</span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="regexps.html#definition_match:">match:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">ok:</span><span class="t"> </span><span class="n">m</span><span class="p">)</span><span class="t"> </span><span class="o"><a href="association.html#definition_-&gt;:">-&gt;</a></span><span class="t"> </span><span class="n">m</span><span class="t"> </span><span class="n"><a href="regexps.html#definition_bindings">bindings</a></span><span class="t"> </span><span class="p">}</span>
+<span class="go">&lt;o</span><span class="go">bject (delegates to 1 object)</span><span class="go">&gt;</span><span class="t">
+  </span><span class="n">\0</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">bc</span><span class="s">&quot;</span><span class="t">
+  </span><span class="n">\1</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">b</span><span class="s">&quot;</span><span class="t">
+  </span><span class="n">\2</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">c</span><span class="s">&quot;</span><span class="t">
+  </span><span class="n">\see</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=:">:=</a></span><span class="t"> </span><span class="s">&quot;</span><span class="s">c</span><span class="s">&quot;</span>
+</pre></div>
+
+
+
+</div>
+
+    </div>
+  </body>
+</html>

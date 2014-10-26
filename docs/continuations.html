@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Continuations</title>
+    <link rel="stylesheet" type="text/css" href="anatomy.css" />
+    <link rel="stylesheet" type="text/css" href="highlight.css" />
+    <script src="jquery.js" type="text/javascript"></script>
+    <script src="jquery.hotkeys.js" type="text/javascript"></script>
+    <script src="tags.js" type="text/javascript"></script>
+    <script src="main.js" type="text/javascript"></script>
+  </head>
+  <body class="with-sidebar normal">
+    <div id="sidebar">
+      <form class="search" action="javascript:void(0)">
+        <input type="text" id="search" placeholder="Search&hellip;" />
+      </form>
+      <ul class="search-results"></ul>
+      <h4>On this page:</h4>
+<ol class="toc"><li><a href="continuations.html">Continuations</a></li></ol>
+<h4>Up one level:</h4><ol class="toc"><li><a href="reference.html">Reference</a><ol><li><a href="ecosystem.html">The Ecosystem</a><ol><li><a href="ecosystem.html#section_.Eco">Eco</a></li><li><a href="ecosystem.html#section_.Packages">Packages</a></li><li><a href="ecosystem.html#section_.Versions">Versions</a></li></ol></li><li><a href="core.html">Core</a></li><li><a href="dynamic.html">Dynamic Environment</a></li><li><a href="lists.html">Lists</a></li><li><a href="tuples.html">Tuples</a></li><li><a href="strings.html">Strings</a></li><li><a href="regexps.html">Regular Expressions</a></li><li><a href="formatting.html">String Formatting</a><ol><li><a href="formatting.html#section_.Syntax">Syntax</a></li><li><a href="formatting.html#section_.Basic_.Formatters">Basic Formatters</a></li><li><a href="formatting.html#section_.Alignment">Alignment</a></li><li><a href="formatting.html#section_.Pluralization">Pluralization</a></li><li><a href="formatting.html#section_.Case_.Conversion">Case Conversion</a></li><li><a href="formatting.html#section_.Skipping___.Indirection">Skipping & Indirection</a></li><li><a href="formatting.html#section_.Iteration___.Breaking">Iteration & Breaking</a></li><li><a href="formatting.html#section_.Conditionals">Conditionals</a></li><li><a href="formatting.html#section_.Justification">Justification</a></li></ol></li><li><a href="class-objects.html">Class Objects</a><ol><li><a href="class-objects.html#section_.Defining_.Classes">Defining Classes</a></li><li><a href="class-objects.html#section_.Modules___.Mixins">Modules & Mixins</a></li></ol></li><li><a href="blocks.html">Blocks</a></li><li><a href="concurrency.html">Concurrency</a></li><li><a href="conditions.html">Conditions & Restarts</a><ol><li><a href="conditions.html#section_.Signals">Signals</a></li><li><a href="conditions.html#section_.Handlers">Handlers</a></li><li><a href="conditions.html#section_.Traditional_.Exceptions">Traditional Exceptions</a></li></ol></li><li><a href="continuations.html">Continuations</a></li><li><a href="particles.html">Particles</a></li><li><a href="numbers.html">Numbers</a></li><li><a href="boolean.html">Boolean</a><ol><li><a href="boolean.html#section_.Logic">Logic</a></li><li><a href="boolean.html#section_.Control_.Flow">Control Flow</a></li></ol></li><li><a href="comparable.html">Comparable</a></li><li><a href="io.html">Input & Output</a><ol><li><a href="io.html#section_.Parameters">Parameters</a></li></ol></li><li><a href=".Timer.html">Timer</a><ol><li><a href=".Timer.html#section_.The_.Timer_.Object">The Timer Object</a></li><li><a href=".Timer.html#section_.Unit_.Helpers">Unit Helpers</a></li></ol></li><li><a href="association.html">Associations</a></li><li><a href="ordered.html">Ordered Values</a></li><li><a href="ranges.html">Ranges</a></li><li><a href="pretty.html">Pretty-Printing</a><ol><li><a href="pretty.html#section_.Documents_.From_.Values">Documents From Values</a></li><li><a href="pretty.html#section_.Simple_.Shortcuts">Simple Shortcuts</a></li><li><a href="pretty.html#section_.Wrapping_.Documents">Wrapping Documents</a></li><li><a href="pretty.html#section_.Combining_.Documents">Combining Documents</a></li><li><a href="pretty.html#section_.Rendering">Rendering</a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="content">
+<h1>Continuations</h1><p>Continuations in Atomo are very simple, and probably more powerful than they should be.</p><p>But this is not a language for the faint of heart.</p><p>Just keep in mind that when you use continuations, you'd better be careful how you use them - and be sure that you're not using a cannon to hammer a nail. With great power comes great responsibility.</p><p>NOTE: <em>A few of these examples need to use blocks to get around limitations of Anatomy's interactive examples, so they may be a bit long.</em>
+
+</p><div class="definition" id="definition_Continuation">
+  <pre class="thumb"><span class="n"><a href="continuations.html#definition_Continuation">Continuation</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="core.html#definition_Object">Object</a></span></pre><p>A <code><span class="n"><a href="continuations.html#definition_Continuation">Continuation</a></span></code> is a value that represents the context of an expression that was evaluated; what was being done with it, and whatever was going to happen next.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_call/cc">
+  <pre class="thumb"><span class="n">o</span><span class="t"> </span><span class="n"><a href="continuations.html#definition_call/cc">call/cc</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">o</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span></pre><p>Sends the current <code><span class="n"><a href="continuations.html#definition_Continuation">Continuation</a></span></code> to <code><span class="n">o</span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">return</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="s">&quot;</span><span class="s">before</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="p">;</span><span class="t"> </span><span class="n">return</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_yield:">yield:</a></span><span class="t"> </span><span class="mi">100</span><span class="p">;</span><span class="t"> </span><span class="s">&quot;</span><span class="s">after</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="continuations.html#definition_call/cc">call/cc</a></span>
+before
+<span class="mi">100</span>
+</pre></div><p>When the continuation is yielded to, the appropriate before/after thunks (provided by <code><span class="nf"><a href="continuations.html#definition_before:after:">before:</a></span><span class="nf"><a href="continuations.html#definition_before:after:">after:</a></span></code>, et al.) are unwound.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_call/cc:">
+  <pre class="thumb"><span class="n">o</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_call/cc:">call/cc:</a></span><span class="t"> </span><span class="p">(</span><span class="o"><a href="ranges.html#definition_...">...</a></span><span class="t"> </span><span class="n">args</span><span class="p">)</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">o</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span></pre><p>Like <code><span class="n"><a href="continuations.html#definition_call/cc">call/cc</a></span></code>, but sends some additional arguments along to the block.</p><p>The continuation is the first argument, followed by <code><span class="n">args</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_yield:">
+  <pre class="thumb"><span class="n">c</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_yield:">yield:</a></span><span class="t"> </span><span class="n">v</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">c</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="continuations.html#definition_Continuation">Continuation</a></span></pre><p>Immediately go back to <code><span class="n">c</span></code>'s context and yield <code><span class="n">v</span></code> in its place.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">cc</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="s">&quot;</span><span class="s">before</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="p">;</span><span class="t"> </span><span class="n">cc</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_yield:">yield:</a></span><span class="t"> </span><span class="mi">1</span><span class="p">;</span><span class="t"> </span><span class="s">&quot;</span><span class="s">after</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="continuations.html#definition_call/cc">call/cc</a></span>
+before
+<span class="mi">1</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_before:after:">
+  <pre class="thumb"><span class="n">action</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_before:after:">before:</a></span><span class="t"> </span><span class="n">pre-thunk</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_before:after:">after:</a></span><span class="t"> </span><span class="n">post-thunk</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="p">[</span><span class="n">action</span><span class="p">,</span><span class="t"> </span><span class="n">pre-thunk</span><span class="p">,</span><span class="t"> </span><span class="n">post-think</span><span class="p">]</span><span class="t"> </span><span class="nf"><a href="lists.html#definition_all?:">all?:</a></span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span><span class="p">)</span></pre><p>Calls the three blocks in order, returning <code><span class="n">action</span></code>'s result.</p><p>In addition; <code><span class="n">post-thunk</span></code> is always called, even if an exception is raised.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">in</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_before:after:">before:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">pre</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_before:after:">after:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">post</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+pre
+in
+post
+<span class="s">&quot;</span><span class="s">in</span><span class="s">&quot;</span>
+</pre></div>
+
+<p><code><span class="n">pre-thunk</span></code> is called whenever <code><span class="n">action</span></code> is re-entered (e.g. by jumping back into it by yielding to a continuation).
+
+<code><span class="n">post-thunk</span></code> is called whenever control leaves the block (e.g. by yielding to another continuation) or when <code><span class="n">action</span></code> completes.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="nf">yield!:</span><span class="t"> </span><span class="n">c</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="nf">when:</span><span class="t"> </span><span class="p">(</span><span class="n">c</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="continuations.html#definition_Continuation">Continuation</a></span><span class="p">)</span><span class="t"> </span><span class="nf"><a href="blocks.html#definition_do:">do:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">c</span><span class="t"> </span><span class="n"><a href="continuations.html#definition_yield">yield</a></span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="n">x</span><span class="t"> </span><span class="o"><a href="core.html#definition_:=">:=</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">in</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="p">;</span><span class="t"> </span><span class="n"><a href="continuations.html#definition_current-continuation">current-continuation</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_before:after:">before:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">pre</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_before:after:">after:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">post</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+<span class="nd">@ok</span>
+<span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">cont</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="n">x</span><span class="p">;</span><span class="t"> </span><span class="n">cont</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="p">;</span><span class="t"> </span><span class="nf">yield!:</span><span class="t"> </span><span class="n">cont</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="continuations.html#definition_call">call</a></span>
+pre
+in
+post
+&lt;continuation&gt;
+pre
+post
+@ok
+<span class="nd">@ok</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_after:">
+  <pre class="thumb"><span class="n">action</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_after:">after:</a></span><span class="t"> </span><span class="n">post-thunk</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">action</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">post-thunk</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Shortcut for <code><span class="n">action</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_before:after:">before:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@ok</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_before:after:">after:</a></span><span class="t"> </span><span class="n">post-thunk</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_before:">
+  <pre class="thumb"><span class="n">action</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_before:">before:</a></span><span class="t"> </span><span class="n">pre-thunk</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">action</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">pre-thunk</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span></pre><p>Shortcut for <code><span class="n">action</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_before:after:">before:</a></span><span class="t"> </span><span class="n">pre-thunk</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_before:after:">after:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="nd">@ok</span><span class="t"> </span><span class="p">}</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_wrap:do:">
+  <pre class="thumb"><span class="n"><a href="lists.html#definition_init">init</a></span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_wrap:do:">wrap:</a></span><span class="t"> </span><span class="n">cleanup</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_wrap:do:">do:</a></span><span class="t"> </span><span class="n">action</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n"><a href="lists.html#definition_init">init</a></span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="blocks.html#definition_Block">Block</a></span>
+  | <span class="n">cleanup</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span>
+  | <span class="n">action</span><span class="t"> </span><span class="nf"><a href="core.html#definition_responds-to?:">responds-to?:</a></span><span class="t"> </span><span class="nd">@call:</span></pre><p>Calls <code><span class="n">action</span></code> with the <code><span class="n"><a href="lists.html#definition_init">init</a></span></code>'s result, ensuring that <code><span class="n">cleanup</span></code> is performed when control leaves <code><span class="n">action</span></code> and that <code><span class="n"><a href="lists.html#definition_init">init</a></span></code> is re-<code><span class="n">called</span></code>ed and passed to <code><span class="n">action</span></code> when control enters <code><span class="n">action</span></code>.</p><p>See also <code><span class="nf"><a href="continuations.html#definition_before:after:">before:</a></span><span class="nf"><a href="continuations.html#definition_before:after:">after:</a></span></code>.
+
+</p><div class="example"><p><em>Example:</em></p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="s">&quot;</span><span class="s">init</span><span class="s">&quot;</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_wrap:do:">wrap:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">c</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="n">c</span><span class="t"> </span><span class="n">uppercase</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_wrap:do:">do:</a></span><span class="t"> </span><span class="p">{</span><span class="t"> </span><span class="n">c</span><span class="t"> </span><span class="o">|</span><span class="t"> </span><span class="nd">@</span><span class="p">(</span><span class="nf">action:</span><span class="t"> </span><span class="n">c</span><span class="p">)</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="t"> </span><span class="p">}</span>
+init
+@(action: &quot;init&quot;)
+INIT
+<span class="nd">@</span><span class="p">(</span><span class="nf">action:</span><span class="t"> </span><span class="s">&quot;</span><span class="s">init</span><span class="s">&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+
+</div>
+
+
+<div class="definition" id="definition_current-continuation">
+  <pre class="thumb"><span class="n"><a href="continuations.html#definition_current-continuation">current-continuation</a></span> <span class="definition-result-arrow">→</span> <span class="n"><a href="continuations.html#definition_Continuation">Continuation</a></span></pre><p>Returns the current continuation.</p><p>Be careful, though: by current, it really means <em>current</em>. You usually want to use <code><span class="n"><a href="continuations.html#definition_call/cc">call/cc</a></span></code>.</p><p>For example, if you assign this to a value, the continuation will be that assignment:
+
+</p><pre class="interaction"><span class="caret">&gt;</span> <span class="p">{</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="o"><a href="core.html#definition_=">=</a></span><span class="t"> </span><span class="n"><a href="continuations.html#definition_current-continuation">current-continuation</a></span><span class="p">;</span><span class="t"> </span><span class="n">a</span><span class="t"> </span><span class="n"><a href="io.html#definition_print">print</a></span><span class="p">;</span><span class="t"> </span><span class="p">(</span><span class="n">a</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_yield:">yield:</a></span><span class="t"> </span><span class="mi">42</span><span class="p">)</span><span class="t"> </span><span class="nf">when:</span><span class="t"> </span><span class="p">(</span><span class="n">a</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="continuations.html#definition_Continuation">Continuation</a></span><span class="p">)</span><span class="p">;</span><span class="t"> </span><span class="nd">@done</span><span class="t"> </span><span class="p">}</span><span class="t"> </span><span class="n"><a href="continuations.html#definition_call">call</a></span>
+&lt;continuation&gt;
+42
+<span class="nd">@done</span>
+</pre><p>We had to check if <code><span class="n">a</span></code> was a <code><span class="n"><a href="continuations.html#definition_Continuation">Continuation</a></span></code> there, because after the <code><span class="nf"><a href="continuations.html#definition_yield:">yield:</a></span></code> it becomes <code><span class="mi">42</span></code>, and you'd end up with <code><span class="mi">42</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_yield:">yield:</a></span><span class="t"> </span><span class="mi">42</span></code>. That is, execution continues from just after the assignment, with <code><span class="n">a</span></code> as its new value, which it happily attempts to <code><span class="nf"><a href="continuations.html#definition_yield:">yield:</a></span></code> to all over again.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_call:">
+  <pre class="thumb"><span class="n">c</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_call:">call:</a></span><span class="t"> </span><span class="n">l</span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">c</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="continuations.html#definition_Continuation">Continuation</a></span>
+  | <span class="p">(</span><span class="n">l</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="lists.html#definition_List">List</a></span><span class="p">)</span><span class="t"> </span><span class="o"><a href="boolean.html#definition_&amp;&amp;">&amp;&amp;</a></span><span class="t"> </span><span class="p">(</span><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_length">length</a></span><span class="t"> </span><span class="o"><a href="comparable.html#definition_==">==</a></span><span class="t"> </span><span class="mi">1</span><span class="p">)</span></pre><p>A helper that just calls <code><span class="n">c</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_yield:">yield:</a></span><span class="t"> </span><span class="n">l</span><span class="t"> </span><span class="n"><a href="lists.html#definition_head">head</a></span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_yield">
+  <pre class="thumb"><span class="n">c</span><span class="t"> </span><span class="n"><a href="continuations.html#definition_yield">yield</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">c</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="continuations.html#definition_Continuation">Continuation</a></span></pre>
+<p><code><span class="n">c</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_yield:">yield:</a></span><span class="t"> </span><span class="nd">@ok</span></code>.
+
+
+
+</p></div>
+
+
+<div class="definition" id="definition_call">
+  <pre class="thumb"><span class="n">c</span><span class="t"> </span><span class="n"><a href="continuations.html#definition_call">call</a></span> <span class="definition-result-arrow">→</span> <span class="n">any</span>
+  | <span class="n">c</span><span class="t"> </span><span class="nf"><a href="core.html#definition_is-a?:">is-a?:</a></span><span class="t"> </span><span class="n"><a href="continuations.html#definition_Continuation">Continuation</a></span></pre>
+<p><code><span class="n">c</span><span class="t"> </span><span class="nf"><a href="continuations.html#definition_yield:">yield:</a></span><span class="t"> </span><span class="nd">@ok</span></code>.
+
+
+
+</p></div>
+
+
+    </div>
+  </body>
+</html>

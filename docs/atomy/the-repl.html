@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>The REPL</title>
+<link rel="stylesheet" type="text/css" href="public/doodle.css">
+<script type="text/javascript" src="public/jquery.js"></script><script type="text/javascript" src="public/jquery.hotkeys.js"></script><script type="text/javascript" src="public/tags.js"></script><script type="text/javascript" src="public/main.js"></script><link rel="stylesheet" type="text/css" href="public/highlight.css">
+</head>
+<body>
+<div id="main"><div id="content"><div class="section">
+<h1 class="section_header">The REPL</h1>
+<div id="definition_basic_repl" class="definition">
+<pre class="thumb"><span class="n">basic-repl</span><span class="p">(</span><span class="n">bnd</span><span class="t"> </span><span class="o">=</span><span class="t"> </span><span class="no">TOPLEVEL_BINDING</span><span class="p">)</span> 
+  | <span class="n">bnd</span><span class="t"> </span><span class="n">is-a?</span><span class="p">(</span><span class="no">Binding</span><span class="p">)</span></pre>
+<p>The basics of a REPL - reading, evaluating, and printing in a loop. More   flexibility is provided by various signals. See <code><span class="n"><a href="the-repl.html#definition_repl">repl</a></span></code> for a fancier   REPL, which builds upon this, and <code><span class="no">ReplDebugger</span></code>.</p>
+<p>When showing the prompt, <code><span class="ss">#prompt</span></code> is signaled with a <code><span class="ss">#use-prompt</span></code>   restart available. Invoke this restart and pass along a string to   override the prompt, which defaults to <code>&gt;&gt;</code>.</p>
+<p>Input preceded by a colon (<code>:</code>) and followed by an alphanumeric   character is assumed to be a <span style="font-style: italic">special command</span>. These are not   evaluated, and are signaled as <code><span class="ss">#special</span><span class="p">(</span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">)</span></code>.</p>
+<p>When the user sends <code>EOF</code> (Ctrl+D) or an interrupt (Ctrl+C),   <code><span class="ss">#quit</span></code> is signaled.</p>
+<p>When the user enters code, <code><span class="ss">#input</span><span class="p">(</span><span class="n"><a href="shortcuts.html#definition_text">text</a></span><span class="p">)</span></code> is signaled. The code  is evaluated with two restarts registered: <code>#retry</code> for re-attempting   evaluation, and <code>#abort</code>, for canceling the evaluation. After the code  is evaluated, <code><span class="ss">#evaluated</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></code> is signaled.</p>
+<p><code><span class="ss">#loop</span></code> is signaled before the loop starts over again (i.e., after the   input is handled).</p>
+</div>
+<div id="definition_ReplDebugger" class="definition">
+<pre class="thumb"><span class="no">ReplDebugger</span> <span class="definition_result_arrow">&rArr;</span> <span class="no">Class</span></pre>
+<p>An interactive debugger REPL for handling errors. This will list the   results along with a number, allow the user to continue evaluating code,   and once they enter a <span style="font-style: italic">special command</span> in the form of   <code>:<span style="font-style: italic">number</span></code>, the specified restart will be invoked.</p>
+</div>
+<div id="definition_repl" class="definition">
+<pre class="thumb"><span class="n"><a href="the-repl.html#definition_repl">repl</a></span><span class="p">(</span><span class="n">history</span><span class="t"> </span><span class="o">=</span><span class="t"> </span><span class="kc">nil</span><span class="p">,</span><span class="t"> </span><span class="n">bnd</span><span class="t"> </span><span class="o">=</span><span class="t"> </span><span class="no">TOPLEVEL_BINDING</span><span class="p">)</span> 
+  | <span class="n">history</span><span class="t"> </span><span class="n">is-a?</span><span class="p">(</span><span class="no">String</span><span class="p">)</span>
+  | <span class="n">bnd</span><span class="t"> </span><span class="n">is-a?</span><span class="p">(</span><span class="no">Binding</span><span class="p">)</span></pre>
+<p>A more feature-filled REPL, providing persistent history and setting   <code><span class="o">^</span><span class="n">debugger</span></code> to <code><span class="no">ReplDebugger</span></code>.</p>
+<p>History will be managed and appended to a file specified by <code><span class="n">history</span></code>   upon termination.</p>
+</div>
+</div></div></div>
+<div class="search">
+<form action="javascript:void(0)"><input autocomplete="off" type="text" placeholder="Search&hellip;" id="search"></form>
+<ul class="search_results"></ul>
+</div>
+<div id="sidebar">
+<h4>Up one level:</h4>
+<ol class="toc"><li>
+<a href="reference.html">Reference</a><ol>
+<li>
+<a href="concurrency.html">Concurrency</a><ol>
+<li><a href="concurrency.html#section_sending-and-receiving">Sending &amp; Receiving</a></li>
+<li><a href="concurrency.html#section_spawning">Spawning</a></li>
+</ol>
+</li>
+<li>
+<a href="condition-system.html">Condition System</a><ol>
+<li><a href="condition-system.html#section_conditions">Conditions</a></li>
+<li><a href="condition-system.html#section_handling">Handling</a></li>
+<li><a href="condition-system.html#section_signalling">Signalling</a></li>
+<li><a href="condition-system.html#section_debuggers">Debuggers</a></li>
+</ol>
+</li>
+<li>
+<a href="pretty-printing.html">Pretty-Printing</a><ol>
+<li><a href="pretty-printing.html#section_documents">Documents</a></li>
+<li><a href="pretty-printing.html#section_constructing">Constructing</a></li>
+<li>
+<a href="pretty-printing.html#section_helpers">Helpers</a><ol>
+<li><a href="pretty-printing.html#section_shortcuts">Shortcuts</a></li>
+<li><a href="pretty-printing.html#section_wrapping">Wrapping</a></li>
+<li><a href="pretty-printing.html#section_combining">Combining</a></li>
+</ol>
+</li>
+</ol>
+</li>
+<li>
+<a href="input-and-output.html">Input &amp; Output</a><ol>
+<li><a href="input-and-output.html#section_output">Output</a></li>
+<li><a href="input-and-output.html#section_input">Input</a></li>
+</ol>
+</li>
+<li><a href="the-repl.html">The REPL</a></li>
+<li>
+<a href="testing-with-therie.html">Testing with Therie</a><ol>
+<li><a href="testing-with-therie.html#section_structure">Structure</a></li>
+<li><a href="testing-with-therie.html#section_tests">Tests</a></li>
+</ol>
+</li>
+</ol>
+</li></ol>
+</div>
+</body>
+</html>
